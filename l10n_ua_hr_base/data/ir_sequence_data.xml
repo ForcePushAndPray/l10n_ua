@@ -60,9 +60,9 @@
             <field name="company_id" eval="False"/>
         </record>
 
-        <record id="seq_hr_order_general" model="ir.sequence">
-            <field name="name">HR Order: General</field>
-            <field name="code">hr.order.general</field>
+        <record id="seq_hr_order_other" model="ir.sequence">
+            <field name="name">HR Order: Other</field>
+            <field name="code">hr.order.other</field>
             <field name="prefix">К-%(year)s/</field>
             <field name="padding">4</field>
             <field name="company_id" eval="False"/>
