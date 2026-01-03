@@ -68,6 +68,10 @@ This module is required for all other l10n_ua_hr_* modules.
         'demo/hr_demo_data.xml',
     ],
     'installable': True,
-    'application': False,
+    'application': True,
     'auto_install': False,
+    'application': True,
+    'price': 199,
+    'currency': 'EUR'
+
 }
