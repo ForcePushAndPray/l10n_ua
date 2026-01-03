@@ -1,26 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <menuitem id="menu_hr_reports_root"
-              name="Reports"
-              parent="l10n_ua_hr_base.menu_hr_ua_root"
-              sequence="70"/>
-
     <menuitem id="menu_hr_report_1df"
               name="1DF Reports"
-              parent="menu_hr_reports_root"
+              parent="hr.hr_menu_hr_reports"
               action="action_hr_report_1df"
               sequence="10"/>
 
     <menuitem id="menu_hr_report_d5"
               name="D5 ESV Reports"
-              parent="menu_hr_reports_root"
+              parent="hr.hr_menu_hr_reports"
               action="action_hr_report_d5"
               sequence="20"/>
 
     <menuitem id="menu_hr_report_wizard"
               name="Generate Report"
-              parent="menu_hr_reports_root"
+              parent="hr.hr_menu_hr_reports"
               action="action_hr_report_wizard"
               sequence="50"/>
 

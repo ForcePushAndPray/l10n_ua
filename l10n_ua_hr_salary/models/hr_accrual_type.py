@@ -65,6 +65,7 @@ class HrAccrualType(models.Model):
     description = fields.Text(string='Description')
     active = fields.Boolean(string='Active', default=True)
 
-    _sql_constraints = [
-        ('code_uniq', 'unique(code)', 'Accrual type code must be unique!'),
-    ]
+    _unique_code = models.Constraint(
+        'unique(code)',
+        'Accrual type code must be unique!',
+    )

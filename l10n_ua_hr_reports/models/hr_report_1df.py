@@ -39,6 +39,11 @@ class HrReport1DF(models.Model):
         string='Report Lines'
     )
     
+    total_employees = fields.Integer(
+        string='Total Employees',
+        compute='_compute_totals',
+        store=True
+    )
     total_accrued = fields.Float(
         string='Total Accrued',
         compute='_compute_totals',
@@ -78,6 +83,7 @@ class HrReport1DF(models.Model):
                  'line_ids.pdfo_amount', 'line_ids.military_amount')
     def _compute_totals(self):
         for rec in self:
+            rec.total_employees = len(rec.line_ids)
             rec.total_accrued = sum(rec.line_ids.mapped('accrued_amount'))
             rec.total_paid = sum(rec.line_ids.mapped('paid_amount'))
             rec.total_pdfo = sum(rec.line_ids.mapped('pdfo_amount'))
@@ -150,10 +156,10 @@ class HrReport1DF(models.Model):
     def action_draft(self):
         self.write({'state': 'draft'})
 
-    _sql_constraints = [
-        ('year_quarter_company_uniq', 'unique(year, quarter, company_id)',
-         '1DF report for this period already exists!'),
-    ]
+    _unique_year_quarter_company_id = models.Constraint(
+        'unique(year, quarter, company_id)',
+        '1DF report for this period already exists!',
+    )
 
 
 class HrReport1DFLine(models.Model):

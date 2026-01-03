@@ -58,9 +58,3 @@ class HrLeaveType(models.Model):
         default=14,
         help='Minimum continuous vacation days (14 for annual)'
     )
-    
-    accrual_type_id = fields.Many2one(
-        'hr.accrual.type',
-        string='Accrual Type',
-        help='Payroll accrual type for this leave'
-    )

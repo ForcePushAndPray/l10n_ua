@@ -1,31 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data noupdate="1">
-        
-        <!-- Vacation balances for demo employees -->
-        <record id="vacation_balance_petrenko_2026" model="hr.vacation.balance">
-            <field name="employee_id" ref="l10n_ua_hr_base.demo_employee_petrenko"/>
-            <field name="leave_type_id" ref="leave_type_annual_basic"/>
-            <field name="year">2026</field>
-            <field name="entitled_days">24</field>
-            <field name="carried_over">5</field>
-        </record>
-        
-        <record id="vacation_balance_kovalenko_2026" model="hr.vacation.balance">
-            <field name="employee_id" ref="l10n_ua_hr_base.demo_employee_kovalenko"/>
-            <field name="leave_type_id" ref="leave_type_annual_basic"/>
-            <field name="year">2026</field>
-            <field name="entitled_days">24</field>
-            <field name="carried_over">0</field>
-        </record>
-        
-        <record id="vacation_balance_shevchenko_2026" model="hr.vacation.balance">
-            <field name="employee_id" ref="l10n_ua_hr_base.demo_employee_shevchenko"/>
-            <field name="leave_type_id" ref="leave_type_annual_basic"/>
-            <field name="year">2026</field>
-            <field name="entitled_days">24</field>
-            <field name="carried_over">10</field>
-        </record>
-        
+        <!-- Demo data will be added when base demo employees exist -->
     </data>
 </odoo>

@@ -89,9 +89,10 @@ class HrPersonalFile(models.Model):
                 vals['name'] = self.env['ir.sequence'].next_by_code('hr.personal.file') or 'New'
         return super().create(vals_list)
 
-    _sql_constraints = [
-        ('employee_uniq', 'unique(employee_id)', 'Personal file for this employee already exists!'),
-    ]
+    _unique_employee_id = models.Constraint(
+        'unique(employee_id)',
+        'Personal file for this employee already exists!',
+    )
 
 
 class HrPersonalFileFamily(models.Model):

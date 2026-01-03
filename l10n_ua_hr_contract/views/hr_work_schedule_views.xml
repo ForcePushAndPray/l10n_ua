@@ -76,35 +76,10 @@
         </field>
     </record>
 
-    <record id="hr_work_schedule_view_search" model="ir.ui.view">
-        <field name="name">hr.work.schedule.search</field>
-        <field name="model">hr.work.schedule</field>
-        <field name="arch" type="xml">
-            <search string="Search Work Schedules">
-                <field name="name"/>
-                <field name="code"/>
-                <separator/>
-                <filter name="filter_standard" string="Standard" domain="[('schedule_type', '=', 'standard')]"/>
-                <filter name="filter_shift" string="Shift Work" domain="[('schedule_type', '=', 'shift')]"/>
-                <filter name="filter_flexible" string="Flexible" domain="[('schedule_type', '=', 'flexible')]"/>
-                <separator/>
-                <filter name="filter_night" string="Night Work" domain="[('is_night_work', '=', True)]"/>
-                <filter name="filter_hazardous" string="Hazardous" domain="[('is_hazardous', '=', True)]"/>
-                <separator/>
-                <filter name="filter_inactive" string="Archived" domain="[('active', '=', False)]"/>
-                <separator/>
-                <group expand="0" string="Group By">
-                    <filter name="group_type" string="Schedule Type" context="{'group_by': 'schedule_type'}"/>
-                </group>
-            </search>
-        </field>
-    </record>
-
-    <record id="action_hr_work_schedule" model="ir.actions.act_window">
+<record id="action_hr_work_schedule" model="ir.actions.act_window">
         <field name="name">Work Schedules</field>
         <field name="res_model">hr.work.schedule</field>
         <field name="view_mode">list,form</field>
-        <field name="search_view_id" ref="hr_work_schedule_view_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your first work schedule

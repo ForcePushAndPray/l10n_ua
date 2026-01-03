@@ -127,10 +127,10 @@ class HrProductionCalendar(models.Model):
         }
         return holidays
 
-    _sql_constraints = [
-        ('year_company_uniq', 'unique(year, company_id)',
-         'Production calendar for this year already exists!'),
-    ]
+    _unique_year_company_id = models.Constraint(
+        'unique(year, company_id)',
+        'Production calendar for this year already exists!',
+    )
 
 
 class HrProductionCalendarLine(models.Model):

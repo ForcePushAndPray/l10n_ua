@@ -3,7 +3,7 @@
 
     <menuitem id="menu_hr_payroll_root"
               name="Payroll"
-              parent="l10n_ua_hr_base.menu_hr_ua_root"
+              web_icon="l10n_ua_hr_salary,static/description/icon.png"
               sequence="30"/>
 
     <menuitem id="menu_hr_payslip"

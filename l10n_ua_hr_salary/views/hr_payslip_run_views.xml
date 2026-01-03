@@ -97,30 +97,10 @@
         </field>
     </record>
 
-    <record id="hr_payslip_run_view_search" model="ir.ui.view">
-        <field name="name">hr.payslip.run.search</field>
-        <field name="model">hr.payslip.run</field>
-        <field name="arch" type="xml">
-            <search string="Search Batches">
-                <field name="name"/>
-                <separator/>
-                <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
-                <filter name="filter_verify" string="Verify" domain="[('state', '=', 'verify')]"/>
-                <filter name="filter_done" string="Done" domain="[('state', '=', 'close')]"/>
-                <separator/>
-                <group expand="0" string="Group By">
-                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
-                    <filter name="group_month" string="Month" context="{'group_by': 'date_end:month'}"/>
-                </group>
-            </search>
-        </field>
-    </record>
-
-    <record id="action_hr_payslip_run" model="ir.actions.act_window">
+<record id="action_hr_payslip_run" model="ir.actions.act_window">
         <field name="name">Payslip Batches</field>
         <field name="res_model">hr.payslip.run</field>
         <field name="view_mode">list,form</field>
-        <field name="search_view_id" ref="hr_payslip_run_view_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a payslip batch to process multiple payslips at once

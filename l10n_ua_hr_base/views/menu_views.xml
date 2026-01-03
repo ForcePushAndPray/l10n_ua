@@ -1,32 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Main Configuration Menu -->
-    <menuitem id="menu_hr_ua_configuration"
-              name="Ukraine"
-              parent="hr.menu_human_resources_configuration"
-              sequence="100"/>
+    <!-- Documents Root Menu -->
+    <menuitem id="menu_hr_documents_root"
+              name="Documents"
+              parent="hr.menu_hr_root"
+              sequence="15"/>
+
+    <!-- Staffing Table Menu -->
+    <menuitem id="menu_hr_staffing_table"
+              name="Штатний розпис"
+              action="action_hr_staffing_table"
+              parent="menu_hr_documents_root"
+              sequence="10"/>
 
     <!-- HR Orders Menu -->
     <menuitem id="menu_hr_order"
-              name="HR Orders"
+              name="Кадрові накази"
               action="action_hr_order"
-              parent="hr.menu_hr_root"
-              sequence="12"/>
+              parent="menu_hr_documents_root"
+              sequence="20"/>
 
     <!-- Order Templates Menu (under Configuration) -->
     <menuitem id="menu_hr_order_template"
               name="Order Templates"
               action="action_hr_order_template"
-              parent="menu_hr_ua_configuration"
+              parent="hr.menu_human_resources_configuration"
               sequence="30"/>
 
-    <!-- Staffing Table Menu -->
-    <menuitem id="menu_hr_staffing_table"
-              name="Staffing Table"
-              action="action_hr_staffing_table"
-              parent="hr.menu_hr_root"
-              sequence="15"/>
+    <!-- Main Configuration Menu -->
+    <menuitem id="menu_hr_ua_configuration"
+              name="Ukraine"
+              parent="hr.menu_human_resources_configuration"
+              sequence="100"/>
 
     <!-- Reference Data Menus -->
     <menuitem id="menu_hr_ua_classifiers"

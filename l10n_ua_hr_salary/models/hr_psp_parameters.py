@@ -122,7 +122,7 @@ class HrPspParameters(models.Model):
         
         return params or self.browse()
 
-    _sql_constraints = [
-        ('year_date_uniq', 'unique(year, date_from, company_id)', 
-         'Parameters for this period already exist!'),
-    ]
+    _unique_year_date_from_company_id = models.Constraint(
+        'unique(year, date_from, company_id)',
+        'Parameters for this period already exist!',
+    )

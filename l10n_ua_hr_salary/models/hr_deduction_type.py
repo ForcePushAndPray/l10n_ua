@@ -59,6 +59,7 @@ class HrDeductionType(models.Model):
     description = fields.Text(string='Description')
     active = fields.Boolean(string='Active', default=True)
 
-    _sql_constraints = [
-        ('code_uniq', 'unique(code)', 'Deduction type code must be unique!'),
-    ]
+    _unique_code = models.Constraint(
+        'unique(code)',
+        'Deduction type code must be unique!',
+    )

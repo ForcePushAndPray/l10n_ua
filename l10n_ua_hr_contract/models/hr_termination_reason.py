@@ -57,6 +57,7 @@ class HrTerminationReason(models.Model):
                 parts.append(f'ст. {rec.article} КЗпП України')
             rec.full_reference = ' '.join(parts) if parts else ''
 
-    _sql_constraints = [
-        ('code_uniq', 'unique(code)', 'Termination reason code must be unique!'),
-    ]
+    _unique_code = models.Constraint(
+        'unique(code)',
+        'Termination reason code must be unique!',
+    )

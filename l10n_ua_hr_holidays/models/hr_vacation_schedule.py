@@ -92,10 +92,10 @@ class HrVacationSchedule(models.Model):
     def action_draft(self):
         self.write({'state': 'draft'})
 
-    _sql_constraints = [
-        ('year_company_uniq', 'unique(year, company_id)',
-         'Vacation schedule for this year and company already exists!'),
-    ]
+    _unique_year_company_id = models.Constraint(
+        'unique(year, company_id)',
+        'Vacation schedule for this year and company already exists!',
+    )
 
 
 class HrVacationScheduleLine(models.Model):

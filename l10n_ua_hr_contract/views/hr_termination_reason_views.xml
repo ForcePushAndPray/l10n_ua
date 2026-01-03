@@ -62,36 +62,10 @@
         </field>
     </record>
 
-    <record id="hr_termination_reason_view_search" model="ir.ui.view">
-        <field name="name">hr.termination.reason.search</field>
-        <field name="model">hr.termination.reason</field>
-        <field name="arch" type="xml">
-            <search string="Search Termination Reasons">
-                <field name="name"/>
-                <field name="code"/>
-                <field name="article"/>
-                <separator/>
-                <filter name="filter_own_will" string="Own Will" domain="[('category', '=', 'own_will')]"/>
-                <filter name="filter_agreement" string="By Agreement" domain="[('category', '=', 'agreement')]"/>
-                <filter name="filter_employer" string="Employer Initiative" domain="[('category', '=', 'employer_initiative')]"/>
-                <separator/>
-                <filter name="filter_compensation" string="With Compensation" domain="[('requires_compensation', '=', True)]"/>
-                <separator/>
-                <filter name="filter_inactive" string="Archived" domain="[('active', '=', False)]"/>
-                <separator/>
-                <group expand="0" string="Group By">
-                    <filter name="group_category" string="Category" context="{'group_by': 'category'}"/>
-                    <filter name="group_article" string="Article" context="{'group_by': 'article'}"/>
-                </group>
-            </search>
-        </field>
-    </record>
-
-    <record id="action_hr_termination_reason" model="ir.actions.act_window">
+<record id="action_hr_termination_reason" model="ir.actions.act_window">
         <field name="name">Termination Reasons</field>
         <field name="res_model">hr.termination.reason</field>
         <field name="view_mode">list,form</field>
-        <field name="search_view_id" ref="hr_termination_reason_view_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create your first termination reason

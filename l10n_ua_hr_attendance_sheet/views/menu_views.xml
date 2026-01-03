@@ -3,7 +3,7 @@
 
     <menuitem id="menu_hr_timesheet_root"
               name="Timesheet"
-              parent="l10n_ua_hr_base.menu_hr_ua_root"
+              web_icon="l10n_ua_hr_attendance_sheet,static/description/icon.png"
               sequence="50"/>
 
     <menuitem id="menu_hr_timesheet"

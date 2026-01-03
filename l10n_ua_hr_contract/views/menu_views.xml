@@ -1,39 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <menuitem id="menu_hr_contract_root"
+    <!-- Contracts menu under Documents -->
+    <menuitem id="menu_hr_contract"
               name="Contracts"
-              parent="l10n_ua_hr_base.menu_hr_ua_root"
-              sequence="20"/>
-
-    <menuitem id="menu_hr_contract_contracts"
-              name="Contracts"
-              parent="menu_hr_contract_root"
+              parent="l10n_ua_hr_base.menu_hr_documents_root"
               action="action_hr_contract"
-              sequence="10"/>
+              sequence="15"/>
 
-    <menuitem id="menu_hr_contract_config"
-              name="Configuration"
-              parent="menu_hr_contract_root"
-              sequence="100"
-              groups="l10n_ua_hr_base.group_hr_ua_manager"/>
-
+    <!-- Configuration menus under HR Configuration -->
     <menuitem id="menu_hr_allowance_type"
               name="Allowance Types"
-              parent="menu_hr_contract_config"
+              parent="hr.menu_human_resources_configuration"
               action="action_hr_allowance_type"
-              sequence="10"/>
+              sequence="40"/>
 
     <menuitem id="menu_hr_work_schedule"
               name="Work Schedules"
-              parent="menu_hr_contract_config"
+              parent="hr.menu_human_resources_configuration"
               action="action_hr_work_schedule"
-              sequence="20"/>
+              sequence="41"/>
 
     <menuitem id="menu_hr_termination_reason"
               name="Termination Reasons"
-              parent="menu_hr_contract_config"
+              parent="hr.menu_human_resources_configuration"
               action="action_hr_termination_reason"
-              sequence="30"/>
+              sequence="42"/>
 
 </odoo>

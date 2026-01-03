@@ -1,9 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_hr_order_type_user,hr.order.type.user,model_hr_order_type,hr.group_hr_user,1,0,0,0
 access_hr_order_type_manager,hr.order.type.manager,model_hr_order_type,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
-access_hr_order_user,hr.order.user,model_hr_order,hr.group_hr_user,1,0,0,0
-access_hr_order_officer,hr.order.officer,model_hr_order,l10n_ua_hr_base.group_hr_ua_officer,1,1,1,0
-access_hr_order_manager,hr.order.manager,model_hr_order,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
 access_hr_personal_file_user,hr.personal.file.user,model_hr_personal_file,hr.group_hr_user,1,0,0,0
 access_hr_personal_file_officer,hr.personal.file.officer,model_hr_personal_file,l10n_ua_hr_base.group_hr_ua_officer,1,1,1,0
 access_hr_personal_file_manager,hr.personal.file.manager,model_hr_personal_file,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1

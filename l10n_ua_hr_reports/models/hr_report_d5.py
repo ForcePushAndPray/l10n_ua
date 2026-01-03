@@ -131,10 +131,10 @@ class HrReportD5(models.Model):
         # TODO: Implement XML export
         pass
 
-    _sql_constraints = [
-        ('year_month_company_uniq', 'unique(year, month, company_id)',
-         'D5 report for this period already exists!'),
-    ]
+    _unique_year_month_company_id = models.Constraint(
+        'unique(year, month, company_id)',
+        'D5 report for this period already exists!',
+    )
 
 
 class HrReportD5Line(models.Model):

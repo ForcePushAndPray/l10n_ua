@@ -124,10 +124,10 @@ class HrTimesheet(models.Model):
     def action_draft(self):
         self.write({'state': 'draft'})
 
-    _sql_constraints = [
-        ('year_month_dept_uniq', 'unique(year, month, department_id, company_id)',
-         'Timesheet for this period already exists!'),
-    ]
+    _unique_year_month_department_id_company_id = models.Constraint(
+        'unique(year, month, department_id, company_id)',
+        'Timesheet for this period already exists!',
+    )
 
 
 class HrTimesheetLine(models.Model):

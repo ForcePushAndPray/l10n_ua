@@ -153,7 +153,7 @@ class HrVacationBalance(models.Model):
                 'carried_over': carried,
             })
 
-    _sql_constraints = [
-        ('employee_type_year_uniq', 'unique(employee_id, leave_type_id, year)',
-         'Balance for this employee, leave type and year already exists!'),
-    ]
+    _unique_employee_id_leave_type_id_year = models.Constraint(
+        'unique(employee_id, leave_type_id, year)',
+        'Balance for this employee, leave type and year already exists!',
+    )

@@ -3,7 +3,7 @@
 
     <menuitem id="menu_hr_holidays_root"
               name="Holidays"
-              parent="l10n_ua_hr_base.menu_hr_ua_root"
+              web_icon="l10n_ua_hr_holidays,static/description/icon.png"
               sequence="40"/>
 
     <menuitem id="menu_hr_sick_leave"
