@@ -44,14 +44,14 @@
                     <notebook>
                         <page string="Payslips" name="payslips">
                             <field name="slip_ids">
-                                <tree>
+                                <list>
                                     <field name="name"/>
                                     <field name="employee_id"/>
                                     <field name="department_id"/>
                                     <field name="gross_salary" sum="Total Gross"/>
                                     <field name="net_salary" sum="Total Net"/>
                                     <field name="state" widget="badge"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Summary" name="summary">
@@ -82,7 +82,7 @@
         <field name="name">hr.payslip.run.tree</field>
         <field name="model">hr.payslip.run</field>
         <field name="arch" type="xml">
-            <tree string="Payslip Batches">
+            <list string="Payslip Batches">
                 <field name="name"/>
                 <field name="date_start"/>
                 <field name="date_end"/>
@@ -93,7 +93,7 @@
                        decoration-success="state == 'close'"
                        decoration-info="state == 'draft'"
                        decoration-warning="state == 'verify'"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -119,7 +119,7 @@
     <record id="action_hr_payslip_run" model="ir.actions.act_window">
         <field name="name">Payslip Batches</field>
         <field name="res_model">hr.payslip.run</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="hr_payslip_run_view_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

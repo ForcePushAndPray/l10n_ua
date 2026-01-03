@@ -45,7 +45,7 @@
         <field name="name">hr.deduction.type.tree</field>
         <field name="model">hr.deduction.type</field>
         <field name="arch" type="xml">
-            <tree string="Deduction Types">
+            <list string="Deduction Types">
                 <field name="sequence" widget="handle"/>
                 <field name="code"/>
                 <field name="name"/>
@@ -54,14 +54,14 @@
                 <field name="priority"/>
                 <field name="is_mandatory"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
 
     <record id="action_hr_deduction_type" model="ir.actions.act_window">
         <field name="name">Deduction Types</field>
         <field name="res_model">hr.deduction.type</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
 </odoo>

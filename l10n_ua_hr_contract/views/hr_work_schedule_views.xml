@@ -39,7 +39,7 @@
                     <notebook>
                         <page string="Schedule Lines" name="lines">
                             <field name="line_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="day_of_week"/>
                                     <field name="is_working_day"/>
                                     <field name="work_from" widget="float_time"/>
@@ -47,7 +47,7 @@
                                     <field name="break_from" widget="float_time"/>
                                     <field name="break_to" widget="float_time"/>
                                     <field name="working_hours"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Description" name="description">
@@ -63,7 +63,7 @@
         <field name="name">hr.work.schedule.tree</field>
         <field name="model">hr.work.schedule</field>
         <field name="arch" type="xml">
-            <tree string="Work Schedules">
+            <list string="Work Schedules">
                 <field name="sequence" widget="handle"/>
                 <field name="code"/>
                 <field name="name"/>
@@ -72,7 +72,7 @@
                 <field name="hours_per_day"/>
                 <field name="is_night_work"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -103,7 +103,7 @@
     <record id="action_hr_work_schedule" model="ir.actions.act_window">
         <field name="name">Work Schedules</field>
         <field name="res_model">hr.work.schedule</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="hr_work_schedule_view_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

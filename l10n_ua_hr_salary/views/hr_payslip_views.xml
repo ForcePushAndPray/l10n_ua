@@ -57,7 +57,7 @@
                         </page>
                         <page string="Accruals" name="accruals">
                             <field name="accrual_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="accrual_type_id"/>
                                     <field name="quantity"/>
                                     <field name="rate"/>
@@ -65,7 +65,7 @@
                                     <field name="is_taxable_pdfo"/>
                                     <field name="is_esv_base"/>
                                     <field name="notes"/>
-                                </tree>
+                                </list>
                             </field>
                             <group class="oe_subtotal_footer">
                                 <field name="gross_salary" class="oe_subtotal_footer_separator"/>
@@ -98,14 +98,14 @@
                             </group>
                             <separator string="Other Deductions"/>
                             <field name="deduction_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="deduction_type_id"/>
                                     <field name="base_amount"/>
                                     <field name="rate"/>
                                     <field name="amount" sum="Total"/>
                                     <field name="execution_doc_id"/>
                                     <field name="notes"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Summary" name="summary">
@@ -140,7 +140,7 @@
         <field name="name">hr.payslip.tree</field>
         <field name="model">hr.payslip</field>
         <field name="arch" type="xml">
-            <tree string="Payslips" decoration-muted="state == 'cancel'"
+            <list string="Payslips" decoration-muted="state == 'cancel'"
                   decoration-info="state == 'draft'">
                 <field name="name"/>
                 <field name="employee_id"/>
@@ -156,7 +156,7 @@
                        decoration-info="state == 'draft'"
                        decoration-warning="state == 'verify'"
                        decoration-muted="state == 'cancel'"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -193,7 +193,7 @@
     <record id="action_hr_payslip" model="ir.actions.act_window">
         <field name="name">Payslips</field>
         <field name="res_model">hr.payslip</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="hr_payslip_view_search"/>
         <field name="context">{'search_default_filter_this_month': 1}</field>
         <field name="help" type="html">

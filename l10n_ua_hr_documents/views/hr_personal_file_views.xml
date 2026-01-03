@@ -51,17 +51,17 @@
                                 <field name="marital_status"/>
                             </group>
                             <field name="family_member_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="name"/>
                                     <field name="relation"/>
                                     <field name="birth_date"/>
                                     <field name="birth_place"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Documents" name="documents">
                             <field name="document_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="document_type"/>
                                     <field name="name"/>
                                     <field name="number"/>
@@ -69,12 +69,12 @@
                                     <field name="issued_by"/>
                                     <field name="valid_until"/>
                                     <field name="notes"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Work History" name="work_history">
                             <field name="work_history_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="date_from"/>
                                     <field name="date_to"/>
                                     <field name="organization"/>
@@ -83,7 +83,7 @@
                                     <field name="order_number"/>
                                     <field name="order_date"/>
                                     <field name="notes"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Notes" name="notes">
@@ -100,13 +100,13 @@
         <field name="name">hr.personal.file.tree</field>
         <field name="model">hr.personal.file</field>
         <field name="arch" type="xml">
-            <tree string="Personal Files">
+            <list string="Personal Files">
                 <field name="name"/>
                 <field name="employee_id"/>
                 <field name="education_level"/>
                 <field name="military_status"/>
                 <field name="marital_status"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -129,7 +129,7 @@
     <record id="action_hr_personal_file" model="ir.actions.act_window">
         <field name="name">Personal Files</field>
         <field name="res_model">hr.personal.file</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="hr_personal_file_view_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

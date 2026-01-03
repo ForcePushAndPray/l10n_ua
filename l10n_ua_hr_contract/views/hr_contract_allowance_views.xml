@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="hr_contract_allowance_view_form" model="ir.ui.view">
+        <field name="name">hr.contract.allowance.form</field>
+        <field name="model">hr.contract.allowance</field>
+        <field name="arch" type="xml">
+            <form string="Contract Allowance">
+                <group>
+                    <group>
+                        <field name="contract_id"/>
+                        <field name="allowance_type_id"/>
+                        <field name="sequence"/>
+                    </group>
+                    <group>
+                        <field name="calculation_method"/>
+                        <field name="amount" invisible="calculation_method != 'fixed'"/>
+                        <field name="percent" invisible="calculation_method == 'fixed'"/>
+                        <field name="calculated_amount"/>
+                        <field name="currency_id" invisible="1"/>
+                    </group>
+                </group>
+                <group>
+                    <group>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="is_active"/>
+                    </group>
+                </group>
+                <group>
+                    <field name="notes"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_contract_allowance_view_tree" model="ir.ui.view">
+        <field name="name">hr.contract.allowance.tree</field>
+        <field name="model">hr.contract.allowance</field>
+        <field name="arch" type="xml">
+            <list string="Contract Allowances" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="allowance_type_id"/>
+                <field name="calculation_method"/>
+                <field name="amount" invisible="calculation_method != 'fixed'"/>
+                <field name="percent" invisible="calculation_method == 'fixed'"/>
+                <field name="calculated_amount"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="is_active"/>
+                <field name="currency_id" column_invisible="1"/>
+            </list>
+        </field>
+    </record>
+
+</odoo>

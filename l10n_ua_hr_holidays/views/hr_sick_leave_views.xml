@@ -76,7 +76,7 @@
         <field name="name">hr.sick.leave.tree</field>
         <field name="model">hr.sick.leave</field>
         <field name="arch" type="xml">
-            <tree string="Sick Leaves" decoration-muted="state == 'cancelled'">
+            <list string="Sick Leaves" decoration-muted="state == 'cancelled'">
                 <field name="name"/>
                 <field name="employee_id"/>
                 <field name="sick_leave_type"/>
@@ -90,7 +90,7 @@
                        decoration-info="state == 'draft'"
                        decoration-warning="state == 'confirmed'"
                        decoration-muted="state == 'cancelled'"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -123,7 +123,7 @@
     <record id="action_hr_sick_leave" model="ir.actions.act_window">
         <field name="name">Sick Leaves</field>
         <field name="res_model">hr.sick.leave</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="hr_sick_leave_view_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

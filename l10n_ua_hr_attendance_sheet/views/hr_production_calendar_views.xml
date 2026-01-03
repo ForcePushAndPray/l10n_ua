@@ -31,13 +31,13 @@
                     <notebook>
                         <page string="Calendar Days" name="days">
                             <field name="line_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="date"/>
                                     <field name="day_type"/>
                                     <field name="is_working_day"/>
                                     <field name="working_hours"/>
                                     <field name="holiday_name"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
@@ -50,21 +50,21 @@
         <field name="name">hr.production.calendar.tree</field>
         <field name="model">hr.production.calendar</field>
         <field name="arch" type="xml">
-            <tree string="Production Calendars">
+            <list string="Production Calendars">
                 <field name="name"/>
                 <field name="year"/>
                 <field name="total_days"/>
                 <field name="working_days"/>
                 <field name="holidays"/>
                 <field name="working_hours"/>
-            </tree>
+            </list>
         </field>
     </record>
 
     <record id="action_hr_production_calendar" model="ir.actions.act_window">
         <field name="name">Production Calendars</field>
         <field name="res_model">hr.production.calendar</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a production calendar for the year

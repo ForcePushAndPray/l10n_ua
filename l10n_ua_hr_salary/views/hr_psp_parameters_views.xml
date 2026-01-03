@@ -43,7 +43,7 @@
         <field name="name">hr.psp.parameters.tree</field>
         <field name="model">hr.psp.parameters</field>
         <field name="arch" type="xml">
-            <tree string="PSP Parameters">
+            <list string="PSP Parameters">
                 <field name="year"/>
                 <field name="date_from"/>
                 <field name="date_to"/>
@@ -52,14 +52,14 @@
                 <field name="psp_standard"/>
                 <field name="income_limit"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
 
     <record id="action_hr_psp_parameters" model="ir.actions.act_window">
         <field name="name">PSP Parameters</field>
         <field name="res_model">hr.psp.parameters</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Configure PSP parameters for each period

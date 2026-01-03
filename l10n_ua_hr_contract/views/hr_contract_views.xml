@@ -79,18 +79,7 @@
                                 </group>
                             </group>
                             <separator string="Allowances"/>
-                            <field name="allowance_ids">
-                                <tree editable="bottom">
-                                    <field name="allowance_type_id"/>
-                                    <field name="calculation_method"/>
-                                    <field name="amount" invisible="calculation_method != 'fixed'"/>
-                                    <field name="percent" invisible="calculation_method == 'fixed'"/>
-                                    <field name="calculated_amount"/>
-                                    <field name="date_from"/>
-                                    <field name="date_to"/>
-                                    <field name="is_active"/>
-                                </tree>
-                            </field>
+                            <field name="allowance_ids"/>
                         </page>
                         <page string="Orders" name="orders">
                             <group>
@@ -120,7 +109,7 @@
         <field name="name">hr.contract.tree</field>
         <field name="model">hr.contract</field>
         <field name="arch" type="xml">
-            <tree string="Contracts" decoration-muted="state == 'cancel'" 
+            <list string="Contracts" decoration-muted="state == 'cancel'" 
                   decoration-info="state == 'draft'">
                 <field name="name"/>
                 <field name="employee_id"/>
@@ -135,7 +124,7 @@
                        decoration-info="state == 'draft'"
                        decoration-muted="state in ('close', 'cancel')"/>
                 <field name="company_id" groups="base.group_multi_company"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -214,7 +203,7 @@
     <record id="action_hr_contract" model="ir.actions.act_window">
         <field name="name">Contracts</field>
         <field name="res_model">hr.contract</field>
-        <field name="view_mode">tree,kanban,form</field>
+        <field name="view_mode">list,kanban,form</field>
         <field name="search_view_id" ref="hr_contract_view_search"/>
         <field name="context">{'search_default_filter_running': 1}</field>
         <field name="help" type="html">

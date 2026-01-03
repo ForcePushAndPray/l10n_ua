@@ -39,7 +39,7 @@
                     <notebook>
                         <page string="D1 Appendix (Employees)" name="lines">
                             <field name="line_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="employee_id"/>
                                     <field name="rnokpp"/>
                                     <field name="last_name"/>
@@ -50,7 +50,7 @@
                                     <field name="esv_amount" sum="Total"/>
                                     <field name="worked_days"/>
                                     <field name="worked_hours"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Notes" name="notes">
@@ -67,7 +67,7 @@
         <field name="name">hr.report.d5.tree</field>
         <field name="model">hr.report.d5</field>
         <field name="arch" type="xml">
-            <tree string="D5 Reports">
+            <list string="D5 Reports">
                 <field name="name"/>
                 <field name="year"/>
                 <field name="month"/>
@@ -79,14 +79,14 @@
                        decoration-success="state == 'submitted'"
                        decoration-info="state == 'draft'"
                        decoration-warning="state == 'generated'"/>
-            </tree>
+            </list>
         </field>
     </record>
 
     <record id="action_hr_report_d5" model="ir.actions.act_window">
         <field name="name">D5 ESV Reports</field>
         <field name="res_model">hr.report.d5</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
                 Create a D5 monthly ESV report

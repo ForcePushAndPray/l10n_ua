@@ -45,7 +45,7 @@
         <field name="name">hr.accrual.type.tree</field>
         <field name="model">hr.accrual.type</field>
         <field name="arch" type="xml">
-            <tree string="Accrual Types">
+            <list string="Accrual Types">
                 <field name="sequence" widget="handle"/>
                 <field name="code"/>
                 <field name="name"/>
@@ -54,14 +54,14 @@
                 <field name="is_esv_base"/>
                 <field name="d4_income_type"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
 
     <record id="action_hr_accrual_type" model="ir.actions.act_window">
         <field name="name">Accrual Types</field>
         <field name="res_model">hr.accrual.type</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
 </odoo>

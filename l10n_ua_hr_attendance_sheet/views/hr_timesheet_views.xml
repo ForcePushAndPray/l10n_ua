@@ -44,7 +44,7 @@
                     <notebook>
                         <page string="Employees" name="employees">
                             <field name="line_ids">
-                                <tree>
+                                <list>
                                     <field name="employee_id"/>
                                     <field name="department_id"/>
                                     <field name="job_id"/>
@@ -56,7 +56,7 @@
                                     <field name="vacation_days" optional="show"/>
                                     <field name="sick_days" optional="show"/>
                                     <field name="absence_days" optional="show"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                         <page string="Notes" name="notes">
@@ -73,7 +73,7 @@
         <field name="name">hr.timesheet.tree</field>
         <field name="model">hr.timesheet</field>
         <field name="arch" type="xml">
-            <tree string="Timesheets">
+            <list string="Timesheets">
                 <field name="name"/>
                 <field name="year"/>
                 <field name="month"/>
@@ -84,7 +84,7 @@
                        decoration-success="state == 'approved'"
                        decoration-info="state == 'draft'"
                        decoration-warning="state == 'confirmed'"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -131,7 +131,7 @@
                     <notebook>
                         <page string="Days" name="days">
                             <field name="day_ids">
-                                <tree editable="bottom">
+                                <list editable="bottom">
                                     <field name="day_number"/>
                                     <field name="date"/>
                                     <field name="code_id"/>
@@ -139,7 +139,7 @@
                                     <field name="overtime_hours"/>
                                     <field name="night_hours"/>
                                     <field name="notes"/>
-                                </tree>
+                                </list>
                             </field>
                         </page>
                     </notebook>
@@ -151,7 +151,7 @@
     <record id="action_hr_timesheet" model="ir.actions.act_window">
         <field name="name">Timesheets</field>
         <field name="res_model">hr.timesheet</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="hr_timesheet_view_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">

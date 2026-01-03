@@ -45,20 +45,20 @@
         <field name="name">hr.order.type.tree</field>
         <field name="model">hr.order.type</field>
         <field name="arch" type="xml">
-            <tree string="Order Types">
+            <list string="Order Types">
                 <field name="sequence" widget="handle"/>
                 <field name="code"/>
                 <field name="name"/>
                 <field name="category"/>
                 <field name="active"/>
-            </tree>
+            </list>
         </field>
     </record>
 
     <record id="action_hr_order_type" model="ir.actions.act_window">
         <field name="name">Order Types</field>
         <field name="res_model">hr.order.type</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
     </record>
 
 </odoo>

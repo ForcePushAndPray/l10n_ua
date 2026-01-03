@@ -99,7 +99,7 @@
         <field name="name">hr.order.tree</field>
         <field name="model">hr.order</field>
         <field name="arch" type="xml">
-            <tree string="HR Orders" decoration-muted="state == 'cancelled'">
+            <list string="HR Orders" decoration-muted="state == 'cancelled'">
                 <field name="number"/>
                 <field name="date"/>
                 <field name="order_type_id"/>
@@ -110,7 +110,7 @@
                        decoration-info="state == 'draft'"
                        decoration-warning="state == 'confirmed'"
                        decoration-muted="state == 'cancelled'"/>
-            </tree>
+            </list>
         </field>
     </record>
 
@@ -143,7 +143,7 @@
     <record id="action_hr_order" model="ir.actions.act_window">
         <field name="name">HR Orders</field>
         <field name="res_model">hr.order</field>
-        <field name="view_mode">tree,form</field>
+        <field name="view_mode">list,form</field>
         <field name="search_view_id" ref="hr_order_view_search"/>
         <field name="help" type="html">
             <p class="o_view_nocontent_smiling_face">
