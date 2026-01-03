@@ -34,6 +34,7 @@ Requires l10n_ua_hr_payroll module.
     ],
     'demo': [
     ],
+    'images': ['static/description/banner.png'],
     'installable': True,
     'application': False,
     'auto_install': False,

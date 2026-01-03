@@ -41,6 +41,7 @@ Requires l10n_ua_hr_base module.
     'demo': [
         'demo/hr_holidays_demo.xml',
     ],
+    'images': ['static/description/banner.png'],
     'installable': True,
     'application': False,
     'auto_install': False,

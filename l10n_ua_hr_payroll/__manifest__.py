@@ -48,6 +48,7 @@ Requires l10n_ua_hr_contract module.
     'demo': [
         'demo/hr_payroll_demo.xml',
     ],
+    'images': ['static/description/banner.png'],
     'installable': True,
     'application': True,
     'auto_install': False,
