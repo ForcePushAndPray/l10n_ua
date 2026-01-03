@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Main Configuration Menu -->
+    <menuitem id="menu_hr_ua_configuration"
+              name="Ukraine"
+              parent="hr.menu_human_resources_configuration"
+              sequence="100"/>
+
+    <!-- HR Orders Menu -->
+    <menuitem id="menu_hr_order"
+              name="HR Orders"
+              action="action_hr_order"
+              parent="hr.menu_hr_root"
+              sequence="12"/>
+
+    <!-- Staffing Table Menu -->
+    <menuitem id="menu_hr_staffing_table"
+              name="Staffing Table"
+              action="action_hr_staffing_table"
+              parent="hr.menu_hr_root"
+              sequence="15"/>
+
+    <!-- Reference Data Menus -->
+    <menuitem id="menu_hr_ua_classifiers"
+              name="Classifiers"
+              parent="menu_hr_ua_configuration"
+              sequence="10"/>
+
+    <menuitem id="menu_hr_kp2010"
+              name="Professions (KP 2010)"
+              action="action_hr_kp2010"
+              parent="menu_hr_ua_classifiers"
+              sequence="10"/>
+
+    <menuitem id="menu_hr_education_level"
+              name="Education Levels"
+              action="action_hr_education_level"
+              parent="menu_hr_ua_classifiers"
+              sequence="20"/>
+
+    <menuitem id="menu_hr_tariff_grade"
+              name="Tariff Grades"
+              action="action_hr_tariff_grade"
+              parent="menu_hr_ua_classifiers"
+              sequence="30"/>
+
+    <menuitem id="menu_hr_employee_benefit"
+              name="Employee Benefits"
+              action="action_hr_employee_benefit"
+              parent="menu_hr_ua_classifiers"
+              sequence="40"/>
+
+    <!-- Military Accounting Menus -->
+    <menuitem id="menu_hr_ua_military"
+              name="Military Accounting"
+              parent="menu_hr_ua_configuration"
+              sequence="20"/>
+
+    <menuitem id="menu_hr_military_rank"
+              name="Military Ranks"
+              action="action_hr_military_rank"
+              parent="menu_hr_ua_military"
+              sequence="10"/>
+
+    <menuitem id="menu_hr_military_tcc"
+              name="Territorial Recruitment Centers"
+              action="action_hr_military_tcc"
+              parent="menu_hr_ua_military"
+              sequence="20"/>
+
+</odoo>

@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_employee_form_inherit_ua" model="ir.ui.view">
+        <field name="name">hr.employee.form.inherit.ua</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <!-- Documents Tab -->
+                <page string="Documents" name="documents_ua">
+                    <group>
+                        <group string="Tax Identification">
+                            <field name="rnokpp" placeholder="1234567890"/>
+                        </group>
+                        <group string="Identity Document">
+                            <field name="document_type"/>
+                            <field name="passport_series" invisible="document_type != 'passport'"/>
+                            <field name="passport_number"/>
+                            <field name="passport_issued_by"/>
+                            <field name="passport_issued_date"/>
+                            <field name="passport_valid_until" invisible="document_type != 'id_card'"/>
+                            <field name="passport_record_number" invisible="document_type != 'id_card'"/>
+                        </group>
+                    </group>
+                </page>
+
+                <!-- Addresses Tab -->
+                <page string="Addresses" name="addresses_ua">
+                    <group>
+                        <group string="Registration Address">
+                            <field name="registration_region_id"/>
+                            <field name="registration_city"/>
+                            <field name="registration_zip"/>
+                            <field name="registration_address"/>
+                        </group>
+                        <group string="Actual Address">
+                            <field name="actual_same_as_registration"/>
+                            <field name="actual_address" invisible="actual_same_as_registration"/>
+                        </group>
+                    </group>
+                </page>
+
+                <!-- Education Tab -->
+                <page string="Education" name="education_ua">
+                    <group>
+                        <group string="Education">
+                            <field name="education_level_id"/>
+                            <field name="education_institution"/>
+                            <field name="education_specialty"/>
+                        </group>
+                        <group string="Diploma">
+                            <field name="diploma_series"/>
+                            <field name="diploma_number"/>
+                            <field name="diploma_date"/>
+                        </group>
+                    </group>
+                </page>
+
+                <!-- Military Accounting Tab -->
+                <page string="Military Accounting" name="military_ua">
+                    <group>
+                        <group string="Military Status">
+                            <field name="military_status"/>
+                            <field name="military_category" invisible="military_status not in ('liable', 'reserved')"/>
+                            <field name="military_rank_id" invisible="military_status not in ('liable', 'reserved')"/>
+                            <field name="military_specialty" invisible="military_status not in ('liable', 'reserved')"/>
+                            <field name="military_fitness" invisible="military_status not in ('liable', 'reserved')"/>
+                        </group>
+                        <group string="Military Documents">
+                            <field name="military_document_number" invisible="military_status not in ('liable', 'reserved')"/>
+                            <field name="military_tcc_id" invisible="military_status not in ('liable', 'reserved')"/>
+                            <field name="military_reservation" invisible="military_status not in ('liable', 'reserved')"/>
+                            <field name="military_reservation_until" invisible="not military_reservation"/>
+                        </group>
+                    </group>
+                </page>
+
+                <!-- Benefits Tab -->
+                <page string="Benefits" name="benefits_ua">
+                    <group>
+                        <group string="Benefits">
+                            <field name="benefit_ids" widget="many2many_tags"/>
+                            <field name="veteran_status"/>
+                            <field name="chornobyl_category"/>
+                        </group>
+                        <group string="Disability">
+                            <field name="disability_group"/>
+                            <field name="disability_reason" invisible="disability_group == 'none'"/>
+                            <field name="disability_document" invisible="disability_group == 'none'"/>
+                            <field name="disability_date_from" invisible="disability_group == 'none'"/>
+                            <field name="disability_date_to" invisible="disability_group == 'none'"/>
+                        </group>
+                    </group>
+                </page>
+
+                <!-- Family Tab -->
+                <page string="Family" name="family_ua">
+                    <group>
+                        <group string="Marital Status">
+                            <field name="marital_status_ua"/>
+                            <field name="spouse_name" invisible="marital_status_ua not in ('married',)"/>
+                            <field name="spouse_rnokpp" invisible="marital_status_ua not in ('married',)"/>
+                        </group>
+                        <group string="Statistics">
+                            <field name="children_count"/>
+                            <field name="dependents_count"/>
+                        </group>
+                    </group>
+                    <separator string="Children"/>
+                    <field name="children_ids" nolabel="1"/>
+                </page>
+
+                <!-- Work Experience & Bank Tab -->
+                <page string="Experience &amp; Bank" name="experience_bank_ua">
+                    <group>
+                        <group string="Work Experience">
+                            <field name="hire_date"/>
+                            <field name="work_experience_total"/>
+                            <field name="work_experience_company"/>
+                            <field name="insurance_experience"/>
+                        </group>
+                        <group string="Bank Details">
+                            <field name="bank_account_id"/>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Employee Tree View Extension -->
+    <record id="view_employee_tree_inherit_ua" model="ir.ui.view">
+        <field name="name">hr.employee.tree.inherit.ua</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='job_id']" position="after">
+                <field name="rnokpp" optional="hide"/>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Employee Search View Extension -->
+    <record id="view_employee_search_inherit_ua" model="ir.ui.view">
+        <field name="name">hr.employee.search.inherit.ua</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='my_team']" position="after">
+                <separator/>
+                <filter string="Military Liable" name="military_liable" domain="[('military_status', '=', 'liable')]"/>
+                <filter string="Reserved" name="military_reserved" domain="[('military_status', '=', 'reserved')]"/>
+                <separator/>
+                <filter string="With Disability" name="with_disability" domain="[('disability_group', '!=', 'none')]"/>
+                <filter string="Veterans" name="veterans" domain="[('veteran_status', '!=', 'none')]"/>
+                <filter string="Chornobyl" name="chornobyl" domain="[('chornobyl_category', '!=', 'none')]"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

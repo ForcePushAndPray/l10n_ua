@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hr_kp2010_tree" model="ir.ui.view">
+        <field name="name">hr.kp2010.tree</field>
+        <field name="model">hr.kp2010</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="group_code"/>
+                <field name="work_conditions"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hr_kp2010_form" model="ir.ui.view">
+        <field name="name">hr.kp2010.form</field>
+        <field name="model">hr.kp2010</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="code"/>
+                            <field name="name"/>
+                        </group>
+                        <group>
+                            <field name="group_code"/>
+                            <field name="section_code"/>
+                            <field name="work_conditions"/>
+                            <field name="active"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hr_kp2010_search" model="ir.ui.view">
+        <field name="name">hr.kp2010.search</field>
+        <field name="model">hr.kp2010</field>
+        <field name="arch" type="xml">
+            <search string="Classifier of Professions">
+                <field name="code"/>
+                <field name="name"/>
+                <separator/>
+                <filter string="Hazardous" name="hazardous" domain="[('work_conditions', '=', 'hazardous')]"/>
+                <filter string="Heavy" name="heavy" domain="[('work_conditions', '=', 'heavy')]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hr_kp2010" model="ir.actions.act_window">
+        <field name="name">Classifier of Professions (KP 2010)</field>
+        <field name="res_model">hr.kp2010</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Import the Classifier of Professions
+            </p>
+            <p>
+                The KP 2010 classifier contains Ukrainian profession codes required for official reporting.
+            </p>
+        </field>
+    </record>
+
+</odoo>
