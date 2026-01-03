@@ -67,6 +67,7 @@ This module is required for all other l10n_ua_hr_* modules.
     'demo': [
         'demo/hr_demo_data.xml',
     ],
+    'images': ['static/description/banner.png'],
     'installable': True,
     'application': True,
     'auto_install': False,
