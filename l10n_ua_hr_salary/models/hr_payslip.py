@@ -434,4 +434,4 @@ class HrPayslip(models.Model):
         self.write({'state': 'draft'})
 
     def action_print_payslip(self):
-        return self.env.ref('l10n_ua_hr_payroll.action_report_payslip').report_action(self)
+        return self.env.ref('l10n_ua_hr_salary.action_report_payslip').report_action(self)

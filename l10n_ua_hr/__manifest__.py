@@ -11,7 +11,7 @@ This is a meta-module that installs all Ukrainian HR localization modules:
 
 * **l10n_ua_hr_base** - Base module with RNOKPP, security groups, demo data
 * **l10n_ua_hr_contract** - Employment contracts (own model for Community edition)
-* **l10n_ua_hr_payroll** - Payroll calculation (PDFO 18%, Military 5%, ESV 22%, PSP)
+* **l10n_ua_hr_salary** - Salary calculation (PDFO 18%, Military 5%, ESV 22%, PSP)
 * **l10n_ua_hr_holidays** - Vacations and sick leaves (extends hr_holidays)
 * **l10n_ua_hr_attendance_sheet** - Attendance sheet (Табель П-5), production calendar
 * **l10n_ua_hr_documents** - HR orders, personal files
@@ -40,7 +40,7 @@ This package is designed for Odoo 19 Community Edition.
     'depends': [
         'l10n_ua_hr_base',
         'l10n_ua_hr_contract',
-        'l10n_ua_hr_payroll',
+        'l10n_ua_hr_salary',
         'l10n_ua_hr_holidays',
         'l10n_ua_hr_attendance_sheet',
         'l10n_ua_hr_documents',
@@ -53,5 +53,4 @@ This package is designed for Odoo 19 Community Edition.
     'auto_install': False,
     'price': 499,
     'currency': 'EUR',
-    'images': ['static/description/banner.png'],
 }

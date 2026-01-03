@@ -1,11 +1,11 @@
 {
-    'name': 'Ukraine - HR Payroll',
+    'name': 'Ukraine - HR Salary',
     'version': '19.0.1.0.0',
     'category': 'Human Resources/Localization',
-    'summary': 'Ukrainian payroll calculation',
+    'summary': 'Ukrainian salary calculation',
     'description': """
-Ukraine HR Payroll Module
-=========================
+Ukraine HR Salary Module
+========================
 
 Payroll calculation for Ukrainian localization:
 
@@ -23,6 +23,9 @@ Payroll calculation for Ukrainian localization:
 * Bank payment registers
 
 Requires l10n_ua_hr_contract module.
+
+Note: This module was renamed from l10n_ua_hr_payroll to l10n_ua_hr_salary
+to avoid naming conflicts with existing modules on Odoo Apps.
     """,
     'author': 'Svyatoslav Nadozirny',
     'website': 'https://ndev.online',

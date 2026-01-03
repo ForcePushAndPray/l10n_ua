@@ -5,8 +5,8 @@
         <field name="name">Payslip</field>
         <field name="model">hr.payslip</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">l10n_ua_hr_payroll.report_payslip</field>
-        <field name="report_file">l10n_ua_hr_payroll.report_payslip</field>
+        <field name="report_name">l10n_ua_hr_salary.report_payslip</field>
+        <field name="report_file">l10n_ua_hr_salary.report_payslip</field>
         <field name="print_report_name">'Розрахунковий_листок_%s_%s' % (object.employee_id.name, object.date_to)</field>
         <field name="binding_model_id" ref="model_hr_payslip"/>
         <field name="binding_type">report</field>
@@ -15,7 +15,7 @@
     <template id="report_payslip">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="payslip">
-                <t t-call="l10n_ua_hr_payroll.report_payslip_document"/>
+                <t t-call="l10n_ua_hr_salary.report_payslip_document"/>
             </t>
         </t>
     </template>

@@ -17,13 +17,13 @@ Regulatory reports for Ukrainian localization:
 * Average headcount calculation
 * Wage fund reports
 
-Requires l10n_ua_hr_payroll module.
+Requires l10n_ua_hr_salary module.
     """,
     'author': 'Svyatoslav Nadozirny',
     'website': 'https://ndev.online',
     'license': 'LGPL-3',
     'depends': [
-        'l10n_ua_hr_payroll',
+        'l10n_ua_hr_salary',
     ],
     'data': [
         'security/ir.model.access.csv',
