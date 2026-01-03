@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <menuitem id="menu_hr_payroll_root"
+              name="Payroll"
+              parent="l10n_ua_hr_base.menu_hr_ua_root"
+              sequence="30"/>
+
+    <menuitem id="menu_hr_payslip"
+              name="Payslips"
+              parent="menu_hr_payroll_root"
+              action="action_hr_payslip"
+              sequence="10"/>
+
+    <menuitem id="menu_hr_payslip_run"
+              name="Batches"
+              parent="menu_hr_payroll_root"
+              action="action_hr_payslip_run"
+              sequence="20"/>
+
+    <menuitem id="menu_hr_execution_document"
+              name="Execution Documents"
+              parent="menu_hr_payroll_root"
+              action="action_hr_execution_document"
+              sequence="30"/>
+
+    <menuitem id="menu_hr_payroll_config"
+              name="Configuration"
+              parent="menu_hr_payroll_root"
+              sequence="100"
+              groups="l10n_ua_hr_base.group_hr_ua_manager"/>
+
+    <menuitem id="menu_hr_psp_parameters"
+              name="PSP Parameters"
+              parent="menu_hr_payroll_config"
+              action="action_hr_psp_parameters"
+              sequence="10"/>
+
+    <menuitem id="menu_hr_accrual_type"
+              name="Accrual Types"
+              parent="menu_hr_payroll_config"
+              action="action_hr_accrual_type"
+              sequence="20"/>
+
+    <menuitem id="menu_hr_deduction_type"
+              name="Deduction Types"
+              parent="menu_hr_payroll_config"
+              action="action_hr_deduction_type"
+              sequence="30"/>
+
+</odoo>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <menuitem id="menu_hr_contract_root"
+              name="Contracts"
+              parent="l10n_ua_hr_base.menu_hr_ua_root"
+              sequence="20"/>
+
+    <menuitem id="menu_hr_contract_contracts"
+              name="Contracts"
+              parent="menu_hr_contract_root"
+              action="action_hr_contract"
+              sequence="10"/>
+
+    <menuitem id="menu_hr_contract_config"
+              name="Configuration"
+              parent="menu_hr_contract_root"
+              sequence="100"
+              groups="l10n_ua_hr_base.group_hr_ua_manager"/>
+
+    <menuitem id="menu_hr_allowance_type"
+              name="Allowance Types"
+              parent="menu_hr_contract_config"
+              action="action_hr_allowance_type"
+              sequence="10"/>
+
+    <menuitem id="menu_hr_work_schedule"
+              name="Work Schedules"
+              parent="menu_hr_contract_config"
+              action="action_hr_work_schedule"
+              sequence="20"/>
+
+    <menuitem id="menu_hr_termination_reason"
+              name="Termination Reasons"
+              parent="menu_hr_contract_config"
+              action="action_hr_termination_reason"
+              sequence="30"/>
+
+</odoo>

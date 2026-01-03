@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="hr_vacation_balance_view_form" model="ir.ui.view">
+        <field name="name">hr.vacation.balance.form</field>
+        <field name="model">hr.vacation.balance</field>
+        <field name="arch" type="xml">
+            <form string="Vacation Balance">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="leave_type_id"/>
+                            <field name="year"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="entitled_days"/>
+                            <field name="carried_over"/>
+                            <field name="total_available"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="used_days"/>
+                            <field name="planned_days"/>
+                            <field name="remaining_days"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_vacation_balance_view_tree" model="ir.ui.view">
+        <field name="name">hr.vacation.balance.tree</field>
+        <field name="model">hr.vacation.balance</field>
+        <field name="arch" type="xml">
+            <tree string="Vacation Balances">
+                <field name="employee_id"/>
+                <field name="leave_type_id"/>
+                <field name="year"/>
+                <field name="entitled_days"/>
+                <field name="carried_over"/>
+                <field name="total_available"/>
+                <field name="used_days"/>
+                <field name="planned_days"/>
+                <field name="remaining_days" decoration-danger="remaining_days &lt; 0"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_vacation_balance_view_search" model="ir.ui.view">
+        <field name="name">hr.vacation.balance.search</field>
+        <field name="model">hr.vacation.balance</field>
+        <field name="arch" type="xml">
+            <search string="Search Vacation Balances">
+                <field name="employee_id"/>
+                <field name="year"/>
+                <separator/>
+                <filter name="filter_current_year" string="Current Year"
+                        domain="[('year', '=', (context_today()).year)]"/>
+                <filter name="filter_has_remaining" string="Has Remaining"
+                        domain="[('remaining_days', '&gt;', 0)]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_year" string="Year" context="{'group_by': 'year'}"/>
+                    <filter name="group_type" string="Leave Type" context="{'group_by': 'leave_type_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hr_vacation_balance" model="ir.actions.act_window">
+        <field name="name">Vacation Balances</field>
+        <field name="res_model">hr.vacation.balance</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="hr_vacation_balance_view_search"/>
+        <field name="context">{'search_default_filter_current_year': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No vacation balances found
+            </p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_hr_report_1df_user,hr.report.1df.user,model_hr_report_1df,hr.group_hr_user,1,0,0,0
+access_hr_report_1df_manager,hr.report.1df.manager,model_hr_report_1df,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
+access_hr_report_1df_line_user,hr.report.1df.line.user,model_hr_report_1df_line,hr.group_hr_user,1,0,0,0
+access_hr_report_1df_line_manager,hr.report.1df.line.manager,model_hr_report_1df_line,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
+access_hr_report_d5_user,hr.report.d5.user,model_hr_report_d5,hr.group_hr_user,1,0,0,0
+access_hr_report_d5_manager,hr.report.d5.manager,model_hr_report_d5,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
+access_hr_report_d5_line_user,hr.report.d5.line.user,model_hr_report_d5_line,hr.group_hr_user,1,0,0,0
+access_hr_report_d5_line_manager,hr.report.d5.line.manager,model_hr_report_d5_line,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
+access_hr_report_wizard_manager,hr.report.wizard.manager,model_hr_report_wizard,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1

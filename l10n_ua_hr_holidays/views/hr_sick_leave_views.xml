@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="hr_sick_leave_view_form" model="ir.ui.view">
+        <field name="name">hr.sick.leave.form</field>
+        <field name="model">hr.sick.leave</field>
+        <field name="arch" type="xml">
+            <form string="Sick Leave">
+                <header>
+                    <button name="action_calculate" string="Calculate" type="object"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_confirm" string="Confirm" type="object"
+                            invisible="state != 'draft'"/>
+                    <button name="action_pay" string="Mark as Paid" type="object"
+                            class="btn-primary" invisible="state != 'confirmed'"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state in ('paid', 'cancelled')"/>
+                    <button name="action_draft" string="Set to Draft" type="object"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,paid"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="sick_leave_type"/>
+                            <field name="diagnosis_code"/>
+                        </group>
+                        <group>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="calendar_days"/>
+                        </group>
+                    </group>
+                    <group string="Sick Leave Document">
+                        <group>
+                            <field name="is_electronic"/>
+                            <field name="sick_leave_number" invisible="is_electronic"/>
+                            <field name="e_sick_leave_id" invisible="not is_electronic"/>
+                        </group>
+                        <group>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group string="Payment Calculation">
+                        <group>
+                            <field name="insurance_experience_years"/>
+                            <field name="payment_percent"/>
+                            <field name="average_daily_salary"/>
+                        </group>
+                        <group>
+                            <field name="employer_days"/>
+                            <field name="employer_amount"/>
+                            <field name="fss_days"/>
+                            <field name="fss_amount"/>
+                            <field name="total_amount"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="leave_id"/>
+                        <field name="notes"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_sick_leave_view_tree" model="ir.ui.view">
+        <field name="name">hr.sick.leave.tree</field>
+        <field name="model">hr.sick.leave</field>
+        <field name="arch" type="xml">
+            <tree string="Sick Leaves" decoration-muted="state == 'cancelled'">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="sick_leave_type"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="calendar_days"/>
+                <field name="payment_percent"/>
+                <field name="total_amount" sum="Total"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'paid'"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'confirmed'"
+                       decoration-muted="state == 'cancelled'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="hr_sick_leave_view_search" model="ir.ui.view">
+        <field name="name">hr.sick.leave.search</field>
+        <field name="model">hr.sick.leave</field>
+        <field name="arch" type="xml">
+            <search string="Search Sick Leaves">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="sick_leave_number"/>
+                <separator/>
+                <filter name="filter_draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="filter_confirmed" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="filter_paid" string="Paid" domain="[('state', '=', 'paid')]"/>
+                <separator/>
+                <filter name="filter_illness" string="Illness" domain="[('sick_leave_type', '=', 'illness')]"/>
+                <filter name="filter_pregnancy" string="Pregnancy" domain="[('sick_leave_type', '=', 'pregnancy')]"/>
+                <separator/>
+                <group expand="0" string="Group By">
+                    <filter name="group_employee" string="Employee" context="{'group_by': 'employee_id'}"/>
+                    <filter name="group_type" string="Type" context="{'group_by': 'sick_leave_type'}"/>
+                    <filter name="group_state" string="Status" context="{'group_by': 'state'}"/>
+                    <filter name="group_month" string="Month" context="{'group_by': 'date_from:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hr_sick_leave" model="ir.actions.act_window">
+        <field name="name">Sick Leaves</field>
+        <field name="res_model">hr.sick.leave</field>
+        <field name="view_mode">tree,form</field>
+        <field name="search_view_id" ref="hr_sick_leave_view_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Register a sick leave
+            </p>
+        </field>
+    </record>
+
+</odoo>

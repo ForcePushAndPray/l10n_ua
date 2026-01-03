@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="hr_vacation_schedule_view_form" model="ir.ui.view">
+        <field name="name">hr.vacation.schedule.form</field>
+        <field name="model">hr.vacation.schedule</field>
+        <field name="arch" type="xml">
+            <form string="Vacation Schedule">
+                <header>
+                    <button name="action_generate_lines" string="Generate Lines" type="object"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_confirm" string="Confirm" type="object"
+                            invisible="state != 'draft'"/>
+                    <button name="action_approve" string="Approve" type="object"
+                            class="btn-primary" invisible="state != 'confirmed'"/>
+                    <button name="action_draft" string="Set to Draft" type="object"
+                            invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,approved"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="year"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group>
+                            <field name="approval_date" invisible="state != 'approved'"/>
+                            <field name="approved_by" invisible="state != 'approved'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Schedule Lines" name="lines">
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="employee_id"/>
+                                    <field name="department_id"/>
+                                    <field name="planned_days"/>
+                                    <field name="period_1_start"/>
+                                    <field name="period_1_end"/>
+                                    <field name="period_1_days"/>
+                                    <field name="period_2_start" optional="show"/>
+                                    <field name="period_2_end" optional="show"/>
+                                    <field name="period_2_days" optional="show"/>
+                                    <field name="period_3_start" optional="hide"/>
+                                    <field name="period_3_end" optional="hide"/>
+                                    <field name="period_3_days" optional="hide"/>
+                                    <field name="total_planned"/>
+                                    <field name="actual_days"/>
+                                    <field name="notes"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="hr_vacation_schedule_view_tree" model="ir.ui.view">
+        <field name="name">hr.vacation.schedule.tree</field>
+        <field name="model">hr.vacation.schedule</field>
+        <field name="arch" type="xml">
+            <tree string="Vacation Schedules">
+                <field name="name"/>
+                <field name="year"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="approval_date"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'approved'"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state == 'confirmed'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_hr_vacation_schedule" model="ir.actions.act_window">
+        <field name="name">Vacation Schedules</field>
+        <field name="res_model">hr.vacation.schedule</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create a vacation schedule for the year
+            </p>
+            <p>
+                Vacation schedules must be approved before December 5th for the next year.
+            </p>
+        </field>
+    </record>
+
+</odoo>

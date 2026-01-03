@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="action_report_hr_order" model="ir.actions.report">
+        <field name="name">HR Order</field>
+        <field name="model">hr.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_hr_documents.report_hr_order</field>
+        <field name="report_file">l10n_ua_hr_documents.report_hr_order</field>
+        <field name="print_report_name">'Наказ_%s_%s' % (object.number, object.date)</field>
+        <field name="binding_model_id" ref="model_hr_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_hr_order">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="order">
+                <t t-call="l10n_ua_hr_documents.report_hr_order_document"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_hr_order_document">
+        <t t-call="web.basic_layout">
+            <div class="page" style="font-family: 'Times New Roman', serif; font-size: 12pt;">
+                
+                <div style="text-align: center; margin-bottom: 30px;">
+                    <strong t-esc="order.company_id.name"/>
+                </div>
+                
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0;">НАКАЗ</h2>
+                    <p style="margin: 5px 0;">
+                        № <span t-esc="order.number"/> 
+                        від <span t-esc="order.date.strftime('%d.%m.%Y')"/>
+                    </p>
+                </div>
+                
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <strong t-esc="order.order_type_id.name"/>
+                </div>
+                
+                <div style="margin-bottom: 20px;" t-if="order.body">
+                    <t t-raw="order.body"/>
+                </div>
+                
+                <div style="margin-bottom: 20px;" t-if="not order.body">
+                    <t t-if="order.category == 'hiring'">
+                        <p style="text-indent: 30px; text-align: justify;">
+                            Прийняти на роботу <strong><t t-esc="order.employee_id.name"/></strong>
+                            <t t-if="order.job_id">
+                                на посаду <t t-esc="order.job_id.name"/>
+                            </t>
+                            <t t-if="order.department_id">
+                                до <t t-esc="order.department_id.name"/>
+                            </t>
+                            з <strong><t t-esc="order.hire_date.strftime('%d.%m.%Y') if order.hire_date else ''"/></strong>
+                            <t t-if="order.wage">
+                                з окладом <t t-esc="'{:,.2f}'.format(order.wage)"/> грн
+                            </t>
+                            <t t-if="order.probation_days">
+                                з випробувальним терміном <t t-esc="order.probation_days"/> днів
+                            </t>.
+                        </p>
+                    </t>
+                    
+                    <t t-if="order.category == 'termination'">
+                        <p style="text-indent: 30px; text-align: justify;">
+                            Звільнити <strong><t t-esc="order.employee_id.name"/></strong>,
+                            <t t-if="order.job_id">
+                                <t t-esc="order.job_id.name"/>,
+                            </t>
+                            з <strong><t t-esc="order.termination_date.strftime('%d.%m.%Y') if order.termination_date else ''"/></strong>
+                            <t t-if="order.termination_reason_id">
+                                <t t-esc="order.termination_reason_id.full_text or order.termination_reason_id.name"/>
+                            </t>.
+                        </p>
+                    </t>
+                    
+                    <t t-if="order.category == 'vacation'">
+                        <p style="text-indent: 30px; text-align: justify;">
+                            Надати <strong><t t-esc="order.employee_id.name"/></strong>,
+                            <t t-if="order.job_id">
+                                <t t-esc="order.job_id.name"/>,
+                            </t>
+                            щорічну основну відпустку
+                            з <strong><t t-esc="order.date_from.strftime('%d.%m.%Y') if order.date_from else ''"/></strong>
+                            по <strong><t t-esc="order.date_to.strftime('%d.%m.%Y') if order.date_to else ''"/></strong>.
+                        </p>
+                    </t>
+                    
+                    <t t-if="order.category == 'transfer'">
+                        <p style="text-indent: 30px; text-align: justify;">
+                            Перевести <strong><t t-esc="order.employee_id.name"/></strong>
+                            <t t-if="order.new_department_id">
+                                до <t t-esc="order.new_department_id.name"/>
+                            </t>
+                            <t t-if="order.new_job_id">
+                                на посаду <t t-esc="order.new_job_id.name"/>
+                            </t>
+                            <t t-if="order.new_wage">
+                                з окладом <t t-esc="'{:,.2f}'.format(order.new_wage)"/> грн
+                            </t>.
+                        </p>
+                    </t>
+                    
+                    <t t-if="order.category == 'bonus'">
+                        <p style="text-indent: 30px; text-align: justify;">
+                            Преміювати <strong><t t-esc="order.employee_id.name"/></strong>
+                            <t t-if="order.bonus_amount">
+                                у розмірі <t t-esc="'{:,.2f}'.format(order.bonus_amount)"/> грн
+                            </t>
+                            <t t-if="order.bonus_reason">
+                                за <t t-esc="order.bonus_reason"/>
+                            </t>.
+                        </p>
+                    </t>
+                </div>
+                
+                <t t-if="order.basis">
+                    <p style="margin-top: 20px;">
+                        Підстава: <t t-esc="order.basis"/>
+                    </p>
+                </t>
+                
+                <div style="margin-top: 50px;">
+                    <table style="width: 100%;">
+                        <tr>
+                            <td style="width: 50%;">Директор</td>
+                            <td style="width: 50%; text-align: right;">
+                                _____________ / _____________ /
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <t t-if="order.employee_id">
+                    <div style="margin-top: 30px;">
+                        <p>З наказом ознайомлений(а):</p>
+                        <p style="margin-top: 20px;">
+                            _____________ / <t t-esc="order.employee_id.name"/> /
+                            <span style="margin-left: 50px;">«___» _____________ 20__ р.</span>
+                        </p>
+                    </div>
+                </t>
+                
+            </div>
+        </t>
+    </template>
+
+</odoo>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <menuitem id="menu_hr_documents_root"
+              name="Documents"
+              parent="l10n_ua_hr_base.menu_hr_ua_root"
+              sequence="60"/>
+
+    <menuitem id="menu_hr_order"
+              name="HR Orders"
+              parent="menu_hr_documents_root"
+              action="action_hr_order"
+              sequence="10"/>
+
+    <menuitem id="menu_hr_personal_file"
+              name="Personal Files"
+              parent="menu_hr_documents_root"
+              action="action_hr_personal_file"
+              sequence="20"/>
+
+    <menuitem id="menu_hr_documents_config"
+              name="Configuration"
+              parent="menu_hr_documents_root"
+              sequence="100"
+              groups="l10n_ua_hr_base.group_hr_ua_manager"/>
+
+    <menuitem id="menu_hr_order_type"
+              name="Order Types"
+              parent="menu_hr_documents_config"
+              action="action_hr_order_type"
+              sequence="10"/>
+
+</odoo>

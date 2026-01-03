@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <record id="contract_demo_petrenko" model="hr.contract">
+            <field name="name">ТД-00001</field>
+            <field name="employee_id" ref="l10n_ua_hr_base.demo_employee_petrenko"/>
+            <field name="contract_type_ua">permanent</field>
+            <field name="is_main_workplace">True</field>
+            <field name="work_mode">full_time</field>
+            <field name="work_schedule_id" ref="work_schedule_standard_40"/>
+            <field name="working_hours_week">40</field>
+            <field name="work_rate">1.0</field>
+            <field name="date_start">2023-01-15</field>
+            <field name="probation_period_days">90</field>
+            <field name="wage">45000</field>
+            <field name="state">open</field>
+            <field name="hire_order_number">ПР-00001</field>
+            <field name="hire_order_date">2023-01-15</field>
+        </record>
+        
+        <record id="contract_demo_kovalenko" model="hr.contract">
+            <field name="name">ТД-00002</field>
+            <field name="employee_id" ref="l10n_ua_hr_base.demo_employee_kovalenko"/>
+            <field name="contract_type_ua">permanent</field>
+            <field name="is_main_workplace">True</field>
+            <field name="work_mode">full_time</field>
+            <field name="work_schedule_id" ref="work_schedule_standard_40"/>
+            <field name="working_hours_week">40</field>
+            <field name="work_rate">1.0</field>
+            <field name="date_start">2022-06-01</field>
+            <field name="wage">35000</field>
+            <field name="state">open</field>
+            <field name="hire_order_number">ПР-00002</field>
+            <field name="hire_order_date">2022-06-01</field>
+        </record>
+        
+        <record id="contract_demo_shevchenko" model="hr.contract">
+            <field name="name">ТД-00003</field>
+            <field name="employee_id" ref="l10n_ua_hr_base.demo_employee_shevchenko"/>
+            <field name="contract_type_ua">permanent</field>
+            <field name="is_main_workplace">True</field>
+            <field name="work_mode">full_time</field>
+            <field name="work_schedule_id" ref="work_schedule_standard_40"/>
+            <field name="working_hours_week">40</field>
+            <field name="work_rate">1.0</field>
+            <field name="date_start">2021-03-10</field>
+            <field name="wage">55000</field>
+            <field name="state">open</field>
+            <field name="hire_order_number">ПР-00003</field>
+            <field name="hire_order_date">2021-03-10</field>
+        </record>
+        
+        <record id="contract_demo_bondarenko" model="hr.contract">
+            <field name="name">ТД-00004</field>
+            <field name="employee_id" ref="l10n_ua_hr_base.demo_employee_bondarenko"/>
+            <field name="contract_type_ua">fixed_term</field>
+            <field name="is_main_workplace">True</field>
+            <field name="work_mode">full_time</field>
+            <field name="work_schedule_id" ref="work_schedule_standard_40"/>
+            <field name="working_hours_week">40</field>
+            <field name="work_rate">1.0</field>
+            <field name="date_start">2024-01-01</field>
+            <field name="date_end">2024-12-31</field>
+            <field name="wage">28000</field>
+            <field name="state">open</field>
+            <field name="hire_order_number">ПР-00004</field>
+            <field name="hire_order_date">2024-01-01</field>
+        </record>
+        
+        <record id="contract_demo_melnyk" model="hr.contract">
+            <field name="name">ТД-00005</field>
+            <field name="employee_id" ref="l10n_ua_hr_base.demo_employee_melnyk"/>
+            <field name="contract_type_ua">permanent</field>
+            <field name="is_main_workplace">True</field>
+            <field name="work_mode">remote</field>
+            <field name="work_schedule_id" ref="work_schedule_flexible"/>
+            <field name="working_hours_week">40</field>
+            <field name="work_rate">1.0</field>
+            <field name="date_start">2023-09-01</field>
+            <field name="wage">65000</field>
+            <field name="state">open</field>
+            <field name="hire_order_number">ПР-00005</field>
+            <field name="hire_order_date">2023-09-01</field>
+        </record>
+        
+        <!-- Allowances for contracts -->
+        <record id="allowance_petrenko_seniority" model="hr.contract.allowance">
+            <field name="contract_id" ref="contract_demo_petrenko"/>
+            <field name="allowance_type_id" ref="allowance_type_seniority"/>
+            <field name="calculation_method">percent_salary</field>
+            <field name="percent">10</field>
+        </record>
+        
+        <record id="allowance_shevchenko_qualification" model="hr.contract.allowance">
+            <field name="contract_id" ref="contract_demo_shevchenko"/>
+            <field name="allowance_type_id" ref="allowance_type_qualification"/>
+            <field name="calculation_method">percent_salary</field>
+            <field name="percent">20</field>
+        </record>
+        
+        <record id="allowance_melnyk_personal" model="hr.contract.allowance">
+            <field name="contract_id" ref="contract_demo_melnyk"/>
+            <field name="allowance_type_id" ref="allowance_type_personal"/>
+            <field name="calculation_method">fixed</field>
+            <field name="amount">5000</field>
+        </record>
+        
+    </data>
+</odoo>

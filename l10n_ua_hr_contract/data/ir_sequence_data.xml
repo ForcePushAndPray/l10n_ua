@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <record id="seq_hr_contract" model="ir.sequence">
+            <field name="name">Employment Contract</field>
+            <field name="code">hr.contract</field>
+            <field name="prefix">ТД-</field>
+            <field name="padding">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        
+    </data>
+</odoo>

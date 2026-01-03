@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <menuitem id="menu_hr_holidays_root"
+              name="Holidays"
+              parent="l10n_ua_hr_base.menu_hr_ua_root"
+              sequence="40"/>
+
+    <menuitem id="menu_hr_sick_leave"
+              name="Sick Leaves"
+              parent="menu_hr_holidays_root"
+              action="action_hr_sick_leave"
+              sequence="20"/>
+
+    <menuitem id="menu_hr_vacation_balance"
+              name="Vacation Balances"
+              parent="menu_hr_holidays_root"
+              action="action_hr_vacation_balance"
+              sequence="30"/>
+
+    <menuitem id="menu_hr_vacation_schedule"
+              name="Vacation Schedules"
+              parent="menu_hr_holidays_root"
+              action="action_hr_vacation_schedule"
+              sequence="40"/>
+
+</odoo>

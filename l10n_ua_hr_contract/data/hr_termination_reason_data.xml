@@ -1,0 +1,255 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <data noupdate="1">
+        
+        <!-- За угодою сторін -->
+        <record id="termination_reason_agreement" model="hr.termination.reason">
+            <field name="name">За угодою сторін</field>
+            <field name="code">AGR</field>
+            <field name="article">36</field>
+            <field name="paragraph">п. 1</field>
+            <field name="category">agreement</field>
+            <field name="full_text">за угодою сторін, п. 1 ст. 36 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">10</field>
+        </record>
+        
+        <!-- Закінчення строку договору -->
+        <record id="termination_reason_fixed_term" model="hr.termination.reason">
+            <field name="name">Закінчення строку трудового договору</field>
+            <field name="code">TERM</field>
+            <field name="article">36</field>
+            <field name="paragraph">п. 2</field>
+            <field name="category">fixed_term</field>
+            <field name="full_text">у зв'язку із закінченням строку трудового договору, п. 2 ст. 36 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">20</field>
+        </record>
+        
+        <!-- Призов на військову службу -->
+        <record id="termination_reason_military" model="hr.termination.reason">
+            <field name="name">Призов на військову службу</field>
+            <field name="code">MIL</field>
+            <field name="article">36</field>
+            <field name="paragraph">п. 3</field>
+            <field name="category">circumstances</field>
+            <field name="full_text">у зв'язку з призовом або вступом на військову службу, п. 3 ст. 36 КЗпП України</field>
+            <field name="requires_compensation">True</field>
+            <field name="compensation_amount">two_months</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">30</field>
+        </record>
+        
+        <!-- Переведення на інше підприємство -->
+        <record id="termination_reason_transfer" model="hr.termination.reason">
+            <field name="name">Переведення на інше підприємство</field>
+            <field name="code">TRANS</field>
+            <field name="article">36</field>
+            <field name="paragraph">п. 5</field>
+            <field name="category">transfer</field>
+            <field name="full_text">у зв'язку з переведенням на інше підприємство, п. 5 ст. 36 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">40</field>
+        </record>
+        
+        <!-- За власним бажанням -->
+        <record id="termination_reason_own_will" model="hr.termination.reason">
+            <field name="name">За власним бажанням</field>
+            <field name="code">OWN</field>
+            <field name="article">38</field>
+            <field name="category">own_will</field>
+            <field name="full_text">за власним бажанням, ст. 38 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">14</field>
+            <field name="sequence">50</field>
+        </record>
+        
+        <!-- За власним бажанням (поважні причини) -->
+        <record id="termination_reason_own_will_valid" model="hr.termination.reason">
+            <field name="name">За власним бажанням (поважні причини)</field>
+            <field name="code">OWN_V</field>
+            <field name="article">38</field>
+            <field name="category">own_will</field>
+            <field name="full_text">за власним бажанням у зв'язку з поважними причинами, ст. 38 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">55</field>
+            <field name="description">Переїзд, догляд за дитиною, вступ до навчального закладу тощо</field>
+        </record>
+        
+        <!-- Зміни в організації виробництва -->
+        <record id="termination_reason_reorganization" model="hr.termination.reason">
+            <field name="name">Зміни в організації виробництва і праці</field>
+            <field name="code">REORG</field>
+            <field name="article">40</field>
+            <field name="paragraph">п. 1</field>
+            <field name="category">employer_initiative</field>
+            <field name="full_text">у зв'язку зі змінами в організації виробництва і праці, в тому числі ліквідацією, реорганізацією, скороченням чисельності або штату працівників, п. 1 ст. 40 КЗпП України</field>
+            <field name="requires_compensation">True</field>
+            <field name="compensation_amount">one_month</field>
+            <field name="notice_days">60</field>
+            <field name="sequence">60</field>
+        </record>
+        
+        <!-- Невідповідність займаній посаді -->
+        <record id="termination_reason_incompetence" model="hr.termination.reason">
+            <field name="name">Невідповідність займаній посаді</field>
+            <field name="code">INCOMP</field>
+            <field name="article">40</field>
+            <field name="paragraph">п. 2</field>
+            <field name="category">employer_initiative</field>
+            <field name="full_text">у зв'язку з виявленою невідповідністю працівника займаній посаді або виконуваній роботі внаслідок недостатньої кваліфікації або стану здоров'я, п. 2 ст. 40 КЗпП України</field>
+            <field name="requires_compensation">True</field>
+            <field name="compensation_amount">one_month</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">70</field>
+        </record>
+        
+        <!-- Систематичне невиконання обов'язків -->
+        <record id="termination_reason_systematic" model="hr.termination.reason">
+            <field name="name">Систематичне невиконання обов'язків</field>
+            <field name="code">SYST</field>
+            <field name="article">40</field>
+            <field name="paragraph">п. 3</field>
+            <field name="category">employer_initiative</field>
+            <field name="full_text">за систематичне невиконання працівником без поважних причин обов'язків, покладених на нього трудовим договором або правилами внутрішнього трудового розпорядку, п. 3 ст. 40 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">80</field>
+        </record>
+        
+        <!-- Прогул -->
+        <record id="termination_reason_absence" model="hr.termination.reason">
+            <field name="name">Прогул</field>
+            <field name="code">ABSENCE</field>
+            <field name="article">40</field>
+            <field name="paragraph">п. 4</field>
+            <field name="category">employer_initiative</field>
+            <field name="full_text">за прогул (в тому числі відсутність на роботі більше трьох годин протягом робочого дня) без поважних причин, п. 4 ст. 40 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">90</field>
+        </record>
+        
+        <!-- Нез'явлення на роботу понад 4 місяці -->
+        <record id="termination_reason_long_absence" model="hr.termination.reason">
+            <field name="name">Нез'явлення на роботу понад 4 місяці</field>
+            <field name="code">LONG_ABS</field>
+            <field name="article">40</field>
+            <field name="paragraph">п. 5</field>
+            <field name="category">employer_initiative</field>
+            <field name="full_text">у зв'язку з нез'явленням на роботу протягом більш як чотирьох місяців підряд внаслідок тимчасової непрацездатності, п. 5 ст. 40 КЗпП України</field>
+            <field name="requires_compensation">True</field>
+            <field name="compensation_amount">one_month</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">100</field>
+        </record>
+        
+        <!-- Поновлення попереднього працівника -->
+        <record id="termination_reason_reinstatement" model="hr.termination.reason">
+            <field name="name">Поновлення попереднього працівника</field>
+            <field name="code">REINST</field>
+            <field name="article">40</field>
+            <field name="paragraph">п. 6</field>
+            <field name="category">employer_initiative</field>
+            <field name="full_text">у зв'язку з поновленням на роботі працівника, який раніше виконував цю роботу, п. 6 ст. 40 КЗпП України</field>
+            <field name="requires_compensation">True</field>
+            <field name="compensation_amount">one_month</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">110</field>
+        </record>
+        
+        <!-- Поява на роботі в нетверезому стані -->
+        <record id="termination_reason_intoxication" model="hr.termination.reason">
+            <field name="name">Поява на роботі в нетверезому стані</field>
+            <field name="code">INTOX</field>
+            <field name="article">40</field>
+            <field name="paragraph">п. 7</field>
+            <field name="category">employer_initiative</field>
+            <field name="full_text">за появу на роботі в нетверезому стані, у стані наркотичного або токсичного сп'яніння, п. 7 ст. 40 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">120</field>
+        </record>
+        
+        <!-- Крадіжка -->
+        <record id="termination_reason_theft" model="hr.termination.reason">
+            <field name="name">Вчинення за місцем роботи розкрадання</field>
+            <field name="code">THEFT</field>
+            <field name="article">40</field>
+            <field name="paragraph">п. 8</field>
+            <field name="category">employer_initiative</field>
+            <field name="full_text">за вчинення за місцем роботи розкрадання майна власника, п. 8 ст. 40 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">130</field>
+        </record>
+        
+        <!-- Одноразове грубе порушення керівником -->
+        <record id="termination_reason_gross_violation" model="hr.termination.reason">
+            <field name="name">Одноразове грубе порушення трудових обов'язків</field>
+            <field name="code">GROSS</field>
+            <field name="article">41</field>
+            <field name="paragraph">п. 1</field>
+            <field name="category">employer_initiative</field>
+            <field name="full_text">за одноразове грубе порушення трудових обов'язків керівником підприємства, п. 1 ст. 41 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">140</field>
+        </record>
+        
+        <!-- Втрата довіри -->
+        <record id="termination_reason_trust" model="hr.termination.reason">
+            <field name="name">Втрата довіри</field>
+            <field name="code">TRUST</field>
+            <field name="article">41</field>
+            <field name="paragraph">п. 2</field>
+            <field name="category">employer_initiative</field>
+            <field name="full_text">у зв'язку з втратою довіри з боку власника до працівника, який обслуговує грошові або товарні цінності, п. 2 ст. 41 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">150</field>
+        </record>
+        
+        <!-- Смерть працівника -->
+        <record id="termination_reason_death" model="hr.termination.reason">
+            <field name="name">Смерть працівника</field>
+            <field name="code">DEATH</field>
+            <field name="article">36</field>
+            <field name="paragraph">п. 8</field>
+            <field name="category">circumstances</field>
+            <field name="full_text">у зв'язку зі смертю працівника, п. 8 ст. 36 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">200</field>
+        </record>
+        
+        <!-- Вихід на пенсію -->
+        <record id="termination_reason_retirement" model="hr.termination.reason">
+            <field name="name">Вихід на пенсію</field>
+            <field name="code">RETIRE</field>
+            <field name="article">38</field>
+            <field name="category">own_will</field>
+            <field name="full_text">за власним бажанням у зв'язку з виходом на пенсію, ст. 38 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">210</field>
+        </record>
+        
+        <!-- Незадовільний результат випробування -->
+        <record id="termination_reason_probation" model="hr.termination.reason">
+            <field name="name">Незадовільний результат випробування</field>
+            <field name="code">PROB</field>
+            <field name="article">28</field>
+            <field name="category">employer_initiative</field>
+            <field name="full_text">у зв'язку з незадовільним результатом випробування, ст. 28 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">3</field>
+            <field name="sequence">220</field>
+        </record>
+        
+    </data>
+</odoo>
