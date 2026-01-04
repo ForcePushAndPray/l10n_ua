@@ -2,72 +2,84 @@
 <odoo>
     <data noupdate="1">
 
+        <!-- Demo Company -->
+        <record id="demo_ua_company" model="res.company">
+            <field name="name">ТОВ "Демо Компанія"</field>
+            <field name="street">вул. Хрещатик, 1</field>
+            <field name="city">Київ</field>
+            <field name="zip">01001</field>
+            <field name="country_id" ref="base.ua"/>
+            <field name="vat">1234567890</field>
+            <field name="phone">+380 44 123 45 67</field>
+            <field name="email">info@demo-company.ua</field>
+        </record>
+
         <!-- Demo Departments -->
         <record id="demo_department_admin" model="hr.department">
             <field name="name">Адміністрація</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_type">head</field>
         </record>
 
         <record id="demo_department_it" model="hr.department">
             <field name="name">Відділ ІТ</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="parent_id" ref="demo_department_admin"/>
         </record>
 
         <record id="demo_department_hr" model="hr.department">
             <field name="name">Відділ кадрів</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="parent_id" ref="demo_department_admin"/>
         </record>
 
         <record id="demo_department_accounting" model="hr.department">
             <field name="name">Бухгалтерія</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="parent_id" ref="demo_department_admin"/>
         </record>
 
         <!-- Demo Jobs -->
         <record id="demo_job_director" model="hr.job">
             <field name="name">Директор</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_id" ref="demo_department_admin"/>
         </record>
 
         <record id="demo_job_hr_manager" model="hr.job">
             <field name="name">Начальник відділу кадрів</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_id" ref="demo_department_hr"/>
         </record>
 
         <record id="demo_job_hr_specialist" model="hr.job">
             <field name="name">Спеціаліст з кадрів</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_id" ref="demo_department_hr"/>
         </record>
 
         <record id="demo_job_accountant" model="hr.job">
             <field name="name">Головний бухгалтер</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_id" ref="demo_department_accounting"/>
         </record>
 
         <record id="demo_job_it_admin" model="hr.job">
             <field name="name">Системний адміністратор</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_id" ref="demo_department_it"/>
         </record>
 
         <record id="demo_job_developer" model="hr.job">
             <field name="name">Програміст</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_id" ref="demo_department_it"/>
         </record>
 
         <!-- Demo Employees -->
         <record id="demo_employee_director" model="hr.employee">
             <field name="name">Петренко Іван Васильович</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_id" ref="demo_department_admin"/>
             <field name="job_id" ref="demo_job_director"/>
             <field name="barcode">001</field>
@@ -96,7 +108,7 @@
 
         <record id="demo_employee_hr_manager" model="hr.employee">
             <field name="name">Коваленко Марія Петрівна</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_id" ref="demo_department_hr"/>
             <field name="job_id" ref="demo_job_hr_manager"/>
             <field name="barcode">002</field>
@@ -122,7 +134,7 @@
 
         <record id="demo_employee_accountant" model="hr.employee">
             <field name="name">Шевченко Олена Миколаївна</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_id" ref="demo_department_accounting"/>
             <field name="job_id" ref="demo_job_accountant"/>
             <field name="barcode">003</field>
@@ -148,7 +160,7 @@
 
         <record id="demo_employee_it_admin" model="hr.employee">
             <field name="name">Бондаренко Олексій Сергійович</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_id" ref="demo_department_it"/>
             <field name="job_id" ref="demo_job_it_admin"/>
             <field name="barcode">004</field>
@@ -179,7 +191,7 @@
 
         <record id="demo_employee_developer" model="hr.employee">
             <field name="name">Мельник Андрій Олександрович</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_id" ref="demo_department_it"/>
             <field name="job_id" ref="demo_job_developer"/>
             <field name="barcode">005</field>
@@ -210,7 +222,7 @@
 
         <record id="demo_employee_hr_specialist" model="hr.employee">
             <field name="name">Ткаченко Наталія Ігорівна</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_id" ref="demo_department_hr"/>
             <field name="job_id" ref="demo_job_hr_specialist"/>
             <field name="barcode">006</field>
@@ -265,7 +277,7 @@
 
         <!-- Demo Staffing Table -->
         <record id="demo_staffing_director" model="hr.staffing.table">
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_id" ref="demo_department_admin"/>
             <field name="job_id" ref="demo_job_director"/>
             <field name="units">1</field>
@@ -275,7 +287,7 @@
         </record>
 
         <record id="demo_staffing_hr_manager" model="hr.staffing.table">
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_id" ref="demo_department_hr"/>
             <field name="job_id" ref="demo_job_hr_manager"/>
             <field name="units">1</field>
@@ -285,7 +297,7 @@
         </record>
 
         <record id="demo_staffing_hr_specialist" model="hr.staffing.table">
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_id" ref="demo_department_hr"/>
             <field name="job_id" ref="demo_job_hr_specialist"/>
             <field name="units">2</field>
@@ -295,7 +307,7 @@
         </record>
 
         <record id="demo_staffing_accountant" model="hr.staffing.table">
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_id" ref="demo_department_accounting"/>
             <field name="job_id" ref="demo_job_accountant"/>
             <field name="units">1</field>
@@ -305,7 +317,7 @@
         </record>
 
         <record id="demo_staffing_it_admin" model="hr.staffing.table">
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_id" ref="demo_department_it"/>
             <field name="job_id" ref="demo_job_it_admin"/>
             <field name="units">1</field>
@@ -315,7 +327,7 @@
         </record>
 
         <record id="demo_staffing_developer" model="hr.staffing.table">
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
             <field name="department_id" ref="demo_department_it"/>
             <field name="job_id" ref="demo_job_developer"/>
             <field name="units">3</field>
@@ -334,7 +346,7 @@
             <field name="subject">Про прийняття на роботу Мельника А.О.</field>
             <field name="content">&lt;p&gt;Прийняти на роботу Мельника Андрія Олександровича на посаду програміста відділу ІТ з 01 серпня 2021 року.&lt;/p&gt;</field>
             <field name="state">confirmed</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
         </record>
 
         <record id="demo_order_vacation" model="hr.order">
@@ -346,7 +358,7 @@
             <field name="subject">Про надання відпустки Коваленко М.П.</field>
             <field name="content">&lt;p&gt;Надати щорічну основну відпустку Коваленко Марії Петрівні, начальнику відділу кадрів, тривалістю 24 календарних дні з 15 червня 2024 року по 08 липня 2024 року.&lt;/p&gt;</field>
             <field name="state">confirmed</field>
-            <field name="company_id" ref="base.main_company"/>
+            <field name="company_id" ref="demo_ua_company"/>
         </record>
 
     </data>
