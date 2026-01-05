@@ -54,9 +54,25 @@ class HrContractAllowance(models.Model):
     
     notes = fields.Text(string='Notes')
 
+    def _get_minimum_wage(self):
+        """Get current minimum wage from PSP parameters or fallback to default"""
+        # Try to get from hr.psp.parameters (l10n_ua_hr_salary module)
+        if 'hr.psp.parameters' in self.env:
+            current_year = fields.Date.today().year
+            psp_params = self.env['hr.psp.parameters'].search([
+                ('year', '=', current_year)
+            ], limit=1)
+            if psp_params:
+                return psp_params.min_wage
+        # Fallback to system parameter
+        param = self.env['ir.config_parameter'].sudo().get_param(
+            'l10n_ua_hr.minimum_wage', '8000'
+        )
+        return float(param)
+
     @api.depends('calculation_method', 'amount', 'percent', 'contract_id.wage')
     def _compute_calculated_amount(self):
-        min_wage = 8000.0  # TODO: get from parameters
+        min_wage = self._get_minimum_wage()
         for allowance in self:
             if allowance.calculation_method == 'fixed':
                 allowance.calculated_amount = allowance.amount

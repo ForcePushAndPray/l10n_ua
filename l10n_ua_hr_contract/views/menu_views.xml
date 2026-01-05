@@ -8,6 +8,24 @@
               action="action_hr_contract"
               sequence="15"/>
 
+    <menuitem id="menu_hr_contract_salary_change"
+              name="Salary Changes"
+              parent="l10n_ua_hr_base.menu_hr_documents_root"
+              action="action_hr_contract_salary_change"
+              sequence="16"/>
+
+    <menuitem id="menu_hr_job_combining"
+              name="Job Combining"
+              parent="l10n_ua_hr_base.menu_hr_documents_root"
+              action="action_hr_job_combining"
+              sequence="17"/>
+
+    <menuitem id="menu_hr_contract_amendment"
+              name="Contract Amendments"
+              parent="l10n_ua_hr_base.menu_hr_documents_root"
+              action="action_hr_contract_amendment"
+              sequence="18"/>
+
     <!-- Configuration menus under HR Configuration -->
     <menuitem id="menu_hr_allowance_type"
               name="Allowance Types"

@@ -63,9 +63,17 @@
                                     <field name="probation_end_date"/>
                                 </group>
                                 <group string="Staffing">
-                                    <field name="staffing_line_id" 
+                                    <field name="staffing_line_id"
                                            domain="[('company_id', '=', company_id), ('state', '=', 'approved')]"/>
                                     <field name="tariff_grade_id"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group string="Work Conditions">
+                                    <field name="work_conditions"/>
+                                    <field name="work_conditions_class" invisible="work_conditions == 'normal'"/>
+                                    <field name="work_conditions_subclass" invisible="work_conditions == 'normal'"/>
+                                    <field name="additional_vacation_days"/>
                                 </group>
                             </group>
                         </page>
@@ -94,6 +102,30 @@
                                     <field name="termination_order_date"/>
                                 </group>
                             </group>
+                        </page>
+                        <page string="Salary History" name="salary_history">
+                            <field name="salary_change_ids" readonly="1">
+                                <list>
+                                    <field name="effective_date"/>
+                                    <field name="old_wage"/>
+                                    <field name="new_wage"/>
+                                    <field name="change_percent"/>
+                                    <field name="order_number"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Amendments" name="amendments">
+                            <field name="amendment_ids" readonly="1">
+                                <list>
+                                    <field name="amendment_date"/>
+                                    <field name="effective_date"/>
+                                    <field name="amendment_type"/>
+                                    <field name="description"/>
+                                    <field name="order_number"/>
+                                    <field name="state" widget="badge"/>
+                                </list>
+                            </field>
                         </page>
                         <page string="Notes" name="notes">
                             <field name="notes" placeholder="Additional notes..."/>

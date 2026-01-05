@@ -26,7 +26,14 @@ class HrStaffingTable(models.Model):
         string='Vacant Units', compute='_compute_vacant_units', store=True)
     salary = fields.Monetary(
         string='Salary', currency_field='currency_id',
-        required=True)
+        required=True,
+        help='Standard salary for this position')
+    salary_min = fields.Monetary(
+        string='Minimum Salary', currency_field='currency_id',
+        help='Minimum salary for this position (salary range)')
+    salary_max = fields.Monetary(
+        string='Maximum Salary', currency_field='currency_id',
+        help='Maximum salary for this position (salary range)')
     currency_id = fields.Many2one(
         'res.currency', string='Currency',
         default=lambda self: self.env.company.currency_id)
@@ -87,6 +94,18 @@ class HrStaffingTable(models.Model):
         for record in self:
             if record.date_to and record.date_from > record.date_to:
                 raise ValidationError('End date must be after start date!')
+
+    @api.constrains('salary', 'salary_min', 'salary_max')
+    def _check_salary_range(self):
+        for record in self:
+            if record.salary_min and record.salary_max:
+                if record.salary_min > record.salary_max:
+                    raise ValidationError('Minimum salary cannot exceed maximum salary!')
+            if record.salary:
+                if record.salary_min and record.salary < record.salary_min:
+                    raise ValidationError('Standard salary cannot be below minimum salary!')
+                if record.salary_max and record.salary > record.salary_max:
+                    raise ValidationError('Standard salary cannot exceed maximum salary!')
 
     def action_approve(self):
         self.write({'state': 'approved'})

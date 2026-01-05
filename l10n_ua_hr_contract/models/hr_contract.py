@@ -172,7 +172,43 @@ class HrContract(models.Model):
         string='Diia.City Employee',
         help='Employee under Diia.City special tax regime'
     )
-    
+
+    # Work conditions
+    work_conditions = fields.Selection([
+        ('normal', 'Normal'),
+        ('hazardous', 'Hazardous (Шкідливі)'),
+        ('heavy', 'Heavy (Важкі)'),
+        ('underground', 'Underground Work'),
+    ], string='Work Conditions', default='normal', tracking=True)
+
+    work_conditions_class = fields.Integer(
+        string='Hazard Class (1-4)',
+        help='Hazard classification class according to DSTU'
+    )
+    work_conditions_subclass = fields.Integer(
+        string='Hazard Subclass',
+        help='Hazard subclass within the class'
+    )
+
+    additional_vacation_days = fields.Integer(
+        string='Additional Vacation Days',
+        compute='_compute_additional_vacation_days',
+        store=True,
+        help='Additional vacation days based on work conditions'
+    )
+
+    # Related records
+    salary_change_ids = fields.One2many(
+        'hr.contract.salary.change',
+        'contract_id',
+        string='Salary Changes'
+    )
+    amendment_ids = fields.One2many(
+        'hr.contract.amendment',
+        'contract_id',
+        string='Amendments'
+    )
+
     state = fields.Selection([
         ('draft', 'Draft'),
         ('open', 'Running'),
@@ -202,6 +238,28 @@ class HrContract(models.Model):
         for contract in self:
             contract.total_wage = contract.wage + contract.total_allowances
 
+    @api.depends('work_conditions', 'work_conditions_class')
+    def _compute_additional_vacation_days(self):
+        """Calculate additional vacation days based on work conditions"""
+        for contract in self:
+            days = 0
+            if contract.work_conditions == 'hazardous':
+                # Up to 35 days for hazardous conditions
+                if contract.work_conditions_class:
+                    days = min(35, contract.work_conditions_class * 7)
+                else:
+                    days = 4  # Default minimum
+            elif contract.work_conditions == 'heavy':
+                # Up to 35 days for heavy conditions
+                if contract.work_conditions_class:
+                    days = min(35, contract.work_conditions_class * 7)
+                else:
+                    days = 4
+            elif contract.work_conditions == 'underground':
+                # Underground workers get more days
+                days = 7
+            contract.additional_vacation_days = days
+
     @api.constrains('date_start', 'date_end')
     def _check_dates(self):
         for contract in self:
@@ -213,6 +271,23 @@ class HrContract(models.Model):
         for contract in self:
             if contract.work_rate <= 0 or contract.work_rate > 2:
                 raise ValidationError('Work rate must be between 0 and 2.')
+
+    @api.constrains('wage', 'staffing_line_id')
+    def _check_wage_in_salary_range(self):
+        """Validate that contract wage is within staffing table salary range"""
+        for contract in self:
+            if contract.staffing_line_id and contract.wage:
+                staffing = contract.staffing_line_id
+                if staffing.salary_min and contract.wage < staffing.salary_min:
+                    raise ValidationError(
+                        'Salary %.2f is below position minimum %.2f for %s' %
+                        (contract.wage, staffing.salary_min, staffing.name)
+                    )
+                if staffing.salary_max and contract.wage > staffing.salary_max:
+                    raise ValidationError(
+                        'Salary %.2f exceeds position maximum %.2f for %s' %
+                        (contract.wage, staffing.salary_max, staffing.name)
+                    )
 
     @api.model_create_multi
     def create(self, vals_list):

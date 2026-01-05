@@ -52,6 +52,12 @@
                     <group>
                         <group string="Salary">
                             <field name="salary"/>
+                            <label for="salary_min" string="Salary Range"/>
+                            <div class="o_row">
+                                <field name="salary_min" class="oe_inline" placeholder="Min"/>
+                                <span class="oe_inline"> - </span>
+                                <field name="salary_max" class="oe_inline" placeholder="Max"/>
+                            </div>
                             <field name="currency_id" invisible="1"/>
                             <field name="total_salary_fund"/>
                         </group>

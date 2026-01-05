@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_hr_contract_salary_change_tree" model="ir.ui.view">
+        <field name="name">hr.contract.salary.change.tree</field>
+        <field name="model">hr.contract.salary.change</field>
+        <field name="arch" type="xml">
+            <list>
+                <field name="effective_date"/>
+                <field name="employee_id"/>
+                <field name="contract_id"/>
+                <field name="old_wage"/>
+                <field name="new_wage"/>
+                <field name="change_amount"/>
+                <field name="change_percent"/>
+                <field name="order_number"/>
+                <field name="state" widget="badge" decoration-info="state == 'draft'" decoration-warning="state == 'confirmed'" decoration-success="state == 'applied'" decoration-danger="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_hr_contract_salary_change_form" model="ir.ui.view">
+        <field name="name">hr.contract.salary.change.form</field>
+        <field name="model">hr.contract.salary.change</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="action_confirm" string="Confirm" type="object" class="oe_highlight" invisible="state != 'draft'"/>
+                    <button name="action_apply" string="Apply" type="object" class="oe_highlight" invisible="state != 'confirmed'"/>
+                    <button name="action_cancel" string="Cancel" type="object" invisible="state in ('applied', 'cancelled')"/>
+                    <button name="action_draft" string="Reset to Draft" type="object" invisible="state in ('draft', 'applied')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,applied"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group string="Contract">
+                            <field name="contract_id"/>
+                            <field name="employee_id"/>
+                            <field name="effective_date"/>
+                        </group>
+                        <group string="Salary Change">
+                            <field name="old_wage"/>
+                            <field name="new_wage"/>
+                            <field name="change_amount"/>
+                            <field name="change_percent" widget="percentage"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Order Reference">
+                        <group>
+                            <field name="order_number"/>
+                            <field name="order_date"/>
+                        </group>
+                        <group>
+                            <field name="order_id"/>
+                        </group>
+                    </group>
+                    <group string="Reason">
+                        <field name="reason" nolabel="1"/>
+                    </group>
+                    <group string="Notes">
+                        <field name="notes" nolabel="1"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_hr_contract_salary_change_search" model="ir.ui.view">
+        <field name="name">hr.contract.salary.change.search</field>
+        <field name="model">hr.contract.salary.change</field>
+        <field name="arch" type="xml">
+            <search string="Salary Changes">
+                <field name="employee_id"/>
+                <field name="contract_id"/>
+                <separator/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmed" name="confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter string="Applied" name="applied" domain="[('state', '=', 'applied')]"/>
+                <group>
+                    <filter string="Employee" name="group_employee" domain="[]" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Effective Date" name="group_date" domain="[]" context="{'group_by': 'effective_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_hr_contract_salary_change" model="ir.actions.act_window">
+        <field name="name">Salary Changes</field>
+        <field name="res_model">hr.contract.salary.change</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Record a salary change
+            </p>
+            <p>
+                Track salary changes for contracts with order references.
+            </p>
+        </field>
+    </record>
+
+</odoo>
