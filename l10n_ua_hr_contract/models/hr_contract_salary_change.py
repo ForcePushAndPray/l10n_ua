@@ -7,9 +7,22 @@ class HrContractSalaryChange(models.Model):
     _description = 'Contract Salary Change'
     _order = 'effective_date desc, id desc'
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    _rec_name = 'display_name'
+
+    name = fields.Char(
+        string='Reference',
+        readonly=True,
+        copy=False,
+        default='New'
+    )
+    display_name = fields.Char(
+        string='Display Name',
+        compute='_compute_display_name',
+        store=True
+    )
 
     contract_id = fields.Many2one(
-        'hr.contract',
+        'hr.contract.ua',
         string='Contract',
         required=True,
         ondelete='cascade',
@@ -62,14 +75,9 @@ class HrContractSalaryChange(models.Model):
     )
     reason = fields.Text(string='Reason for Change')
 
-    # Order references
-    order_number = fields.Char(string='Order Number', tracking=True)
-    order_date = fields.Date(string='Order Date')
-    order_id = fields.Many2one(
-        'hr.order',
-        string='Related Order',
-        help='HR Order document for this salary change'
-    )
+    # Order references (order_id will be added by l10n_ua_hr_documents)
+    order_number = fields.Char(string='Order Number', required=True, tracking=True)
+    order_date = fields.Date(string='Order Date', required=True)
 
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -79,6 +87,21 @@ class HrContractSalaryChange(models.Model):
     ], string='Status', default='draft', tracking=True)
 
     notes = fields.Text(string='Notes')
+
+    @api.depends('employee_id', 'effective_date', 'order_number')
+    def _compute_display_name(self):
+        for record in self:
+            if record.employee_id and record.effective_date:
+                record.display_name = f"{record.employee_id.name} - {record.effective_date} ({record.order_number or 'New'})"
+            else:
+                record.display_name = record.name or 'New'
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = self.env['ir.sequence'].next_by_code('hr.contract.salary.change') or 'New'
+        return super().create(vals_list)
 
     @api.depends('old_wage', 'new_wage')
     def _compute_change_amount(self):

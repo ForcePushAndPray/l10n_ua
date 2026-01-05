@@ -17,6 +17,15 @@
         <field name="implied_ids" eval="[(4, ref('l10n_ua_hr_base.group_hr_ua_officer'))]"/>
     </record>
 
+    <!-- Auto-assign Ukrainian HR groups to standard Odoo HR groups -->
+    <record id="hr.group_hr_user" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('group_hr_ua_user'))]"/>
+    </record>
+
+    <record id="hr.group_hr_manager" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('group_hr_ua_manager'))]"/>
+    </record>
+
     <!-- Record Rules -->
     <record id="hr_staffing_table_company_rule" model="ir.rule">
         <field name="name">Staffing Table: Multi-company</field>

@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Employment Certificate (Довідка про роботу) -->
+        <record id="certificate_type_employment" model="hr.certificate.type">
+            <field name="name">Довідка про роботу</field>
+            <field name="code">employment</field>
+            <field name="sequence">10</field>
+            <field name="sequence_id" ref="seq_hr_certificate_employment"/>
+            <field name="requires_salary_info">False</field>
+            <field name="requires_period">False</field>
+            <field name="requires_destination">True</field>
+            <field name="validity_days">30</field>
+            <field name="template_body"><![CDATA[
+<div style="font-family: Times New Roman, serif; font-size: 14pt; line-height: 1.5;">
+    <div style="text-align: center; margin-bottom: 20px;">
+        <strong>{company_name}</strong><br/>
+        <span style="font-size: 12pt;">{company_address}</span><br/>
+        <span style="font-size: 12pt;">ЄДРПОУ: {company_edrpou}</span>
+    </div>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <h2 style="margin: 0;">ДОВІДКА</h2>
+        <p style="margin: 5px 0;">№ {certificate_number} від {certificate_date}</p>
+    </div>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        Видана <strong>{employee_name}</strong> у тому, що він(вона) дійсно працює
+        в {company_name} на посаді <strong>{employee_position}</strong>
+        з {employee_hire_date} по теперішній час.
+    </p>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        Довідка видана {destination}.
+    </p>
+
+    <div style="margin-top: 50px;">
+        <table style="width: 100%; border: none;">
+            <tr>
+                <td style="width: 50%;">{company_director_position}</td>
+                <td style="width: 50%; text-align: right;">________________ {company_director}</td>
+            </tr>
+        </table>
+    </div>
+
+    <p style="margin-top: 30px; font-size: 12pt;">М.П.</p>
+</div>
+            ]]></field>
+        </record>
+
+        <!-- Salary Certificate (Довідка про заробітну плату) -->
+        <record id="certificate_type_salary" model="hr.certificate.type">
+            <field name="name">Довідка про заробітну плату</field>
+            <field name="code">salary</field>
+            <field name="sequence">20</field>
+            <field name="sequence_id" ref="seq_hr_certificate_salary"/>
+            <field name="requires_salary_info">True</field>
+            <field name="requires_period">False</field>
+            <field name="requires_destination">True</field>
+            <field name="validity_days">30</field>
+            <field name="template_body"><![CDATA[
+<div style="font-family: Times New Roman, serif; font-size: 14pt; line-height: 1.5;">
+    <div style="text-align: center; margin-bottom: 20px;">
+        <strong>{company_name}</strong><br/>
+        <span style="font-size: 12pt;">{company_address}</span><br/>
+        <span style="font-size: 12pt;">ЄДРПОУ: {company_edrpou}</span>
+    </div>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <h2 style="margin: 0;">ДОВІДКА</h2>
+        <p style="margin: 5px 0;">про заробітну плату</p>
+        <p style="margin: 5px 0;">№ {certificate_number} від {certificate_date}</p>
+    </div>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        Видана <strong>{employee_name}</strong> у тому, що він(вона) дійсно працює
+        в {company_name} на посаді <strong>{employee_position}</strong>.
+    </p>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        Посадовий оклад (заробітна плата) становить <strong>{salary_amount} грн.</strong> на місяць.
+    </p>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        Довідка видана {destination}.
+    </p>
+
+    <div style="margin-top: 50px;">
+        <table style="width: 100%; border: none;">
+            <tr>
+                <td style="width: 50%;">{company_director_position}</td>
+                <td style="width: 50%; text-align: right;">________________ {company_director}</td>
+            </tr>
+            <tr>
+                <td style="width: 50%;">Головний бухгалтер</td>
+                <td style="width: 50%; text-align: right;">________________</td>
+            </tr>
+        </table>
+    </div>
+
+    <p style="margin-top: 30px; font-size: 12pt;">М.П.</p>
+</div>
+            ]]></field>
+        </record>
+
+        <!-- Income Certificate (Довідка про доходи) -->
+        <record id="certificate_type_income" model="hr.certificate.type">
+            <field name="name">Довідка про доходи</field>
+            <field name="code">income</field>
+            <field name="sequence">30</field>
+            <field name="sequence_id" ref="seq_hr_certificate_income"/>
+            <field name="requires_salary_info">True</field>
+            <field name="requires_period">True</field>
+            <field name="requires_destination">True</field>
+            <field name="validity_days">30</field>
+            <field name="template_body"><![CDATA[
+<div style="font-family: Times New Roman, serif; font-size: 14pt; line-height: 1.5;">
+    <div style="text-align: center; margin-bottom: 20px;">
+        <strong>{company_name}</strong><br/>
+        <span style="font-size: 12pt;">{company_address}</span><br/>
+        <span style="font-size: 12pt;">ЄДРПОУ: {company_edrpou}</span>
+    </div>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <h2 style="margin: 0;">ДОВІДКА</h2>
+        <p style="margin: 5px 0;">про доходи</p>
+        <p style="margin: 5px 0;">№ {certificate_number} від {certificate_date}</p>
+    </div>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        Видана <strong>{employee_name}</strong>, РНОКПП: {employee_rnokpp},
+        у тому, що він(вона) працює в {company_name} на посаді <strong>{employee_position}</strong>.
+    </p>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        За період з {period_from} по {period_to} отримав(ла) дохід у розмірі
+        <strong>{total_income} грн.</strong>
+    </p>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        Довідка видана {destination}.
+    </p>
+
+    <div style="margin-top: 50px;">
+        <table style="width: 100%; border: none;">
+            <tr>
+                <td style="width: 50%;">{company_director_position}</td>
+                <td style="width: 50%; text-align: right;">________________ {company_director}</td>
+            </tr>
+            <tr>
+                <td style="width: 50%;">Головний бухгалтер</td>
+                <td style="width: 50%; text-align: right;">________________</td>
+            </tr>
+        </table>
+    </div>
+
+    <p style="margin-top: 30px; font-size: 12pt;">М.П.</p>
+</div>
+            ]]></field>
+        </record>
+
+        <!-- Work Experience Certificate (Довідка про стаж) -->
+        <record id="certificate_type_experience" model="hr.certificate.type">
+            <field name="name">Довідка про стаж роботи</field>
+            <field name="code">experience</field>
+            <field name="sequence">40</field>
+            <field name="sequence_id" ref="seq_hr_certificate_experience"/>
+            <field name="requires_salary_info">False</field>
+            <field name="requires_period">False</field>
+            <field name="requires_destination">True</field>
+            <field name="validity_days">30</field>
+            <field name="template_body"><![CDATA[
+<div style="font-family: Times New Roman, serif; font-size: 14pt; line-height: 1.5;">
+    <div style="text-align: center; margin-bottom: 20px;">
+        <strong>{company_name}</strong><br/>
+        <span style="font-size: 12pt;">{company_address}</span><br/>
+        <span style="font-size: 12pt;">ЄДРПОУ: {company_edrpou}</span>
+    </div>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <h2 style="margin: 0;">ДОВІДКА</h2>
+        <p style="margin: 5px 0;">про стаж роботи</p>
+        <p style="margin: 5px 0;">№ {certificate_number} від {certificate_date}</p>
+    </div>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        Видана <strong>{employee_name}</strong> у тому, що він(вона) працює
+        в {company_name} з {employee_hire_date} по теперішній час.
+    </p>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        Загальний стаж роботи на підприємстві становить <strong>{work_experience}</strong>.
+    </p>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        Довідка видана {destination}.
+    </p>
+
+    <div style="margin-top: 50px;">
+        <table style="width: 100%; border: none;">
+            <tr>
+                <td style="width: 50%;">{company_director_position}</td>
+                <td style="width: 50%; text-align: right;">________________ {company_director}</td>
+            </tr>
+        </table>
+    </div>
+
+    <p style="margin-top: 30px; font-size: 12pt;">М.П.</p>
+</div>
+            ]]></field>
+        </record>
+
+        <!-- Bank Certificate (Довідка для банку) -->
+        <record id="certificate_type_bank" model="hr.certificate.type">
+            <field name="name">Довідка для банку</field>
+            <field name="code">bank</field>
+            <field name="sequence">50</field>
+            <field name="sequence_id" ref="seq_hr_certificate_bank"/>
+            <field name="requires_salary_info">True</field>
+            <field name="requires_period">True</field>
+            <field name="requires_destination">True</field>
+            <field name="validity_days">14</field>
+            <field name="template_body"><![CDATA[
+<div style="font-family: Times New Roman, serif; font-size: 14pt; line-height: 1.5;">
+    <div style="text-align: center; margin-bottom: 20px;">
+        <strong>{company_name}</strong><br/>
+        <span style="font-size: 12pt;">{company_address}</span><br/>
+        <span style="font-size: 12pt;">ЄДРПОУ: {company_edrpou}, тел.: {company_phone}</span>
+    </div>
+
+    <div style="text-align: center; margin: 30px 0;">
+        <h2 style="margin: 0;">ДОВІДКА</h2>
+        <p style="margin: 5px 0;">№ {certificate_number} від {certificate_date}</p>
+    </div>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        Видана <strong>{employee_name}</strong>, РНОКПП: {employee_rnokpp},
+        у тому, що він(вона) дійсно працює в {company_name}
+        на посаді <strong>{employee_position}</strong> з {employee_hire_date}
+        по теперішній час на умовах безстрокового трудового договору.
+    </p>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        Середньомісячний дохід за останні 6 місяців (з {period_from} по {period_to})
+        становить <strong>{total_income} грн.</strong>
+    </p>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        Довідка видана {destination}.
+    </p>
+
+    <div style="margin-top: 50px;">
+        <table style="width: 100%; border: none;">
+            <tr>
+                <td style="width: 50%;">{company_director_position}</td>
+                <td style="width: 50%; text-align: right;">________________ {company_director}</td>
+            </tr>
+            <tr>
+                <td style="width: 50%;">Головний бухгалтер</td>
+                <td style="width: 50%; text-align: right;">________________</td>
+            </tr>
+        </table>
+    </div>
+
+    <p style="margin-top: 30px; font-size: 12pt;">М.П.</p>
+</div>
+            ]]></field>
+        </record>
+
+        <!-- Character Reference (Характеристика) -->
+        <record id="certificate_type_character" model="hr.certificate.type">
+            <field name="name">Характеристика</field>
+            <field name="code">character</field>
+            <field name="sequence">60</field>
+            <field name="sequence_id" ref="seq_hr_certificate_character"/>
+            <field name="requires_salary_info">False</field>
+            <field name="requires_period">False</field>
+            <field name="requires_destination">True</field>
+            <field name="validity_days">90</field>
+            <field name="template_body"><![CDATA[
+<div style="font-family: Times New Roman, serif; font-size: 14pt; line-height: 1.5;">
+    <div style="text-align: center; margin: 30px 0;">
+        <h2 style="margin: 0;">ХАРАКТЕРИСТИКА</h2>
+        <p style="margin: 5px 0;">№ {certificate_number}</p>
+    </div>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        <strong>{employee_name}</strong> працює в {company_name}
+        на посаді <strong>{employee_position}</strong> з {employee_hire_date}.
+    </p>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        За час роботи зарекомендував(ла) себе як відповідальний,
+        дисциплінований працівник, який сумлінно виконує свої посадові обов'язки.
+    </p>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        Має високий рівень професійної підготовки, постійно підвищує свою кваліфікацію.
+        До виконання доручень ставиться відповідально.
+    </p>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        У колективі користується повагою. Комунікабельний(на),
+        вміє працювати в команді.
+    </p>
+
+    <p style="text-indent: 40px; text-align: justify;">
+        Характеристика видана {destination}.
+    </p>
+
+    <div style="margin-top: 50px;">
+        <table style="width: 100%; border: none;">
+            <tr>
+                <td style="width: 50%;">{company_director_position}</td>
+                <td style="width: 50%; text-align: right;">________________ {company_director}</td>
+            </tr>
+        </table>
+    </div>
+
+    <p style="margin-top: 20px;">{certificate_date}</p>
+    <p style="font-size: 12pt;">М.П.</p>
+</div>
+            ]]></field>
+        </record>
+
+    </data>
+</odoo>

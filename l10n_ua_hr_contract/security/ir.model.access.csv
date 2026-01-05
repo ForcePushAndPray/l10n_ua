@@ -1,7 +1,7 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_hr_contract_user,hr.contract.user,model_hr_contract,hr.group_hr_user,1,0,0,0
-access_hr_contract_officer,hr.contract.officer,model_hr_contract,l10n_ua_hr_base.group_hr_ua_officer,1,1,1,0
-access_hr_contract_manager,hr.contract.manager,model_hr_contract,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
+access_hr_contract_user,hr.contract.user,model_hr_contract_ua,hr.group_hr_user,1,0,0,0
+access_hr_contract_officer,hr.contract.officer,model_hr_contract_ua,l10n_ua_hr_base.group_hr_ua_officer,1,1,1,0
+access_hr_contract_manager,hr.contract.manager,model_hr_contract_ua,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
 access_hr_contract_allowance_user,hr.contract.allowance.user,model_hr_contract_allowance,hr.group_hr_user,1,0,0,0
 access_hr_contract_allowance_officer,hr.contract.allowance.officer,model_hr_contract_allowance,l10n_ua_hr_base.group_hr_ua_officer,1,1,1,0
 access_hr_contract_allowance_manager,hr.contract.allowance.manager,model_hr_contract_allowance,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1

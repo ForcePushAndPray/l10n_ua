@@ -1,0 +1,1734 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ua_hr_contract
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260103\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-05 19:43+0000\n"
+"PO-Revision-Date: 2026-01-05 19:43+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_ua__work_rate
+msgid "1.0 = full rate, 0.5 = half rate, etc."
+msgstr "1.0 = повна ставка, 0.5 = половина ставки тощо"
+
+#. module: l10n_ua_hr_contract
+#: model:hr.work.schedule,name:l10n_ua_hr_contract.work_schedule_6day
+msgid "6-денний робочий тиждень"
+msgstr ""
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__message_needaction
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__message_needaction
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__message_needaction
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__message_needaction
+msgid "Action Needed"
+msgstr "Потрібна дія"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_job_combining_form
+msgid "Activate"
+msgstr "Активувати"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__active
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_allowance__is_active
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__active
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__active
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_job_combining__state__active
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_job_combining_search
+msgid "Active"
+msgstr "Активний"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__activity_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__activity_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__activity_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__activity_ids
+msgid "Activities"
+msgstr "Активності"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__activity_exception_decoration
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__activity_exception_decoration
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__activity_exception_decoration
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Оформлення виключення активності"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__activity_state
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__activity_state
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__activity_state
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__activity_state
+msgid "Activity State"
+msgstr "Стан активності"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__activity_type_icon
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__activity_type_icon
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__activity_type_icon
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Іконка типу активності"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__additional_vacation_days
+msgid "Additional Vacation Days"
+msgstr "Додаткові дні відпустки"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+msgid "Additional notes..."
+msgstr "Додаткові примітки..."
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_ua__additional_vacation_days
+msgid "Additional vacation days based on work conditions"
+msgstr "Додаткові дні відпустки залежно від умов праці"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_allowance_type_view_form
+msgid "Allowance Name"
+msgstr "Назва надбавки"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model,name:l10n_ua_hr_contract.model_hr_allowance_type
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_allowance__allowance_type_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_allowance_type_view_form
+msgid "Allowance Type"
+msgstr "Тип надбавки"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.actions.act_window,name:l10n_ua_hr_contract.action_hr_allowance_type
+#: model:ir.ui.menu,name:l10n_ua_hr_contract.menu_hr_allowance_type
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_allowance_type_view_tree
+msgid "Allowance Types"
+msgstr "Типи надбавок"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.constraint,message:l10n_ua_hr_contract.constraint_hr_allowance_type_unique_code
+msgid "Allowance type code must be unique!"
+msgstr "Код типу надбавки повинен бути унікальним!"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__allowance_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+msgid "Allowances"
+msgstr "Надбавки"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_amendment_form
+msgid "Amendment"
+msgstr "Додаткова угода"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__amendment_date
+msgid "Amendment Date"
+msgstr "Дата додаткової угоди"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__amendment_number
+msgid "Amendment Number"
+msgstr "Номер додаткової угоди"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__amendment_type
+msgid "Amendment Type"
+msgstr "Тип зміни"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__amendment_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+msgid "Amendments"
+msgstr "Додаткові угоди"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_allowance__amount
+msgid "Amount"
+msgstr "Сума"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_salary_change__state__applied
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_salary_change_search
+msgid "Applied"
+msgstr "Застосовано"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_salary_change_form
+msgid "Apply"
+msgstr "Застосувати"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+msgid "Archived"
+msgstr "Архівовано"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__message_attachment_count
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__message_attachment_count
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__message_attachment_count
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__message_attachment_count
+msgid "Attachment Count"
+msgstr "Кількість вкладень"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__contract_type_ua__author
+msgid "Author Contract"
+msgstr "Авторський договір"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_job_combining__allowance_id
+msgid "Automatically created allowance for this job combining"
+msgstr "Автоматично створена надбавка для цього суміщення"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_termination_reason__category__circumstances
+msgid "Beyond Control (Art. 36 p.3,4,6,7,8)"
+msgstr "Незалежні обставини (ст. 36 п.3,4,6,7,8)"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__break_from
+msgid "Break From"
+msgstr "Перерва з"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__break_to
+msgid "Break To"
+msgstr "Перерва до"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_termination_reason__category__agreement
+msgid "By Agreement (Art. 36 p.1)"
+msgstr "За угодою сторін (ст. 36 п.1)"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_allowance__calculated_amount
+msgid "Calculated Amount"
+msgstr "Розрахована сума"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__calculated_surcharge
+msgid "Calculated Surcharge"
+msgstr "Розрахована доплата"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_allowance__calculation_method
+msgid "Calculation Method"
+msgstr "Метод розрахунку"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_salary_change_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_job_combining_form
+msgid "Cancel"
+msgstr "Скасувати"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__cancellation_order_number
+msgid "Cancellation Order"
+msgstr "Наказ про скасування"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__cancellation_order_date
+msgid "Cancellation Order Date"
+msgstr "Дата наказу про скасування"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_salary_change__state__cancelled
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__state__cancel
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_document_mixin__state__cancelled
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_job_combining__state__cancelled
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_job_combining_search
+msgid "Cancelled"
+msgstr "Скасовано"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__category
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__category
+msgid "Category"
+msgstr "Категорія"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__change_percent
+msgid "Change %"
+msgstr "Зміна %"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__change_amount
+msgid "Change Amount"
+msgstr "Сума зміни"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_amendment_form
+msgid "Changes"
+msgstr "Зміни"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__contract_type_ua__civil
+msgid "Civil Law Contract"
+msgstr "Цивільно-правовий договір"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+msgid "Close"
+msgstr "Закрити"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__code
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__code
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__code
+msgid "Code"
+msgstr "Код"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__combined_department_id
+msgid "Combined Department"
+msgstr "Суміщуваний підрозділ"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__combined_job_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_job_combining_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_job_combining_search
+msgid "Combined Position"
+msgstr "Суміщувана посада"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__company_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__company_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__company_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__company_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__company_id
+msgid "Company"
+msgstr "Компанія"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_termination_reason_view_form
+msgid "Compensation"
+msgstr "Компенсація"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__compensation_amount
+msgid "Compensation Amount"
+msgstr "Сума компенсації"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_amendment_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_salary_change_form
+msgid "Confirm"
+msgstr "Підтвердити"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_amendment__state__confirmed
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_salary_change__state__confirmed
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_document_mixin__state__confirmed
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_amendment_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_salary_change_search
+msgid "Confirmed"
+msgstr "Підтверджено"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_allowance__contract_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__contract_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__contract_id
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__contract_type_ua__contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_amendment_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_salary_change_form
+msgid "Contract"
+msgstr "Договір"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model,name:l10n_ua_hr_contract.model_hr_contract_allowance
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__allowance_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_allowance_view_form
+msgid "Contract Allowance"
+msgstr "Надбавка за договором"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_allowance_view_tree
+msgid "Contract Allowances"
+msgstr "Надбавки за договором"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model,name:l10n_ua_hr_contract.model_hr_contract_amendment
+msgid "Contract Amendment"
+msgstr "Додаткова угода до договору"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.actions.act_window,name:l10n_ua_hr_contract.action_hr_contract_amendment
+#: model:ir.ui.menu,name:l10n_ua_hr_contract.menu_hr_contract_amendment
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_amendment_search
+msgid "Contract Amendments"
+msgstr "Додаткові угоди до договорів"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+msgid "Contract Details"
+msgstr "Деталі договору"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_amendment__amendment_type__extension
+msgid "Contract Extension"
+msgstr "Продовження договору"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__name
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+msgid "Contract Reference"
+msgstr "Посилання на договір"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model,name:l10n_ua_hr_contract.model_hr_contract_salary_change
+msgid "Contract Salary Change"
+msgstr "Зміна окладу за договором"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__contract_type_ua
+msgid "Contract Type"
+msgstr "Тип договору"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.actions.act_window,name:l10n_ua_hr_contract.action_hr_contract
+#: model:ir.ui.menu,name:l10n_ua_hr_contract.menu_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_tree
+msgid "Contracts"
+msgstr "Договори"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_contract.action_hr_allowance_type
+msgid "Create your first allowance type"
+msgstr "Створіть перший тип надбавки"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_contract.action_hr_contract
+msgid "Create your first employment contract"
+msgstr "Створіть перший трудовий договір"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_contract.action_hr_termination_reason
+msgid "Create your first termination reason"
+msgstr "Створіть першу причину звільнення"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_contract.action_hr_work_schedule
+msgid "Create your first work schedule"
+msgstr "Створіть перший графік роботи"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_allowance__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__create_uid
+msgid "Created by"
+msgstr "Створив"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_allowance__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__create_date
+msgid "Created on"
+msgstr "Створено"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_allowance__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__currency_id
+msgid "Currency"
+msgstr "Валюта"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_employee__contract_ua_id
+msgid "Current UA Contract"
+msgstr "Поточний договір UA"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_employee__contract_ua_id
+msgid "Current running Ukrainian contract"
+msgstr "Поточний діючий український договір"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_amendment_search
+msgid "Date"
+msgstr "Дата"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_allowance__date_from
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__date_from
+msgid "Date From"
+msgstr "Дата з"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_allowance__date_to
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__date_to
+msgid "Date To"
+msgstr "Дата до"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__day_of_week
+msgid "Day of Week"
+msgstr "День тижня"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_termination_reason__notice_days
+msgid "Days of advance notice required"
+msgstr "Необхідна кількість днів попередження"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__default_amount
+msgid "Default Amount"
+msgstr "Сума за замовчуванням"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__default_percent
+msgid "Default Percent"
+msgstr "Відсоток за замовчуванням"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__department_id
+msgid "Department"
+msgstr "Підрозділ"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__description
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__description
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__description
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__description
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_work_schedule_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_amendment_form
+msgid "Description"
+msgstr "Опис"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_amendment__description
+msgid "Detailed description of changes made"
+msgstr "Детальний опис внесених змін"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__diia_city_employee
+msgid "Diia.City Employee"
+msgstr "Працівник Дія.Сіті"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_allowance__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_document_mixin__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_employee__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__display_name
+msgid "Display Name"
+msgstr "Назва для відображення"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_amendment__state__draft
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_salary_change__state__draft
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__state__draft
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_document_mixin__state__draft
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_job_combining__state__draft
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_amendment_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_salary_change_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_job_combining_search
+msgid "Draft"
+msgstr "Чернетка"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__is_esv_base
+msgid "ESV Base"
+msgstr "База ЄСВ"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__effective_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__effective_date
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_salary_change_search
+msgid "Effective Date"
+msgstr "Дата набуття чинності"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model,name:l10n_ua_hr_contract.model_hr_employee
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__employee_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__employee_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__employee_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__employee_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_amendment_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_salary_change_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_job_combining_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_job_combining_search
+msgid "Employee"
+msgstr "Співробітник"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_ua__diia_city_employee
+msgid "Employee under Diia.City special tax regime"
+msgstr "Працівник за спеціальним податковим режимом Дія.Сіті"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_termination_reason__category__employer_initiative
+msgid "Employer Initiative (Art. 40)"
+msgstr "З ініціативи роботодавця (ст. 40)"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model,name:l10n_ua_hr_contract.model_hr_contract_ua
+msgid "Employment Contract (Ukraine)"
+msgstr "Трудовий договір (Україна)"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+msgid "Employment Type"
+msgstr "Тип зайнятості"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__date_end
+msgid "End Date"
+msgstr "Дата закінчення"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__state__close
+msgid "Expired"
+msgstr "Завершений"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__part_time_type__external
+msgid "External Part-time"
+msgstr "Зовнішнє сумісництво"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_allowance__calculation_method__fixed
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_job_combining__surcharge_type__fixed
+msgid "Fixed Amount"
+msgstr "Фіксована сума"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__contract_type_ua__fixed_term
+msgid "Fixed Term"
+msgstr "Строковий"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_termination_reason__category__fixed_term
+msgid "Fixed Term Expiry (Art. 36 p.2)"
+msgstr "Закінчення строку (ст. 36 п.2)"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_allowance__amount
+msgid "Fixed amount if calculation method is fixed"
+msgstr "Фіксована сума, якщо метод розрахунку - фіксований"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_job_combining__surcharge_amount
+msgid "Fixed surcharge amount"
+msgstr "Фіксована сума доплати"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__work_mode__flexible
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule__schedule_type__flexible
+msgid "Flexible Schedule"
+msgstr "Гнучкий графік"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__message_follower_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__message_follower_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__message_follower_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__message_follower_ids
+msgid "Followers"
+msgstr "Підписники"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__message_partner_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__message_partner_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__message_partner_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Підписники (Партнери)"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_amendment__activity_type_icon
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_salary_change__activity_type_icon
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_ua__activity_type_icon
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_job_combining__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Іконка Font Awesome, напр. fa-tasks"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule_line__day_of_week__4
+msgid "Friday"
+msgstr "П'ятниця"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__full_reference
+msgid "Full Reference"
+msgstr "Повне посилання"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__full_text
+msgid "Full Text for Order"
+msgstr "Повний текст для наказу"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__work_mode__full_time
+msgid "Full-time"
+msgstr "Повна зайнятість"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__contract_type_ua__gig
+msgid "Gig Contract (Diia.City)"
+msgstr "Гіг-контракт (Дія.Сіті)"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model,name:l10n_ua_hr_contract.model_hr_document_mixin
+msgid "HR Document Mixin"
+msgstr "Міксин HR-документа"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__has_message
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__has_message
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__has_message
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__has_message
+msgid "Has Message"
+msgstr "Має повідомлення"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__work_conditions_class
+msgid "Hazard Class (1-4)"
+msgstr "Клас шкідливості (1-4)"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__work_conditions_subclass
+msgid "Hazard Subclass"
+msgstr "Підклас шкідливості"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_ua__work_conditions_class
+msgid "Hazard classification class according to DSTU"
+msgstr "Клас шкідливості згідно з ДСТУ"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_ua__work_conditions_subclass
+msgid "Hazard subclass within the class"
+msgstr "Підклас шкідливості в межах класу"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__work_conditions__hazardous
+msgid "Hazardous (Шкідливі)"
+msgstr ""
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__is_hazardous
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_allowance_type__category__hazard
+msgid "Hazardous Conditions"
+msgstr "Шкідливі умови"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__work_conditions__heavy
+msgid "Heavy (Важкі)"
+msgstr ""
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__hire_order_date
+msgid "Hire Order Date"
+msgstr "Дата наказу про прийняття"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__hire_order_number
+msgid "Hire Order Number"
+msgstr "Номер наказу про прийняття"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+msgid "Hiring"
+msgstr "Прийняття на роботу"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__hours_per_day
+msgid "Hours per Day"
+msgstr "Годин на день"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__working_hours_week
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__hours_per_week
+msgid "Hours per Week"
+msgstr "Годин на тиждень"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__work_mode__hybrid
+msgid "Hybrid"
+msgstr "Гібридна робота"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_allowance__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_document_mixin__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_employee__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__activity_exception_icon
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__activity_exception_icon
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__activity_exception_icon
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__activity_exception_icon
+msgid "Icon"
+msgstr "Іконка"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_amendment__activity_exception_icon
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_salary_change__activity_exception_icon
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_ua__activity_exception_icon
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_job_combining__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Іконка для позначення виключної активності."
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_amendment__message_needaction
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_salary_change__message_needaction
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_ua__message_needaction
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_job_combining__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Якщо позначено, нові повідомлення потребують вашої уваги."
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_amendment__message_has_error
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_amendment__message_has_sms_error
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_salary_change__message_has_error
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_salary_change__message_has_sms_error
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_ua__message_has_error
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_ua__message_has_sms_error
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_job_combining__message_has_error
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_job_combining__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Якщо позначено, деякі повідомлення мають помилку доставки."
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__is_night_work
+msgid "Includes Night Work"
+msgstr "Включає нічну роботу"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__part_time_type__internal
+msgid "Internal Part-time"
+msgstr "Внутрішнє сумісництво"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__message_is_follower
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__message_is_follower
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__message_is_follower
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__message_is_follower
+msgid "Is Follower"
+msgstr "Є підписником"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.actions.act_window,name:l10n_ua_hr_contract.action_hr_job_combining
+#: model:ir.model,name:l10n_ua_hr_contract.model_hr_job_combining
+#: model:ir.ui.menu,name:l10n_ua_hr_contract.menu_hr_job_combining
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_job_combining_search
+msgid "Job Combining"
+msgstr "Суміщення посад"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__job_id
+msgid "Job Position"
+msgstr "Посада"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__article
+msgid "Labor Code Article"
+msgstr "Стаття КЗпП"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_allowance__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__write_uid
+msgid "Last Updated by"
+msgstr "Оновив"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_allowance__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__write_date
+msgid "Last Updated on"
+msgstr "Оновлено"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_work_schedule__resource_calendar_id
+msgid "Link to Odoo resource calendar for employee scheduling integration"
+msgstr "Посилання на календар ресурсів Odoo для інтеграції планування працівників"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__main_contract_id
+msgid "Main Contract"
+msgstr "Основний договір"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__is_main_workplace
+msgid "Main Workplace"
+msgstr "Основне місце роботи"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__message_has_error
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__message_has_error
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__message_has_error
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__message_has_error
+msgid "Message Delivery error"
+msgstr "Помилка доставки повідомлення"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__message_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__message_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__message_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__message_ids
+msgid "Messages"
+msgstr "Повідомлення"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule_line__day_of_week__0
+msgid "Monday"
+msgstr "Понеділок"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_ua__wage
+msgid "Monthly gross salary"
+msgstr "Місячна заробітна плата (брутто)"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__my_activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__my_activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__my_activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Термін моєї активності"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__name
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__name
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__name
+msgid "Name"
+msgstr "Назва"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__new_wage
+msgid "New Salary"
+msgstr "Новий оклад"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__new_values
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_amendment_form
+msgid "New Values"
+msgstr "Нові значення"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_amendment__new_values
+msgid "New field values after amendment"
+msgstr "Нові значення полів після зміни"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__activity_calendar_event_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__activity_calendar_event_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__activity_calendar_event_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Подія календаря наступної активності"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Термін наступної активності"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__activity_summary
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__activity_summary
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__activity_summary
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__activity_summary
+msgid "Next Activity Summary"
+msgstr "Опис наступної активності"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__activity_type_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__activity_type_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__activity_type_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__activity_type_id
+msgid "Next Activity Type"
+msgstr "Тип наступної активності"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__night_end_hour
+msgid "Night End Hour"
+msgstr "Кінець нічного часу"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__night_start_hour
+msgid "Night Start Hour"
+msgstr "Початок нічного часу"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_allowance_type__category__night
+msgid "Night Work"
+msgstr "Нічна робота"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_termination_reason__compensation_amount__none
+msgid "None"
+msgstr "Немає"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__work_conditions__normal
+msgid "Normal"
+msgstr "Нормальні"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_allowance__notes
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__notes
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__notes
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__notes
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_document_mixin__notes
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__notes
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_amendment_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_salary_change_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_job_combining_form
+msgid "Notes"
+msgstr "Примітки"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__notice_days
+msgid "Notice Days"
+msgstr "Днів попередження"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__message_needaction_counter
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__message_needaction_counter
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__message_needaction_counter
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Кількість дій"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__message_has_error_counter
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__message_has_error_counter
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__message_has_error_counter
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__message_has_error_counter
+msgid "Number of errors"
+msgstr "Кількість помилок"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_amendment__message_needaction_counter
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_salary_change__message_needaction_counter
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_ua__message_needaction_counter
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_job_combining__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Кількість повідомлень, що потребують дії"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_amendment__message_has_error_counter
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_salary_change__message_has_error_counter
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_ua__message_has_error_counter
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_job_combining__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Кількість повідомлень з помилкою доставки"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_termination_reason__compensation_amount__one_month
+msgid "One Month Salary"
+msgstr "Місячний оклад"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__order_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__order_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_document_mixin__order_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__order_date
+msgid "Order Date"
+msgstr "Дата наказу"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__order_number
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__order_number
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_document_mixin__order_number
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__order_number
+msgid "Order Number"
+msgstr "Номер наказу"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_amendment_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_salary_change_form
+msgid "Order Reference"
+msgstr "Посилання на наказ"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_job_combining_form
+msgid "Order References"
+msgstr "Посилання на накази"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+msgid "Orders"
+msgstr "Накази"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_allowance_type__category__other
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_amendment__amendment_type__other
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_termination_reason__category__other
+msgid "Other"
+msgstr "Інше"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_termination_reason__category__own_will
+msgid "Own Will (Art. 38)"
+msgstr "За власним бажанням (ст. 38)"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__paragraph
+msgid "Paragraph"
+msgstr "Пункт"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__work_mode__part_time
+msgid "Part-time"
+msgstr "Часткова зайнятість"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__part_time_type
+msgid "Part-time Type"
+msgstr "Тип часткової зайнятості"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__is_part_time
+msgid "Part-time Work"
+msgstr "Робота на неповний день"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_allowance__percent
+msgid "Percent"
+msgstr "Відсоток"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_allowance__calculation_method__percent_min_wage
+msgid "Percent of Minimum Wage"
+msgstr "Відсоток від мінімальної зарплати"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_allowance__calculation_method__percent_salary
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_job_combining__surcharge_type__percent
+msgid "Percent of Salary"
+msgstr "Відсоток від окладу"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_allowance__percent
+msgid "Percentage if calculation method is percent"
+msgstr "Відсоток, якщо метод розрахунку - відсотковий"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_job_combining__surcharge_percent
+msgid "Percentage of main salary as surcharge"
+msgstr "Відсоток від основного окладу як доплата"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_job_combining_form
+msgid "Period"
+msgstr "Період"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__contract_type_ua__permanent
+msgid "Permanent (Indefinite)"
+msgstr "Безстроковий"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_allowance_type__category__personal
+msgid "Personal Allowance"
+msgstr "Персональна надбавка"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_amendment__amendment_type__position
+msgid "Position Change"
+msgstr "Зміна посади"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__old_wage
+msgid "Previous Salary"
+msgstr "Попередній оклад"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__old_values
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_amendment_form
+msgid "Previous Values"
+msgstr "Попередні значення"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_amendment__old_values
+msgid "Previous field values before amendment"
+msgstr "Попередні значення полів до зміни"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+msgid "Probation"
+msgstr "Випробувальний термін"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__probation_end_date
+msgid "Probation End Date"
+msgstr "Дата закінчення випробування"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__probation_period_days
+msgid "Probation Period (days)"
+msgstr "Випробувальний термін (дні)"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_allowance_type__category__qualification
+msgid "Qualification"
+msgstr "Кваліфікація"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_salary_change_form
+msgid "Reason"
+msgstr "Причина"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_termination_reason_view_form
+msgid "Reason Name"
+msgstr "Назва причини"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__reason
+msgid "Reason for Change"
+msgstr "Причина зміни"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_contract.action_hr_contract_amendment
+msgid "Record a contract amendment"
+msgstr "Оформити додаткову угоду"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_contract.action_hr_contract_salary_change
+msgid "Record a salary change"
+msgstr "Зафіксувати зміну окладу"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_contract.action_hr_job_combining
+msgid "Record job combining for employees"
+msgstr "Оформлення суміщення посад для працівників"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__reduced_hours
+msgid "Reduced Working Hours"
+msgstr "Скорочений робочий час"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__name
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__name
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_document_mixin__name
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__name
+msgid "Reference"
+msgstr "Посилання"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_job_combining_form
+msgid "Related Allowance"
+msgstr "Пов'язана надбавка"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__work_mode__remote
+msgid "Remote Work"
+msgstr "Дистанційна робота"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_amendment_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_salary_change_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_job_combining_form
+msgid "Reset to Draft"
+msgstr "Повернути в чернетку"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__activity_user_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__activity_user_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__activity_user_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__activity_user_id
+msgid "Responsible User"
+msgstr "Відповідальний"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__state__open
+msgid "Running"
+msgstr "Діючий"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__message_has_sms_error
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__message_has_sms_error
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__message_has_sms_error
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Помилка доставки SMS"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+msgid "Salary"
+msgstr "Заробітна плата"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_amendment__amendment_type__salary
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_salary_change_form
+msgid "Salary Change"
+msgstr "Зміна окладу"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.actions.act_window,name:l10n_ua_hr_contract.action_hr_contract_salary_change
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__salary_change_ids
+#: model:ir.ui.menu,name:l10n_ua_hr_contract.menu_hr_contract_salary_change
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_salary_change_search
+msgid "Salary Changes"
+msgstr "Зміни окладу"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+msgid "Salary History"
+msgstr "Історія зарплати"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule_line__day_of_week__5
+msgid "Saturday"
+msgstr "Субота"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__schedule_id
+msgid "Schedule"
+msgstr "Графік"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_amendment__amendment_type__schedule
+msgid "Schedule Change"
+msgstr "Зміна графіка"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__line_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_work_schedule_view_form
+msgid "Schedule Lines"
+msgstr "Рядки графіка"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_work_schedule_view_form
+msgid "Schedule Name"
+msgstr "Назва графіка"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__schedule_type
+msgid "Schedule Type"
+msgstr "Тип графіка"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__contract_type_ua__seasonal
+msgid "Seasonal Work"
+msgstr "Сезонна робота"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_allowance_type__category__seniority
+msgid "Seniority"
+msgstr "Стаж"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__sequence
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_allowance__sequence
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__sequence
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__sequence
+msgid "Sequence"
+msgstr "Послідовність"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+msgid "Set to Draft"
+msgstr "Повернути в чернетку"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__requires_compensation
+msgid "Severance Pay Required"
+msgstr "Потрібна вихідна допомога"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule__schedule_type__shift
+msgid "Shift Work"
+msgstr "Змінна робота"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_work_schedule_view_form
+msgid "Special Conditions"
+msgstr "Особливі умови"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+msgid "Staffing"
+msgstr "Штатний розпис"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__staffing_line_id
+msgid "Staffing Position"
+msgstr "Штатна позиція"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule__schedule_type__standard
+msgid "Standard (5-day week)"
+msgstr "Стандартний (5-денний тиждень)"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__date_start
+msgid "Start Date"
+msgstr "Дата початку"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__state
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__state
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__state
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_document_mixin__state
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__state
+msgid "Status"
+msgstr "Статус"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_amendment__activity_state
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_salary_change__activity_state
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_ua__activity_state
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_job_combining__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule__schedule_type__summarized
+msgid "Summarized Accounting"
+msgstr "Підсумований облік"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule_line__day_of_week__6
+msgid "Sunday"
+msgstr "Неділя"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_job_combining_form
+msgid "Surcharge"
+msgstr "Доплата"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__surcharge_percent
+msgid "Surcharge %"
+msgstr "Доплата %"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__surcharge_amount
+msgid "Surcharge Amount"
+msgstr "Сума доплати"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__surcharge_type
+msgid "Surcharge Type"
+msgstr "Тип доплати"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__tariff_grade_id
+msgid "Tariff Grade"
+msgstr "Тарифний розряд"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__is_taxable
+msgid "Taxable (PDFO)"
+msgstr "Оподатковується (ПДФО)"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__contract_type_ua__temporary
+msgid "Temporary Work"
+msgstr "Тимчасова робота"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+msgid "Termination"
+msgstr "Звільнення"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__termination_date
+msgid "Termination Date"
+msgstr "Дата звільнення"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__termination_order_date
+msgid "Termination Order Date"
+msgstr "Дата наказу про звільнення"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__termination_order_number
+msgid "Termination Order Number"
+msgstr "Номер наказу про звільнення"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model,name:l10n_ua_hr_contract.model_hr_termination_reason
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__termination_reason_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_termination_reason_view_form
+msgid "Termination Reason"
+msgstr "Причина звільнення"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.actions.act_window,name:l10n_ua_hr_contract.action_hr_termination_reason
+#: model:ir.ui.menu,name:l10n_ua_hr_contract.menu_hr_termination_reason
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_termination_reason_view_tree
+msgid "Termination Reasons"
+msgstr "Причини звільнення"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.constraint,message:l10n_ua_hr_contract.constraint_hr_termination_reason_unique_code
+msgid "Termination reason code must be unique!"
+msgstr "Код причини звільнення повинен бути унікальним!"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_contract.action_hr_termination_reason
+msgid "Termination reasons are based on Ukrainian Labor Code articles."
+msgstr "Причини звільнення базуються на статтях Кодексу законів про працю України."
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_termination_reason__compensation_amount__three_months
+msgid "Three Months Salary"
+msgstr "Тримісячний оклад"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule_line__day_of_week__3
+msgid "Thursday"
+msgstr "Четвер"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_tree
+msgid "Total"
+msgstr "Всього"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__total_allowances
+msgid "Total Allowances"
+msgstr "Всього надбавок"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__total_wage
+msgid "Total Wage"
+msgstr "Загальний оклад"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_contract.action_hr_contract_amendment
+msgid "Track all changes made to employment contracts."
+msgstr "Відстеження всіх змін до трудових договорів."
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_contract.action_hr_job_combining
+msgid ""
+"Track employees who perform duties of combined positions with surcharges."
+msgstr ""
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_contract.action_hr_contract_salary_change
+msgid "Track salary changes for contracts with order references."
+msgstr "Відстеження змін окладу за договорами з посиланнями на накази."
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_termination_reason__category__transfer
+msgid "Transfer (Art. 36 p.5)"
+msgstr "Переведення (ст. 36 п.5)"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule_line__day_of_week__1
+msgid "Tuesday"
+msgstr "Вівторок"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_termination_reason__compensation_amount__two_months
+msgid "Two Months Salary"
+msgstr "Двомісячний оклад"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_contract_amendment_search
+msgid "Type"
+msgstr "Тип"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_amendment__activity_exception_decoration
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_salary_change__activity_exception_decoration
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_ua__activity_exception_decoration
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_job_combining__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Тип виключної активності в записі."
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_employee__contract_ua_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_employee_view_form_contract
+msgid "UA Contracts"
+msgstr "Договори UA"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_employee__contracts_ua_count
+msgid "UA Contracts Count"
+msgstr "Кількість договорів UA"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_ua__work_conditions__underground
+msgid "Underground Work"
+msgstr "Підземні роботи"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__wage
+msgid "Wage"
+msgstr "Оклад"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_amendment__website_message_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_salary_change__website_message_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__website_message_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__website_message_ids
+msgid "Website Messages"
+msgstr "Повідомлення веб-сайту"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_amendment__website_message_ids
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_salary_change__website_message_ids
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_contract_ua__website_message_ids
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_job_combining__website_message_ids
+msgid "Website communication history"
+msgstr "Історія комунікації веб-сайту"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule_line__day_of_week__2
+msgid "Wednesday"
+msgstr "Середа"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_termination_reason__requires_compensation
+msgid "Whether severance pay is required by law"
+msgstr "Чи потрібна вихідна допомога за законом"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__work_conditions
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+msgid "Work Conditions"
+msgstr "Умови праці"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_contract_amendment__amendment_type__conditions
+msgid "Work Conditions Change"
+msgstr "Зміна умов праці"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__work_from
+msgid "Work From"
+msgstr "Робота з"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_allowance_type__category__intensity
+msgid "Work Intensity"
+msgstr "Інтенсивність роботи"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__work_mode
+msgid "Work Mode"
+msgstr "Режим роботи"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__work_rate
+msgid "Work Rate"
+msgstr "Ставка"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model,name:l10n_ua_hr_contract.model_hr_work_schedule
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_contract_ua__work_schedule_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_work_schedule_view_form
+msgid "Work Schedule"
+msgstr "Графік роботи"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model,name:l10n_ua_hr_contract.model_hr_work_schedule_line
+msgid "Work Schedule Line"
+msgstr "Рядок графіка роботи"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.actions.act_window,name:l10n_ua_hr_contract.action_hr_work_schedule
+#: model:ir.ui.menu,name:l10n_ua_hr_contract.menu_hr_work_schedule
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_work_schedule_view_tree
+msgid "Work Schedules"
+msgstr "Графіки роботи"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__work_to
+msgid "Work To"
+msgstr "Робота до"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__is_working_day
+msgid "Working Day"
+msgstr "Робочий день"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__working_days_per_week
+msgid "Working Days per Week"
+msgstr "Робочих днів на тиждень"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__working_hours
+msgid "Working Hours"
+msgstr "Робочі години"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__resource_calendar_id
+msgid "Working Hours Calendar"
+msgstr "Календар робочих годин"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_contract_view_form
+msgid "Working Time"
+msgstr "Робочий час"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_termination_reason__article
+msgid "e.g., 36, 38, 40"
+msgstr "напр., 36, 38, 40"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_termination_reason__paragraph
+msgid "e.g., п. 1, п. 2"
+msgstr ""
+

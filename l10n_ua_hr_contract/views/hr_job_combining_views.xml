@@ -6,6 +6,7 @@
         <field name="model">hr.job.combining</field>
         <field name="arch" type="xml">
             <list>
+                <field name="name"/>
                 <field name="employee_id"/>
                 <field name="combined_job_id"/>
                 <field name="combined_department_id"/>

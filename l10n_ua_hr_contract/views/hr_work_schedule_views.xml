@@ -24,6 +24,7 @@
                             <field name="hours_per_week"/>
                             <field name="hours_per_day"/>
                             <field name="working_days_per_week"/>
+                            <field name="resource_calendar_id"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                     </group>

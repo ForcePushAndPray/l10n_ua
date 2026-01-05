@@ -7,6 +7,19 @@ class HrJobCombining(models.Model):
     _description = 'Job Combining'
     _order = 'date_from desc, id desc'
     _inherit = ['mail.thread', 'mail.activity.mixin']
+    _rec_name = 'display_name'
+
+    name = fields.Char(
+        string='Reference',
+        readonly=True,
+        copy=False,
+        default='New'
+    )
+    display_name = fields.Char(
+        string='Display Name',
+        compute='_compute_display_name',
+        store=True
+    )
 
     employee_id = fields.Many2one(
         'hr.employee',
@@ -15,7 +28,7 @@ class HrJobCombining(models.Model):
         tracking=True
     )
     main_contract_id = fields.Many2one(
-        'hr.contract',
+        'hr.contract.ua',
         string='Main Contract',
         required=True,
         tracking=True,
@@ -79,8 +92,8 @@ class HrJobCombining(models.Model):
     )
 
     # Order references
-    order_number = fields.Char(string='Order Number', tracking=True)
-    order_date = fields.Date(string='Order Date')
+    order_number = fields.Char(string='Order Number', required=True, tracking=True)
+    order_date = fields.Date(string='Order Date', required=True)
     cancellation_order_number = fields.Char(string='Cancellation Order')
     cancellation_order_date = fields.Date(string='Cancellation Order Date')
 
@@ -98,6 +111,21 @@ class HrJobCombining(models.Model):
     ], string='Status', default='draft', tracking=True)
 
     notes = fields.Text(string='Notes')
+
+    @api.depends('employee_id', 'combined_job_id', 'order_number')
+    def _compute_display_name(self):
+        for record in self:
+            if record.employee_id and record.combined_job_id:
+                record.display_name = f"{record.employee_id.name} - {record.combined_job_id.name} ({record.order_number or 'New'})"
+            else:
+                record.display_name = record.name or 'New'
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = self.env['ir.sequence'].next_by_code('hr.job.combining') or 'New'
+        return super().create(vals_list)
 
     @api.depends('surcharge_type', 'surcharge_percent', 'surcharge_amount', 'main_contract_id.wage')
     def _compute_calculated_surcharge(self):
@@ -117,7 +145,7 @@ class HrJobCombining(models.Model):
     def _onchange_employee_id(self):
         if self.employee_id:
             # Find active contract
-            contract = self.env['hr.contract'].search([
+            contract = self.env['hr.contract.ua'].search([
                 ('employee_id', '=', self.employee_id.id),
                 ('state', '=', 'open')
             ], limit=1)

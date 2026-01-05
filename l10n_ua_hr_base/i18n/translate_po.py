@@ -707,6 +707,15 @@ TRANSLATIONS.update({
     "Notes": "Примітки",
     "Job Position": "Посада",
     "Position": "Посада",
+
+    # Staffing table salary range
+    "Max": "Макс",
+    "Min": "Мін",
+    "Salary Range": "Діапазон окладу",
+    "Maximum salary for this position (salary range)": "Максимальний оклад для цієї посади (діапазон окладу)",
+    "Minimum salary for this position (salary range)": "Мінімальний оклад для цієї посади (діапазон окладу)",
+    "Standard salary for this position": "Стандартний оклад для цієї посади",
+    "Next Activity Calendar Event": "Подія календаря наступної активності",
 })
 
 
@@ -724,38 +733,79 @@ def is_english(text):
 def translate_po(input_file, output_file):
     with open(input_file, 'r', encoding='utf-8') as f:
         content = f.read()
-    
+
     lines = content.split('\n')
     result = []
     i = 0
     translated_count = 0
-    
+    untranslated = []
+
     while i < len(lines):
         line = lines[i]
         result.append(line)
-        
-        if line.startswith('msgid "') and not line.startswith('msgid ""'):
-            msgid = line[7:-1]
-            
-            j = i + 1
-            while j < len(lines) and lines[j].startswith('"'):
-                msgid += lines[j][1:-1]
-                result.append(lines[j])
-                j += 1
-            
-            if j < len(lines) and lines[j].startswith('msgstr ""'):
-                if msgid in TRANSLATIONS and is_english(msgid):
-                    result.append(f'msgstr "{TRANSLATIONS[msgid]}"')
-                    translated_count += 1
-                    i = j + 1
-                    continue
-        
+
+        # Handle msgid (both single-line and multi-line)
+        if line.startswith('msgid "'):
+            if line == 'msgid ""':
+                # Multi-line msgid starting with empty string
+                msgid = ""
+                j = i + 1
+                while j < len(lines) and lines[j].startswith('"'):
+                    msgid += lines[j][1:-1]
+                    result.append(lines[j])
+                    j += 1
+            else:
+                # Single-line or continuation msgid
+                msgid = line[7:-1]
+                j = i + 1
+                while j < len(lines) and lines[j].startswith('"'):
+                    msgid += lines[j][1:-1]
+                    result.append(lines[j])
+                    j += 1
+
+            # Check if msgstr is empty and we have a translation
+            if j < len(lines) and lines[j].startswith('msgstr "'):
+                msgstr_line = lines[j]
+                # Check if msgstr is empty (either 'msgstr ""' alone or followed by empty continuations)
+                if msgstr_line == 'msgstr ""':
+                    # Check if next lines are empty string continuations
+                    k = j + 1
+                    msgstr_empty = True
+                    while k < len(lines) and lines[k].startswith('"'):
+                        if lines[k] != '""':
+                            msgstr_empty = False
+                            break
+                        k += 1
+
+                    if msgstr_empty and msgid and msgid in TRANSLATIONS:
+                        translation = TRANSLATIONS[msgid]
+                        # Handle multi-line translations
+                        if '\n' in translation:
+                            result.append('msgstr ""')
+                            for part in translation.split('\n'):
+                                result.append(f'"{part}\\n"')
+                            # Remove trailing \n from last part
+                            if result[-1].endswith('\\n"'):
+                                result[-1] = result[-1][:-3] + '"'
+                        else:
+                            result.append(f'msgstr "{translation}"')
+                        translated_count += 1
+                        i = j + 1
+                        continue
+                    elif msgstr_empty and msgid and is_english(msgid) and msgid not in TRANSLATIONS:
+                        untranslated.append(msgid)
+
         i += 1
-    
+
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write('\n'.join(result))
-    
+
     print(f"Translated {translated_count} strings")
+
+    if untranslated:
+        print(f"\nUntranslated English strings ({len(untranslated)}):")
+        for s in sorted(set(untranslated)):
+            print(f'    "{repr(s)[1:-1]}": "",')
 
 
 if __name__ == '__main__':

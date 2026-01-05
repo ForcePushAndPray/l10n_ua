@@ -2,7 +2,7 @@
 <odoo>
     <data noupdate="1">
 
-        <record id="contract_demo_director" model="hr.contract">
+        <record id="contract_demo_director" model="hr.contract.ua">
             <field name="name">ТД-00001</field>
             <field name="employee_id" ref="l10n_ua_hr_base.demo_employee_director"/>
             <field name="contract_type_ua">permanent</field>
@@ -18,7 +18,7 @@
             <field name="hire_order_date">2020-01-15</field>
         </record>
 
-        <record id="contract_demo_hr_manager" model="hr.contract">
+        <record id="contract_demo_hr_manager" model="hr.contract.ua">
             <field name="name">ТД-00002</field>
             <field name="employee_id" ref="l10n_ua_hr_base.demo_employee_hr_manager"/>
             <field name="contract_type_ua">permanent</field>
@@ -34,7 +34,7 @@
             <field name="hire_order_date">2021-06-01</field>
         </record>
 
-        <record id="contract_demo_accountant" model="hr.contract">
+        <record id="contract_demo_accountant" model="hr.contract.ua">
             <field name="name">ТД-00003</field>
             <field name="employee_id" ref="l10n_ua_hr_base.demo_employee_accountant"/>
             <field name="contract_type_ua">permanent</field>
@@ -50,7 +50,7 @@
             <field name="hire_order_date">2021-03-10</field>
         </record>
 
-        <record id="contract_demo_it_admin" model="hr.contract">
+        <record id="contract_demo_it_admin" model="hr.contract.ua">
             <field name="name">ТД-00004</field>
             <field name="employee_id" ref="l10n_ua_hr_base.demo_employee_it_admin"/>
             <field name="contract_type_ua">permanent</field>
@@ -66,7 +66,7 @@
             <field name="hire_order_date">2022-01-01</field>
         </record>
 
-        <record id="contract_demo_developer" model="hr.contract">
+        <record id="contract_demo_developer" model="hr.contract.ua">
             <field name="name">ТД-00005</field>
             <field name="employee_id" ref="l10n_ua_hr_base.demo_employee_developer"/>
             <field name="contract_type_ua">permanent</field>

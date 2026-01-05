@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0-20260103\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-03 14:58+0000\n"
-"PO-Revision-Date: 2026-01-03 14:58+0000\n"
+"POT-Creation-Date: 2026-01-05 20:14+0000\n"
+"PO-Revision-Date: 2026-01-05 20:14+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,125 +16,6 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: l10n_ua_hr_base
-#: model:ir.actions.report,print_report_name:l10n_ua_hr_base.action_report_hr_vacancies
-msgid "'Вакансії_%s' % (time.strftime('%Y%m%d'))"
-msgstr ""
-
-#. module: l10n_ua_hr_base
-#: model:ir.actions.report,print_report_name:l10n_ua_hr_base.action_report_hr_employee_military
-msgid "'Військовозобовязані_%s' % (time.strftime('%Y%m%d'))"
-msgstr ""
-
-#. module: l10n_ua_hr_base
-#: model:ir.actions.report,print_report_name:l10n_ua_hr_base.action_report_hr_order
-msgid "'Наказ_%s_%s' % (object.name, object.date)"
-msgstr ""
-
-#. module: l10n_ua_hr_base
-#: model:ir.actions.report,print_report_name:l10n_ua_hr_base.action_report_hr_employee_p2
-msgid "'Особова_картка_П2_%s' % (object.name)"
-msgstr ""
-
-#. module: l10n_ua_hr_base
-#: model:ir.actions.report,print_report_name:l10n_ua_hr_base.action_report_hr_employee_benefits
-msgid "'Працівники_з_пільгами_%s' % (time.strftime('%Y%m%d'))"
-msgstr ""
-
-#. module: l10n_ua_hr_base
-#: model:ir.actions.report,print_report_name:l10n_ua_hr_base.action_report_hr_employee_list
-msgid "'Список_працівників_%s' % (time.strftime('%Y%m%d'))"
-msgstr ""
-
-#. module: l10n_ua_hr_base
-#: model:ir.actions.report,print_report_name:l10n_ua_hr_base.action_report_hr_staffing_table
-msgid "'Штатний_розпис_%s' % (object.company_id.name)"
-msgstr ""
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_staffing_table_kanban
-msgid "(Vacant:"
-msgstr "(Вакантно:"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_benefits_document
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_list_document
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_military_document
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_p2_document
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_order_document
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_staffing_table_document
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_vacancies_document
-msgid "(П.І.Б.)"
-msgstr "(П.І.Б.)"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_benefits_document
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_list_document
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_military_document
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_p2_document
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_order_document
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_staffing_table_document
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_vacancies_document
-msgid "(підпис)"
-msgstr "(підпис)"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_p2_document
-msgid "(те саме)"
-msgstr "(те саме)"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_benefits_document
-msgid ""
-",\n"
-"                       ветеранів —"
-msgstr ""
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_benefits_document
-msgid ""
-", \n"
-"                       чорнобильців —"
-msgstr ""
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
-msgid "1234567890"
-msgstr "1234567890"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_p2_document
-msgid ""
-"<br/>\n"
-"                            <span style=\"font-size: 9pt;\">(найменування підприємства, організації)</span>"
-msgstr ""
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_p2_document
-msgid "<br/>виданий"
-msgstr "<br/>виданий"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_order_document
-msgid "<strong>Посада:</strong>"
-msgstr "<strong>Посада:</strong>"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_order_document
-msgid "<strong>Працівник:</strong>"
-msgstr "<strong>Працівник:</strong>"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_order_document
-msgid "<strong>Підрозділ:</strong>"
-msgstr "<strong>Підрозділ:</strong>"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_order_document
-msgid "<strong>Тема:</strong>"
-msgstr "<strong>Тема:</strong>"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__message_needaction
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__message_needaction
 msgid "Action Needed"
 msgstr "Потрібна дія"
@@ -145,31 +26,26 @@ msgstr "Потрібна дія"
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_kp2010__active
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_rank__active
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_tcc__active
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template__active
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade__active
 msgid "Active"
 msgstr "Активний"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__activity_ids
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__activity_ids
 msgid "Activities"
 msgstr "Активності"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__activity_exception_decoration
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__activity_exception_decoration
 msgid "Activity Exception Decoration"
 msgstr "Оформлення виключення активності"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__activity_state
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__activity_state
 msgid "Activity State"
 msgstr "Стан активності"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__activity_type_icon
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__activity_type_icon
 msgid "Activity Type Icon"
 msgstr "Іконка типу активності"
@@ -201,11 +77,6 @@ msgid "Age"
 msgstr "Вік"
 
 #. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_template_wizard_form
-msgid "Apply"
-msgstr "Застосувати"
-
-#. module: l10n_ua_hr_base
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_staffing_table_form
 msgid "Approval"
 msgstr "Затвердження"
@@ -228,13 +99,11 @@ msgstr "Архівувати"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_staffing_table__state__archived
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_template_search
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_staffing_table_search
 msgid "Archived"
 msgstr "Архівовано"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__message_attachment_count
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__message_attachment_count
 msgid "Attachment Count"
 msgstr "Кількість вкладень"
@@ -286,18 +155,6 @@ msgid "Birthday"
 msgstr "Дата народження"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template__body
-msgid "Body"
-msgstr "Тіло шаблону"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order__order_type__bonus
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order_template__order_type__bonus
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order_template_wizard__order_type__bonus
-msgid "Bonus"
-msgstr "Преміювання"
-
-#. module: l10n_ua_hr_base
 #: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_department__department_type__branch
 msgid "Branch"
 msgstr "Філія"
@@ -306,24 +163,6 @@ msgstr "Філія"
 #: model:hr.military.rank,name:l10n_ua_hr_base.military_rank_brigadier_general
 msgid "Brigadier General"
 msgstr "Бригадний генерал"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order__order_type__business_trip
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order_template__order_type__business_trip
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order_template_wizard__order_type__business_trip
-msgid "Business Trip"
-msgstr "Відрядження"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_form
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_template_wizard_form
-msgid "Cancel"
-msgstr "Скасувати"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order__state__cancelled
-msgid "Cancelled"
-msgstr "Скасовано"
 
 #. module: l10n_ua_hr_base
 #: model:hr.military.rank,name:l10n_ua_hr_base.military_rank_captain
@@ -497,6 +336,9 @@ msgstr "Код з Класифікатора професій (КП 2010)"
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_res_company__koatuu
 msgid ""
 "Code of the Classification of Administrative-Territorial Units of Ukraine"
+"Code of the Classification of Administrative-Territorial Units of Ukraine"
+"Code of the Classification of Administrative-Territorial Units of Ukraine"
+"Code of the Classification of Administrative-Territorial Units of Ukraine"
 msgstr "Код Класифікатора адміністративно-територіальних одиниць України"
 
 #. module: l10n_ua_hr_base
@@ -541,7 +383,6 @@ msgid "Companies"
 msgstr "Компанії"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__company_id
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__company_id
 msgid "Company"
 msgstr "Компанія"
@@ -562,38 +403,6 @@ msgid "Complete Secondary Education"
 msgstr "Повна загальна середня освіта"
 
 #. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_form
-msgid "Confirm"
-msgstr "Підтвердити"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order__state__confirmed
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_search
-msgid "Confirmed"
-msgstr "Підтверджено"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__content
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_form
-msgid "Content"
-msgstr "Зміст"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_template_form
-msgid "Content Template"
-msgstr "Шаблон змісту"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.actions.act_window,help:l10n_ua_hr_base.action_hr_order
-msgid "Create your first HR order"
-msgstr "Створіть свій перший кадровий наказ"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.actions.act_window,help:l10n_ua_hr_base.action_hr_order_template
-msgid "Create your first order template"
-msgstr "Створіть свій перший шаблон наказу"
-
-#. module: l10n_ua_hr_base
 #: model_terms:ir.actions.act_window,help:l10n_ua_hr_base.action_hr_staffing_table
 msgid "Create your first staffing table entry"
 msgstr "Створіть перший запис штатного розпису"
@@ -605,9 +414,6 @@ msgstr "Створіть перший запис штатного розпису
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_kp2010__create_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_rank__create_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_tcc__create_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__create_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template__create_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template_wizard__create_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__create_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade__create_uid
 msgid "Created by"
@@ -620,9 +426,6 @@ msgstr "Створено"
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_kp2010__create_date
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_rank__create_date
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_tcc__create_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__create_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template__create_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template_wizard__create_date
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__create_date
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade__create_date
 msgid "Created on"
@@ -636,12 +439,6 @@ msgid "Currency"
 msgstr "Валюта"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__date
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_search
-msgid "Date"
-msgstr "Дата"
-
-#. module: l10n_ua_hr_base
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_job__probation_days
 msgid "Default probation period in days"
 msgstr "Випробувальний термін за замовчуванням (дні)"
@@ -650,12 +447,14 @@ msgstr "Випробувальний термін за замовчування�
 #: model_terms:ir.actions.act_window,help:l10n_ua_hr_base.action_hr_staffing_table
 msgid ""
 "Define positions, staff units, and salaries for your organization structure."
+"Define positions, staff units, and salaries for your organization structure."
+"Define positions, staff units, and salaries for your organization structure."
+"Define positions, staff units, and salaries for your organization structure."
 msgstr ""
 "Визначте посади, штатні одиниці та оклади для структури вашої організації."
 
 #. module: l10n_ua_hr_base
 #: model:ir.model,name:l10n_ua_hr_base.model_hr_department
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__department_id
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__department_id
 msgid "Department"
 msgstr "Відділ"
@@ -766,15 +565,6 @@ msgid "Disabled Child"
 msgstr "Дитина з інвалідністю"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order__order_type__dismissal
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order_template__order_type__dismissal
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order_template_wizard__order_type__dismissal
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_search
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_template_search
-msgid "Dismissal"
-msgstr "Звільнення"
-
-#. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_department__display_name
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_education_level__display_name
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__display_name
@@ -784,9 +574,6 @@ msgstr "Звільнення"
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_kp2010__display_name
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_rank__display_name
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_tcc__display_name
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__display_name
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template__display_name
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template_wizard__display_name
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__display_name
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade__display_name
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_res_company__display_name
@@ -814,14 +601,13 @@ msgid "Document Type"
 msgstr "Тип документа"
 
 #. module: l10n_ua_hr_base
+#: model:ir.ui.menu,name:l10n_ua_hr_base.menu_hr_documents_root
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
 msgid "Documents"
 msgstr "Документи"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order__state__draft
 #: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_staffing_table__state__draft
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_search
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_staffing_table_search
 msgid "Draft"
 msgstr "Чернетка"
@@ -883,8 +669,6 @@ msgstr "Електронна пошта"
 #. module: l10n_ua_hr_base
 #: model:ir.model,name:l10n_ua_hr_base.model_hr_employee
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee_child__employee_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__employee_id
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_search
 msgid "Employee"
 msgstr "Співробітник"
 
@@ -951,19 +735,16 @@ msgid "Fit for Service"
 msgstr "Придатний до служби"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__message_follower_ids
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__message_follower_ids
 msgid "Followers"
 msgstr "Підписники"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__message_partner_ids
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__message_partner_ids
 msgid "Followers (Partners)"
 msgstr "Підписники (Партнери)"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_order__activity_type_icon
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_staffing_table__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
 msgstr "Іконка Font Awesome, напр. fa-tasks"
@@ -1025,44 +806,11 @@ msgid "HR Manager"
 msgstr "Менеджер з персоналу"
 
 #. module: l10n_ua_hr_base
-#: model:ir.actions.report,name:l10n_ua_hr_base.action_report_hr_order
-#: model:ir.model,name:l10n_ua_hr_base.model_hr_order
-msgid "HR Order"
-msgstr "Кадровий наказ"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model,name:l10n_ua_hr_base.model_hr_order_template
-msgid "HR Order Template"
-msgstr "Шаблон кадрового наказу"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model,name:l10n_ua_hr_base.model_hr_order_template_wizard
-msgid "HR Order Template Selection Wizard"
-msgstr "Майстер вибору шаблону наказу"
-
-#. module: l10n_ua_hr_base
-#: model:ir.actions.act_window,name:l10n_ua_hr_base.action_hr_order
-#: model:ir.ui.menu,name:l10n_ua_hr_base.menu_hr_order
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_search
-msgid "HR Orders"
-msgstr "Кадрові накази"
-
-#. module: l10n_ua_hr_base
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_res_company__hr_manager_id
 msgid "HR department head for document signing"
 msgstr "Керівник відділу кадрів для підпису документів"
 
 #. module: l10n_ua_hr_base
-#: model_terms:ir.actions.act_window,help:l10n_ua_hr_base.action_hr_order
-msgid ""
-"HR orders include hiring, dismissal, transfer, vacation, and other personnel"
-" documents."
-msgstr ""
-"Кадрові накази включають прийом на роботу, звільнення, переведення, "
-"відпустки та інші кадрові документи."
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__has_message
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__has_message
 msgid "Has Message"
 msgstr "Є повідомлення"
@@ -1112,18 +860,9 @@ msgid "Hire Date"
 msgstr "Дата прийняття"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order__order_type__hiring
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order_template__order_type__hiring
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order_template_wizard__order_type__hiring
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_search
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_template_search
-msgid "Hiring"
-msgstr "Прийом на роботу"
-
-#. module: l10n_ua_hr_base
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_p2_document
 msgid "I. ЗАГАЛЬНІ ВІДОМОСТІ"
-msgstr "I. ЗАГАЛЬНІ ВІДОМОСТІ"
+msgstr ""
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_department__id
@@ -1135,9 +874,6 @@ msgstr "I. ЗАГАЛЬНІ ВІДОМОСТІ"
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_kp2010__id
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_rank__id
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_tcc__id
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__id
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template__id
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template_wizard__id
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__id
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade__id
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_res_company__id
@@ -1152,31 +888,29 @@ msgstr "ID-картка"
 #. module: l10n_ua_hr_base
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_p2_document
 msgid "ID-картка №"
-msgstr "ID-картка №"
+msgstr ""
 
 #. module: l10n_ua_hr_base
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_p2_document
 msgid "II. ВІДОМОСТІ ПРО ВІЙСЬКОВИЙ ОБЛІК"
-msgstr "II. ВІДОМОСТІ ПРО ВІЙСЬКОВИЙ ОБЛІК"
+msgstr ""
 
 #. module: l10n_ua_hr_base
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_p2_document
 msgid "III. ПРИЙНЯТТЯ НА РОБОТУ І ПЕРЕВЕДЕННЯ"
-msgstr "III. ПРИЙНЯТТЯ НА РОБОТУ І ПЕРЕВЕДЕННЯ"
+msgstr ""
 
 #. module: l10n_ua_hr_base
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_p2_document
 msgid "IV. ВІДПУСТКИ"
-msgstr "IV. ВІДПУСТКИ"
+msgstr ""
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__activity_exception_icon
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__activity_exception_icon
 msgid "Icon"
 msgstr "Іконка"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_order__activity_exception_icon
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_staffing_table__activity_exception_icon
 msgid "Icon to indicate an exception activity."
 msgstr "Іконка для позначення виключної активності."
@@ -1187,14 +921,11 @@ msgid "Identity Document"
 msgstr "Документ, що посвідчує особу"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_order__message_needaction
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_staffing_table__message_needaction
 msgid "If checked, new messages require your attention."
 msgstr "Якщо позначено, нові повідомлення потребують вашої уваги."
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_order__message_has_error
-#: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_order__message_has_sms_error
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_staffing_table__message_has_error
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_staffing_table__message_has_sms_error
 msgid "If checked, some messages have a delivery error."
@@ -1221,7 +952,6 @@ msgid "Insurance experience for sick leave calculation"
 msgstr "Страховий стаж для розрахунку лікарняних"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__message_is_follower
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__message_is_follower
 msgid "Is Follower"
 msgstr "Є підписником"
@@ -1243,7 +973,6 @@ msgstr "Ким виданий"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model,name:l10n_ua_hr_base.model_hr_job
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__job_id
 msgid "Job Position"
 msgstr "Вакансія"
 
@@ -1290,9 +1019,6 @@ msgstr "Ветеран праці"
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_kp2010__write_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_rank__write_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_tcc__write_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__write_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template__write_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template_wizard__write_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__write_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade__write_uid
 msgid "Last Updated by"
@@ -1305,9 +1031,6 @@ msgstr "Останнє оновлення"
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_kp2010__write_date
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_rank__write_date
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_tcc__write_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__write_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template__write_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template_wizard__write_date
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__write_date
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade__write_date
 msgid "Last Updated on"
@@ -1343,11 +1066,6 @@ msgstr "Генерал-лейтенант"
 #: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_employee__military_fitness__limited
 msgid "Limited Fitness"
 msgstr "Обмежено придатний"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_form
-msgid "Load from Template"
-msgstr "Завантажити з шаблону"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__disability_document
@@ -1410,12 +1128,18 @@ msgid "Master's Degree"
 msgstr "Магістр"
 
 #. module: l10n_ua_hr_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_staffing_table_form
+msgid "Max"
+msgstr "Макс"
+
+#. module: l10n_ua_hr_base
 #: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_employee_benefit__psp_type__200
 msgid "Maximum (200%)"
 msgstr "Максимальна (200%)"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_job__max_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__salary_max
 msgid "Maximum Salary"
 msgstr "Максимальний оклад"
 
@@ -1425,18 +1149,21 @@ msgid "Maximum salary for this position"
 msgstr "Максимальний оклад для цієї посади"
 
 #. module: l10n_ua_hr_base
+#: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_staffing_table__salary_max
+msgid "Maximum salary for this position (salary range)"
+msgstr "Максимальний оклад для цієї посади (діапазон окладу)"
+
+#. module: l10n_ua_hr_base
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_employee__disability_document
 msgid "Medical-Social Expert Commission document"
 msgstr "Документ медико-соціальної експертної комісії"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__message_has_error
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__message_has_error
 msgid "Message Delivery error"
 msgstr "Помилка доставки повідомлення"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__message_ids
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__message_ids
 msgid "Messages"
 msgstr "Повідомлення"
@@ -1511,7 +1238,13 @@ msgid "Military rank code must be unique!"
 msgstr "Код військового звання повинен бути унікальним!"
 
 #. module: l10n_ua_hr_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_staffing_table_form
+msgid "Min"
+msgstr "Мін"
+
+#. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_job__min_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__salary_min
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade__min_salary
 msgid "Minimum Salary"
 msgstr "Мінімальна ставка"
@@ -1522,12 +1255,16 @@ msgid "Minimum salary for this position"
 msgstr "Мінімальний оклад для цієї посади"
 
 #. module: l10n_ua_hr_base
+#: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_staffing_table__salary_min
+msgid "Minimum salary for this position (salary range)"
+msgstr "Мінімальний оклад для цієї посади (діапазон окладу)"
+
+#. module: l10n_ua_hr_base
 #: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__res_company__ownership_form__mixed
 msgid "Mixed"
 msgstr "Змішана"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__my_activity_date_deadline
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__my_activity_date_deadline
 msgid "My Activity Deadline"
 msgstr "Термін моєї активності"
@@ -1549,19 +1286,21 @@ msgid "Name according to Classifier of Professions"
 msgstr "Назва згідно з Класифікатором професій"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Подія календаря наступної активності"
+
+#. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__activity_date_deadline
 msgid "Next Activity Deadline"
 msgstr "Термін наступної активності"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__activity_summary
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__activity_summary
 msgid "Next Activity Summary"
 msgstr "Опис наступної активності"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__activity_type_id
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__activity_type_id
 msgid "Next Activity Type"
 msgstr "Тип наступної активності"
@@ -1590,18 +1329,6 @@ msgid "Not Applicable"
 msgstr "Не застосовується"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template__notes
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_template_form
-msgid "Notes"
-msgstr "Примітки"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__name
-msgid "Number"
-msgstr "Номер"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__message_needaction_counter
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__message_needaction_counter
 msgid "Number of Actions"
 msgstr "Кількість дій"
@@ -1612,19 +1339,16 @@ msgid "Number of dependents for PSP calculation"
 msgstr "Кількість утриманців для розрахунку ПСП"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__message_has_error_counter
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__message_has_error_counter
 msgid "Number of errors"
 msgstr "Кількість помилок"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_order__message_needaction_counter
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_staffing_table__message_needaction_counter
 msgid "Number of messages requiring action"
 msgstr "Кількість повідомлень, що потребують дії"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_order__message_has_error_counter
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_staffing_table__message_has_error_counter
 msgid "Number of messages with delivery error"
 msgstr "Кількість повідомлень з помилкою доставки"
@@ -1640,11 +1364,6 @@ msgid "Officer"
 msgstr "Офіцер"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template_wizard__order_id
-msgid "Order"
-msgstr "Наказ"
-
-#. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__order_date
 msgid "Order Date"
 msgstr "Дата наказу"
@@ -1655,24 +1374,7 @@ msgid "Order Number"
 msgstr "№ наказу"
 
 #. module: l10n_ua_hr_base
-#: model:ir.actions.act_window,name:l10n_ua_hr_base.action_hr_order_template
-#: model:ir.ui.menu,name:l10n_ua_hr_base.menu_hr_order_template
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_template_search
-msgid "Order Templates"
-msgstr "Шаблони наказів"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__order_type
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template__order_type
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template_wizard__order_type
-msgid "Order Type"
-msgstr "Тип наказу"
-
-#. module: l10n_ua_hr_base
 #: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_employee__document_type__other
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order__order_type__other
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order_template__order_type__other
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order_template_wizard__order_type__other
 msgid "Other"
 msgstr "Інший"
 
@@ -1813,6 +1515,9 @@ msgstr "Реєстраційний номер облікової картки п
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_employee__rnokpp
 msgid ""
 "Registration Number of the Taxpayer Account Card (Individual Tax Number)"
+"Registration Number of the Taxpayer Account Card (Individual Tax Number)"
+"Registration Number of the Taxpayer Account Card (Individual Tax Number)"
+"Registration Number of the Taxpayer Account Card (Individual Tax Number)"
 msgstr "Реєстраційний номер облікової картки платника податків (ІПН)"
 
 #. module: l10n_ua_hr_base
@@ -1857,13 +1562,11 @@ msgid "Responsible Persons"
 msgstr "Відповідальні особи"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__activity_user_id
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__activity_user_id
 msgid "Responsible User"
 msgstr "Відповідальний користувач"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__message_has_sms_error
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__message_has_sms_error
 msgid "SMS Delivery error"
 msgstr "Помилка доставки SMS"
@@ -1873,6 +1576,11 @@ msgstr "Помилка доставки SMS"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_staffing_table_form
 msgid "Salary"
 msgstr "Оклад"
+
+#. module: l10n_ua_hr_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_staffing_table_form
+msgid "Salary Range"
+msgstr "Діапазон окладу"
 
 #. module: l10n_ua_hr_base
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_staffing_table_kanban
@@ -1888,11 +1596,6 @@ msgstr "Співпадає з реєстрацією"
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_kp2010__section_code
 msgid "Section Code"
 msgstr "Код розділу"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_template_wizard_form
-msgid "Select Template"
-msgstr "Виберіть шаблон"
 
 #. module: l10n_ua_hr_base
 #: model:hr.military.rank,name:l10n_ua_hr_base.military_rank_senior_lieutenant
@@ -1923,7 +1626,6 @@ msgstr "Відокремлений підрозділ"
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_education_level__sequence
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee_benefit__sequence
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_rank__sequence
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template__sequence
 msgid "Sequence"
 msgstr "Послідовність"
 
@@ -1934,17 +1636,9 @@ msgid "Sergeant"
 msgstr "Сержант"
 
 #. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_form
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_staffing_table_form
 msgid "Set to Draft"
 msgstr "Повернути в чернетку"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order__order_type__sick_leave
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order_template__order_type__sick_leave
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order_template_wizard__order_type__sick_leave
-msgid "Sick Leave"
-msgstr "Лікарняний"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_employee__marital_status_ua__single
@@ -1992,7 +1686,6 @@ msgstr "Штатні одиниці"
 #: model:ir.actions.act_window,name:l10n_ua_hr_base.action_hr_staffing_table
 #: model:ir.actions.report,name:l10n_ua_hr_base.action_report_hr_staffing_table
 #: model:ir.model,name:l10n_ua_hr_base.model_hr_staffing_table
-#: model:ir.ui.menu,name:l10n_ua_hr_base.menu_hr_staffing_table
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_staffing_table_search
 msgid "Staffing Table"
 msgstr "Штатний розпис"
@@ -2001,6 +1694,11 @@ msgstr "Штатний розпис"
 #: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_employee_benefit__psp_type__standard
 msgid "Standard (50%)"
 msgstr "Стандартна (50%)"
+
+#. module: l10n_ua_hr_base
+#: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_staffing_table__salary
+msgid "Standard salary for this position"
+msgstr "Стандартний оклад для цієї посади"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__res_company__ownership_form__state
@@ -2013,16 +1711,25 @@ msgid "Statistics"
 msgstr "Статистика"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__state
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__state
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_search
 msgid "Status"
 msgstr "Статус"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_order__activity_state
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_staffing_table__activity_state
 msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
 "Status based on activities\n"
 "Overdue: Due date is already passed\n"
 "Today: Activity date is today\n"
@@ -2032,12 +1739,6 @@ msgstr ""
 "Прострочено: Термін вже минув\n"
 "Сьогодні: Дата активності сьогодні\n"
 "Заплановано: Майбутні активності."
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__subject
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template__subject
-msgid "Subject"
-msgstr "Тема"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__military_tcc_id
@@ -2077,22 +1778,6 @@ msgid "Tax Office Code"
 msgstr "Код податкової"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template_wizard__template_id
-msgid "Template"
-msgstr "Шаблон"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order_template__name
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_template_form
-msgid "Template Name"
-msgstr "Назва шаблону"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.actions.act_window,help:l10n_ua_hr_base.action_hr_order_template
-msgid "Templates help you quickly fill in standard order content."
-msgstr "Шаблони допомагають швидко заповнити стандартний зміст наказу."
-
-#. module: l10n_ua_hr_base
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_employee__military_tcc_id
 msgid "Territorial Recruitment Center"
 msgstr "Територіальний центр комплектування"
@@ -2112,6 +1797,12 @@ msgstr "Територіальні центри комплектування"
 #. module: l10n_ua_hr_base
 #: model_terms:ir.actions.act_window,help:l10n_ua_hr_base.action_hr_kp2010
 msgid ""
+"The KP 2010 classifier contains Ukrainian profession codes required for "
+"official reporting."
+"The KP 2010 classifier contains Ukrainian profession codes required for "
+"official reporting."
+"The KP 2010 classifier contains Ukrainian profession codes required for "
+"official reporting."
 "The KP 2010 classifier contains Ukrainian profession codes required for "
 "official reporting."
 msgstr ""
@@ -2134,23 +1825,9 @@ msgid "Total work experience in years"
 msgstr "Загальний стаж роботи в роках"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order__order_type__transfer
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order_template__order_type__transfer
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order_template_wizard__order_type__transfer
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_search
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_template_search
-msgid "Transfer"
-msgstr "Переведення"
-
-#. module: l10n_ua_hr_base
 #: model:hr.employee.benefit,name:l10n_ua_hr_base.benefit_two_children
 msgid "Two or More Children"
 msgstr "Двоє і більше дітей"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_search
-msgid "Type"
-msgstr "Тип"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_employee_benefit__psp_type
@@ -2158,7 +1835,6 @@ msgid "Type of Personal Income Tax Social Benefit (PSP)"
 msgstr "Тип податкової соціальної пільги (ПСП)"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_order__activity_exception_decoration
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_staffing_table__activity_exception_decoration
 msgid "Type of the exception activity on record."
 msgstr "Тип виключної активності в записі."
@@ -2207,6 +1883,9 @@ msgstr "Непридатний до служби"
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_res_company__edrpou
 msgid ""
 "Unified State Register of Enterprises and Organizations of Ukraine code"
+"Unified State Register of Enterprises and Organizations of Ukraine code"
+"Unified State Register of Enterprises and Organizations of Ukraine code"
+"Unified State Register of Enterprises and Organizations of Ukraine code"
 msgstr "Код єднодержавної реєстрації підприємств та організацій України"
 
 #. module: l10n_ua_hr_base
@@ -2222,7 +1901,7 @@ msgstr "Одиниць:"
 #. module: l10n_ua_hr_base
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.report_hr_employee_p2_document
 msgid "V. ДОДАТКОВІ ВІДОМОСТІ"
-msgstr "V. ДОДАТКОВІ ВІДОМОСТІ"
+msgstr ""
 
 #. module: l10n_ua_hr_base
 #: model:ir.actions.report,name:l10n_ua_hr_base.action_report_hr_vacancies
@@ -2233,15 +1912,6 @@ msgstr "Вакансії"
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__vacant_units
 msgid "Vacant Units"
 msgstr "Вакантних одиниць"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order__order_type__vacation
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order_template__order_type__vacation
-#: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_order_template_wizard__order_type__vacation
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_search
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_hr_order_template_search
-msgid "Vacation"
-msgstr "Відпустка"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__passport_valid_until
@@ -2275,13 +1945,11 @@ msgid "War Veteran"
 msgstr "Ветеран війни"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_order__website_message_ids
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__website_message_ids
 msgid "Website Messages"
 msgstr "Повідомлення веб-сайту"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_order__website_message_ids
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_staffing_table__website_message_ids
 msgid "Website communication history"
 msgstr "Історія комунікації веб-сайту"
@@ -2310,3 +1978,4 @@ msgstr "Умови праці"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
 msgid "Work Experience"
 msgstr "Стаж роботи"
+

@@ -6,7 +6,7 @@
         <field name="model">hr.contract.amendment</field>
         <field name="arch" type="xml">
             <list>
-                <field name="amendment_number"/>
+                <field name="name"/>
                 <field name="amendment_date"/>
                 <field name="effective_date"/>
                 <field name="employee_id"/>
@@ -61,9 +61,6 @@
                                 <group>
                                     <field name="order_number"/>
                                     <field name="order_date"/>
-                                </group>
-                                <group>
-                                    <field name="order_id"/>
                                 </group>
                             </group>
                         </page>

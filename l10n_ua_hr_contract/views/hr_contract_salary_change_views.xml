@@ -6,6 +6,7 @@
         <field name="model">hr.contract.salary.change</field>
         <field name="arch" type="xml">
             <list>
+                <field name="name"/>
                 <field name="effective_date"/>
                 <field name="employee_id"/>
                 <field name="contract_id"/>
@@ -50,9 +51,6 @@
                         <group>
                             <field name="order_number"/>
                             <field name="order_date"/>
-                        </group>
-                        <group>
-                            <field name="order_id"/>
                         </group>
                     </group>
                     <group string="Reason">

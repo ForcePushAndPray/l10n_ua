@@ -9,7 +9,14 @@ class HrWorkSchedule(models.Model):
     name = fields.Char(string='Name', required=True, translate=True)
     code = fields.Char(string='Code')
     sequence = fields.Integer(string='Sequence', default=10)
-    
+
+    # Link to Odoo's resource.calendar for integration
+    resource_calendar_id = fields.Many2one(
+        'resource.calendar',
+        string='Working Hours Calendar',
+        help='Link to Odoo resource calendar for employee scheduling integration'
+    )
+
     schedule_type = fields.Selection([
         ('standard', 'Standard (5-day week)'),
         ('shift', 'Shift Work'),

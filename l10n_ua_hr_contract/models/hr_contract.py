@@ -3,9 +3,9 @@ from odoo.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
 
 
-class HrContract(models.Model):
-    _name = 'hr.contract'
-    _description = 'Employment Contract'
+class HrContractUa(models.Model):
+    _name = 'hr.contract.ua'
+    _description = 'Employment Contract (Ukraine)'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'date_start desc, id desc'
 
@@ -293,11 +293,56 @@ class HrContract(models.Model):
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('name', 'New') == 'New':
-                vals['name'] = self.env['ir.sequence'].next_by_code('hr.contract') or 'New'
+                vals['name'] = self.env['ir.sequence'].next_by_code('hr.contract.ua') or 'New'
         return super().create(vals_list)
 
     def action_open(self):
+        """Activate contract and sync wage to employee's hr.version"""
+        for contract in self:
+            contract._sync_to_employee_version()
         self.write({'state': 'open'})
+
+    def _sync_to_employee_version(self):
+        """Sync contract data to employee's current hr.version record"""
+        self.ensure_one()
+        if not self.employee_id:
+            return
+
+        # Get employee's current version
+        version = self.employee_id.current_version_id or self.employee_id.version_id
+        if not version:
+            return
+
+        # Prepare values to sync
+        vals = {
+            'wage': self.wage,
+            'contract_date_start': self.date_start,
+            'contract_date_end': self.date_end,
+        }
+
+        # Sync job and department if set on contract
+        if self.job_id:
+            vals['job_id'] = self.job_id.id
+        if self.department_id:
+            vals['department_id'] = self.department_id.id
+
+        # Sync work schedule to resource calendar
+        if self.work_schedule_id and self.work_schedule_id.resource_calendar_id:
+            vals['resource_calendar_id'] = self.work_schedule_id.resource_calendar_id.id
+
+        # Update version with synced values
+        version.sudo().write(vals)
+
+    def write(self, vals):
+        """Override to sync wage changes to employee version for open contracts"""
+        result = super().write(vals)
+
+        # If wage changed on an open contract, sync to employee
+        if 'wage' in vals:
+            for contract in self.filtered(lambda c: c.state == 'open'):
+                contract._sync_to_employee_version()
+
+        return result
 
     def action_close(self):
         self.write({'state': 'close'})

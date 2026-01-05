@@ -7,7 +7,7 @@ class HrContractAllowance(models.Model):
     _order = 'sequence, id'
 
     contract_id = fields.Many2one(
-        'hr.contract',
+        'hr.contract.ua',
         string='Contract',
         required=True,
         ondelete='cascade'
