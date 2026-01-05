@@ -16,10 +16,10 @@ class HrOrderTemplateWizard(models.TransientModel):
         ('business_trip', 'Business Trip'),
         ('other', 'Other'),
     ], string='Order Type')
-    
+
     template_id = fields.Many2one(
-        'hr.order.template', 
-        string='Template', 
+        'hr.order.template',
+        string='Template',
         required=True,
         domain="[('order_type', '=', order_type), ('active', '=', True)]"
     )
@@ -29,22 +29,22 @@ class HrOrderTemplateWizard(models.TransientModel):
         template = self.template_id
         order = self.order_id
         vals = {}
-        
+
         if template.subject:
             vals['subject'] = self._render_template_string(template.subject, order)
-        
+
         if template.body:
             vals['content'] = self._render_template_string(template.body, order)
-        
+
         if vals:
             order.write(vals)
-        
+
         return {'type': 'ir.actions.act_window_close'}
-    
+
     def _render_template_string(self, template_str, order):
         employee = order.employee_id
         company = order.company_id
-        
+
         replacements = {
             '{company_name}': company.name or '_______________',
             '{order_number}': order.name or '______',
@@ -58,13 +58,13 @@ class HrOrderTemplateWizard(models.TransientModel):
             '{job_name}': order.job_id.name if order.job_id else (employee.job_id.name if employee and employee.job_id else '________________________________'),
             '{director_name}': '________________',
         }
-        
+
         result = template_str
         for placeholder, value in replacements.items():
             result = result.replace(placeholder, str(value))
-        
+
         return result
-    
+
     def _get_month_name(self, month):
         months = {
             1: 'січня', 2: 'лютого', 3: 'березня', 4: 'квітня',

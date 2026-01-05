@@ -18,9 +18,9 @@ class HrOrderTemplate(models.Model):
         ('business_trip', 'Business Trip'),
         ('other', 'Other'),
     ], string='Order Type', required=True)
-    
+
     subject = fields.Char(string='Subject')
     body = fields.Html(string='Body')
     active = fields.Boolean(string='Active', default=True)
-    
+
     notes = fields.Text(string='Notes')

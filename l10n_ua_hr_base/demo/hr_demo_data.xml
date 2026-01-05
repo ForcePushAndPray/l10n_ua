@@ -336,30 +336,7 @@
             <field name="state">approved</field>
         </record>
 
-        <!-- Demo HR Orders -->
-        <record id="demo_order_hiring" model="hr.order">
-            <field name="date">2024-01-15</field>
-            <field name="order_type">hiring</field>
-            <field name="employee_id" ref="demo_employee_developer"/>
-            <field name="department_id" ref="demo_department_it"/>
-            <field name="job_id" ref="demo_job_developer"/>
-            <field name="subject">Про прийняття на роботу Мельника А.О.</field>
-            <field name="content">&lt;p&gt;Прийняти на роботу Мельника Андрія Олександровича на посаду програміста відділу ІТ з 01 серпня 2021 року.&lt;/p&gt;</field>
-            <field name="state">confirmed</field>
-            <field name="company_id" ref="demo_ua_company"/>
-        </record>
-
-        <record id="demo_order_vacation" model="hr.order">
-            <field name="date">2024-06-01</field>
-            <field name="order_type">vacation</field>
-            <field name="employee_id" ref="demo_employee_hr_manager"/>
-            <field name="department_id" ref="demo_department_hr"/>
-            <field name="job_id" ref="demo_job_hr_manager"/>
-            <field name="subject">Про надання відпустки Коваленко М.П.</field>
-            <field name="content">&lt;p&gt;Надати щорічну основну відпустку Коваленко Марії Петрівні, начальнику відділу кадрів, тривалістю 24 календарних дні з 15 червня 2024 року по 08 липня 2024 року.&lt;/p&gt;</field>
-            <field name="state">confirmed</field>
-            <field name="company_id" ref="demo_ua_company"/>
-        </record>
+        <!-- HR Orders demo data moved to l10n_ua_hr_documents -->
 
     </data>
 </odoo>

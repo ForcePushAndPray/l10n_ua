@@ -10,5 +10,3 @@ from . import hr_department
 from . import hr_job
 from . import hr_staffing_table
 from . import res_company
-from . import hr_order
-from . import hr_order_template

@@ -9,7 +9,8 @@ Ukraine HR Documents Module
 
 HR document management for Ukrainian localization:
 
-* HR order templates (hiring, transfer, termination, vacation)
+* HR orders (Накази) - hiring, transfer, termination, vacation, bonus, etc.
+* HR order templates with placeholders
 * Document numbering sequences
 * Employee personal file management
 * Document templates with Ukrainian formatting
@@ -25,14 +26,20 @@ Requires l10n_ua_hr_base module.
     'depends': [
         'l10n_ua_hr_base',
         'l10n_ua_hr_contract',
+        'mail',
     ],
     'data': [
         'security/ir.model.access.csv',
         'data/ir_sequence_data.xml',
         'data/hr_order_type_data.xml',
+        'data/hr_order_template_data.xml',
+        'views/hr_order_views.xml',
+        'views/hr_order_template_views.xml',
+        'wizard/hr_order_template_wizard_views.xml',
         'views/hr_order_type_views.xml',
         'views/hr_personal_file_views.xml',
         'views/menu_views.xml',
+        'report/hr_order_report.xml',
     ],
     'demo': [
     ],

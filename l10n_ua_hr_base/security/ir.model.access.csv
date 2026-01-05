@@ -16,9 +16,3 @@ access_hr_employee_child_officer,hr.employee.child.officer,model_hr_employee_chi
 access_hr_staffing_table_user,hr.staffing.table.user,model_hr_staffing_table,hr.group_hr_user,1,1,1,0
 access_hr_staffing_table_officer,hr.staffing.table.officer,model_hr_staffing_table,l10n_ua_hr_base.group_hr_ua_officer,1,1,1,0
 access_hr_staffing_table_manager,hr.staffing.table.manager,model_hr_staffing_table,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
-access_hr_order_user,hr.order.user,model_hr_order,hr.group_hr_user,1,1,1,0
-access_hr_order_officer,hr.order.officer,model_hr_order,l10n_ua_hr_base.group_hr_ua_officer,1,1,1,0
-access_hr_order_manager,hr.order.manager,model_hr_order,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
-access_hr_order_template_user,hr.order.template.user,model_hr_order_template,hr.group_hr_user,1,0,0,0
-access_hr_order_template_manager,hr.order.template.manager,model_hr_order_template,hr.group_hr_manager,1,1,1,1
-access_hr_order_template_wizard_user,hr.order.template.wizard.user,model_hr_order_template_wizard,hr.group_hr_user,1,1,1,0
