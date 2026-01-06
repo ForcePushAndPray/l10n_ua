@@ -202,35 +202,97 @@ class HrSickLeave(models.Model):
         return True
 
     def _calculate_average_salary(self):
-        """Calculate average daily salary for sick leave
-        Based on earnings in billing period
+        """Calculate average daily salary for sick leave.
+
+        Based on earnings in billing period (12 months before sick leave).
+        According to the Law of Ukraine on Compulsory Social Insurance.
         """
         self.ensure_one()
-        
+
         # Billing period: 12 calendar months before sick leave
         from dateutil.relativedelta import relativedelta
-        
+
         date_to = self.date_from.replace(day=1) - relativedelta(days=1)
         date_from = (date_to - relativedelta(months=11)).replace(day=1)
-        
+
         payslips = self.env['hr.payslip'].search([
             ('employee_id', '=', self.employee_id.id),
             ('date_from', '>=', date_from),
             ('date_to', '<=', date_to),
             ('state', '=', 'done'),
         ])
-        
+
         if not payslips:
+            # Fallback to contract wage
+            contract = self.employee_id.contract_id
+            if contract and contract.wage:
+                # Average days in month for fallback calculation
+                return round(contract.wage / 30.44, 2)
             return 0.0
-        
-        total_earnings = sum(payslips.mapped('gross_salary'))
-        total_days = sum(payslips.mapped('worked_days'))
-        
-        if total_days > 0:
-            return round(total_earnings / total_days, 2)
+
+        # Calculate total earnings from payslip lines
+        total_earnings = 0.0
+        total_calendar_days = 0
+
+        for payslip in payslips:
+            # Calculate calendar days in payslip period
+            payslip_days = (payslip.date_to - payslip.date_from).days + 1
+            total_calendar_days += payslip_days
+
+            # Check if payslip has line_ids (Odoo payroll module structure)
+            if hasattr(payslip, 'line_ids') and payslip.line_ids:
+                for line in payslip.line_ids:
+                    # Check if salary rule has is_basic_salary attribute
+                    if hasattr(line, 'salary_rule_id') and line.salary_rule_id:
+                        rule = line.salary_rule_id
+                        # Include if marked as basic salary or if it's a base category
+                        if getattr(rule, 'is_basic_salary', False) or \
+                           getattr(rule, 'category_id', False) and \
+                           rule.category_id.code in ('BASIC', 'ALW', 'GROSS'):
+                            total_earnings += line.total or 0
+                    else:
+                        # Fallback: include all positive lines
+                        total_earnings += max(0, line.total or 0)
+            else:
+                # Fallback: use gross_salary if available, else net
+                if hasattr(payslip, 'gross_salary'):
+                    total_earnings += payslip.gross_salary or 0
+                elif hasattr(payslip, 'net_wage'):
+                    total_earnings += payslip.net_wage or 0
+
+        if total_calendar_days > 0:
+            return round(total_earnings / total_calendar_days, 2)
         return 0.0
 
     def action_confirm(self):
+        """Confirm sick leave and create hr.leave record."""
+        for rec in self:
+            if not rec.leave_id:
+                # Find sick leave type
+                leave_type = self.env['hr.leave.type'].search([
+                    ('ua_leave_category', '=', 'sick')
+                ], limit=1)
+
+                if leave_type:
+                    # Create hr.leave record
+                    leave_vals = {
+                        'employee_id': rec.employee_id.id,
+                        'holiday_status_id': leave_type.id,
+                        'date_from': rec.date_from,
+                        'date_to': rec.date_to,
+                        'request_date_from': rec.date_from,
+                        'request_date_to': rec.date_to,
+                        'name': f'Sick Leave {rec.name}',
+                    }
+                    leave = self.env['hr.leave'].create(leave_vals)
+                    rec.leave_id = leave.id
+
+                    # Auto-approve the leave if in draft state
+                    if leave.state == 'draft':
+                        leave.action_confirm()
+                    if leave.state == 'confirm':
+                        leave.action_approve()
+
         self.write({'state': 'confirmed'})
 
     def action_pay(self):

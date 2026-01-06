@@ -108,7 +108,7 @@
         
         <record id="leave_type_sick" model="hr.leave.type">
             <field name="name">Лікарняний</field>
-            <field name="ua_leave_category">other</field>
+            <field name="ua_leave_category">sick</field>
             <field name="is_calendar_days">True</field>
             <field name="is_transferable">False</field>
             <field name="is_paid">True</field>
@@ -116,6 +116,68 @@
             <field name="request_unit">day</field>
             <field name="leave_validation_type">hr</field>
         </record>
-        
+
+        <!-- Additional leave types according to Ukrainian law -->
+
+        <record id="leave_type_additional_hazard" model="hr.leave.type">
+            <field name="name">Додаткова за шкідливі умови праці</field>
+            <field name="ua_leave_category">annual_additional</field>
+            <field name="annual_days">35</field>
+            <field name="is_calendar_days">True</field>
+            <field name="is_transferable">True</field>
+            <field name="is_paid">True</field>
+            <field name="payment_source">employer</field>
+            <field name="request_unit">day</field>
+            <field name="leave_validation_type">hr</field>
+        </record>
+
+        <record id="leave_type_additional_irregular" model="hr.leave.type">
+            <field name="name">Додаткова за ненормований робочий день</field>
+            <field name="ua_leave_category">annual_additional</field>
+            <field name="annual_days">7</field>
+            <field name="is_calendar_days">True</field>
+            <field name="is_transferable">True</field>
+            <field name="is_paid">True</field>
+            <field name="payment_source">employer</field>
+            <field name="request_unit">day</field>
+            <field name="leave_validation_type">hr</field>
+        </record>
+
+        <record id="leave_type_additional_special_work" model="hr.leave.type">
+            <field name="name">Додаткова за особливий характер праці</field>
+            <field name="ua_leave_category">annual_additional</field>
+            <field name="annual_days">35</field>
+            <field name="is_calendar_days">True</field>
+            <field name="is_transferable">True</field>
+            <field name="is_paid">True</field>
+            <field name="payment_source">employer</field>
+            <field name="request_unit">day</field>
+            <field name="leave_validation_type">hr</field>
+        </record>
+
+        <record id="leave_type_chornobyl" model="hr.leave.type">
+            <field name="name">Додаткова чорнобильцям</field>
+            <field name="ua_leave_category">social</field>
+            <field name="annual_days">16</field>
+            <field name="is_calendar_days">True</field>
+            <field name="is_transferable">False</field>
+            <field name="is_paid">True</field>
+            <field name="payment_source">employer</field>
+            <field name="request_unit">day</field>
+            <field name="leave_validation_type">hr</field>
+        </record>
+
+        <record id="leave_type_veteran" model="hr.leave.type">
+            <field name="name">Додаткова ветеранам війни</field>
+            <field name="ua_leave_category">social</field>
+            <field name="annual_days">14</field>
+            <field name="is_calendar_days">True</field>
+            <field name="is_transferable">False</field>
+            <field name="is_paid">True</field>
+            <field name="payment_source">employer</field>
+            <field name="request_unit">day</field>
+            <field name="leave_validation_type">hr</field>
+        </record>
+
     </data>
 </odoo>

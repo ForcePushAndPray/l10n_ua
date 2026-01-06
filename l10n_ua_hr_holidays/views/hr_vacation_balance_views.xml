@@ -6,6 +6,11 @@
         <field name="model">hr.vacation.balance</field>
         <field name="arch" type="xml">
             <form string="Vacation Balance">
+                <header>
+                    <button name="action_calculate_compensation" type="object"
+                            string="Calculate Compensation" class="oe_highlight"
+                            invisible="remaining_days &lt;= 0"/>
+                </header>
                 <sheet>
                     <group>
                         <group>

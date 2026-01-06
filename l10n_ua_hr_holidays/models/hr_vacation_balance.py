@@ -157,3 +157,49 @@ class HrVacationBalance(models.Model):
         'unique(employee_id, leave_type_id, year)',
         'Balance for this employee, leave type and year already exists!',
     )
+
+    def calculate_compensation(self, termination_date=None):
+        """Calculate compensation for unused vacation on termination.
+
+        Args:
+            termination_date: Date of termination (defaults to today)
+
+        Returns:
+            float: Compensation amount for unused vacation days
+        """
+        self.ensure_one()
+
+        if not self.employee_id or not self.remaining_days:
+            return 0.0
+
+        if termination_date is None:
+            termination_date = fields.Date.today()
+
+        # Get average daily salary using hr.leave calculation
+        leave = self.env['hr.leave'].new({
+            'employee_id': self.employee_id.id,
+            'date_from': termination_date,
+        })
+        avg_salary = leave._calculate_average_salary()
+
+        if avg_salary <= 0:
+            return 0.0
+
+        compensation = self.remaining_days * avg_salary
+        return round(compensation, 2)
+
+    def action_calculate_compensation(self):
+        """Action to calculate and display compensation amount."""
+        self.ensure_one()
+        compensation = self.calculate_compensation()
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'Vacation Compensation',
+                'message': f'Compensation for {self.remaining_days} unused days: {compensation:.2f} UAH',
+                'type': 'success',
+                'sticky': False,
+            }
+        }

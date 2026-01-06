@@ -13,6 +13,7 @@ class HrLeaveType(models.Model):
         ('unpaid', 'Unpaid Leave'),
         ('maternity', 'Maternity Leave'),
         ('childcare', 'Childcare Leave'),
+        ('sick', 'Sick Leave'),
         ('other', 'Other'),
     ], string='UA Leave Category')
     

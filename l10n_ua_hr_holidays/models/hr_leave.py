@@ -93,14 +93,26 @@ class HrLeave(models.Model):
         return True
 
     def _calculate_average_salary(self):
-        """Calculate average daily salary for vacation pay
-        Based on last 12 months earnings divided by calendar days
+        """Calculate average daily salary for vacation pay.
+
+        According to Resolution of CMU No. 100 from 08.02.1995:
+        Formula: Total earnings / Calendar days in period
+
+        Include:
+        - Base salary
+        - Bonuses marked as is_basic_salary
+        - Allowances marked as is_basic_salary
+
+        Exclude periods:
+        - Sick leave
+        - Unpaid leave
+        - Idle time
         """
         self.ensure_one()
-        
+
         date_to = self.date_from.date() - relativedelta(days=1)
         date_from = date_to - relativedelta(months=12) + relativedelta(days=1)
-        
+
         # Get payslips for the period
         payslips = self.env['hr.payslip'].search([
             ('employee_id', '=', self.employee_id.id),
@@ -108,15 +120,63 @@ class HrLeave(models.Model):
             ('date_to', '<=', date_to),
             ('state', '=', 'done'),
         ])
-        
+
         if not payslips:
+            # Fallback to contract wage
+            contract = self.employee_id.contract_id
+            if contract and contract.wage:
+                # Average days in month for fallback calculation
+                return round(contract.wage / 29.3, 2)
             return 0.0
-        
-        total_earnings = sum(payslips.mapped('gross_salary'))
-        
-        # Calculate calendar days in period (excluding holidays)
-        calendar_days = (date_to - date_from).days + 1
-        
+
+        # Calculate total earnings from payslip lines
+        total_earnings = 0.0
+        excluded_days = 0
+
+        for payslip in payslips:
+            # Check if payslip has line_ids (Odoo payroll module structure)
+            if hasattr(payslip, 'line_ids') and payslip.line_ids:
+                for line in payslip.line_ids:
+                    # Check if salary rule has is_basic_salary attribute
+                    if hasattr(line, 'salary_rule_id') and line.salary_rule_id:
+                        rule = line.salary_rule_id
+                        # Include if marked as basic salary or if it's a base category
+                        if getattr(rule, 'is_basic_salary', False) or \
+                           getattr(rule, 'category_id', False) and \
+                           rule.category_id.code in ('BASIC', 'ALW', 'GROSS'):
+                            total_earnings += line.total or 0
+                    else:
+                        # Fallback: include all positive lines
+                        total_earnings += max(0, line.total or 0)
+            else:
+                # Fallback: use gross_salary if available, else net
+                if hasattr(payslip, 'gross_salary'):
+                    total_earnings += payslip.gross_salary or 0
+                elif hasattr(payslip, 'net_wage'):
+                    total_earnings += payslip.net_wage or 0
+
+        # Calculate excluded days from sick leave and unpaid leave in the period
+        sick_leave_type = self.env['hr.leave.type'].search([
+            ('ua_leave_category', '=', 'sick')
+        ], limit=1)
+        unpaid_leave_type = self.env['hr.leave.type'].search([
+            ('ua_leave_category', '=', 'unpaid')
+        ])
+
+        excluded_leave_types = sick_leave_type.ids + unpaid_leave_type.ids
+        if excluded_leave_types:
+            excluded_leaves = self.env['hr.leave'].search([
+                ('employee_id', '=', self.employee_id.id),
+                ('holiday_status_id', 'in', excluded_leave_types),
+                ('state', '=', 'validate'),
+                ('date_from', '>=', date_from),
+                ('date_to', '<=', date_to),
+            ])
+            excluded_days = sum(excluded_leaves.mapped('number_of_days'))
+
+        # Calculate calendar days in period
+        calendar_days = (date_to - date_from).days + 1 - excluded_days
+
         if calendar_days > 0:
             return round(total_earnings / calendar_days, 2)
         return 0.0

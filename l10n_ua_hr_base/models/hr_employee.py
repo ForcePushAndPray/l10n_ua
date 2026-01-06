@@ -8,9 +8,12 @@ class HrEmployee(models.Model):
     _inherit = 'hr.employee'
 
     # === Personal Documents ===
+    # RNOKPP is Ukrainian-specific, different from Odoo's identification_id
     rnokpp = fields.Char(
         string='RNOKPP (IPN)', size=10,
         help='Registration Number of the Taxpayer Account Card (Individual Tax Number)')
+
+    # Document type and Ukrainian-specific fields
     document_type = fields.Selection([
         ('passport', 'Passport (old format)'),
         ('id_card', 'ID Card'),
@@ -18,11 +21,11 @@ class HrEmployee(models.Model):
     ], string='Document Type', default='id_card')
     passport_series = fields.Char(string='Passport Series', size=2,
                                    help='For old format passports only')
-    passport_number = fields.Char(string='Passport/ID Number', size=9)
+    # Use Odoo core passport_id field (via hr.version)
+    # passport_number - REMOVED, use passport_id from core
     passport_issued_by = fields.Char(string='Issued By', size=100)
     passport_issued_date = fields.Date(string='Issue Date')
-    passport_valid_until = fields.Date(string='Valid Until',
-                                        help='For ID cards only')
+    # passport_valid_until - REMOVED, use passport_expiration_date from core
     passport_record_number = fields.Char(string='Record Number', size=14,
                                           help='Unique record number in the register (for ID cards)')
 
@@ -41,9 +44,13 @@ class HrEmployee(models.Model):
         help='Actual address is the same as registration address')
 
     # === Education ===
-    education_level_id = fields.Many2one('hr.education.level', string='Education Level')
-    education_institution = fields.Char(string='Educational Institution')
-    education_specialty = fields.Char(string='Specialty')
+    # Use Odoo core fields: study_school (institution), study_field (specialty), certificate (level)
+    # education_institution - REMOVED, use study_school from core
+    # education_specialty - REMOVED, use study_field from core
+    # Keep education_level_id as Many2one for more detailed Ukrainian education levels
+    education_level_id = fields.Many2one('hr.education.level', string='Education Level (UA)',
+                                          help='Detailed Ukrainian education level classification')
+    # Ukrainian-specific diploma details
     diploma_series = fields.Char(string='Diploma Series')
     diploma_number = fields.Char(string='Diploma Number')
     diploma_date = fields.Date(string='Diploma Date')
@@ -102,14 +109,12 @@ class HrEmployee(models.Model):
     ], string='Veteran Status', default='none')
 
     # === Family ===
-    marital_status_ua = fields.Selection([
-        ('single', 'Single'),
-        ('married', 'Married'),
-        ('divorced', 'Divorced'),
-        ('widowed', 'Widowed'),
-    ], string='Marital Status (UA)')
-    spouse_name = fields.Char(string='Spouse Name')
+    # Use Odoo core fields: marital (status), spouse_complete_name, spouse_birthdate, children (count)
+    # marital_status_ua - REMOVED, use marital from core
+    # spouse_name - REMOVED, use spouse_complete_name from core
+    # Ukrainian-specific: spouse tax ID
     spouse_rnokpp = fields.Char(string='Spouse RNOKPP', size=10)
+    # Detailed children records (Odoo core only has count)
     children_ids = fields.One2many('hr.employee.child', 'employee_id', string='Children')
     children_count = fields.Integer(string='Children Count', compute='_compute_children_count', store=True)
     dependents_count = fields.Integer(string='Dependents Count', compute='_compute_dependents_count', store=True,
@@ -170,13 +175,14 @@ class HrEmployee(models.Model):
         control = (checksum % 11) % 10
         return control == int(rnokpp[9])
 
-    @api.constrains('passport_number', 'document_type')
+    @api.constrains('passport_id', 'document_type')
     def _check_passport_number(self):
+        """Validate passport/ID number format based on document type."""
         for employee in self:
-            if employee.passport_number:
-                if employee.document_type == 'passport' and len(employee.passport_number) != 6:
+            if employee.passport_id:
+                if employee.document_type == 'passport' and len(employee.passport_id) != 6:
                     raise ValidationError('Old passport number must be 6 digits!')
-                if employee.document_type == 'id_card' and len(employee.passport_number) != 9:
+                if employee.document_type == 'id_card' and len(employee.passport_id) != 9:
                     raise ValidationError('ID card number must be 9 digits!')
 
     _rnokpp_uniq = models.Constraint(

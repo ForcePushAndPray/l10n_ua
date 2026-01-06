@@ -6,6 +6,24 @@
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
+            <!-- Hide duplicate citizenship fields from core Personal page -->
+            <!-- We use Documents tab instead with more Ukrainian-specific fields -->
+            <xpath expr="//group[@name='citizenship']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Hide duplicate Family fields from core Personal page -->
+            <!-- We use Family tab instead with more Ukrainian-specific fields -->
+            <xpath expr="//group[@name='hr_family_group']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <!-- Hide duplicate Education fields from core Personal page -->
+            <!-- We use Education tab instead with more Ukrainian-specific fields -->
+            <xpath expr="//group[@name='hr_education_group']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
             <xpath expr="//notebook" position="inside">
                 <!-- Documents Tab -->
                 <page string="Documents" name="documents_ua">
@@ -16,10 +34,10 @@
                         <group string="Identity Document">
                             <field name="document_type"/>
                             <field name="passport_series" invisible="document_type != 'passport'"/>
-                            <field name="passport_number"/>
+                            <field name="passport_id" string="Passport/ID Number"/>
                             <field name="passport_issued_by"/>
                             <field name="passport_issued_date"/>
-                            <field name="passport_valid_until" invisible="document_type != 'id_card'"/>
+                            <field name="passport_expiration_date" string="Valid Until" invisible="document_type != 'id_card'"/>
                             <field name="passport_record_number" invisible="document_type != 'id_card'"/>
                         </group>
                     </group>
@@ -46,8 +64,8 @@
                     <group>
                         <group string="Education">
                             <field name="education_level_id"/>
-                            <field name="education_institution"/>
-                            <field name="education_specialty"/>
+                            <field name="study_school" string="Educational Institution"/>
+                            <field name="study_field" string="Specialty"/>
                         </group>
                         <group string="Diploma">
                             <field name="diploma_series"/>
@@ -95,20 +113,22 @@
                 </page>
 
                 <!-- Family Tab -->
-                <page string="Family" name="family_ua">
+                <page string="Family" name="family_ua" groups="hr.group_hr_user">
                     <group>
                         <group string="Marital Status">
-                            <field name="marital_status_ua"/>
-                            <field name="spouse_name" invisible="marital_status_ua not in ('married',)"/>
-                            <field name="spouse_rnokpp" invisible="marital_status_ua not in ('married',)"/>
+                            <field name="marital" groups="hr.group_hr_user"/>
+                            <field name="spouse_complete_name" invisible="marital not in ('married', 'cohabitant')" groups="hr.group_hr_user"/>
+                            <field name="spouse_birthdate" invisible="marital not in ('married', 'cohabitant')" groups="hr.group_hr_user"/>
+                            <field name="spouse_rnokpp" invisible="marital not in ('married', 'cohabitant')" groups="hr.group_hr_user"/>
                         </group>
                         <group string="Statistics">
-                            <field name="children_count"/>
-                            <field name="dependents_count"/>
+                            <field name="children" string="Children (Odoo)" groups="hr.group_hr_user"/>
+                            <field name="children_count" string="Children Count" groups="hr.group_hr_user"/>
+                            <field name="dependents_count" groups="hr.group_hr_user"/>
                         </group>
                     </group>
-                    <separator string="Children"/>
-                    <field name="children_ids" nolabel="1"/>
+                    <separator string="Children Details"/>
+                    <field name="children_ids" nolabel="1" groups="hr.group_hr_user"/>
                 </page>
 
                 <!-- Work Experience & Bank Tab -->

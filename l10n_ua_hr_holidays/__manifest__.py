@@ -29,6 +29,7 @@ Requires l10n_ua_hr_base module.
     ],
     'data': [
         'security/ir.model.access.csv',
+        'data/hr_sick_leave_data.xml',
         'data/hr_leave_type_data.xml',
         'views/hr_leave_views.xml',
         'views/hr_leave_type_views.xml',

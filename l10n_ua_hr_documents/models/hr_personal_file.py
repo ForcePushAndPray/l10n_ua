@@ -19,42 +19,74 @@ class HrPersonalFile(models.Model):
         required=True,
         tracking=True
     )
-    
-    # Personal card data (П-2)
-    birth_place = fields.Char(string='Birth Place')
-    citizenship = fields.Char(string='Citizenship', default='Україна')
-    
-    education_level = fields.Selection([
-        ('basic_secondary', 'Basic Secondary'),
-        ('complete_secondary', 'Complete Secondary'),
-        ('vocational', 'Vocational'),
-        ('incomplete_higher', 'Incomplete Higher'),
-        ('basic_higher', 'Basic Higher (Bachelor)'),
-        ('complete_higher', 'Complete Higher (Master/Specialist)'),
-        ('phd', 'PhD'),
-        ('doctor', 'Doctor of Sciences'),
-    ], string='Education Level')
-    
-    education_institution = fields.Char(string='Educational Institution')
+
+    # === Related fields from hr.employee (Odoo core) ===
+    birth_place = fields.Char(
+        string='Birth Place',
+        related='employee_id.place_of_birth',
+        readonly=False,
+        store=False
+    )
+    country_of_birth = fields.Many2one(
+        'res.country',
+        string='Country of Birth',
+        related='employee_id.country_of_birth',
+        readonly=False,
+        store=False
+    )
+
+    # === Related fields from hr.employee (l10n_ua_hr_base) ===
+    education_level_id = fields.Many2one(
+        'hr.education.level',
+        string='Education Level',
+        related='employee_id.education_level_id',
+        readonly=False,
+        store=False
+    )
+    # Use Odoo core fields for education
+    education_institution = fields.Char(
+        string='Educational Institution',
+        related='employee_id.study_school',
+        readonly=False,
+        store=False
+    )
+    education_specialty = fields.Char(
+        string='Specialty',
+        related='employee_id.study_field',
+        readonly=False,
+        store=False
+    )
+
+    # Additional education fields (stored on personal file)
     graduation_year = fields.Integer(string='Graduation Year')
-    specialty = fields.Char(string='Specialty')
     qualification = fields.Char(string='Qualification')
-    
-    military_status = fields.Selection([
-        ('liable', 'Liable for Military Service'),
-        ('not_liable', 'Not Liable'),
-        ('reservist', 'Reservist'),
-        ('retired', 'Retired'),
-    ], string='Military Status')
-    military_rank = fields.Char(string='Military Rank')
-    military_specialty = fields.Char(string='Military Specialty')
-    
-    marital_status = fields.Selection([
-        ('single', 'Single'),
-        ('married', 'Married'),
-        ('divorced', 'Divorced'),
-        ('widowed', 'Widowed'),
-    ], string='Marital Status')
+
+    # === Military fields - related from hr.employee (l10n_ua_hr_base) ===
+    military_status = fields.Selection(
+        related='employee_id.military_status',
+        readonly=False,
+        store=False
+    )
+    military_rank_id = fields.Many2one(
+        'hr.military.rank',
+        string='Military Rank',
+        related='employee_id.military_rank_id',
+        readonly=False,
+        store=False
+    )
+    military_specialty = fields.Char(
+        string='Military Specialty',
+        related='employee_id.military_specialty',
+        readonly=False,
+        store=False
+    )
+
+    # === Marital status - related from hr.employee (Odoo core) ===
+    marital_status = fields.Selection(
+        related='employee_id.marital',
+        readonly=False,
+        store=False
+    )
     
     family_member_ids = fields.One2many(
         'hr.personal.file.family',

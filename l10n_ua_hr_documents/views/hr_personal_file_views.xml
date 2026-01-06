@@ -20,19 +20,19 @@
                         </group>
                         <group>
                             <field name="birth_place"/>
-                            <field name="citizenship"/>
+                            <field name="country_of_birth"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Education" name="education">
                             <group>
                                 <group>
-                                    <field name="education_level"/>
+                                    <field name="education_level_id"/>
                                     <field name="education_institution"/>
                                 </group>
                                 <group>
                                     <field name="graduation_year"/>
-                                    <field name="specialty"/>
+                                    <field name="education_specialty"/>
                                     <field name="qualification"/>
                                 </group>
                             </group>
@@ -41,7 +41,7 @@
                             <group>
                                 <group>
                                     <field name="military_status"/>
-                                    <field name="military_rank"/>
+                                    <field name="military_rank_id"/>
                                     <field name="military_specialty"/>
                                 </group>
                             </group>
@@ -103,7 +103,7 @@
             <list string="Personal Files">
                 <field name="name"/>
                 <field name="employee_id"/>
-                <field name="education_level"/>
+                <field name="education_level_id"/>
                 <field name="military_status"/>
                 <field name="marital_status"/>
             </list>
