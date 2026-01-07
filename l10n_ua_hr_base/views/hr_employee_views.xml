@@ -25,6 +25,30 @@
             </xpath>
 
             <xpath expr="//notebook" position="inside">
+                <!-- Position Details Tab (from hr.job) -->
+                <page string="Position Details" name="position_details_ua">
+                    <group>
+                        <group string="Класифікатор професій (КП)">
+                            <field name="job_kp_code" string="Код КП"/>
+                            <field name="job_kp_name" string="Назва КП"/>
+                        </group>
+                        <group string="Умови праці">
+                            <field name="job_work_conditions" string="Умови"/>
+                            <field name="job_hazard_class" string="Клас шкідливості"
+                                   invisible="job_work_conditions == 'normal'"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Оплата за посадою">
+                            <field name="job_min_salary" string="Мін. ставка"/>
+                            <field name="job_max_salary" string="Макс. оклад"/>
+                        </group>
+                        <group>
+                            <!-- Empty for balance -->
+                        </group>
+                    </group>
+                </page>
+
                 <!-- Documents Tab -->
                 <page string="Documents" name="documents_ua">
                     <group>
@@ -157,6 +181,7 @@
         <field name="inherit_id" ref="hr.view_employee_tree"/>
         <field name="arch" type="xml">
             <xpath expr="//field[@name='job_id']" position="after">
+                <field name="job_kp_code" string="Код КП" optional="show"/>
                 <field name="rnokpp" optional="hide"/>
             </xpath>
         </field>

@@ -133,6 +133,29 @@ class HrEmployee(models.Model):
     bank_account_id = fields.Many2one('res.partner.bank', string='Bank Account',
                                        help='Bank account for salary payment')
 
+    # === Related fields from hr.job (readonly) ===
+    job_kp_code = fields.Char(
+        string='KP Code', related='job_id.kp_code', readonly=True, store=False,
+        help='Код професії за Класифікатором професій ДК 003:2010')
+    job_kp_name = fields.Char(
+        string='KP Name', related='job_id.kp_name', readonly=True, store=False,
+        help='Назва професії за Класифікатором професій')
+    job_work_conditions = fields.Selection(
+        related='job_id.work_conditions', readonly=True, store=False,
+        string='Work Conditions')
+    job_hazard_class = fields.Selection(
+        related='job_id.hazard_class', readonly=True, store=False,
+        string='Hazard Class')
+    job_currency_id = fields.Many2one(
+        related='job_id.currency_id', readonly=True, store=False,
+        string='Job Currency')
+    job_min_salary = fields.Monetary(
+        related='job_id.min_salary', readonly=True, store=False,
+        currency_field='job_currency_id', string='Min Salary')
+    job_max_salary = fields.Monetary(
+        related='job_id.max_salary', readonly=True, store=False,
+        currency_field='job_currency_id', string='Max Salary')
+
     @api.depends('children_ids')
     def _compute_children_count(self):
         for employee in self:

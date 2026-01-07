@@ -85,14 +85,14 @@
             <field name="barcode">001</field>
             <field name="rnokpp">1234567899</field>
             <field name="document_type">id_card</field>
-            <field name="passport_number">123456789</field>
+            <field name="passport_id">123456789</field>
             <field name="passport_issued_by">1234</field>
             <field name="passport_issued_date">2020-01-15</field>
             <field name="birthday">1975-05-20</field>
-            <field name="marital_status_ua">married</field>
+            <field name="marital">married</field>
             <field name="education_level_id" ref="l10n_ua_hr_base.education_level_master"/>
-            <field name="education_institution">Київський національний університет</field>
-            <field name="education_specialty">Менеджмент</field>
+            <field name="study_school">Київський національний університет</field>
+            <field name="study_field">Менеджмент</field>
             <field name="registration_address">м. Київ, вул. Хрещатик, 1, кв. 10</field>
             <field name="registration_city">Київ</field>
             <field name="registration_zip">01001</field>
@@ -114,14 +114,14 @@
             <field name="barcode">002</field>
             <field name="rnokpp">2345678902</field>
             <field name="document_type">id_card</field>
-            <field name="passport_number">234567890</field>
+            <field name="passport_id">234567890</field>
             <field name="passport_issued_by">1234</field>
             <field name="passport_issued_date">2019-03-20</field>
             <field name="birthday">1985-08-15</field>
-            <field name="marital_status_ua">married</field>
+            <field name="marital">married</field>
             <field name="education_level_id" ref="l10n_ua_hr_base.education_level_master"/>
-            <field name="education_institution">Національний університет "Львівська політехніка"</field>
-            <field name="education_specialty">Управління персоналом</field>
+            <field name="study_school">Національний університет "Львівська політехніка"</field>
+            <field name="study_field">Управління персоналом</field>
             <field name="registration_address">м. Київ, вул. Велика Васильківська, 25, кв. 5</field>
             <field name="registration_city">Київ</field>
             <field name="registration_zip">01004</field>
@@ -140,14 +140,14 @@
             <field name="barcode">003</field>
             <field name="rnokpp">3456789014</field>
             <field name="document_type">id_card</field>
-            <field name="passport_number">345678901</field>
+            <field name="passport_id">345678901</field>
             <field name="passport_issued_by">1234</field>
             <field name="passport_issued_date">2021-07-10</field>
             <field name="birthday">1980-12-03</field>
-            <field name="marital_status_ua">divorced</field>
+            <field name="marital">divorced</field>
             <field name="education_level_id" ref="l10n_ua_hr_base.education_level_master"/>
-            <field name="education_institution">Київський національний економічний університет</field>
-            <field name="education_specialty">Облік і аудит</field>
+            <field name="study_school">Київський національний економічний університет</field>
+            <field name="study_field">Облік і аудит</field>
             <field name="registration_address">м. Київ, вул. Саксаганського, 100, кв. 15</field>
             <field name="registration_city">Київ</field>
             <field name="registration_zip">01033</field>
@@ -166,14 +166,14 @@
             <field name="barcode">004</field>
             <field name="rnokpp">4567890120</field>
             <field name="document_type">id_card</field>
-            <field name="passport_number">456789012</field>
+            <field name="passport_id">456789012</field>
             <field name="passport_issued_by">1234</field>
             <field name="passport_issued_date">2022-02-28</field>
             <field name="birthday">1990-04-25</field>
-            <field name="marital_status_ua">single</field>
+            <field name="marital">single</field>
             <field name="education_level_id" ref="l10n_ua_hr_base.education_level_bachelor"/>
-            <field name="education_institution">НТУУ "КПІ"</field>
-            <field name="education_specialty">Комп'ютерні науки</field>
+            <field name="study_school">НТУУ "КПІ"</field>
+            <field name="study_field">Комп'ютерні науки</field>
             <field name="registration_address">м. Київ, пр. Перемоги, 37, кв. 88</field>
             <field name="registration_city">Київ</field>
             <field name="registration_zip">03056</field>
@@ -197,15 +197,15 @@
             <field name="barcode">005</field>
             <field name="rnokpp">5678901233</field>
             <field name="document_type">id_card</field>
-            <field name="passport_number">567890123</field>
+            <field name="passport_id">567890123</field>
             <field name="passport_issued_by">1234</field>
             <field name="passport_issued_date">2023-05-15</field>
             <field name="birthday">1995-11-10</field>
-            <field name="marital_status_ua">married</field>
-            <field name="spouse_name">Мельник Ірина Вікторівна</field>
+            <field name="marital">married</field>
+            <field name="spouse_complete_name">Мельник Ірина Вікторівна</field>
             <field name="education_level_id" ref="l10n_ua_hr_base.education_level_master"/>
-            <field name="education_institution">НТУУ "КПІ"</field>
-            <field name="education_specialty">Програмна інженерія</field>
+            <field name="study_school">НТУУ "КПІ"</field>
+            <field name="study_field">Програмна інженерія</field>
             <field name="registration_address">м. Київ, вул. Борщагівська, 150, кв. 42</field>
             <field name="registration_city">Київ</field>
             <field name="registration_zip">03056</field>
@@ -228,14 +228,14 @@
             <field name="barcode">006</field>
             <field name="rnokpp">6789012344</field>
             <field name="document_type">id_card</field>
-            <field name="passport_number">678901234</field>
+            <field name="passport_id">678901234</field>
             <field name="passport_issued_by">1234</field>
             <field name="passport_issued_date">2020-11-20</field>
             <field name="birthday">1992-07-18</field>
-            <field name="marital_status_ua">single</field>
+            <field name="marital">single</field>
             <field name="education_level_id" ref="l10n_ua_hr_base.education_level_bachelor"/>
-            <field name="education_institution">Київський національний університет</field>
-            <field name="education_specialty">Психологія</field>
+            <field name="study_school">Київський національний університет</field>
+            <field name="study_field">Психологія</field>
             <field name="registration_address">м. Київ, вул. Льва Толстого, 5, кв. 20</field>
             <field name="registration_city">Київ</field>
             <field name="registration_zip">01004</field>

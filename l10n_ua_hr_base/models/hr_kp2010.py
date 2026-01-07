@@ -1,11 +1,10 @@
-from odoo import models, fields
+from odoo import models, fields, api
 
 
 class HrKp2010(models.Model):
     _name = 'hr.kp2010'
     _description = 'Classifier of Professions (KP 2010)'
     _order = 'code'
-    _rec_name = 'display_name'
 
     code = fields.Char(string='Code', required=True, index=True)
     name = fields.Char(string='Name', required=True, translate=True)
@@ -18,9 +17,15 @@ class HrKp2010(models.Model):
         ('heavy', 'Heavy'),
     ], string='Typical Work Conditions', default='normal')
     active = fields.Boolean(string='Active', default=True)
-    display_name = fields.Char(string='Display Name', compute='_compute_display_name', store=True)
 
-
+    @api.depends('code', 'name')
     def _compute_display_name(self):
         for record in self:
-            record.display_name = f"[{record.code}] {record.name}" if record.code else record.name
+            if record.code and record.name:
+                record.display_name = f"[{record.code}] {record.name}"
+            elif record.code:
+                record.display_name = record.code
+            elif record.name:
+                record.display_name = record.name
+            else:
+                record.display_name = ''
