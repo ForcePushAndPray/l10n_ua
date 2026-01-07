@@ -95,13 +95,13 @@
                         <td style="border: 1px solid #000; padding: 3px;" rowspan="3"></td>
                         <td style="border: 1px solid #000; padding: 3px;">Навчальний заклад</td>
                         <td style="border: 1px solid #000; padding: 3px;" colspan="3">
-                            <t t-esc="employee.education_institution or ''"/>
+                            <t t-esc="employee.study_school or ''"/>
                         </td>
                     </tr>
                     <tr>
                         <td style="border: 1px solid #000; padding: 3px;">Спеціальність</td>
                         <td style="border: 1px solid #000; padding: 3px;" colspan="3">
-                            <t t-esc="employee.education_specialty or ''"/>
+                            <t t-esc="employee.study_field or ''"/>
                         </td>
                     </tr>
                     <tr>
@@ -120,18 +120,19 @@
                         <td style="border: 1px solid #000; padding: 3px;">5.</td>
                         <td style="border: 1px solid #000; padding: 3px;">Сімейний стан</td>
                         <td style="border: 1px solid #000; padding: 3px;" colspan="3">
-                            <t t-if="employee.marital_status_ua == 'single'">неодружений(а)</t>
-                            <t t-if="employee.marital_status_ua == 'married'">одружений(а)</t>
-                            <t t-if="employee.marital_status_ua == 'divorced'">розлучений(а)</t>
-                            <t t-if="employee.marital_status_ua == 'widowed'">вдівець/вдова</t>
+                            <t t-if="employee.marital == 'single'">неодружений(а)</t>
+                            <t t-if="employee.marital == 'married'">одружений(а)</t>
+                            <t t-if="employee.marital == 'cohabitant'">співмешканець</t>
+                            <t t-if="employee.marital == 'divorced'">розлучений(а)</t>
+                            <t t-if="employee.marital == 'widower'">вдівець/вдова</t>
                         </td>
                     </tr>
                     <tr>
                         <td style="border: 1px solid #000; padding: 3px;">6.</td>
                         <td style="border: 1px solid #000; padding: 3px;">Склад сім'ї</td>
                         <td style="border: 1px solid #000; padding: 3px;" colspan="3">
-                            <t t-if="employee.spouse_name">
-                                Чоловік/дружина: <t t-esc="employee.spouse_name"/><br/>
+                            <t t-if="employee.spouse_complete_name">
+                                Чоловік/дружина: <t t-esc="employee.spouse_complete_name"/><br/>
                             </t>
                             <t t-if="employee.children_ids">
                                 Діти: 
@@ -150,11 +151,11 @@
                         <td style="border: 1px solid #000; padding: 3px;">Паспорт</td>
                         <td style="border: 1px solid #000; padding: 3px;" colspan="3">
                             <t t-if="employee.document_type == 'passport'">
-                                серія <t t-esc="employee.passport_series or ''"/> 
-                                № <t t-esc="employee.passport_number or ''"/>
+                                серія <t t-esc="employee.passport_series or ''"/>
+                                № <t t-esc="employee.passport_id or ''"/>
                             </t>
                             <t t-if="employee.document_type == 'id_card'">
-                                ID-картка № <t t-esc="employee.passport_number or ''"/>
+                                ID-картка № <t t-esc="employee.passport_id or ''"/>
                             </t>
                             <t t-if="employee.passport_issued_by">
                                 <br/>виданий <t t-esc="employee.passport_issued_by"/>
@@ -246,6 +247,14 @@
                                 </t>
                             </td>
                         </tr>
+                        <t t-if="employee.military_reservplus_id">
+                            <tr>
+                                <td style="border: 1px solid #000; padding: 3px;">Резерв+ ID</td>
+                                <td style="border: 1px solid #000; padding: 3px;">
+                                    <t t-esc="employee.military_reservplus_id"/>
+                                </td>
+                            </tr>
+                        </t>
                     </t>
                 </table>
                 

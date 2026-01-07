@@ -1,6 +1,10 @@
+import logging
+from lxml import etree
 from odoo import models, fields, api
 from odoo.exceptions import UserError
 from dateutil.relativedelta import relativedelta
+
+_logger = logging.getLogger(__name__)
 
 
 class HrCertificate(models.Model):
@@ -180,77 +184,89 @@ class HrCertificate(models.Model):
                 record.body = record._render_template(record.certificate_type_id.template_body)
 
     def _render_template(self, template):
-        """Render template with placeholders replaced by actual values"""
+        """Render template using QWeb engine"""
+        self.ensure_one()
+
+        context = self._get_render_context()
+
+        try:
+            qweb_template = f'<t>{template}</t>'
+            # Parse as XML element
+            template_element = etree.fromstring(qweb_template.encode('utf-8'))
+            # Render using QWeb
+            result = self.env['ir.qweb']._render(template_element, context)
+            return str(result)
+        except Exception as e:
+            _logger.error(f"QWeb rendering failed: {e}")
+            # Fallback: return template as-is
+            return template
+
+    def _get_render_context(self):
+        """Prepare context for QWeb template rendering"""
         self.ensure_one()
 
         employee = self.employee_id
         company = self.company_id
 
         # Get company director
-        director_name = ''
+        director = False
         director_position = 'Директор'
         if hasattr(company, 'director_id') and company.director_id:
-            director_name = company.director_id.name
-            director_position = company.director_id.job_id.name if company.director_id.job_id else 'Директор'
+            director = company.director_id
+            director_position = director.job_id.name if director.job_id else 'Директор'
 
-        # Get hire date
-        hire_date = ''
-        if employee and hasattr(employee, 'contract_ua_id') and employee.contract_ua_id:
-            hire_date = employee.contract_ua_id.date_start
+        # Get hire date from contract (if hr_contract module is installed)
+        hire_date = False
+        contract = False
+        if employee and 'hr.contract' in self.env:
+            contract = self.env['hr.contract'].search([
+                ('employee_id', '=', employee.id),
+                ('state', '=', 'open')
+            ], limit=1)
+            if contract:
+                hire_date = contract.date_start
 
-        # Get work experience
-        work_experience = ''
-        if hire_date:
-            delta = relativedelta(fields.Date.today(), hire_date)
-            years = delta.years
-            months = delta.months
-            parts = []
-            if years:
-                parts.append(f"{years} р.")
-            if months:
-                parts.append(f"{months} міс.")
-            work_experience = ' '.join(parts) if parts else 'менше місяця'
+        # Calculate work experience
+        work_experience = self._calculate_work_experience(hire_date)
 
-        # Format dates
-        issue_date_str = ''
-        if self.issue_date:
-            issue_date_str = self.issue_date.strftime('%d.%m.%Y')
-        current_date_str = fields.Date.today().strftime('%d.%m.%Y')
-
-        # Prepare placeholders
-        placeholders = {
-            '{company_name}': company.name or '',
-            '{company_director}': director_name,
-            '{company_director_position}': director_position,
-            '{company_address}': company.partner_id.contact_address if company.partner_id else '',
-            '{company_edrpou}': company.company_registry or '',
-            '{company_phone}': company.phone or '',
-            '{employee_name}': employee.name or '',
-            '{employee_name_genitive}': employee.name or '',  # TODO: implement declension
-            '{employee_position}': employee.job_id.name if employee.job_id else '',
-            '{employee_department}': employee.department_id.name if employee.department_id else '',
-            '{employee_hire_date}': hire_date.strftime('%d.%m.%Y') if hire_date else '',
-            '{employee_rnokpp}': getattr(employee, 'rnokpp', '') or '',
-            '{employee_passport}': '',  # TODO: get from employee
-            '{salary_amount}': f"{self.salary_amount:,.2f}".replace(',', ' ') if self.salary_amount else '',
-            '{salary_words}': '',  # TODO: implement number to words
-            '{work_experience}': work_experience,
-            '{certificate_number}': self.name or 'New',
-            '{certificate_date}': issue_date_str or current_date_str,
-            '{certificate_date_words}': '',  # TODO: implement date to words
-            '{destination}': self.destination or 'за місцем вимоги',
-            '{period_from}': self.period_from.strftime('%d.%m.%Y') if self.period_from else '',
-            '{period_to}': self.period_to.strftime('%d.%m.%Y') if self.period_to else '',
-            '{total_income}': f"{self.total_income:,.2f}".replace(',', ' ') if self.total_income else '',
-            '{total_income_words}': '',  # TODO: implement number to words
-            '{current_date}': current_date_str,
+        return {
+            'o': self,
+            'certificate': self,
+            'employee': employee,
+            'company': company,
+            'director': director,
+            'director_position': director_position,
+            'contract': contract,
+            'hire_date': hire_date,
+            'work_experience': work_experience,
+            'destination': self.destination or 'за місцем вимоги',
+            'format_date': self._format_date,
+            'format_money': self._format_money,
         }
 
-        result = template
-        for placeholder, value in placeholders.items():
-            result = result.replace(placeholder, str(value) if value else '')
+    def _calculate_work_experience(self, hire_date):
+        """Calculate work experience string"""
+        if not hire_date:
+            return ''
+        delta = relativedelta(fields.Date.today(), hire_date)
+        parts = []
+        if delta.years:
+            parts.append(f"{delta.years} р.")
+        if delta.months:
+            parts.append(f"{delta.months} міс.")
+        return ' '.join(parts) if parts else 'менше місяця'
 
-        return result
+    def _format_date(self, date_val, fmt='%d.%m.%Y'):
+        """Format date helper for templates"""
+        if date_val:
+            return date_val.strftime(fmt)
+        return ''
+
+    def _format_money(self, amount):
+        """Format monetary amount"""
+        if amount:
+            return f"{amount:,.2f}".replace(',', ' ')
+        return ''
 
     @api.model_create_multi
     def create(self, vals_list):

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <data noupdate="1">
+    <data noupdate="0">
 
         <!-- Employment Certificate (Довідка про роботу) -->
         <record id="certificate_type_employment" model="hr.certificate.type">
@@ -15,31 +15,31 @@
             <field name="template_body"><![CDATA[
 <div style="font-family: Times New Roman, serif; font-size: 14pt; line-height: 1.5;">
     <div style="text-align: center; margin-bottom: 20px;">
-        <strong>{company_name}</strong><br/>
-        <span style="font-size: 12pt;">{company_address}</span><br/>
-        <span style="font-size: 12pt;">ЄДРПОУ: {company_edrpou}</span>
+        <strong><t t-esc="company.name or ''"/></strong><br/>
+        <span style="font-size: 12pt;"><t t-esc="company.partner_id.contact_address if company.partner_id else ''"/></span><br/>
+        <span style="font-size: 12pt;">ЄДРПОУ: <t t-esc="company.company_registry or ''"/></span>
     </div>
 
     <div style="text-align: center; margin: 30px 0;">
         <h2 style="margin: 0;">ДОВІДКА</h2>
-        <p style="margin: 5px 0;">№ {certificate_number} від {certificate_date}</p>
+        <p style="margin: 5px 0;">№ <t t-esc="certificate.name or 'New'"/> від <t t-esc="format_date(certificate.issue_date) or format_date(certificate.request_date)"/></p>
     </div>
 
     <p style="text-indent: 40px; text-align: justify;">
-        Видана <strong>{employee_name}</strong> у тому, що він(вона) дійсно працює
-        в {company_name} на посаді <strong>{employee_position}</strong>
-        з {employee_hire_date} по теперішній час.
+        Видана <strong><t t-esc="employee.name or ''"/></strong> у тому, що він(вона) дійсно працює
+        в <t t-esc="company.name or ''"/> на посаді <strong><t t-esc="employee.job_id.name if employee.job_id else ''"/></strong>
+        з <t t-esc="format_date(hire_date)"/> по теперішній час.
     </p>
 
     <p style="text-indent: 40px; text-align: justify;">
-        Довідка видана {destination}.
+        Довідка видана <t t-esc="destination"/>.
     </p>
 
     <div style="margin-top: 50px;">
         <table style="width: 100%; border: none;">
             <tr>
-                <td style="width: 50%;">{company_director_position}</td>
-                <td style="width: 50%; text-align: right;">________________ {company_director}</td>
+                <td style="width: 50%;"><t t-esc="director_position"/></td>
+                <td style="width: 50%; text-align: right;">________________ <t t-esc="director.name if director else ''"/></td>
             </tr>
         </table>
     </div>
@@ -62,35 +62,35 @@
             <field name="template_body"><![CDATA[
 <div style="font-family: Times New Roman, serif; font-size: 14pt; line-height: 1.5;">
     <div style="text-align: center; margin-bottom: 20px;">
-        <strong>{company_name}</strong><br/>
-        <span style="font-size: 12pt;">{company_address}</span><br/>
-        <span style="font-size: 12pt;">ЄДРПОУ: {company_edrpou}</span>
+        <strong><t t-esc="company.name or ''"/></strong><br/>
+        <span style="font-size: 12pt;"><t t-esc="company.partner_id.contact_address if company.partner_id else ''"/></span><br/>
+        <span style="font-size: 12pt;">ЄДРПОУ: <t t-esc="company.company_registry or ''"/></span>
     </div>
 
     <div style="text-align: center; margin: 30px 0;">
         <h2 style="margin: 0;">ДОВІДКА</h2>
         <p style="margin: 5px 0;">про заробітну плату</p>
-        <p style="margin: 5px 0;">№ {certificate_number} від {certificate_date}</p>
+        <p style="margin: 5px 0;">№ <t t-esc="certificate.name or 'New'"/> від <t t-esc="format_date(certificate.issue_date) or format_date(certificate.request_date)"/></p>
     </div>
 
     <p style="text-indent: 40px; text-align: justify;">
-        Видана <strong>{employee_name}</strong> у тому, що він(вона) дійсно працює
-        в {company_name} на посаді <strong>{employee_position}</strong>.
+        Видана <strong><t t-esc="employee.name or ''"/></strong> у тому, що він(вона) дійсно працює
+        в <t t-esc="company.name or ''"/> на посаді <strong><t t-esc="employee.job_id.name if employee.job_id else ''"/></strong>.
     </p>
 
     <p style="text-indent: 40px; text-align: justify;">
-        Посадовий оклад (заробітна плата) становить <strong>{salary_amount} грн.</strong> на місяць.
+        Посадовий оклад (заробітна плата) становить <strong><t t-esc="format_money(certificate.salary_amount)"/> грн.</strong> на місяць.
     </p>
 
     <p style="text-indent: 40px; text-align: justify;">
-        Довідка видана {destination}.
+        Довідка видана <t t-esc="destination"/>.
     </p>
 
     <div style="margin-top: 50px;">
         <table style="width: 100%; border: none;">
             <tr>
-                <td style="width: 50%;">{company_director_position}</td>
-                <td style="width: 50%; text-align: right;">________________ {company_director}</td>
+                <td style="width: 50%;"><t t-esc="director_position"/></td>
+                <td style="width: 50%; text-align: right;">________________ <t t-esc="director.name if director else ''"/></td>
             </tr>
             <tr>
                 <td style="width: 50%;">Головний бухгалтер</td>
@@ -117,36 +117,36 @@
             <field name="template_body"><![CDATA[
 <div style="font-family: Times New Roman, serif; font-size: 14pt; line-height: 1.5;">
     <div style="text-align: center; margin-bottom: 20px;">
-        <strong>{company_name}</strong><br/>
-        <span style="font-size: 12pt;">{company_address}</span><br/>
-        <span style="font-size: 12pt;">ЄДРПОУ: {company_edrpou}</span>
+        <strong><t t-esc="company.name or ''"/></strong><br/>
+        <span style="font-size: 12pt;"><t t-esc="company.partner_id.contact_address if company.partner_id else ''"/></span><br/>
+        <span style="font-size: 12pt;">ЄДРПОУ: <t t-esc="company.company_registry or ''"/></span>
     </div>
 
     <div style="text-align: center; margin: 30px 0;">
         <h2 style="margin: 0;">ДОВІДКА</h2>
         <p style="margin: 5px 0;">про доходи</p>
-        <p style="margin: 5px 0;">№ {certificate_number} від {certificate_date}</p>
+        <p style="margin: 5px 0;">№ <t t-esc="certificate.name or 'New'"/> від <t t-esc="format_date(certificate.issue_date) or format_date(certificate.request_date)"/></p>
     </div>
 
     <p style="text-indent: 40px; text-align: justify;">
-        Видана <strong>{employee_name}</strong>, РНОКПП: {employee_rnokpp},
-        у тому, що він(вона) працює в {company_name} на посаді <strong>{employee_position}</strong>.
+        Видана <strong><t t-esc="employee.name or ''"/></strong>, РНОКПП: <t t-esc="employee.rnokpp if hasattr(employee, 'rnokpp') else ''"/>,
+        у тому, що він(вона) працює в <t t-esc="company.name or ''"/> на посаді <strong><t t-esc="employee.job_id.name if employee.job_id else ''"/></strong>.
     </p>
 
     <p style="text-indent: 40px; text-align: justify;">
-        За період з {period_from} по {period_to} отримав(ла) дохід у розмірі
-        <strong>{total_income} грн.</strong>
+        За період з <t t-esc="format_date(certificate.period_from)"/> по <t t-esc="format_date(certificate.period_to)"/> отримав(ла) дохід у розмірі
+        <strong><t t-esc="format_money(certificate.total_income)"/> грн.</strong>
     </p>
 
     <p style="text-indent: 40px; text-align: justify;">
-        Довідка видана {destination}.
+        Довідка видана <t t-esc="destination"/>.
     </p>
 
     <div style="margin-top: 50px;">
         <table style="width: 100%; border: none;">
             <tr>
-                <td style="width: 50%;">{company_director_position}</td>
-                <td style="width: 50%; text-align: right;">________________ {company_director}</td>
+                <td style="width: 50%;"><t t-esc="director_position"/></td>
+                <td style="width: 50%; text-align: right;">________________ <t t-esc="director.name if director else ''"/></td>
             </tr>
             <tr>
                 <td style="width: 50%;">Головний бухгалтер</td>
@@ -173,35 +173,35 @@
             <field name="template_body"><![CDATA[
 <div style="font-family: Times New Roman, serif; font-size: 14pt; line-height: 1.5;">
     <div style="text-align: center; margin-bottom: 20px;">
-        <strong>{company_name}</strong><br/>
-        <span style="font-size: 12pt;">{company_address}</span><br/>
-        <span style="font-size: 12pt;">ЄДРПОУ: {company_edrpou}</span>
+        <strong><t t-esc="company.name or ''"/></strong><br/>
+        <span style="font-size: 12pt;"><t t-esc="company.partner_id.contact_address if company.partner_id else ''"/></span><br/>
+        <span style="font-size: 12pt;">ЄДРПОУ: <t t-esc="company.company_registry or ''"/></span>
     </div>
 
     <div style="text-align: center; margin: 30px 0;">
         <h2 style="margin: 0;">ДОВІДКА</h2>
         <p style="margin: 5px 0;">про стаж роботи</p>
-        <p style="margin: 5px 0;">№ {certificate_number} від {certificate_date}</p>
+        <p style="margin: 5px 0;">№ <t t-esc="certificate.name or 'New'"/> від <t t-esc="format_date(certificate.issue_date) or format_date(certificate.request_date)"/></p>
     </div>
 
     <p style="text-indent: 40px; text-align: justify;">
-        Видана <strong>{employee_name}</strong> у тому, що він(вона) працює
-        в {company_name} з {employee_hire_date} по теперішній час.
+        Видана <strong><t t-esc="employee.name or ''"/></strong> у тому, що він(вона) працює
+        в <t t-esc="company.name or ''"/> з <t t-esc="format_date(hire_date)"/> по теперішній час.
     </p>
 
     <p style="text-indent: 40px; text-align: justify;">
-        Загальний стаж роботи на підприємстві становить <strong>{work_experience}</strong>.
+        Загальний стаж роботи на підприємстві становить <strong><t t-esc="work_experience"/></strong>.
     </p>
 
     <p style="text-indent: 40px; text-align: justify;">
-        Довідка видана {destination}.
+        Довідка видана <t t-esc="destination"/>.
     </p>
 
     <div style="margin-top: 50px;">
         <table style="width: 100%; border: none;">
             <tr>
-                <td style="width: 50%;">{company_director_position}</td>
-                <td style="width: 50%; text-align: right;">________________ {company_director}</td>
+                <td style="width: 50%;"><t t-esc="director_position"/></td>
+                <td style="width: 50%; text-align: right;">________________ <t t-esc="director.name if director else ''"/></td>
             </tr>
         </table>
     </div>
@@ -224,37 +224,37 @@
             <field name="template_body"><![CDATA[
 <div style="font-family: Times New Roman, serif; font-size: 14pt; line-height: 1.5;">
     <div style="text-align: center; margin-bottom: 20px;">
-        <strong>{company_name}</strong><br/>
-        <span style="font-size: 12pt;">{company_address}</span><br/>
-        <span style="font-size: 12pt;">ЄДРПОУ: {company_edrpou}, тел.: {company_phone}</span>
+        <strong><t t-esc="company.name or ''"/></strong><br/>
+        <span style="font-size: 12pt;"><t t-esc="company.partner_id.contact_address if company.partner_id else ''"/></span><br/>
+        <span style="font-size: 12pt;">ЄДРПОУ: <t t-esc="company.company_registry or ''"/>, тел.: <t t-esc="company.phone or ''"/></span>
     </div>
 
     <div style="text-align: center; margin: 30px 0;">
         <h2 style="margin: 0;">ДОВІДКА</h2>
-        <p style="margin: 5px 0;">№ {certificate_number} від {certificate_date}</p>
+        <p style="margin: 5px 0;">№ <t t-esc="certificate.name or 'New'"/> від <t t-esc="format_date(certificate.issue_date) or format_date(certificate.request_date)"/></p>
     </div>
 
     <p style="text-indent: 40px; text-align: justify;">
-        Видана <strong>{employee_name}</strong>, РНОКПП: {employee_rnokpp},
-        у тому, що він(вона) дійсно працює в {company_name}
-        на посаді <strong>{employee_position}</strong> з {employee_hire_date}
+        Видана <strong><t t-esc="employee.name or ''"/></strong>, РНОКПП: <t t-esc="employee.rnokpp if hasattr(employee, 'rnokpp') else ''"/>,
+        у тому, що він(вона) дійсно працює в <t t-esc="company.name or ''"/>
+        на посаді <strong><t t-esc="employee.job_id.name if employee.job_id else ''"/></strong> з <t t-esc="format_date(hire_date)"/>
         по теперішній час на умовах безстрокового трудового договору.
     </p>
 
     <p style="text-indent: 40px; text-align: justify;">
-        Середньомісячний дохід за останні 6 місяців (з {period_from} по {period_to})
-        становить <strong>{total_income} грн.</strong>
+        Середньомісячний дохід за останні 6 місяців (з <t t-esc="format_date(certificate.period_from)"/> по <t t-esc="format_date(certificate.period_to)"/>)
+        становить <strong><t t-esc="format_money(certificate.total_income)"/> грн.</strong>
     </p>
 
     <p style="text-indent: 40px; text-align: justify;">
-        Довідка видана {destination}.
+        Довідка видана <t t-esc="destination"/>.
     </p>
 
     <div style="margin-top: 50px;">
         <table style="width: 100%; border: none;">
             <tr>
-                <td style="width: 50%;">{company_director_position}</td>
-                <td style="width: 50%; text-align: right;">________________ {company_director}</td>
+                <td style="width: 50%;"><t t-esc="director_position"/></td>
+                <td style="width: 50%; text-align: right;">________________ <t t-esc="director.name if director else ''"/></td>
             </tr>
             <tr>
                 <td style="width: 50%;">Головний бухгалтер</td>
@@ -282,12 +282,12 @@
 <div style="font-family: Times New Roman, serif; font-size: 14pt; line-height: 1.5;">
     <div style="text-align: center; margin: 30px 0;">
         <h2 style="margin: 0;">ХАРАКТЕРИСТИКА</h2>
-        <p style="margin: 5px 0;">№ {certificate_number}</p>
+        <p style="margin: 5px 0;">№ <t t-esc="certificate.name or 'New'"/></p>
     </div>
 
     <p style="text-indent: 40px; text-align: justify;">
-        <strong>{employee_name}</strong> працює в {company_name}
-        на посаді <strong>{employee_position}</strong> з {employee_hire_date}.
+        <strong><t t-esc="employee.name or ''"/></strong> працює в <t t-esc="company.name or ''"/>
+        на посаді <strong><t t-esc="employee.job_id.name if employee.job_id else ''"/></strong> з <t t-esc="format_date(hire_date)"/>.
     </p>
 
     <p style="text-indent: 40px; text-align: justify;">
@@ -306,19 +306,19 @@
     </p>
 
     <p style="text-indent: 40px; text-align: justify;">
-        Характеристика видана {destination}.
+        Характеристика видана <t t-esc="destination"/>.
     </p>
 
     <div style="margin-top: 50px;">
         <table style="width: 100%; border: none;">
             <tr>
-                <td style="width: 50%;">{company_director_position}</td>
-                <td style="width: 50%; text-align: right;">________________ {company_director}</td>
+                <td style="width: 50%;"><t t-esc="director_position"/></td>
+                <td style="width: 50%; text-align: right;">________________ <t t-esc="director.name if director else ''"/></td>
             </tr>
         </table>
     </div>
 
-    <p style="margin-top: 20px;">{certificate_date}</p>
+    <p style="margin-top: 20px;"><t t-esc="format_date(certificate.issue_date) or format_date(certificate.request_date)"/></p>
     <p style="font-size: 12pt;">М.П.</p>
 </div>
             ]]></field>

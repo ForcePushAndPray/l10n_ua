@@ -25,6 +25,13 @@ class HrOrder(models.Model):
     department_id = fields.Many2one('hr.department', string='Department', tracking=True)
     job_id = fields.Many2one('hr.job', string='Job Position', tracking=True)
 
+    @api.onchange('employee_id')
+    def _onchange_employee_id(self):
+        """Auto-fill department and job position from employee."""
+        if self.employee_id:
+            self.department_id = self.employee_id.department_id
+            self.job_id = self.employee_id.job_id
+
     subject = fields.Char(string='Subject', required=True, tracking=True, compute='_compute_subject', store=True, readonly=False)
 
     ORDER_TYPE_SUBJECTS = {

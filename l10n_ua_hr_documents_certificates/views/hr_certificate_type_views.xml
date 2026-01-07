@@ -40,6 +40,9 @@
                         <page string="Template" name="template">
                             <field name="template_body"/>
                         </page>
+                        <page string="Source" name="source">
+                            <field name="template_body" widget="ace"/>
+                        </page>
                         <page string="Description" name="description">
                             <field name="description"/>
                         </page>

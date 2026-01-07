@@ -20,7 +20,7 @@ class HrOrderTemplate(models.Model):
     ], string='Order Type', required=True)
 
     subject = fields.Char(string='Subject')
-    body = fields.Html(string='Body')
+    body = fields.Html(string='Body', sanitize=False)
     active = fields.Boolean(string='Active', default=True)
 
     notes = fields.Text(string='Notes')

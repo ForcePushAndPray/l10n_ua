@@ -40,6 +40,9 @@
                         <page string="Content Template">
                             <field name="body"/>
                         </page>
+                        <page string="Source code">
+                            <field name="body" widget="ace"/>
+                        </page>
                         <page string="Notes">
                             <field name="notes"/>
                         </page>

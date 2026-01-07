@@ -1,0 +1,76 @@
+@startuml module_architecture
+skinparam backgroundColor #FEFEFE
+skinparam componentStyle rectangle
+
+title Архітектура модулів Ukrainian HR Localization
+
+package "Базові модулі" {
+    [l10n_ua_hr_base] as base #LightBlue
+}
+
+package "Кадрові процеси" {
+    [l10n_ua_hr_contract] as contract #LightGreen
+    [l10n_ua_hr_documents] as docs #LightYellow
+    [l10n_ua_hr_documents_certificates] as certs #LightYellow
+}
+
+package "Облік часу" {
+    [l10n_ua_hr_holidays] as holidays #LightCoral
+    [l10n_ua_hr_timesheet] as timesheet #LightCoral
+}
+
+package "Зарплата та звітність" {
+    [l10n_ua_hr_salary] as salary #Plum
+    [l10n_ua_hr_reports] as reports #Plum
+}
+
+base --> contract
+base --> docs
+base --> holidays
+base --> timesheet
+base --> certs
+
+contract --> docs
+contract --> salary
+
+salary --> reports
+
+holidays --> timesheet
+
+note right of base
+  Працівники
+  Штатний розпис
+  КП-2010
+  Військовий облік
+end note
+
+note right of contract
+  Трудові договори
+  Графіки роботи
+  Надбавки
+end note
+
+note right of docs
+  Накази (П-1, П-3, П-4, П-5)
+  Шаблони QWeb
+  Особові справи
+end note
+
+note right of certs
+  Довідки
+  Шаблони QWeb
+end note
+
+note right of holidays
+  Відпустки
+  Лікарняні
+  е-ТВН
+end note
+
+note right of salary
+  Нарахування
+  ПДФО, ВЗ, ЄСВ
+  ПСП
+end note
+
+@enduml

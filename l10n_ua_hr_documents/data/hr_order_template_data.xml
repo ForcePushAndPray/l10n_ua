@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
     <data noupdate="0">
-        
+
         <!-- ========== ШАБЛОН НАКАЗУ ПРО ПРИЙНЯТТЯ НА РОБОТУ (П-1) ========== -->
         <record id="order_template_hiring" model="hr.order.template">
             <field name="name">Наказ про прийняття на роботу (форма П-1)</field>
@@ -22,57 +22,57 @@
             </tr>
         </table>
     </div>
-    
+
     <div style="text-align: center; margin-bottom: 20px;">
-        <strong>{company_name}</strong><br/>
+        <strong><t t-esc="company.name or '_______________'"/></strong><br/>
         <span style="font-size: 10pt;">(найменування підприємства, організації)</span>
     </div>
-    
+
     <div style="text-align: center; margin-bottom: 20px;">
         <h2 style="margin: 0;">НАКАЗ (РОЗПОРЯДЖЕННЯ)</h2>
         <h3 style="margin: 5px 0;">про прийняття на роботу</h3>
     </div>
-    
+
     <table style="width: 100%; margin-bottom: 20px;">
         <tr>
-            <td style="width: 50%;">№ {order_number}</td>
+            <td style="width: 50%;">№ <t t-esc="order.name or '______'"/></td>
             <td style="width: 50%; text-align: right;">
-                від "{order_date_day}" {order_date_month} {order_date_year} р.
+                від <t t-esc="format_date_ua(order.date)"/>
             </td>
         </tr>
     </table>
-    
+
     <div style="margin-bottom: 20px;">
         <p><strong>ПРИЙНЯТИ</strong> на роботу:</p>
-        
+
         <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
             <tr>
                 <td style="width: 30%; padding: 5px;">Прізвище, ім'я, по батькові:</td>
-                <td style="width: 70%; padding: 5px; border-bottom: 1px solid #000;">{employee_name}</td>
+                <td style="width: 70%; padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.name if employee else '________________________________'"/></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Табельний номер:</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;">{employee_barcode}</td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.barcode or '____________'" t-if="employee"/><t t-else="">____________</t></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Структурний підрозділ:</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;">{department_name}</td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="department.name if department else '________________________________'"/></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Посада (професія):</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;">{job_name}</td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="job.name if job else '________________________________'"/></td>
             </tr>
         </table>
-        
+
         <p style="margin: 10px 0;"><strong>Підстава:</strong> заява працівника</p>
     </div>
-    
+
     <div style="margin-top: 40px;">
         <table style="width: 100%;">
             <tr>
                 <td style="width: 40%;">Керівник підприємства</td>
                 <td style="width: 30%; text-align: center; border-bottom: 1px solid #000;"></td>
-                <td style="width: 30%; text-align: center;">{director_name}</td>
+                <td style="width: 30%; text-align: center;"><t t-esc="director.name if director else '________________'"/></td>
             </tr>
             <tr>
                 <td></td>
@@ -81,7 +81,7 @@
             </tr>
         </table>
     </div>
-    
+
     <div style="margin-top: 30px;">
         <p>З наказом ознайомлений(а):</p>
         <table style="width: 100%; margin-top: 10px;">
@@ -104,7 +104,7 @@
 </div>
 ]]></field>
         </record>
-        
+
         <!-- ========== ШАБЛОН НАКАЗУ ПРО ЗВІЛЬНЕННЯ (П-4) ========== -->
         <record id="order_template_dismissal" model="hr.order.template">
             <field name="name">Наказ про припинення трудового договору (форма П-4)</field>
@@ -125,58 +125,58 @@
             </tr>
         </table>
     </div>
-    
+
     <div style="text-align: center; margin-bottom: 20px;">
-        <strong>{company_name}</strong><br/>
+        <strong><t t-esc="company.name or '_______________'"/></strong><br/>
         <span style="font-size: 10pt;">(найменування підприємства, організації)</span>
     </div>
-    
+
     <div style="text-align: center; margin-bottom: 20px;">
         <h2 style="margin: 0;">НАКАЗ (РОЗПОРЯДЖЕННЯ)</h2>
         <h3 style="margin: 5px 0;">про припинення трудового договору (контракту)</h3>
     </div>
-    
+
     <table style="width: 100%; margin-bottom: 20px;">
         <tr>
-            <td style="width: 50%;">№ {order_number}</td>
+            <td style="width: 50%;">№ <t t-esc="order.name or '______'"/></td>
             <td style="width: 50%; text-align: right;">
-                від "{order_date_day}" {order_date_month} {order_date_year} р.
+                від <t t-esc="format_date_ua(order.date)"/>
             </td>
         </tr>
     </table>
-    
+
     <div style="margin-bottom: 20px;">
         <p><strong>ЗВІЛЬНИТИ</strong>:</p>
-        
+
         <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
             <tr>
                 <td style="width: 30%; padding: 5px;">Прізвище, ім'я, по батькові:</td>
-                <td style="width: 70%; padding: 5px; border-bottom: 1px solid #000;">{employee_name}</td>
+                <td style="width: 70%; padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.name if employee else '________________________________'"/></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Табельний номер:</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;">{employee_barcode}</td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.barcode or '____________'" t-if="employee"/><t t-else="">____________</t></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Структурний підрозділ:</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;">{department_name}</td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="department.name if department else '________________________________'"/></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Посада (професія):</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;">{job_name}</td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="job.name if job else '________________________________'"/></td>
             </tr>
         </table>
-        
+
         <p style="margin: 10px 0;"><strong>Причина звільнення:</strong> за власним бажанням, ст. 38 КЗпП України</p>
         <p style="margin: 10px 0;"><strong>Підстава:</strong> заява працівника</p>
     </div>
-    
+
     <div style="margin-top: 40px;">
         <table style="width: 100%;">
             <tr>
                 <td style="width: 40%;">Керівник підприємства</td>
                 <td style="width: 30%; text-align: center; border-bottom: 1px solid #000;"></td>
-                <td style="width: 30%; text-align: center;">{director_name}</td>
+                <td style="width: 30%; text-align: center;"><t t-esc="director.name if director else '________________'"/></td>
             </tr>
             <tr>
                 <td></td>
@@ -185,7 +185,7 @@
             </tr>
         </table>
     </div>
-    
+
     <div style="margin-top: 30px;">
         <p>З наказом ознайомлений(а):</p>
         <table style="width: 100%; margin-top: 10px;">
@@ -208,7 +208,7 @@
 </div>
 ]]></field>
         </record>
-        
+
         <!-- ========== ШАБЛОН НАКАЗУ ПРО ПЕРЕВЕДЕННЯ (П-5) ========== -->
         <record id="order_template_transfer" model="hr.order.template">
             <field name="name">Наказ про переведення на іншу роботу (форма П-5)</field>
@@ -229,61 +229,61 @@
             </tr>
         </table>
     </div>
-    
+
     <div style="text-align: center; margin-bottom: 20px;">
-        <strong>{company_name}</strong><br/>
+        <strong><t t-esc="company.name or '_______________'"/></strong><br/>
         <span style="font-size: 10pt;">(найменування підприємства, організації)</span>
     </div>
-    
+
     <div style="text-align: center; margin-bottom: 20px;">
         <h2 style="margin: 0;">НАКАЗ (РОЗПОРЯДЖЕННЯ)</h2>
         <h3 style="margin: 5px 0;">про переведення на іншу роботу</h3>
     </div>
-    
+
     <table style="width: 100%; margin-bottom: 20px;">
         <tr>
-            <td style="width: 50%;">№ {order_number}</td>
+            <td style="width: 50%;">№ <t t-esc="order.name or '______'"/></td>
             <td style="width: 50%; text-align: right;">
-                від "{order_date_day}" {order_date_month} {order_date_year} р.
+                від <t t-esc="format_date_ua(order.date)"/>
             </td>
         </tr>
     </table>
-    
+
     <div style="margin-bottom: 20px;">
         <p><strong>ПЕРЕВЕСТИ</strong>:</p>
-        
+
         <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
             <tr>
                 <td style="width: 30%; padding: 5px;">Прізвище, ім'я, по батькові:</td>
-                <td style="width: 70%; padding: 5px; border-bottom: 1px solid #000;">{employee_name}</td>
+                <td style="width: 70%; padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.name if employee else '________________________________'"/></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Табельний номер:</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;">{employee_barcode}</td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.barcode or '____________'" t-if="employee"/><t t-else="">____________</t></td>
             </tr>
         </table>
-        
+
         <p style="margin: 15px 0 5px 0;"><strong>НОВЕ МІСЦЕ РОБОТИ:</strong></p>
         <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
             <tr>
                 <td style="width: 30%; padding: 5px;">Структурний підрозділ:</td>
-                <td style="width: 70%; padding: 5px; border-bottom: 1px solid #000;">{department_name}</td>
+                <td style="width: 70%; padding: 5px; border-bottom: 1px solid #000;"><t t-esc="department.name if department else '________________________________'"/></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Посада (професія):</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;">{job_name}</td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="job.name if job else '________________________________'"/></td>
             </tr>
         </table>
-        
+
         <p style="margin: 10px 0;"><strong>Підстава:</strong> заява працівника</p>
     </div>
-    
+
     <div style="margin-top: 40px;">
         <table style="width: 100%;">
             <tr>
                 <td style="width: 40%;">Керівник підприємства</td>
                 <td style="width: 30%; text-align: center; border-bottom: 1px solid #000;"></td>
-                <td style="width: 30%; text-align: center;">{director_name}</td>
+                <td style="width: 30%; text-align: center;"><t t-esc="director.name if director else '________________'"/></td>
             </tr>
             <tr>
                 <td></td>
@@ -292,7 +292,7 @@
             </tr>
         </table>
     </div>
-    
+
     <div style="margin-top: 20px;">
         <p>З наказом ознайомлений(а), на переведення згоден(на):</p>
         <table style="width: 100%; margin-top: 10px;">
@@ -315,7 +315,7 @@
 </div>
 ]]></field>
         </record>
-        
+
         <!-- ========== ШАБЛОН НАКАЗУ ПРО НАДАННЯ ВІДПУСТКИ (П-3) ========== -->
         <record id="order_template_vacation" model="hr.order.template">
             <field name="name">Наказ про надання відпустки (форма П-3)</field>
@@ -336,50 +336,50 @@
             </tr>
         </table>
     </div>
-    
+
     <div style="text-align: center; margin-bottom: 20px;">
-        <strong>{company_name}</strong><br/>
+        <strong><t t-esc="company.name or '_______________'"/></strong><br/>
         <span style="font-size: 10pt;">(найменування підприємства, організації)</span>
     </div>
-    
+
     <div style="text-align: center; margin-bottom: 20px;">
         <h2 style="margin: 0;">НАКАЗ (РОЗПОРЯДЖЕННЯ)</h2>
         <h3 style="margin: 5px 0;">про надання відпустки</h3>
     </div>
-    
+
     <table style="width: 100%; margin-bottom: 20px;">
         <tr>
-            <td style="width: 50%;">№ {order_number}</td>
+            <td style="width: 50%;">№ <t t-esc="order.name or '______'"/></td>
             <td style="width: 50%; text-align: right;">
-                від "{order_date_day}" {order_date_month} {order_date_year} р.
+                від <t t-esc="format_date_ua(order.date)"/>
             </td>
         </tr>
     </table>
-    
+
     <div style="margin-bottom: 20px;">
         <p><strong>НАДАТИ ВІДПУСТКУ</strong>:</p>
-        
+
         <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
             <tr>
                 <td style="width: 30%; padding: 5px;">Прізвище, ім'я, по батькові:</td>
-                <td style="width: 70%; padding: 5px; border-bottom: 1px solid #000;">{employee_name}</td>
+                <td style="width: 70%; padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.name if employee else '________________________________'"/></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Табельний номер:</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;">{employee_barcode}</td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.barcode or '____________'" t-if="employee"/><t t-else="">____________</t></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Структурний підрозділ:</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;">{department_name}</td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="department.name if department else '________________________________'"/></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Посада (професія):</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;">{job_name}</td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="job.name if job else '________________________________'"/></td>
             </tr>
         </table>
-        
+
         <p style="margin: 15px 0 5px 0;"><strong>Вид відпустки:</strong> щорічна основна відпустка</p>
-        
+
         <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
             <tr>
                 <td style="width: 50%; padding: 5px;">Тривалість відпустки:</td>
@@ -394,16 +394,16 @@
                 <td style="padding: 5px; border-bottom: 1px solid #000;">"___" ____________ 20__ р.</td>
             </tr>
         </table>
-        
+
         <p style="margin: 10px 0;"><strong>Підстава:</strong> заява працівника, графік відпусток</p>
     </div>
-    
+
     <div style="margin-top: 40px;">
         <table style="width: 100%;">
             <tr>
                 <td style="width: 40%;">Керівник підприємства</td>
                 <td style="width: 30%; text-align: center; border-bottom: 1px solid #000;"></td>
-                <td style="width: 30%; text-align: center;">{director_name}</td>
+                <td style="width: 30%; text-align: center;"><t t-esc="director.name if director else '________________'"/></td>
             </tr>
             <tr>
                 <td></td>
@@ -412,7 +412,7 @@
             </tr>
         </table>
     </div>
-    
+
     <div style="margin-top: 20px;">
         <p>З наказом ознайомлений(а):</p>
         <table style="width: 100%; margin-top: 10px;">
@@ -435,7 +435,7 @@
 </div>
 ]]></field>
         </record>
-        
+
         <!-- ========== ШАБЛОН НАКАЗУ ПРО ПРЕМІЮВАННЯ ========== -->
         <record id="order_template_bonus" model="hr.order.template">
             <field name="name">Наказ про преміювання працівника</field>
@@ -445,37 +445,37 @@
             <field name="body"><![CDATA[
 <div class="order-document" style="font-family: 'Times New Roman', serif; font-size: 14pt; line-height: 1.5;">
     <div style="text-align: center; margin-bottom: 20px;">
-        <strong>{company_name}</strong><br/>
+        <strong><t t-esc="company.name or '_______________'"/></strong><br/>
         <span style="font-size: 10pt;">(найменування підприємства, організації)</span>
     </div>
-    
+
     <div style="text-align: center; margin-bottom: 20px;">
         <h2 style="margin: 0;">НАКАЗ</h2>
         <h3 style="margin: 5px 0;">про преміювання</h3>
     </div>
-    
+
     <table style="width: 100%; margin-bottom: 20px;">
         <tr>
-            <td style="width: 50%;">№ {order_number}</td>
+            <td style="width: 50%;">№ <t t-esc="order.name or '______'"/></td>
             <td style="width: 50%; text-align: right;">
-                від "{order_date_day}" {order_date_month} {order_date_year} р.
+                від <t t-esc="format_date_ua(order.date)"/>
             </td>
         </tr>
     </table>
-    
+
     <div style="margin-bottom: 20px;">
         <p style="text-indent: 30px;">
-            На підставі статті 97 Кодексу законів про працю України, 
-            Положення про преміювання працівників {company_name}, 
+            На підставі статті 97 Кодексу законів про працю України,
+            Положення про преміювання працівників <t t-esc="company.name or '_______________'"/>,
             з метою матеріального стимулювання працівників,
         </p>
-        
+
         <p style="text-align: center; margin: 20px 0;"><strong>НАКАЗУЮ:</strong></p>
-        
+
         <p style="margin: 10px 0;">
             <strong>1.</strong> За сумлінне виконання посадових обов'язків, досягнення високих результатів у роботі преміювати:
         </p>
-        
+
         <table style="width: 100%; border-collapse: collapse; margin: 15px 0; border: 1px solid #000;">
             <thead>
                 <tr style="background-color: #f0f0f0;">
@@ -488,28 +488,28 @@
             <tbody>
                 <tr>
                     <td style="border: 1px solid #000; padding: 8px; text-align: center;">1</td>
-                    <td style="border: 1px solid #000; padding: 8px;">{employee_name}</td>
-                    <td style="border: 1px solid #000; padding: 8px;">{job_name}</td>
+                    <td style="border: 1px solid #000; padding: 8px;"><t t-esc="employee.name if employee else '________________________________'"/></td>
+                    <td style="border: 1px solid #000; padding: 8px;"><t t-esc="job.name if job else '________________________________'"/></td>
                     <td style="border: 1px solid #000; padding: 8px; text-align: right;">________</td>
                 </tr>
             </tbody>
         </table>
-        
+
         <p style="margin: 10px 0;">
             <strong>2.</strong> Бухгалтерії здійснити виплату премії разом із заробітною платою.
         </p>
-        
+
         <p style="margin: 10px 0;">
             <strong>Підстава:</strong> Положення про преміювання, доповідна записка
         </p>
     </div>
-    
+
     <div style="margin-top: 40px;">
         <table style="width: 100%;">
             <tr>
                 <td style="width: 40%;">Керівник підприємства</td>
                 <td style="width: 30%; text-align: center; border-bottom: 1px solid #000;"></td>
-                <td style="width: 30%; text-align: center;">{director_name}</td>
+                <td style="width: 30%; text-align: center;"><t t-esc="director.name if director else '________________'"/></td>
             </tr>
             <tr>
                 <td></td>
@@ -518,12 +518,12 @@
             </tr>
         </table>
     </div>
-    
+
     <div style="margin-top: 20px;">
         <p>З наказом ознайомлені:</p>
         <table style="width: 100%; margin-top: 10px;">
             <tr>
-                <td style="width: 40%; padding: 5px; border-bottom: 1px solid #000;">{employee_name}</td>
+                <td style="width: 40%; padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.name if employee else '________________________________'"/></td>
                 <td style="width: 30%; padding: 5px; text-align: center; border-bottom: 1px solid #000;"></td>
                 <td style="width: 30%; padding: 5px; text-align: center; border-bottom: 1px solid #000;"></td>
             </tr>
@@ -537,7 +537,7 @@
 </div>
 ]]></field>
         </record>
-        
+
         <!-- ========== ШАБЛОН НАКАЗУ ПРО ЛІКАРНЯНИЙ ========== -->
         <record id="order_template_sick_leave" model="hr.order.template">
             <field name="name">Наказ про надання листка непрацездатності</field>
@@ -547,54 +547,54 @@
             <field name="body"><![CDATA[
 <div class="order-document" style="font-family: 'Times New Roman', serif; font-size: 14pt; line-height: 1.5;">
     <div style="text-align: center; margin-bottom: 20px;">
-        <strong>{company_name}</strong><br/>
+        <strong><t t-esc="company.name or '_______________'"/></strong><br/>
         <span style="font-size: 10pt;">(найменування підприємства, організації)</span>
     </div>
-    
+
     <div style="text-align: center; margin-bottom: 20px;">
         <h2 style="margin: 0;">НАКАЗ</h2>
         <h3 style="margin: 5px 0;">про оплату листка непрацездатності</h3>
     </div>
-    
+
     <table style="width: 100%; margin-bottom: 20px;">
         <tr>
-            <td style="width: 50%;">№ {order_number}</td>
+            <td style="width: 50%;">№ <t t-esc="order.name or '______'"/></td>
             <td style="width: 50%; text-align: right;">
-                від "{order_date_day}" {order_date_month} {order_date_year} р.
+                від <t t-esc="format_date_ua(order.date)"/>
             </td>
         </tr>
     </table>
-    
+
     <div style="margin-bottom: 20px;">
         <p style="text-indent: 30px;">
             На підставі листка непрацездатності № ____________,
         </p>
-        
+
         <p style="text-align: center; margin: 20px 0;"><strong>НАКАЗУЮ:</strong></p>
-        
+
         <p style="margin: 10px 0;">
             <strong>1.</strong> Оплатити листок непрацездатності працівнику:
         </p>
-        
+
         <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
             <tr>
                 <td style="width: 30%; padding: 5px;">Прізвище, ім'я, по батькові:</td>
-                <td style="width: 70%; padding: 5px; border-bottom: 1px solid #000;">{employee_name}</td>
+                <td style="width: 70%; padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.name if employee else '________________________________'"/></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Табельний номер:</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;">{employee_barcode}</td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.barcode or '____________'" t-if="employee"/><t t-else="">____________</t></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Структурний підрозділ:</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;">{department_name}</td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="department.name if department else '________________________________'"/></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Посада (професія):</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;">{job_name}</td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="job.name if job else '________________________________'"/></td>
             </tr>
         </table>
-        
+
         <p style="margin: 15px 0 5px 0;"><strong>2.</strong> Період непрацездатності:</p>
         <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
             <tr>
@@ -610,23 +610,23 @@
                 <td style="padding: 5px; border-bottom: 1px solid #000;">____ календарних днів</td>
             </tr>
         </table>
-        
+
         <p style="margin: 10px 0;">
-            <strong>3.</strong> Бухгалтерії здійснити нарахування та виплату допомоги по тимчасовій 
+            <strong>3.</strong> Бухгалтерії здійснити нарахування та виплату допомоги по тимчасовій
             непрацездатності відповідно до чинного законодавства.
         </p>
-        
+
         <p style="margin: 10px 0;">
             <strong>Підстава:</strong> листок непрацездатності № ____________
         </p>
     </div>
-    
+
     <div style="margin-top: 40px;">
         <table style="width: 100%;">
             <tr>
                 <td style="width: 40%;">Керівник підприємства</td>
                 <td style="width: 30%; text-align: center; border-bottom: 1px solid #000;"></td>
-                <td style="width: 30%; text-align: center;">{director_name}</td>
+                <td style="width: 30%; text-align: center;"><t t-esc="director.name if director else '________________'"/></td>
             </tr>
             <tr>
                 <td></td>
@@ -635,7 +635,7 @@
             </tr>
         </table>
     </div>
-    
+
     <div style="margin-top: 20px;">
         <p>З наказом ознайомлений(а):</p>
         <table style="width: 100%; margin-top: 10px;">
@@ -658,7 +658,7 @@
 </div>
 ]]></field>
         </record>
-        
+
         <!-- ========== ШАБЛОН НАКАЗУ ПРО ВІДРЯДЖЕННЯ ========== -->
         <record id="order_template_business_trip" model="hr.order.template">
             <field name="name">Наказ про службове відрядження</field>
@@ -668,54 +668,54 @@
             <field name="body"><![CDATA[
 <div class="order-document" style="font-family: 'Times New Roman', serif; font-size: 14pt; line-height: 1.5;">
     <div style="text-align: center; margin-bottom: 20px;">
-        <strong>{company_name}</strong><br/>
+        <strong><t t-esc="company.name or '_______________'"/></strong><br/>
         <span style="font-size: 10pt;">(найменування підприємства, організації)</span>
     </div>
-    
+
     <div style="text-align: center; margin-bottom: 20px;">
         <h2 style="margin: 0;">НАКАЗ</h2>
         <h3 style="margin: 5px 0;">про направлення у службове відрядження</h3>
     </div>
-    
+
     <table style="width: 100%; margin-bottom: 20px;">
         <tr>
-            <td style="width: 50%;">№ {order_number}</td>
+            <td style="width: 50%;">№ <t t-esc="order.name or '______'"/></td>
             <td style="width: 50%; text-align: right;">
-                від "{order_date_day}" {order_date_month} {order_date_year} р.
+                від <t t-esc="format_date_ua(order.date)"/>
             </td>
         </tr>
     </table>
-    
+
     <div style="margin-bottom: 20px;">
         <p style="text-indent: 30px;">
             Відповідно до Інструкції про службові відрядження в межах України та за кордон,
         </p>
-        
+
         <p style="text-align: center; margin: 20px 0;"><strong>НАКАЗУЮ:</strong></p>
-        
+
         <p style="margin: 10px 0;">
             <strong>1.</strong> Направити у службове відрядження:
         </p>
-        
+
         <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
             <tr>
                 <td style="width: 30%; padding: 5px;">Прізвище, ім'я, по батькові:</td>
-                <td style="width: 70%; padding: 5px; border-bottom: 1px solid #000;">{employee_name}</td>
+                <td style="width: 70%; padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.name if employee else '________________________________'"/></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Табельний номер:</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;">{employee_barcode}</td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.barcode or '____________'" t-if="employee"/><t t-else="">____________</t></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Структурний підрозділ:</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;">{department_name}</td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="department.name if department else '________________________________'"/></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Посада (професія):</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;">{job_name}</td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="job.name if job else '________________________________'"/></td>
             </tr>
         </table>
-        
+
         <p style="margin: 15px 0 5px 0;"><strong>2.</strong> Пункт призначення:</p>
         <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
             <tr>
@@ -727,7 +727,7 @@
                 <td style="padding: 5px; border-bottom: 1px solid #000;">________________________________</td>
             </tr>
         </table>
-        
+
         <p style="margin: 15px 0 5px 0;"><strong>3.</strong> Строк відрядження:</p>
         <table style="width: 100%; border-collapse: collapse; margin: 10px 0;">
             <tr>
@@ -743,26 +743,26 @@
                 <td style="padding: 5px; border-bottom: 1px solid #000;">____ календарних днів</td>
             </tr>
         </table>
-        
+
         <p style="margin: 10px 0;">
             <strong>4.</strong> Мета відрядження: ________________________________
         </p>
-        
+
         <p style="margin: 10px 0;">
             <strong>5.</strong> Бухгалтерії видати аванс на відрядження у сумі ____________ грн.
         </p>
-        
+
         <p style="margin: 10px 0;">
             <strong>Підстава:</strong> доповідна записка
         </p>
     </div>
-    
+
     <div style="margin-top: 40px;">
         <table style="width: 100%;">
             <tr>
                 <td style="width: 40%;">Керівник підприємства</td>
                 <td style="width: 30%; text-align: center; border-bottom: 1px solid #000;"></td>
-                <td style="width: 30%; text-align: center;">{director_name}</td>
+                <td style="width: 30%; text-align: center;"><t t-esc="director.name if director else '________________'"/></td>
             </tr>
             <tr>
                 <td></td>
@@ -771,7 +771,7 @@
             </tr>
         </table>
     </div>
-    
+
     <div style="margin-top: 20px;">
         <p>З наказом ознайомлений(а):</p>
         <table style="width: 100%; margin-top: 10px;">
@@ -794,6 +794,6 @@
 </div>
 ]]></field>
         </record>
-        
+
     </data>
 </odoo>

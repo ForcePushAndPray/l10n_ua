@@ -80,6 +80,8 @@ class HrEmployee(models.Model):
                                        help='Territorial Recruitment Center')
     military_reservation = fields.Boolean(string='Reserved (Booking)')
     military_reservation_until = fields.Date(string='Reserved Until')
+    military_reservplus_id = fields.Char(string='Reserv+ ID',
+                                          help='Ідентифікатор у системі Резерв+')
 
     # === Benefits ===
     benefit_ids = fields.Many2many('hr.employee.benefit', string='Benefits')

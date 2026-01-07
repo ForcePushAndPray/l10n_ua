@@ -1557,6 +1557,11 @@ msgid "Reserved Until"
 msgstr "Заброньований до"
 
 #. module: l10n_ua_hr_base
+#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__military_reservplus_id
+msgid "Reserv+ ID"
+msgstr "Ідентифікатор Резерв+"
+
+#. module: l10n_ua_hr_base
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_company_form_inherit_ua_hr
 msgid "Responsible Persons"
 msgstr "Відповідальні особи"

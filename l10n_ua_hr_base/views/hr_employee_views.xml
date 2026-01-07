@@ -90,6 +90,7 @@
                             <field name="military_tcc_id" invisible="military_status not in ('liable', 'reserved')"/>
                             <field name="military_reservation" invisible="military_status not in ('liable', 'reserved')"/>
                             <field name="military_reservation_until" invisible="not military_reservation"/>
+                            <field name="military_reservplus_id" invisible="not military_reservation"/>
                         </group>
                     </group>
                 </page>

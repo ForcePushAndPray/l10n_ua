@@ -147,7 +147,7 @@ class HrCertificateType(models.Model):
             'name': self.name,
             'type': 'ir.actions.act_window',
             'res_model': 'hr.certificate',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('certificate_type_id', '=', self.id)],
             'context': {'default_certificate_type_id': self.id},
         }

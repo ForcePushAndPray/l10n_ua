@@ -49,6 +49,7 @@
                                     <field name="department_id"/>
                                     <field name="job_id"/>
                                     <field name="scheduled_days"/>
+                                    <field name="scheduled_hours" sum="Total" optional="show"/>
                                     <field name="worked_days"/>
                                     <field name="worked_hours" sum="Total"/>
                                     <field name="overtime_hours" sum="Total" optional="show"/>
@@ -56,6 +57,7 @@
                                     <field name="vacation_days" optional="show"/>
                                     <field name="sick_days" optional="show"/>
                                     <field name="absence_days" optional="show"/>
+                                    <field name="payslip_id" optional="hide"/>
                                 </list>
                             </field>
                         </page>
@@ -102,10 +104,12 @@
                         </group>
                         <group>
                             <field name="scheduled_days"/>
+                            <field name="scheduled_hours"/>
                             <field name="worked_days"/>
                             <field name="worked_hours"/>
                             <field name="overtime_hours"/>
                             <field name="night_hours"/>
+                            <field name="payslip_id"/>
                         </group>
                     </group>
                     <notebook>

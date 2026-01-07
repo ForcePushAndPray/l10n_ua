@@ -1,4 +1,8 @@
+import logging
+from lxml import etree
 from odoo import models, fields, api
+
+_logger = logging.getLogger(__name__)
 
 
 class HrOrderTemplateWizard(models.TransientModel):
@@ -30,42 +34,73 @@ class HrOrderTemplateWizard(models.TransientModel):
         order = self.order_id
         vals = {}
 
+        # Prepare context for QWeb rendering
+        render_context = self._get_render_context(order)
+
         if template.subject:
-            vals['subject'] = self._render_template_string(template.subject, order)
+            vals['subject'] = self._render_qweb(template.subject, render_context)
 
         if template.body:
-            vals['content'] = self._render_template_string(template.body, order)
+            vals['content'] = self._render_qweb(template.body, render_context)
 
         if vals:
             order.write(vals)
 
         return {'type': 'ir.actions.act_window_close'}
 
-    def _render_template_string(self, template_str, order):
+    def _get_render_context(self, order):
+        """Prepare context dictionary for QWeb template rendering."""
         employee = order.employee_id
         company = order.company_id
 
-        replacements = {
-            '{company_name}': company.name or '_______________',
-            '{order_number}': order.name or '______',
-            '{order_date}': order.date.strftime('%d.%m.%Y') if order.date else '____________',
-            '{order_date_day}': str(order.date.day) if order.date else '___',
-            '{order_date_month}': self._get_month_name(order.date.month) if order.date else '____________',
-            '{order_date_year}': str(order.date.year) if order.date else '20__',
-            '{employee_name}': employee.name if employee else '________________________________',
-            '{employee_barcode}': employee.barcode or '____________' if employee else '____________',
-            '{department_name}': order.department_id.name if order.department_id else (employee.department_id.name if employee and employee.department_id else '________________________________'),
-            '{job_name}': order.job_id.name if order.job_id else (employee.job_id.name if employee and employee.job_id else '________________________________'),
-            '{director_name}': '________________',
+        # Get director from company (hr_responsible_id or first manager)
+        director = company.hr_responsible_id if hasattr(company, 'hr_responsible_id') and company.hr_responsible_id else False
+
+        return {
+            'o': order,
+            'order': order,
+            'employee': employee,
+            'company': company,
+            'department': order.department_id or (employee.department_id if employee else False),
+            'job': order.job_id or (employee.job_id if employee else False),
+            'director': director,
+            'format_date': self._format_date,
+            'format_date_ua': self._format_date_ua,
+            'month_name': self._get_month_name,
         }
 
-        result = template_str
-        for placeholder, value in replacements.items():
-            result = result.replace(placeholder, str(value))
+    def _render_qweb(self, template_str, context):
+        """Render template string using QWeb engine."""
+        if not template_str:
+            return ''
 
-        return result
+        try:
+            # Wrap template in t element for QWeb
+            qweb_template = f'<t>{template_str}</t>'
+            # Parse as XML element
+            template_element = etree.fromstring(qweb_template.encode('utf-8'))
+            # Render using QWeb
+            result = self.env['ir.qweb']._render(template_element, context)
+            return str(result)
+        except Exception as e:
+            _logger.error(f"QWeb rendering failed: {e}")
+            # Fallback: return template as-is if QWeb fails
+            return template_str
+
+    def _format_date(self, date_val, fmt='%d.%m.%Y'):
+        """Format date helper for templates."""
+        if date_val:
+            return date_val.strftime(fmt)
+        return '____________'
+
+    def _format_date_ua(self, date_val):
+        """Format date in Ukrainian style: "15" січня 2026 р."""
+        if date_val:
+            return f'"{date_val.day}" {self._get_month_name(date_val.month)} {date_val.year} р.'
+        return '"___" ____________ 20__ р.'
 
     def _get_month_name(self, month):
+        """Get Ukrainian month name in genitive case."""
         months = {
             1: 'січня', 2: 'лютого', 3: 'березня', 4: 'квітня',
             5: 'травня', 6: 'червня', 7: 'липня', 8: 'серпня',

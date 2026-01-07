@@ -204,14 +204,30 @@ class HrTimesheetLine(models.Model):
         compute='_compute_totals',
         store=True
     )
+    scheduled_hours = fields.Float(
+        string='Scheduled Hours',
+        compute='_compute_totals',
+        store=True,
+        help='Total scheduled working hours for the month'
+    )
 
-    @api.depends('day_ids.code_id', 'day_ids.hours', 'day_ids.overtime_hours', 'day_ids.night_hours')
+    # Payroll integration
+    payslip_id = fields.Many2one(
+        'hr.payslip',
+        string='Payslip',
+        readonly=True,
+        help='Link to payslip for this timesheet line'
+    )
+
+    @api.depends('day_ids.code_id', 'day_ids.hours', 'day_ids.overtime_hours', 'day_ids.night_hours', 'day_ids.is_scheduled')
     def _compute_totals(self):
         for line in self:
             days = line.day_ids
-            line.scheduled_days = len(days.filtered(lambda d: d.code_id.code_type == 'work' or d.is_scheduled))
+            scheduled_days = days.filtered(lambda d: d.is_scheduled)
+            line.scheduled_days = len(scheduled_days)
+            line.scheduled_hours = sum(scheduled_days.mapped('hours'))
             line.worked_days = len(days.filtered(lambda d: d.code_id.is_worked))
-            line.worked_hours = sum(days.mapped('hours'))
+            line.worked_hours = sum(days.filtered(lambda d: d.code_id.is_worked).mapped('hours'))
             line.overtime_hours = sum(days.mapped('overtime_hours'))
             line.night_hours = sum(days.mapped('night_hours'))
             line.absence_days = len(days.filtered(lambda d: d.code_id.code_type == 'absence'))

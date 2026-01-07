@@ -38,6 +38,7 @@ Requires l10n_ua_hr_base module.
         'wizard/hr_order_template_wizard_views.xml',
         'views/hr_order_type_views.xml',
         'views/hr_personal_file_views.xml',
+        'views/hr_employee_views.xml',
         'views/menu_views.xml',
         'report/hr_order_report.xml',
     ],
