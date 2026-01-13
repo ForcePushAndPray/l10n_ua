@@ -55,6 +55,6 @@ to avoid naming conflicts with existing modules on Odoo Apps.
     'installable': True,
     'application': True,
     'auto_install': False,
-    'price': 299,
+    'price': 19,
     'currency': 'EUR',
 }

@@ -51,6 +51,6 @@ This package is designed for Odoo 19 Community Edition.
     'installable': True,
     'application': True,
     'auto_install': False,
-    'price': 499,
+    'price': 0,
     'currency': 'EUR',
 }

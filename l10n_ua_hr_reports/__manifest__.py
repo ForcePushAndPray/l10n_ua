@@ -38,6 +38,6 @@ Requires l10n_ua_hr_salary module.
     'installable': True,
     'application': False,
     'auto_install': False,
-    'price': 199,
+    'price': 19,
     'currency': 'EUR',
 }

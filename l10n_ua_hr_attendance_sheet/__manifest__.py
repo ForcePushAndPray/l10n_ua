@@ -42,6 +42,6 @@ Requires l10n_ua_hr_base module.
     'installable': True,
     'application': False,
     'auto_install': False,
-    'price': 99,
+    'price': 19,
     'currency': 'EUR',
 }
