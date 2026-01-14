@@ -43,7 +43,10 @@ Requires l10n_ua_hr_base module.
         'views/menu_views.xml',
         'report/hr_certificate_report.xml',
     ],
+    'images': ['static/description/banner.png'],
     'installable': True,
     'application': False,
     'auto_install': False,
+    'price': 19,
+    'currency': 'EUR',
 }

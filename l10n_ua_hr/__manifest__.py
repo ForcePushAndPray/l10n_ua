@@ -15,6 +15,7 @@ This is a meta-module that installs all Ukrainian HR localization modules:
 * **l10n_ua_hr_holidays** - Vacations and sick leaves (extends hr_holidays)
 * **l10n_ua_hr_attendance_sheet** - Attendance sheet (Табель П-5), production calendar
 * **l10n_ua_hr_documents** - HR orders, personal files
+* **l10n_ua_hr_documents_certificates** - HR certificates (довідки)
 * **l10n_ua_hr_reports** - Regulatory reports (1DF, D5)
 
 Features:
@@ -44,6 +45,7 @@ This package is designed for Odoo 19 Community Edition.
         'l10n_ua_hr_holidays',
         'l10n_ua_hr_attendance_sheet',
         'l10n_ua_hr_documents',
+        'l10n_ua_hr_documents_certificates',
         'l10n_ua_hr_reports',
     ],
     'data': [],

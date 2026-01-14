@@ -67,7 +67,6 @@ This module is required for all other l10n_ua_hr_* modules.
     'installable': True,
     'application': True,
     'auto_install': False,
-    'application': True,
     'price': 19,
     'currency': 'EUR'
 
