@@ -53,8 +53,8 @@ to avoid naming conflicts with existing modules on Odoo Apps.
     ],
     'images': ['static/description/banner.png'],
     'installable': True,
-    'application': True,
+    'application': False,
     'auto_install': False,
-    'price': 19,
+    'price': 0,
     'currency': 'EUR',
 }
