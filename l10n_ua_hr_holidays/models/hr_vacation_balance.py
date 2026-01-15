@@ -1,4 +1,5 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
 
 
@@ -84,7 +85,7 @@ class HrVacationBalance(models.Model):
             year_start = fields.Date.from_string(f'{rec.year}-01-01')
             year_end = fields.Date.from_string(f'{rec.year}-12-31')
             
-            # Approved leaves
+            # Approved leaves - use calendar_days per Ukrainian law
             approved_leaves = self.env['hr.leave'].search([
                 ('employee_id', '=', rec.employee_id.id),
                 ('holiday_status_id', '=', rec.leave_type_id.id),
@@ -92,9 +93,9 @@ class HrVacationBalance(models.Model):
                 ('date_from', '>=', year_start),
                 ('date_to', '<=', year_end),
             ])
-            rec.used_days = sum(approved_leaves.mapped('number_of_days'))
+            rec.used_days = sum(approved_leaves.mapped('calendar_days'))
             
-            # Planned (not yet approved)
+            # Planned (not yet approved) - use calendar_days per Ukrainian law
             planned_leaves = self.env['hr.leave'].search([
                 ('employee_id', '=', rec.employee_id.id),
                 ('holiday_status_id', '=', rec.leave_type_id.id),
@@ -102,7 +103,7 @@ class HrVacationBalance(models.Model):
                 ('date_from', '>=', year_start),
                 ('date_to', '<=', year_end),
             ])
-            rec.planned_days = sum(planned_leaves.mapped('number_of_days'))
+            rec.planned_days = sum(planned_leaves.mapped('calendar_days'))
 
     @api.depends('employee_id', 'year')
     def _compute_display_name(self):
@@ -115,9 +116,11 @@ class HrVacationBalance(models.Model):
         if year is None:
             year = fields.Date.today().year
         
-        employees = self.env['hr.employee'].search([
-            ('contract_ids.state', '=', 'open'),
-        ])
+        domain = []
+        if 'contract_id' in self.env['hr.employee']._fields:
+            domain.append(('contract_id.state', '=', 'open'))
+        
+        employees = self.env['hr.employee'].search(domain)
         
         annual_leave_type = self.env['hr.leave.type'].search([
             ('ua_leave_category', '=', 'annual_basic'),
@@ -158,14 +161,50 @@ class HrVacationBalance(models.Model):
         'Balance for this employee, leave type and year already exists!',
     )
 
-    def calculate_compensation(self, termination_date=None):
-        """Calculate compensation for unused vacation on termination.
+    @api.constrains('carried_over', 'year', 'employee_id', 'leave_type_id')
+    def _check_carryover_limit(self):
+        """Check that vacation is not carried over for more than max_carryover_years.
+        
+        Ukrainian law requires that vacation must be used within 2 years.
+        """
+        for rec in self:
+            if not rec.carried_over or rec.carried_over <= 0:
+                continue
+            
+            max_years = rec.leave_type_id.max_carryover_years or 2
+            
+            oldest_allowed_year = rec.year - max_years
+            old_balances = self.search([
+                ('employee_id', '=', rec.employee_id.id),
+                ('leave_type_id', '=', rec.leave_type_id.id),
+                ('year', '<=', oldest_allowed_year),
+                ('remaining_days', '>', 0),
+            ])
+            
+            if old_balances:
+                raise ValidationError(_(
+                    'Employee %(employee)s has unused vacation days from %(year)s or earlier. '
+                    'According to Ukrainian law, vacation must be used within %(max_years)s years.',
+                    employee=rec.employee_id.name,
+                    year=oldest_allowed_year,
+                    max_years=max_years,
+                ))
+
+    def calculate_compensation(self, termination_date=None, is_termination=True):
+        """Calculate compensation for unused vacation.
 
         Args:
-            termination_date: Date of termination (defaults to today)
+            termination_date: Date of termination/calculation (defaults to today)
+            is_termination: If True, compensate all unused days (on termination).
+                           If False, only compensate days over 24 (without termination).
 
         Returns:
             float: Compensation amount for unused vacation days
+            
+        Per Ukrainian law:
+        - On termination: all unused days are compensated
+        - Without termination: only days over 24 can be compensated,
+          and employee must have used at least 24 days in current year
         """
         self.ensure_one()
 
@@ -174,6 +213,16 @@ class HrVacationBalance(models.Model):
 
         if termination_date is None:
             termination_date = fields.Date.today()
+
+        compensable_days = self.remaining_days
+        
+        if not is_termination:
+            min_annual_days = self.leave_type_id.annual_days or 24
+            if self.used_days < min_annual_days:
+                return 0.0
+            compensable_days = max(0, self.remaining_days - min_annual_days)
+            if compensable_days <= 0:
+                return 0.0
 
         # Get average daily salary using hr.leave calculation
         leave = self.env['hr.leave'].new({
@@ -185,7 +234,7 @@ class HrVacationBalance(models.Model):
         if avg_salary <= 0:
             return 0.0
 
-        compensation = self.remaining_days * avg_salary
+        compensation = compensable_days * avg_salary
         return round(compensation, 2)
 
     def action_calculate_compensation(self):

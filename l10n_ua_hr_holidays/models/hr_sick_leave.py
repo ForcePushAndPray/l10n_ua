@@ -85,8 +85,9 @@ class HrSickLeave(models.Model):
     
     employer_days = fields.Integer(
         string='Employer Days',
-        default=5,
-        help='First 5 days paid by employer'
+        compute='_compute_employer_days',
+        store=True,
+        help='First 5 days paid by employer (0 for pregnancy)'
     )
     employer_amount = fields.Float(
         string='Employer Amount',
@@ -150,13 +151,18 @@ class HrSickLeave(models.Model):
             else:
                 rec.payment_percent = 100.0
 
+    @api.depends('sick_leave_type', 'calendar_days')
+    def _compute_employer_days(self):
+        for rec in self:
+            if rec.sick_leave_type == 'pregnancy':
+                rec.employer_days = 0
+            else:
+                rec.employer_days = min(5, rec.calendar_days)
+
     @api.depends('calendar_days', 'employer_days')
     def _compute_fss_days(self):
         for rec in self:
-            if rec.sick_leave_type == 'pregnancy':
-                rec.fss_days = rec.calendar_days
-            else:
-                rec.fss_days = max(0, rec.calendar_days - rec.employer_days)
+            rec.fss_days = max(0, rec.calendar_days - rec.employer_days)
 
     @api.depends('calendar_days', 'employer_days', 'fss_days', 
                  'average_daily_salary', 'payment_percent', 'sick_leave_type')

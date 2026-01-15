@@ -114,7 +114,7 @@ class HrPayslipRun(models.Model):
         
         employees = self.env['hr.employee'].search([
             ('company_id', '=', self.company_id.id),
-            ('contract_ids.state', '=', 'open'),
+            ('contract_ua_ids.state', '=', 'open'),
         ])
         
         for employee in employees:

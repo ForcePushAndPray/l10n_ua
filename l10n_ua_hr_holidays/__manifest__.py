@@ -25,12 +25,15 @@ Requires l10n_ua_hr_base module.
     'license': 'LGPL-3',
     'depends': [
         'hr_holidays',
+        'resource',
         'l10n_ua_hr_base',
     ],
     'data': [
         'security/ir.model.access.csv',
         'data/hr_sick_leave_data.xml',
         'data/hr_leave_type_data.xml',
+        'data/hr_public_holiday_data.xml',
+        'views/res_company_views.xml',
         'views/hr_leave_views.xml',
         'views/hr_leave_type_views.xml',
         'views/hr_sick_leave_views.xml',

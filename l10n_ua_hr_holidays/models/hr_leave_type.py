@@ -7,9 +7,15 @@ class HrLeaveType(models.Model):
     ua_leave_category = fields.Selection([
         ('annual_basic', 'Annual Basic Leave'),
         ('annual_additional', 'Annual Additional Leave'),
+        ('annual_hazardous', 'Additional Leave for Hazardous Conditions'),
+        ('annual_special', 'Additional Leave for Special Work Nature'),
+        ('annual_irregular', 'Additional Leave for Irregular Hours'),
         ('educational', 'Educational Leave'),
         ('creative', 'Creative Leave'),
         ('social', 'Social Leave'),
+        ('social_children', 'Additional Leave for Workers with Children'),
+        ('chornobyl', 'Additional Leave for Chornobyl Victims'),
+        ('veteran', 'Additional Leave for War Veterans'),
         ('unpaid', 'Unpaid Leave'),
         ('maternity', 'Maternity Leave'),
         ('childcare', 'Childcare Leave'),
@@ -58,4 +64,13 @@ class HrLeaveType(models.Model):
         string='Min Continuous Days',
         default=14,
         help='Minimum continuous vacation days (14 for annual)'
+    )
+    max_carryover_years = fields.Integer(
+        string='Max Carryover Years',
+        default=2,
+        help='Maximum years unused vacation can be carried over (Ukrainian law: 2 years)'
+    )
+    max_additional_days = fields.Integer(
+        string='Max Additional Days',
+        help='Maximum additional days for this leave type (e.g., 35 for hazardous, 7 for irregular)'
     )

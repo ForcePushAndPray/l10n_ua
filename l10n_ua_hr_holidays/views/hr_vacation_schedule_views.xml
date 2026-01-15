@@ -82,6 +82,111 @@
         </field>
     </record>
 
+    <!-- Calendar view for schedule lines -->
+    <record id="hr_vacation_schedule_line_view_calendar" model="ir.ui.view">
+        <field name="name">hr.vacation.schedule.line.calendar</field>
+        <field name="model">hr.vacation.schedule.line</field>
+        <field name="arch" type="xml">
+            <calendar string="Vacation Schedule" date_start="period_1_start" date_stop="period_1_end" color="department_id" mode="month">
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="period_1_days"/>
+            </calendar>
+        </field>
+    </record>
+
+    <!-- List view for schedule lines -->
+    <record id="hr_vacation_schedule_line_view_tree" model="ir.ui.view">
+        <field name="name">hr.vacation.schedule.line.tree</field>
+        <field name="model">hr.vacation.schedule.line</field>
+        <field name="arch" type="xml">
+            <list string="Schedule Lines">
+                <field name="employee_id"/>
+                <field name="department_id"/>
+                <field name="planned_days"/>
+                <field name="period_1_start"/>
+                <field name="period_1_end"/>
+                <field name="period_1_days"/>
+                <field name="total_planned"/>
+                <field name="actual_days"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Form view for schedule lines -->
+    <record id="hr_vacation_schedule_line_view_form" model="ir.ui.view">
+        <field name="name">hr.vacation.schedule.line.form</field>
+        <field name="model">hr.vacation.schedule.line</field>
+        <field name="arch" type="xml">
+            <form string="Schedule Line">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="employee_id"/>
+                            <field name="department_id"/>
+                            <field name="planned_days"/>
+                        </group>
+                        <group>
+                            <field name="total_planned"/>
+                            <field name="actual_days"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Period 1" name="period1">
+                            <group>
+                                <field name="period_1_start"/>
+                                <field name="period_1_end"/>
+                                <field name="period_1_days"/>
+                            </group>
+                        </page>
+                        <page string="Period 2" name="period2">
+                            <group>
+                                <field name="period_2_start"/>
+                                <field name="period_2_end"/>
+                                <field name="period_2_days"/>
+                            </group>
+                        </page>
+                        <page string="Period 3" name="period3">
+                            <group>
+                                <field name="period_3_start"/>
+                                <field name="period_3_end"/>
+                                <field name="period_3_days"/>
+                            </group>
+                        </page>
+                    </notebook>
+                    <field name="notes"/>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Search view for schedule lines -->
+    <record id="hr_vacation_schedule_line_view_search" model="ir.ui.view">
+        <field name="name">hr.vacation.schedule.line.search</field>
+        <field name="model">hr.vacation.schedule.line</field>
+        <field name="arch" type="xml">
+            <search string="Schedule Lines">
+                <field name="employee_id"/>
+                <field name="department_id"/>
+            </search>
+        </field>
+    </record>
+
+    <!-- Action for schedule lines with calendar -->
+    <record id="action_hr_vacation_schedule_line_calendar" model="ir.actions.act_window">
+        <field name="name">Vacation Calendar</field>
+        <field name="res_model">hr.vacation.schedule.line</field>
+        <field name="view_mode">calendar,list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No vacation periods scheduled
+            </p>
+            <p>
+                Fill in vacation periods in the schedule to see them here.
+            </p>
+        </field>
+    </record>
+
     <record id="action_hr_vacation_schedule" model="ir.actions.act_window">
         <field name="name">Vacation Schedules</field>
         <field name="res_model">hr.vacation.schedule</field>

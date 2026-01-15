@@ -1,0 +1,142 @@
+from datetime import datetime, date
+from odoo.tests.common import TransactionCase
+from odoo.exceptions import ValidationError
+
+
+class TestHrLeave(TransactionCase):
+    """Tests for hr.leave Ukrainian extensions"""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.company = cls.env.company
+        
+        cls.employee = cls.env['hr.employee'].create({
+            'name': 'Test Employee Leave',
+            'company_id': cls.company.id,
+        })
+        
+        cls.leave_type_calendar = cls.env['hr.leave.type'].create({
+            'name': 'Annual Leave (Calendar) Test',
+            'ua_leave_category': 'annual_basic',
+            'is_calendar_days': True,
+            'annual_days': 24,
+            'is_paid': True,
+            'company_id': cls.company.id,
+            'requires_allocation': False,
+        })
+        
+        cls.leave_type_working = cls.env['hr.leave.type'].create({
+            'name': 'Other Leave (Working) Test',
+            'ua_leave_category': 'other',
+            'is_calendar_days': False,
+            'is_paid': False,
+            'company_id': cls.company.id,
+            'requires_allocation': False,
+        })
+
+    def test_calendar_days_computation(self):
+        """Test that calendar_days is computed correctly"""
+        leave = self.env['hr.leave'].create({
+            'name': 'Test Leave',
+            'employee_id': self.employee.id,
+            'holiday_status_id': self.leave_type_calendar.id,
+            'date_from': datetime(2026, 1, 15, 8, 0, 0),
+            'date_to': datetime(2026, 1, 21, 17, 0, 0),
+        })
+        self.assertGreater(leave.calendar_days, 0)
+
+    def test_working_days_computation(self):
+        """Test that working_days is computed correctly (Mon-Fri)"""
+        leave = self.env['hr.leave'].create({
+            'name': 'Test Leave',
+            'employee_id': self.employee.id,
+            'holiday_status_id': self.leave_type_calendar.id,
+            'date_from': datetime(2026, 1, 15, 8, 0, 0),
+            'date_to': datetime(2026, 1, 21, 17, 0, 0),
+        })
+        self.assertGreater(leave.working_days, 0)
+        self.assertLessEqual(leave.working_days, leave.calendar_days)
+
+    def test_number_of_days_calendar_type(self):
+        """Test that number_of_days uses calendar days for is_calendar_days=True"""
+        leave = self.env['hr.leave'].create({
+            'name': 'Test Leave',
+            'employee_id': self.employee.id,
+            'holiday_status_id': self.leave_type_calendar.id,
+            'date_from': datetime(2026, 1, 15, 8, 0, 0),
+            'date_to': datetime(2026, 1, 21, 17, 0, 0),
+        })
+        self.assertGreater(leave.number_of_days, 0)
+
+    def test_vacation_pay_computation(self):
+        """Test vacation pay calculation"""
+        leave = self.env['hr.leave'].create({
+            'name': 'Test Leave',
+            'employee_id': self.employee.id,
+            'holiday_status_id': self.leave_type_calendar.id,
+            'date_from': datetime(2026, 1, 15, 8, 0, 0),
+            'date_to': datetime(2026, 1, 21, 17, 0, 0),
+            'average_daily_salary': 500.0,
+        })
+        self.assertGreaterEqual(leave.vacation_pay_amount, 0)
+
+    def test_vacation_pay_unpaid_leave(self):
+        """Test that unpaid leave has zero vacation pay"""
+        leave = self.env['hr.leave'].create({
+            'name': 'Test Leave',
+            'employee_id': self.employee.id,
+            'holiday_status_id': self.leave_type_working.id,
+            'date_from': datetime(2026, 1, 15, 8, 0, 0),
+            'date_to': datetime(2026, 1, 21, 17, 0, 0),
+            'average_daily_salary': 500.0,
+        })
+        self.assertEqual(leave.vacation_pay_amount, 0.0)
+
+    def test_remaining_days_after_computation(self):
+        """Test remaining_days_after calculation"""
+        balance = self.env['hr.vacation.balance'].create({
+            'employee_id': self.employee.id,
+            'leave_type_id': self.leave_type_calendar.id,
+            'year': 2028,
+            'entitled_days': 24,
+            'carried_over': 0,
+        })
+        
+        leave = self.env['hr.leave'].create({
+            'name': 'Test Leave',
+            'employee_id': self.employee.id,
+            'holiday_status_id': self.leave_type_calendar.id,
+            'date_from': datetime(2028, 1, 15, 8, 0, 0),
+            'date_to': datetime(2028, 1, 21, 17, 0, 0),
+            'vacation_year': 2028,
+        })
+        
+        self.assertGreaterEqual(leave.remaining_days_before, 0)
+        self.assertLess(leave.remaining_days_after, leave.remaining_days_before)
+
+    def test_order_fields(self):
+        """Test order number and date fields"""
+        leave = self.env['hr.leave'].create({
+            'name': 'Test Leave',
+            'employee_id': self.employee.id,
+            'holiday_status_id': self.leave_type_calendar.id,
+            'date_from': datetime(2026, 1, 15, 8, 0, 0),
+            'date_to': datetime(2026, 1, 21, 17, 0, 0),
+            'order_number': 'ORD-001',
+            'order_date': date(2026, 1, 10),
+        })
+        self.assertEqual(leave.order_number, 'ORD-001')
+        self.assertEqual(leave.order_date, date(2026, 1, 10))
+
+    def test_vacation_year_field(self):
+        """Test vacation year field"""
+        leave = self.env['hr.leave'].create({
+            'name': 'Test Leave',
+            'employee_id': self.employee.id,
+            'holiday_status_id': self.leave_type_calendar.id,
+            'date_from': datetime(2026, 1, 15, 8, 0, 0),
+            'date_to': datetime(2026, 1, 21, 17, 0, 0),
+            'vacation_year': 2025,
+        })
+        self.assertEqual(leave.vacation_year, 2025)

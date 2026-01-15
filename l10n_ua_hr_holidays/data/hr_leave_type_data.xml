@@ -53,7 +53,7 @@
         
         <record id="leave_type_social_children" model="hr.leave.type">
             <field name="name">Соціальна відпустка (на дітей)</field>
-            <field name="ua_leave_category">social</field>
+            <field name="ua_leave_category">social_children</field>
             <field name="annual_days">10</field>
             <field name="is_calendar_days">True</field>
             <field name="is_transferable">False</field>
@@ -121,8 +121,9 @@
 
         <record id="leave_type_additional_hazard" model="hr.leave.type">
             <field name="name">Додаткова за шкідливі умови праці</field>
-            <field name="ua_leave_category">annual_additional</field>
+            <field name="ua_leave_category">annual_hazardous</field>
             <field name="annual_days">35</field>
+            <field name="max_additional_days">35</field>
             <field name="is_calendar_days">True</field>
             <field name="is_transferable">True</field>
             <field name="is_paid">True</field>
@@ -133,8 +134,9 @@
 
         <record id="leave_type_additional_irregular" model="hr.leave.type">
             <field name="name">Додаткова за ненормований робочий день</field>
-            <field name="ua_leave_category">annual_additional</field>
+            <field name="ua_leave_category">annual_irregular</field>
             <field name="annual_days">7</field>
+            <field name="max_additional_days">7</field>
             <field name="is_calendar_days">True</field>
             <field name="is_transferable">True</field>
             <field name="is_paid">True</field>
@@ -145,8 +147,9 @@
 
         <record id="leave_type_additional_special_work" model="hr.leave.type">
             <field name="name">Додаткова за особливий характер праці</field>
-            <field name="ua_leave_category">annual_additional</field>
-            <field name="annual_days">35</field>
+            <field name="ua_leave_category">annual_special</field>
+            <field name="annual_days">7</field>
+            <field name="max_additional_days">7</field>
             <field name="is_calendar_days">True</field>
             <field name="is_transferable">True</field>
             <field name="is_paid">True</field>
@@ -157,7 +160,7 @@
 
         <record id="leave_type_chornobyl" model="hr.leave.type">
             <field name="name">Додаткова чорнобильцям</field>
-            <field name="ua_leave_category">social</field>
+            <field name="ua_leave_category">chornobyl</field>
             <field name="annual_days">16</field>
             <field name="is_calendar_days">True</field>
             <field name="is_transferable">False</field>
@@ -169,7 +172,7 @@
 
         <record id="leave_type_veteran" model="hr.leave.type">
             <field name="name">Додаткова ветеранам війни</field>
-            <field name="ua_leave_category">social</field>
+            <field name="ua_leave_category">veteran</field>
             <field name="annual_days">14</field>
             <field name="is_calendar_days">True</field>
             <field name="is_transferable">False</field>

@@ -23,7 +23,7 @@ class HrPayslip(models.Model):
         tracking=True
     )
     contract_id = fields.Many2one(
-        'hr.contract',
+        'hr.contract.ua',
         string='Contract',
         compute='_compute_contract_id',
         store=True,
@@ -216,7 +216,7 @@ class HrPayslip(models.Model):
     def _compute_contract_id(self):
         for payslip in self:
             if payslip.employee_id:
-                contracts = payslip.employee_id.contract_ids.filtered(
+                contracts = payslip.employee_id.contract_ua_ids.filtered(
                     lambda c: c.state == 'open' and 
                     c.date_start <= (payslip.date_from or fields.Date.today()) and
                     (not c.date_end or c.date_end >= (payslip.date_from or fields.Date.today()))

@@ -4,17 +4,74 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Odoo Server 19.0\n"
+"Project-Id-Version: Odoo Server 19.0-20260103\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-06 12:00+0000\n"
-"PO-Revision-Date: 2026-01-06 12:00+0000\n"
+"POT-Creation-Date: 2026-01-15 09:19+0000\n"
+"PO-Revision-Date: 2026-01-15 09:19+0000\n"
 "Last-Translator: \n"
-"Language-Team: Ukrainian\n"
-"Language: uk_UA\n"
+"Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_ua_hr_holidays
+#. odoo-python
+#: code:addons/l10n_ua_hr_holidays/models/res_company.py:0
+msgid "%d leave types have been created for %s"
+msgstr "%d типів відпусток створено для %s"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.actions.report,print_report_name:l10n_ua_hr_holidays.action_report_vacation_order
+msgid "'Наказ_відпустка_%s_%s' % (object.employee_id.name, object.date_from)"
+msgstr ""
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.report_vacation_order_document
+msgid ""
+"/\n"
+"                        <span style=\"margin-left: 50px;\">«___» _____________ 20__ р.</span>"
+msgstr ""
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__payment_percent
+msgid "50%, 60%, 70% or 100% based on experience"
+msgstr "50%, 60%, 70% або 100% залежно від стажу"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__message_needaction
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__message_needaction
+msgid "Action Needed"
+msgstr "Потрібна дія"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__activity_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__activity_ids
+msgid "Activities"
+msgstr "Активності"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__activity_exception_decoration
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Оформлення виключення активності"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__activity_state
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__activity_state
+msgid "Activity State"
+msgstr "Стан активності"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__activity_type_icon
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Іконка типу активності"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__actual_days
+msgid "Actual Days"
+msgstr "Фактичні дні"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_leave_type__ua_leave_category__annual_additional
@@ -27,8 +84,34 @@ msgid "Annual Basic Leave"
 msgstr "Щорічна основна відпустка"
 
 #. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__average_daily_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__approval_date
+msgid "Approval Date"
+msgstr "Дата затвердження"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_schedule_view_form
+msgid "Approve"
+msgstr "Затвердити"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_vacation_schedule__state__approved
+msgid "Approved"
+msgstr "Затверджено"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__approved_by
+msgid "Approved By"
+msgstr "Затверджено"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__message_attachment_count
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__message_attachment_count
+msgid "Attachment Count"
+msgstr "Кількість вкладень"
+
+#. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__average_daily_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__average_daily_salary
 msgid "Average Daily Salary"
 msgstr "Середньоденна заробітна плата"
 
@@ -43,11 +126,41 @@ msgid "Balance Before"
 msgstr "Залишок до"
 
 #. module: l10n_ua_hr_holidays
+#: model:ir.model.constraint,message:l10n_ua_hr_holidays.constraint_hr_vacation_balance_unique_employee_id_leave_type_id_year
+msgid "Balance for this employee, leave type and year already exists!"
+msgstr "Залишок для цього працівника, типу відпустки та року вже існує!"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_sick_leave_view_form
+msgid "Calculate"
+msgstr "Розрахувати"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_form
+msgid "Calculate Compensation"
+msgstr "Розрахувати компенсацію"
+
+#. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__calendar_days
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__calendar_days
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__is_calendar_days
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__calendar_days
 msgid "Calendar Days"
 msgstr "Календарні дні"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave_type__is_transferable
+msgid "Can unused days be transferred to next year"
+msgstr "Чи можна переносити невикористані дні на наступний рік"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_sick_leave_view_form
+msgid "Cancel"
+msgstr "Скасувати"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_sick_leave__state__cancelled
+msgid "Cancelled"
+msgstr "Скасовано"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__carried_over
@@ -65,10 +178,49 @@ msgid "Childcare Leave"
 msgstr "Відпустка для догляду за дитиною"
 
 #. module: l10n_ua_hr_holidays
+#: model:ir.model,name:l10n_ua_hr_holidays.model_res_company
+msgid "Companies"
+msgstr "Компанії"
+
+#. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__company_id
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__company_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__company_id
 msgid "Company"
 msgstr "Компанія"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_sick_leave_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_schedule_view_form
+msgid "Confirm"
+msgstr "Підтвердити"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_sick_leave__state__confirmed
+#: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_vacation_schedule__state__confirmed
+msgid "Confirmed"
+msgstr "Підтверджено"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_holidays.action_hr_vacation_schedule
+msgid "Create a vacation schedule for the year"
+msgstr "Створіть графік відпусток на рік"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__create_uid
+msgid "Created by"
+msgstr "Створив"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__create_date
+msgid "Created on"
+msgstr "Створено"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_leave_type__ua_leave_category__creative
@@ -77,15 +229,23 @@ msgstr "Творча відпустка"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__date_from
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__date_from
 msgid "Date From"
 msgstr "Дата з"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__date_to
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__date_to
 msgid "Date To"
 msgstr "Дата по"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_balance__carried_over
+msgid "Days carried from previous year"
+msgstr "Днів перенесено з минулого року"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_balance__entitled_days
+msgid "Days entitled for the year"
+msgstr "Належить днів за рік"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__annual_days
@@ -93,12 +253,28 @@ msgid "Days per Year"
 msgstr "Днів на рік"
 
 #. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__department_id
+msgid "Department"
+msgstr "Підрозділ"
+
+#. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__diagnosis_code
 msgid "Diagnosis Code (ICD-10)"
 msgstr "Код діагнозу (МКХ-10)"
 
 #. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_res_company__display_name
+msgid "Display Name"
+msgstr "Назва для відображення"
+
+#. module: l10n_ua_hr_holidays
 #: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_sick_leave__state__draft
+#: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_vacation_schedule__state__draft
 msgid "Draft"
 msgstr "Чернетка"
 
@@ -113,9 +289,9 @@ msgid "Electronic (e-TVN)"
 msgstr "Електронний (е-ТВН)"
 
 #. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__e_sick_leave_id
-msgid "e-TVN ID"
-msgstr "ID е-ТВН"
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__e_sick_leave_id
+msgid "Electronic sick leave ID from PFU system"
+msgstr "ID електронного лікарняного з системи ПФУ"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__employee_id
@@ -155,14 +331,95 @@ msgid "FSS Days"
 msgstr "Дні ФСС"
 
 #. module: l10n_ua_hr_holidays
-#: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_leave_type__payment_source__fss
-msgid "Social Insurance Fund"
-msgstr "Фонд соціального страхування"
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__employer_days
+msgid "First 5 days paid by employer"
+msgstr "Перші 5 днів оплачує роботодавець"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__message_follower_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__message_follower_ids
+msgid "Followers"
+msgstr "Підписники"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__message_partner_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Підписники (Партнери)"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__activity_type_icon
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_schedule__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Іконка Font Awesome, напр. fa-tasks"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_schedule_view_form
+msgid "Generate Lines"
+msgstr "Згенерувати рядки"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__has_message
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__has_message
+msgid "Has Message"
+msgstr "Є повідомлення"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__activity_exception_icon
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__activity_exception_icon
+msgid "Icon"
+msgstr "Іконка"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__activity_exception_icon
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_schedule__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Іконка для позначення виключної активності."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__message_needaction
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_schedule__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Якщо позначено, нові повідомлення потребують вашої уваги."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__message_has_error
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__message_has_sms_error
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_schedule__message_has_error
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_schedule__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Якщо позначено, деякі повідомлення мають помилку доставки."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave_type__is_calendar_days
+msgid "If checked, vacation is counted in calendar days"
+msgstr "Якщо позначено, відпустка рахується в календарних днях"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_sick_leave__sick_leave_type__illness
 msgid "Illness"
 msgstr "Захворювання"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.view_company_form_inherit_ua_holidays
+msgid "Import UA Leave Types"
+msgstr "Імпорт типів відпусток UA"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_res_company__ua_leave_types_imported
+msgid "Indicates if Ukrainian leave types have been imported for this company"
+msgstr "Вказує, чи імпортовано українські типи відпусток для цієї компанії"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_sick_leave__sick_leave_type__injury
@@ -175,9 +432,181 @@ msgid "Insurance Experience (years)"
 msgstr "Страховий стаж (роки)"
 
 #. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__is_paid
-msgid "Paid Leave"
-msgstr "Оплачувана відпустка"
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__insurance_experience_years
+msgid "Insurance experience for payment calculation"
+msgstr "Страховий стаж для розрахунку оплати"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__message_is_follower
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__message_is_follower
+msgid "Is Follower"
+msgstr "Є підписником"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__write_uid
+msgid "Last Updated by"
+msgstr "Оновив"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__write_date
+msgid "Last Updated on"
+msgstr "Оновлено"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__leave_type_id
+msgid "Leave Type"
+msgstr "Тип відпустки"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_sick_leave_view_form
+msgid "Mark as Paid"
+msgstr "Позначити як оплачено"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_leave_type__ua_leave_category__maternity
+msgid "Maternity Leave"
+msgstr "Відпустка по вагітності та пологах"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__max_transfer_days
+msgid "Max Transfer Days"
+msgstr "Макс. днів для перенесення"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave_type__max_transfer_days
+msgid "Maximum days that can be transferred"
+msgstr "Максимум днів для перенесення"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__message_has_error
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__message_has_error
+msgid "Message Delivery error"
+msgstr "Помилка доставки повідомлення"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__message_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__message_ids
+msgid "Messages"
+msgstr "Повідомлення"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__min_continuous_days
+msgid "Min Continuous Days"
+msgstr "Мін. неперервних днів"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__min_experience_months
+msgid "Min Experience (months)"
+msgstr "Мін. стаж (місяців)"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave_type__min_continuous_days
+msgid "Minimum continuous vacation days (14 for annual)"
+msgstr "Мінімальна неперервна частина відпустки (14 для щорічної)"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_leave_type__payment_source__mixed
+msgid "Mixed"
+msgstr "Змішане"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__my_activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Термін моєї активності"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__name
+msgid "Name"
+msgstr "Назва"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__activity_calendar_event_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Подія календаря наступної активності"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Термін наступної активності"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__activity_summary
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__activity_summary
+msgid "Next Activity Summary"
+msgstr "Опис наступної активності"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__activity_type_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__activity_type_id
+msgid "Next Activity Type"
+msgstr "Тип наступної активності"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_holidays.action_hr_vacation_balance
+msgid "No vacation balances found"
+msgstr "Залишків відпусток не знайдено"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__notes
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__notes
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__notes
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_schedule_view_form
+msgid "Notes"
+msgstr "Примітки"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__message_needaction_counter
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Кількість дій"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__message_has_error_counter
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__message_has_error_counter
+msgid "Number of errors"
+msgstr "Кількість помилок"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__message_needaction_counter
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_schedule__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Кількість повідомлень, що потребують дії"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__message_has_error_counter
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_schedule__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Кількість повідомлень з помилкою доставки"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave_type__annual_days
+msgid "Number of vacation days per year (24 is standard)"
+msgstr "Кількість днів відпустки на рік (24 - стандарт)"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__order_date
+msgid "Order Date"
+msgstr "Дата наказу"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__order_number
+msgid "Order Number"
+msgstr "Номер наказу"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_leave_type__ua_leave_category__other
+msgid "Other"
+msgstr "Інше"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_sick_leave__state__paid
@@ -185,9 +614,14 @@ msgid "Paid"
 msgstr "Оплачено"
 
 #. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__payment_source
-msgid "Payment Source"
-msgstr "Джерело оплати"
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__is_paid
+msgid "Paid Leave"
+msgstr "Оплачувана відпустка"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_sick_leave_view_form
+msgid "Payment Calculation"
+msgstr "Розрахунок оплати"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__payment_percent
@@ -195,7 +629,58 @@ msgid "Payment Percent"
 msgstr "Відсоток оплати"
 
 #. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__payment_source
+msgid "Payment Source"
+msgstr "Джерело оплати"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__period_1_days
+msgid "Period 1 Days"
+msgstr "Період 1 днів"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__period_1_end
+msgid "Period 1 End"
+msgstr "Період 1 кінець"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__period_1_start
+msgid "Period 1 Start"
+msgstr "Період 1 початок"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__period_2_days
+msgid "Period 2 Days"
+msgstr "Період 2 днів"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__period_2_end
+msgid "Period 2 End"
+msgstr "Період 2 кінець"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__period_2_start
+msgid "Period 2 Start"
+msgstr "Період 2 початок"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__period_3_days
+msgid "Period 3 Days"
+msgstr "Період 3 днів"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__period_3_end
+msgid "Period 3 End"
+msgstr "Період 3 кінець"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__period_3_start
+msgid "Period 3 Start"
+msgstr "Період 3 початок"
+
+#. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__planned_days
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__planned_days
 msgid "Planned Days"
 msgstr "Заплановано днів"
 
@@ -215,9 +700,19 @@ msgid "Quarantine"
 msgstr "Карантин"
 
 #. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.view_company_form_inherit_ua_holidays
+msgid "Re-import UA Leave Types"
+msgstr "Повторний імпорт типів відпусток UA"
+
+#. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__name
 msgid "Reference"
 msgstr "Номер"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_holidays.action_hr_sick_leave
+msgid "Register a sick leave"
+msgstr "Зареєструвати лікарняний"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__leave_id
@@ -230,14 +725,60 @@ msgid "Remaining Days"
 msgstr "Залишок днів"
 
 #. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave_type__requires_experience
+msgid "Requires 6 months of work experience"
+msgstr "Потребує 6 місяців стажу роботи"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__requires_experience
+msgid "Requires Work Experience"
+msgstr "Потребує стажу роботи"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__activity_user_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__activity_user_id
+msgid "Responsible User"
+msgstr "Відповідальний"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__message_has_sms_error
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Помилка доставки SMS"
+
+#. module: l10n_ua_hr_holidays
 #: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_sick_leave__sick_leave_type__sanatorium
 msgid "Sanatorium Treatment"
 msgstr "Санаторне лікування"
 
 #. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__schedule_id
+msgid "Schedule"
+msgstr "Графік"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__line_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_schedule_view_form
+msgid "Schedule Lines"
+msgstr "Рядки графіка"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_sick_leave_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_schedule_view_form
+msgid "Set to Draft"
+msgstr "Повернути в чернетку"
+
+#. module: l10n_ua_hr_holidays
 #: model:ir.model,name:l10n_ua_hr_holidays.model_hr_sick_leave
+#: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_leave_type__ua_leave_category__sick
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_sick_leave_view_form
 msgid "Sick Leave"
 msgstr "Лікарняний"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_sick_leave_view_form
+msgid "Sick Leave Document"
+msgstr "Документ лікарняного"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__sick_leave_number
@@ -245,9 +786,16 @@ msgid "Sick Leave Number"
 msgstr "Номер лікарняного"
 
 #. module: l10n_ua_hr_holidays
-#: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_leave_type__ua_leave_category__sick
-msgid "Sick Leave"
-msgstr "Лікарняний"
+#: model:ir.actions.act_window,name:l10n_ua_hr_holidays.action_hr_sick_leave
+#: model:ir.ui.menu,name:l10n_ua_hr_holidays.menu_hr_sick_leave
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_sick_leave_view_tree
+msgid "Sick Leaves"
+msgstr "Лікарняні"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_leave_type__payment_source__fss
+msgid "Social Insurance Fund"
+msgstr "Фонд соціального страхування"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_leave_type__ua_leave_category__social
@@ -256,8 +804,48 @@ msgstr "Соціальна відпустка"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__state
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__state
 msgid "Status"
 msgstr "Статус"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__activity_state
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_schedule__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Статус на основі активностей\n"
+"Прострочено: Термін вже минув\n"
+"Сьогодні: Дата активності сьогодні\n"
+"Заплановано: Майбутні активності."
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.view_company_form_inherit_ua_holidays
+msgid "This will create any missing UA leave types. Continue?"
+msgstr "Це створить відсутні українські типи відпусток. Продовжити?"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model,name:l10n_ua_hr_holidays.model_hr_leave
+msgid "Time Off"
+msgstr "Відпустка"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model,name:l10n_ua_hr_holidays.model_hr_leave_type
+msgid "Time Off Type"
+msgstr "Тип відпустки"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_sick_leave_view_tree
+msgid "Total"
+msgstr "Всього"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__total_amount
+msgid "Total Amount"
+msgstr "Загальна сума"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__total_available
@@ -265,9 +853,9 @@ msgid "Total Available"
 msgstr "Всього доступно"
 
 #. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__total_amount
-msgid "Total Amount"
-msgstr "Загальна сума"
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__total_planned
+msgid "Total Planned"
+msgstr "Всього заплановано"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__is_transferable
@@ -280,9 +868,32 @@ msgid "Type"
 msgstr "Тип"
 
 #. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__activity_exception_decoration
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_schedule__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Тип виключної активності в записі."
+
+#. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__ua_leave_category
 msgid "UA Leave Category"
 msgstr "Категорія відпустки (UA)"
+
+#. module: l10n_ua_hr_holidays
+#. odoo-python
+#: code:addons/l10n_ua_hr_holidays/models/res_company.py:0
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_res_company__ua_leave_types_imported
+msgid "UA Leave Types Imported"
+msgstr "Типи відпусток UA імпортовано"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_leave_type_view_form_ua
+msgid "Ukrainian Settings"
+msgstr "Українські налаштування"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_leave_view_form_ua
+msgid "Ukrainian Specifics"
+msgstr "Українська специфіка"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_leave_type__ua_leave_category__unpaid
@@ -296,8 +907,21 @@ msgstr "Використано днів"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model,name:l10n_ua_hr_holidays.model_hr_vacation_balance
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_form
 msgid "Vacation Balance"
 msgstr "Залишок відпустки"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.actions.act_window,name:l10n_ua_hr_holidays.action_hr_vacation_balance
+#: model:ir.ui.menu,name:l10n_ua_hr_holidays.menu_hr_vacation_balance
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_tree
+msgid "Vacation Balances"
+msgstr "Залишки відпусток"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.actions.report,name:l10n_ua_hr_holidays.action_report_vacation_order
+msgid "Vacation Order"
+msgstr "Наказ на відпустку"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__vacation_pay_amount
@@ -306,6 +930,7 @@ msgstr "Сума відпускних"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model,name:l10n_ua_hr_holidays.model_hr_vacation_schedule
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_schedule_view_form
 msgid "Vacation Schedule"
 msgstr "Графік відпусток"
 
@@ -315,9 +940,43 @@ msgid "Vacation Schedule Line"
 msgstr "Рядок графіка відпусток"
 
 #. module: l10n_ua_hr_holidays
+#: model:ir.actions.act_window,name:l10n_ua_hr_holidays.action_hr_vacation_schedule
+#: model:ir.ui.menu,name:l10n_ua_hr_holidays.menu_hr_vacation_schedule
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_schedule_view_tree
+msgid "Vacation Schedules"
+msgstr "Графіки відпусток"
+
+#. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__vacation_year
 msgid "Vacation Year"
 msgstr "Рік відпустки"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave__remaining_days_before
+msgid "Vacation balance before this leave"
+msgstr "Залишок відпустки до цієї відпустки"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.constraint,message:l10n_ua_hr_holidays.constraint_hr_vacation_schedule_unique_year_company_id
+msgid "Vacation schedule for this year and company already exists!"
+msgstr "Графік відпусток для цього року та компанії вже існує!"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_holidays.action_hr_vacation_schedule
+msgid "Vacation schedules must be approved before December 5th for the next year."
+msgstr "Графіки відпусток мають бути затверджені до 5 грудня на наступний рік."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__website_message_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__website_message_ids
+msgid "Website Messages"
+msgstr "Повідомлення веб-сайту"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__website_message_ids
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_schedule__website_message_ids
+msgid "Website communication history"
+msgstr "Історія комунікації веб-сайту"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__working_days
@@ -326,163 +985,9 @@ msgstr "Робочі дні"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__year
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__year
 msgid "Year"
 msgstr "Рік"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__min_continuous_days
-msgid "Min Continuous Days"
-msgstr "Мін. неперервних днів"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__min_experience_months
-msgid "Min Experience (months)"
-msgstr "Мін. стаж (місяців)"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__max_transfer_days
-msgid "Max Transfer Days"
-msgstr "Макс. днів для перенесення"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_leave_type__ua_leave_category__maternity
-msgid "Maternity Leave"
-msgstr "Відпустка по вагітності та пологах"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_leave_type__payment_source__mixed
-msgid "Mixed"
-msgstr "Змішане"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__notes
-msgid "Notes"
-msgstr "Примітки"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__order_date
-msgid "Order Date"
-msgstr "Дата наказу"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__order_number
-msgid "Order Number"
-msgstr "Номер наказу"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_leave_type__ua_leave_category__other
-msgid "Other"
-msgstr "Інше"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_sick_leave__state__confirmed
-msgid "Confirmed"
-msgstr "Підтверджено"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields.selection,name:l10n_ua_hr_holidays.selection__hr_sick_leave__state__cancelled
-msgid "Cancelled"
-msgstr "Скасовано"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__requires_experience
-msgid "Requires Work Experience"
-msgstr "Потребує стажу роботи"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__leave_type_id
-msgid "Leave Type"
-msgstr "Тип відпустки"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.actions.act_window,name:l10n_ua_hr_holidays.action_hr_vacation_balance
-msgid "Vacation Balances"
-msgstr "Залишки відпусток"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.actions.act_window,name:l10n_ua_hr_holidays.action_hr_sick_leave
-msgid "Sick Leaves"
-msgstr "Лікарняні"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.actions.act_window,name:l10n_ua_hr_holidays.action_hr_vacation_schedule
-msgid "Vacation Schedules"
-msgstr "Графіки відпусток"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.ui.menu,name:l10n_ua_hr_holidays.menu_hr_holidays_ua
-msgid "Ukrainian Holidays"
-msgstr "Відпустки (UA)"
-
-#. module: l10n_ua_hr_holidays
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_sick_leave_form_view
-msgid "Calculate"
-msgstr "Розрахувати"
-
-#. module: l10n_ua_hr_holidays
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_sick_leave_form_view
-msgid "Confirm"
-msgstr "Підтвердити"
-
-#. module: l10n_ua_hr_holidays
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_sick_leave_form_view
-msgid "Set to Draft"
-msgstr "Повернути до чернетки"
-
-#. module: l10n_ua_hr_holidays
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_sick_leave_form_view
-msgid "Mark as Paid"
-msgstr "Позначити як оплачено"
-
-#. module: l10n_ua_hr_holidays
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_sick_leave_form_view
-msgid "Cancel"
-msgstr "Скасувати"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__employer_days
-msgid "First 5 days paid by employer"
-msgstr "Перші 5 днів оплачує роботодавець"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__payment_percent
-msgid "50%, 60%, 70% or 100% based on experience"
-msgstr "50%, 60%, 70% або 100% залежно від стажу"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__e_sick_leave_id
-msgid "Electronic sick leave ID from PFU system"
-msgstr "ID електронного лікарняного з системи ПФУ"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave_type__annual_days
-msgid "Number of vacation days per year (24 is standard)"
-msgstr "Кількість днів відпустки на рік (24 - стандарт)"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave_type__is_calendar_days
-msgid "If checked, vacation is counted in calendar days"
-msgstr "Якщо позначено, відпустка рахується в календарних днях"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave_type__is_transferable
-msgid "Can unused days be transferred to next year"
-msgstr "Чи можна переносити невикористані дні на наступний рік"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave_type__requires_experience
-msgid "Requires 6 months of work experience"
-msgstr "Потребує 6 місяців стажу роботи"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave_type__min_continuous_days
-msgid "Minimum continuous vacation days (14 for annual)"
-msgstr "Мінімальна неперервна частина відпустки (14 для щорічної)"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave__remaining_days_before
-msgid "Vacation balance before this leave"
-msgstr "Залишок відпустки до цієї відпустки"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave__vacation_year
@@ -490,26 +995,16 @@ msgid "Year for which vacation is taken"
 msgstr "Рік, за який береться відпустка"
 
 #. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_balance__entitled_days
-msgid "Days entitled for the year"
-msgstr "Належить днів за рік"
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.report_vacation_order_document
+msgid "_____________ /"
+msgstr ""
 
 #. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_balance__carried_over
-msgid "Days carried from previous year"
-msgstr "Днів перенесено з минулого року"
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.report_vacation_order_document
+msgid "_____________ / _____________ /"
+msgstr ""
 
 #. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__insurance_experience_years
-msgid "Insurance experience for payment calculation"
-msgstr "Страховий стаж для розрахунку оплати"
-
-#. module: l10n_ua_hr_holidays
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_form_view
-msgid "Calculate Compensation"
-msgstr "Розрахувати компенсацію"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.actions.client,name:l10n_ua_hr_holidays.action_vacation_compensation_notification
-msgid "Vacation Compensation"
-msgstr "Компенсація за невикористану відпустку"
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__e_sick_leave_id
+msgid "e-TVN ID"
+msgstr "ID е-ТВН"

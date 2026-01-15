@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <menuitem id="menu_hr_holidays_root"
-              name="Holidays"
-              web_icon="l10n_ua_hr_holidays,static/description/icon.png"
-              sequence="40"/>
-
     <menuitem id="menu_hr_sick_leave"
               name="Sick Leaves"
-              parent="menu_hr_holidays_root"
+              parent="hr_holidays.menu_hr_holidays_management"
               action="action_hr_sick_leave"
               sequence="20"/>
 
     <menuitem id="menu_hr_vacation_balance"
               name="Vacation Balances"
-              parent="menu_hr_holidays_root"
+              parent="hr_holidays.menu_hr_holidays_management"
               action="action_hr_vacation_balance"
               sequence="30"/>
 
     <menuitem id="menu_hr_vacation_schedule"
               name="Vacation Schedules"
-              parent="menu_hr_holidays_root"
+              parent="hr_holidays.menu_hr_holidays_management"
               action="action_hr_vacation_schedule"
               sequence="40"/>
+
+    <menuitem id="menu_hr_vacation_calendar"
+              name="Vacation Calendar"
+              parent="hr_holidays.menu_hr_holidays_management"
+              action="action_hr_vacation_schedule_line_calendar"
+              sequence="45"/>
 
 </odoo>

@@ -53,10 +53,11 @@ class HrVacationSchedule(models.Model):
         self.ensure_one()
         self.line_ids.unlink()
         
-        employees = self.env['hr.employee'].search([
-            ('company_id', '=', self.company_id.id),
-            ('contract_ids.state', '=', 'open'),
-        ])
+        domain = [('company_id', '=', self.company_id.id)]
+        if 'contract_id' in self.env['hr.employee']._fields:
+            domain.append(('contract_id.state', '=', 'open'))
+        
+        employees = self.env['hr.employee'].search(domain)
         
         annual_leave = self.env['hr.leave.type'].search([
             ('ua_leave_category', '=', 'annual_basic'),
@@ -102,6 +103,13 @@ class HrVacationScheduleLine(models.Model):
     _name = 'hr.vacation.schedule.line'
     _description = 'Vacation Schedule Line'
     _order = 'department_id, employee_id'
+    _rec_name = 'display_name'
+
+    display_name = fields.Char(
+        string='Name',
+        compute='_compute_display_name',
+        store=True
+    )
 
     schedule_id = fields.Many2one(
         'hr.vacation.schedule',
@@ -158,6 +166,14 @@ class HrVacationScheduleLine(models.Model):
     )
     
     notes = fields.Char(string='Notes')
+
+    @api.depends('employee_id', 'department_id', 'period_1_days')
+    def _compute_display_name(self):
+        for line in self:
+            if line.employee_id:
+                line.display_name = f"{line.employee_id.name} ({line.period_1_days} дн.)"
+            else:
+                line.display_name = "Новий запис"
 
     @api.depends('period_1_start', 'period_1_end', 'period_2_start', 'period_2_end',
                  'period_3_start', 'period_3_end')

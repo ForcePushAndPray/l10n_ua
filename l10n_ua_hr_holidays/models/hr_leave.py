@@ -1,4 +1,5 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
 
 
@@ -32,6 +33,8 @@ class HrLeave(models.Model):
     
     remaining_days_before = fields.Float(
         string='Balance Before',
+        compute='_compute_remaining_before',
+        store=True,
         help='Vacation balance before this leave'
     )
     remaining_days_after = fields.Float(
@@ -45,14 +48,99 @@ class HrLeave(models.Model):
         help='Year for which vacation is taken'
     )
 
+    @api.constrains('employee_id', 'holiday_status_id', 'date_from')
+    def _check_minimum_experience(self):
+        """Check minimum work experience for first annual leave.
+        
+        Per Ukrainian law, employee must work 6 months before first annual leave.
+        Exception: pregnant women, minors, part-time workers, etc.
+        """
+        for leave in self:
+            if not leave.holiday_status_id or not leave.holiday_status_id.requires_experience:
+                continue
+            if not leave.employee_id or not leave.date_from:
+                continue
+            
+            min_months = leave.holiday_status_id.min_experience_months or 6
+            
+            # Check for contract - prefer l10n_ua_hr_contract, fallback to standard hr_contract
+            contract = None
+            if 'contract_ua_id' in self.env['hr.employee']._fields:
+                contract = leave.employee_id.contract_ua_id
+            elif 'contract_id' in self.env['hr.employee']._fields:
+                contract = leave.employee_id.contract_id
+            
+            if not contract or not contract.date_start:
+                continue
+            
+            experience_date = contract.date_start + relativedelta(months=min_months)
+            if leave.date_from.date() < experience_date:
+                existing_leaves = self.env['hr.leave'].search_count([
+                    ('employee_id', '=', leave.employee_id.id),
+                    ('holiday_status_id', '=', leave.holiday_status_id.id),
+                    ('state', '=', 'validate'),
+                    ('id', '!=', leave.id),
+                ])
+                if existing_leaves == 0:
+                    raise ValidationError(_(
+                        'Employee %(employee)s must work at least %(months)s months before first annual leave. '
+                        'Current experience: %(current)s months.',
+                        employee=leave.employee_id.name,
+                        months=min_months,
+                        current=(leave.date_from.date() - contract.date_start).days // 30,
+                    ))
+
     @api.depends('date_from', 'date_to')
     def _compute_calendar_days(self):
         for leave in self:
             if leave.date_from and leave.date_to:
                 delta = leave.date_to.date() - leave.date_from.date()
-                leave.calendar_days = delta.days + 1
+                total_days = delta.days + 1
+                
+                public_holidays = leave._get_public_holidays_count()
+                leave.calendar_days = total_days - public_holidays
             else:
                 leave.calendar_days = 0
+
+    @api.depends('date_from', 'date_to', 'employee_id', 'holiday_status_id', 'holiday_status_id.is_calendar_days')
+    def _compute_number_of_days(self):
+        """Override to use calendar days for Ukrainian leave types with is_calendar_days=True.
+        
+        Public holidays are excluded from vacation duration per Ukrainian labor law.
+        """
+        calendar_days_leaves = self.filtered(
+            lambda l: l.holiday_status_id and l.holiday_status_id.is_calendar_days
+        )
+        other_leaves = self - calendar_days_leaves
+        
+        for leave in calendar_days_leaves:
+            if leave.date_from and leave.date_to:
+                delta = leave.date_to.date() - leave.date_from.date()
+                total_days = delta.days + 1
+                public_holidays = leave._get_public_holidays_count()
+                leave.number_of_days = total_days - public_holidays
+            else:
+                leave.number_of_days = 0
+        
+        if other_leaves:
+            super(HrLeave, other_leaves)._compute_number_of_days()
+
+    def _get_public_holidays_count(self):
+        """Get count of public holidays within leave period.
+        
+        Public holidays are stored in resource.calendar.leaves with resource_id=False.
+        Finds holidays that overlap with the leave period.
+        """
+        self.ensure_one()
+        if not self.date_from or not self.date_to:
+            return 0
+        
+        public_holidays = self.env['resource.calendar.leaves'].search([
+            ('resource_id', '=', False),
+            ('date_from', '<=', self.date_to),
+            ('date_to', '>=', self.date_from),
+        ])
+        return len(public_holidays)
 
     @api.depends('date_from', 'date_to')
     def _compute_working_days(self):
@@ -76,6 +164,30 @@ class HrLeave(models.Model):
                 leave.vacation_pay_amount = leave.calendar_days * leave.average_daily_salary
             else:
                 leave.vacation_pay_amount = 0.0
+
+    @api.depends('employee_id', 'holiday_status_id', 'vacation_year', 'date_from')
+    def _compute_remaining_before(self):
+        """Compute vacation balance before this leave from hr.vacation.balance"""
+        for leave in self:
+            if not leave.employee_id or not leave.holiday_status_id:
+                leave.remaining_days_before = 0
+                continue
+            
+            year = leave.vacation_year or (leave.date_from.year if leave.date_from else False)
+            if not year:
+                leave.remaining_days_before = 0
+                continue
+            
+            balance = self.env['hr.vacation.balance'].search([
+                ('employee_id', '=', leave.employee_id.id),
+                ('leave_type_id', '=', leave.holiday_status_id.id),
+                ('year', '=', year),
+            ], limit=1)
+            
+            if balance:
+                leave.remaining_days_before = balance.total_available - balance.used_days
+            else:
+                leave.remaining_days_before = 0
 
     @api.depends('remaining_days_before', 'number_of_days')
     def _compute_remaining_after(self):
@@ -122,10 +234,14 @@ class HrLeave(models.Model):
         ])
 
         if not payslips:
-            # Fallback to contract wage
-            contract = self.employee_id.contract_id
+            # Fallback to contract wage - prefer l10n_ua_hr_contract, fallback to standard hr_contract
+            contract = None
+            if 'contract_ua_id' in self.env['hr.employee']._fields:
+                contract = self.employee_id.contract_ua_id
+            elif 'contract_id' in self.env['hr.employee']._fields:
+                contract = self.employee_id.contract_id
+            
             if contract and contract.wage:
-                # Average days in month for fallback calculation
                 return round(contract.wage / 29.3, 2)
             return 0.0
 
@@ -174,8 +290,16 @@ class HrLeave(models.Model):
             ])
             excluded_days = sum(excluded_leaves.mapped('number_of_days'))
 
-        # Calculate calendar days in period
-        calendar_days = (date_to - date_from).days + 1 - excluded_days
+        # Count public holidays in the calculation period
+        public_holidays = self.env['resource.calendar.leaves'].search_count([
+            ('resource_id', '=', False),
+            ('date_from', '>=', date_from),
+            ('date_to', '<=', date_to),
+        ])
+
+        # Calculate calendar days in period (excluding public holidays and excluded periods)
+        # Formula per CMU Resolution No. 100: earnings / (calendar days - public holidays - excluded days)
+        calendar_days = (date_to - date_from).days + 1 - public_holidays - excluded_days
 
         if calendar_days > 0:
             return round(total_earnings / calendar_days, 2)
