@@ -124,7 +124,10 @@ class HrVacationScheduleLine(models.Model):
     )
     department_id = fields.Many2one(
         'hr.department',
-        string='Department'
+        string='Department',
+        related='employee_id.department_id',
+        store=True,
+        readonly=False
     )
     
     planned_days = fields.Integer(string='Planned Days')

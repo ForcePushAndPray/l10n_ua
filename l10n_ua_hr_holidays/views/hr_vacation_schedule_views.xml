@@ -87,7 +87,7 @@
         <field name="name">hr.vacation.schedule.line.calendar</field>
         <field name="model">hr.vacation.schedule.line</field>
         <field name="arch" type="xml">
-            <calendar string="Vacation Schedule" date_start="period_1_start" date_stop="period_1_end" color="department_id" mode="month">
+            <calendar string="Vacation Schedule" date_start="period_1_start" date_stop="period_1_end" color="department_id" mode="month" quick_create="0" create="0">
                 <field name="employee_id"/>
                 <field name="department_id"/>
                 <field name="period_1_days"/>
