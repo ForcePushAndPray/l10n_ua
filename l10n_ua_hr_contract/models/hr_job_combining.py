@@ -27,23 +27,23 @@ class HrJobCombining(models.Model):
         required=True,
         tracking=True
     )
-    main_contract_id = fields.Many2one(
-        'hr.contract.ua',
-        string='Main Contract',
+    version_id = fields.Many2one(
+        'hr.version',
+        string='Employee Version',
         required=True,
         tracking=True,
-        domain="[('employee_id', '=', employee_id), ('state', '=', 'open')]"
+        domain="[('employee_id', '=', employee_id), ('contract_date_start', '!=', False)]"
     )
     company_id = fields.Many2one(
         'res.company',
         string='Company',
-        related='main_contract_id.company_id',
+        related='version_id.company_id',
         store=True
     )
     currency_id = fields.Many2one(
         'res.currency',
         string='Currency',
-        related='main_contract_id.currency_id'
+        related='version_id.currency_id'
     )
 
     combined_job_id = fields.Many2one(
@@ -99,8 +99,8 @@ class HrJobCombining(models.Model):
 
     # Related allowance
     allowance_id = fields.Many2one(
-        'hr.contract.allowance',
-        string='Contract Allowance',
+        'hr.version.allowance',
+        string='Version Allowance',
         help='Automatically created allowance for this job combining'
     )
 
@@ -127,11 +127,11 @@ class HrJobCombining(models.Model):
                 vals['name'] = self.env['ir.sequence'].next_by_code('hr.job.combining') or 'New'
         return super().create(vals_list)
 
-    @api.depends('surcharge_type', 'surcharge_percent', 'surcharge_amount', 'main_contract_id.wage')
+    @api.depends('surcharge_type', 'surcharge_percent', 'surcharge_amount', 'version_id.wage')
     def _compute_calculated_surcharge(self):
         for record in self:
             if record.surcharge_type == 'percent':
-                record.calculated_surcharge = (record.main_contract_id.wage or 0) * (record.surcharge_percent or 0) / 100
+                record.calculated_surcharge = (record.version_id.wage or 0) * (record.surcharge_percent or 0) / 100
             else:
                 record.calculated_surcharge = record.surcharge_amount or 0
 
@@ -144,13 +144,10 @@ class HrJobCombining(models.Model):
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
         if self.employee_id:
-            # Find active contract
-            contract = self.env['hr.contract.ua'].search([
-                ('employee_id', '=', self.employee_id.id),
-                ('state', '=', 'open')
-            ], limit=1)
-            if contract:
-                self.main_contract_id = contract.id
+            # Find current version with contract
+            version = self.employee_id.current_version_id
+            if version and version.contract_date_start:
+                self.version_id = version.id
 
     def action_activate(self):
         """Activate job combining and create allowance"""
@@ -158,14 +155,14 @@ class HrJobCombining(models.Model):
             if record.state != 'draft':
                 raise UserError('Only draft job combining can be activated.')
 
-            # Create allowance on main contract
+            # Create allowance on version
             combining_type = self.env['hr.allowance.type'].search([
                 ('code', '=', 'COMBINING')
             ], limit=1)
 
             if combining_type:
                 allowance_vals = {
-                    'contract_id': record.main_contract_id.id,
+                    'version_id': record.version_id.id,
                     'allowance_type_id': combining_type.id,
                     'calculation_method': 'percent_salary' if record.surcharge_type == 'percent' else 'fixed',
                     'percent': record.surcharge_percent if record.surcharge_type == 'percent' else 0,
@@ -174,7 +171,7 @@ class HrJobCombining(models.Model):
                     'date_to': record.date_to,
                     'notes': f'Job combining: {record.combined_job_id.name}',
                 }
-                allowance = self.env['hr.contract.allowance'].create(allowance_vals)
+                allowance = self.env['hr.version.allowance'].create(allowance_vals)
                 record.allowance_id = allowance.id
 
             record.state = 'active'

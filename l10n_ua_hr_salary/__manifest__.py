@@ -22,7 +22,7 @@ Payroll calculation for Ukrainian localization:
 * Payslip generation and printing
 * Bank payment registers
 
-Requires l10n_ua_hr_contract module.
+Requires l10n_ua_hr_base module. Uses hr.version from Odoo 19.
 
 Note: This module was renamed from l10n_ua_hr_payroll to l10n_ua_hr_salary
 to avoid naming conflicts with existing modules on Odoo Apps.
@@ -31,7 +31,7 @@ to avoid naming conflicts with existing modules on Odoo Apps.
     'website': 'https://ndev.online',
     'license': 'LGPL-3',
     'depends': [
-        'l10n_ua_hr_contract',
+        'l10n_ua_hr_base',
     ],
     'data': [
         'security/ir.model.access.csv',

@@ -1,17 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
 
-    <!-- Contracts menu under Documents -->
-    <menuitem id="menu_hr_contract"
-              name="Contracts"
-              parent="l10n_ua_hr_base.menu_hr_documents_root"
-              action="action_hr_contract"
-              sequence="15"/>
-
-    <menuitem id="menu_hr_contract_salary_change"
+    <!-- Version related menus under Documents -->
+    <menuitem id="menu_hr_version_salary_change"
               name="Salary Changes"
               parent="l10n_ua_hr_base.menu_hr_documents_root"
-              action="action_hr_contract_salary_change"
+              action="action_hr_version_salary_change"
               sequence="16"/>
 
     <menuitem id="menu_hr_job_combining"
@@ -20,10 +14,10 @@
               action="action_hr_job_combining"
               sequence="17"/>
 
-    <menuitem id="menu_hr_contract_amendment"
-              name="Contract Amendments"
+    <menuitem id="menu_hr_version_amendment"
+              name="Amendments"
               parent="l10n_ua_hr_base.menu_hr_documents_root"
-              action="action_hr_contract_amendment"
+              action="action_hr_version_amendment"
               sequence="18"/>
 
     <!-- Configuration menus under HR Configuration -->

@@ -278,41 +278,42 @@ else:
     print("   ✓ All holidays have resource_id=False")
 
 # ============================================================
-# 8. Check l10n_ua_hr_contract integration
+# 8. Check l10n_ua_hr_contract integration (hr.version)
 # ============================================================
 print("\n" + "=" * 70)
-print("8. l10n_ua_hr_contract Integration Check")
+print("8. l10n_ua_hr_contract Integration Check (hr.version)")
 print("=" * 70)
 
 try:
-    Contract = env['hr.contract.ua']
-    print("   ✓ hr.contract.ua model exists (l10n_ua_hr_contract installed)")
-    
-    contract = Contract.search([('employee_id', '=', employee.id)], limit=1)
-    if not contract:
-        print("   Creating demo contract...")
-        contract = Contract.create({
-            'name': f'Contract {employee.name}',
-            'employee_id': employee.id,
-            'date_start': '2024-01-01',
-            'wage': 15000,
-            'state': 'open',
-        })
-        print(f"   ✓ Demo contract created: {contract.name}")
-    
-    print(f"   ✓ Contract found: {contract.name}")
-    print(f"   - date_start: {contract.date_start}")
-    print(f"   - wage: {contract.wage}")
-    
-    # Check experience calculation
-    if contract.date_start:
-        from dateutil.relativedelta import relativedelta
-        today = date.today()
-        experience = relativedelta(today, contract.date_start)
-        months = experience.years * 12 + experience.months
-        print(f"   - Experience: {months} months ({experience.years} years, {experience.months} months)")
+    Version = env['hr.version']
+    print("   ✓ hr.version model exists")
+
+    version = employee.current_version_id
+    if version:
+        print(f"   ✓ Current version found: {version.name}")
+        print(f"   - contract_date_start: {version.contract_date_start}")
+        print(f"   - wage: {version.wage}")
+
+        # Check Ukrainian fields if l10n_ua_hr_contract installed
+        if hasattr(version, 'contract_type_ua'):
+            print(f"   - contract_type_ua: {version.contract_type_ua}")
+            print(f"   - is_main_workplace: {version.is_main_workplace}")
+            print(f"   - work_mode: {version.work_mode}")
+            print("   ✓ Ukrainian contract fields available")
+        else:
+            print("   ⚠️ Ukrainian contract fields not found (l10n_ua_hr_contract not installed)")
+
+        # Check experience calculation
+        if version.contract_date_start:
+            from dateutil.relativedelta import relativedelta
+            today = date.today()
+            experience = relativedelta(today, version.contract_date_start)
+            months = experience.years * 12 + experience.months
+            print(f"   - Experience: {months} months ({experience.years} years, {experience.months} months)")
+    else:
+        print("   ⚠️ No current version for employee")
 except KeyError:
-    print("   ⚠️ hr.contract.ua not found (l10n_ua_hr_contract not installed)")
+    print("   ⚠️ hr.version not found")
 
 # ============================================================
 # 9. Check l10n_ua_hr_salary integration

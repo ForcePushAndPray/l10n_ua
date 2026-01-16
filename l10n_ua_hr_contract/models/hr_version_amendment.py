@@ -2,9 +2,9 @@ from odoo import models, fields, api
 from odoo.exceptions import UserError
 
 
-class HrContractAmendment(models.Model):
-    _name = 'hr.contract.amendment'
-    _description = 'Contract Amendment'
+class HrVersionAmendment(models.Model):
+    _name = 'hr.version.amendment'
+    _description = 'Version Amendment'
     _order = 'amendment_date desc, id desc'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'display_name'
@@ -21,9 +21,9 @@ class HrContractAmendment(models.Model):
         store=True
     )
 
-    contract_id = fields.Many2one(
-        'hr.contract.ua',
-        string='Contract',
+    version_id = fields.Many2one(
+        'hr.version',
+        string='Employee Version',
         required=True,
         ondelete='cascade',
         tracking=True
@@ -31,13 +31,13 @@ class HrContractAmendment(models.Model):
     employee_id = fields.Many2one(
         'hr.employee',
         string='Employee',
-        related='contract_id.employee_id',
+        related='version_id.employee_id',
         store=True
     )
     company_id = fields.Many2one(
         'res.company',
         string='Company',
-        related='contract_id.company_id',
+        related='version_id.company_id',
         store=True
     )
 
@@ -72,7 +72,6 @@ class HrContractAmendment(models.Model):
         help='Detailed description of changes made'
     )
 
-    # Snapshot of changed values (JSON format)
     old_values = fields.Text(
         string='Previous Values',
         help='Previous field values before amendment'
@@ -82,7 +81,6 @@ class HrContractAmendment(models.Model):
         help='New field values after amendment'
     )
 
-    # Order references (order_id will be added by l10n_ua_hr_documents)
     order_number = fields.Char(string='Order Number', required=True, tracking=True)
     order_date = fields.Date(string='Order Date', required=True)
 
@@ -107,27 +105,24 @@ class HrContractAmendment(models.Model):
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('name', 'New') == 'New':
-                vals['name'] = self.env['ir.sequence'].next_by_code('hr.contract.amendment') or 'New'
+                vals['name'] = self.env['ir.sequence'].next_by_code('hr.version.amendment') or 'New'
         return super().create(vals_list)
 
     def action_confirm(self):
-        """Confirm the amendment"""
         for record in self:
             if record.state != 'draft':
                 raise UserError('Only draft amendments can be confirmed.')
             record.state = 'confirmed'
 
     def action_draft(self):
-        """Reset to draft"""
         for record in self:
             record.state = 'draft'
 
     @api.model
-    def create_from_change(self, contract, amendment_type, description, old_vals, new_vals):
-        """Helper method to create amendment from contract changes"""
+    def create_from_change(self, version, amendment_type, description, old_vals, new_vals):
         import json
         return self.create({
-            'contract_id': contract.id,
+            'version_id': version.id,
             'amendment_type': amendment_type,
             'description': description,
             'effective_date': fields.Date.today(),

@@ -2,9 +2,9 @@ from odoo import models, fields, api
 from odoo.exceptions import UserError
 
 
-class HrContractSalaryChange(models.Model):
-    _name = 'hr.contract.salary.change'
-    _description = 'Contract Salary Change'
+class HrVersionSalaryChange(models.Model):
+    _name = 'hr.version.salary.change'
+    _description = 'Version Salary Change'
     _order = 'effective_date desc, id desc'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _rec_name = 'display_name'
@@ -21,9 +21,9 @@ class HrContractSalaryChange(models.Model):
         store=True
     )
 
-    contract_id = fields.Many2one(
-        'hr.contract.ua',
-        string='Contract',
+    version_id = fields.Many2one(
+        'hr.version',
+        string='Employee Version',
         required=True,
         ondelete='cascade',
         tracking=True
@@ -31,19 +31,19 @@ class HrContractSalaryChange(models.Model):
     employee_id = fields.Many2one(
         'hr.employee',
         string='Employee',
-        related='contract_id.employee_id',
+        related='version_id.employee_id',
         store=True
     )
     company_id = fields.Many2one(
         'res.company',
         string='Company',
-        related='contract_id.company_id',
+        related='version_id.company_id',
         store=True
     )
     currency_id = fields.Many2one(
         'res.currency',
         string='Currency',
-        related='contract_id.currency_id'
+        related='version_id.currency_id'
     )
 
     old_wage = fields.Monetary(
@@ -75,7 +75,6 @@ class HrContractSalaryChange(models.Model):
     )
     reason = fields.Text(string='Reason for Change')
 
-    # Order references (order_id will be added by l10n_ua_hr_documents)
     order_number = fields.Char(string='Order Number', required=True, tracking=True)
     order_date = fields.Date(string='Order Date', required=True)
 
@@ -100,7 +99,7 @@ class HrContractSalaryChange(models.Model):
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('name', 'New') == 'New':
-                vals['name'] = self.env['ir.sequence'].next_by_code('hr.contract.salary.change') or 'New'
+                vals['name'] = self.env['ir.sequence'].next_by_code('hr.version.salary.change') or 'New'
         return super().create(vals_list)
 
     @api.depends('old_wage', 'new_wage')
@@ -112,39 +111,33 @@ class HrContractSalaryChange(models.Model):
             else:
                 record.change_percent = 0
 
-    @api.onchange('contract_id')
-    def _onchange_contract_id(self):
-        if self.contract_id:
-            self.old_wage = self.contract_id.wage
+    @api.onchange('version_id')
+    def _onchange_version_id(self):
+        if self.version_id:
+            self.old_wage = self.version_id.wage
 
     def action_confirm(self):
-        """Confirm the salary change"""
         for record in self:
             if record.state != 'draft':
                 raise UserError('Only draft salary changes can be confirmed.')
             record.state = 'confirmed'
 
     def action_apply(self):
-        """Apply salary change to contract"""
         for record in self:
             if record.state != 'confirmed':
                 raise UserError('Only confirmed salary changes can be applied.')
             if record.effective_date > fields.Date.today():
                 raise UserError('Cannot apply salary change before its effective date.')
-
-            # Update contract wage
-            record.contract_id.wage = record.new_wage
+            record.version_id.wage = record.new_wage
             record.state = 'applied'
 
     def action_cancel(self):
-        """Cancel the salary change"""
         for record in self:
             if record.state == 'applied':
                 raise UserError('Cannot cancel an already applied salary change.')
             record.state = 'cancelled'
 
     def action_draft(self):
-        """Reset to draft"""
         for record in self:
             if record.state == 'applied':
                 raise UserError('Cannot reset an applied salary change to draft.')

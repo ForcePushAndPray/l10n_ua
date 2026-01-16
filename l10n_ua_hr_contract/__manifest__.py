@@ -1,24 +1,27 @@
 {
     'name': 'Ukraine - HR Contracts',
-    'version': '19.0.1.0.1',
+    'version': '19.0.2.0.0',
     'category': 'Human Resources/Localization',
-    'summary': 'Ukrainian HR contracts localization',
+    'summary': 'Ukrainian HR contracts localization (extends hr.version)',
     'description': """
 Ukraine HR Contracts Module
 ===========================
 
-Extension of HR contracts for Ukrainian localization:
+Extension of hr.version for Ukrainian localization (Odoo 19 architecture):
 
 * Contract types (permanent, fixed-term, civil, gig-contract)
 * Main workplace / part-time work tracking
 * Work modes (full-time, part-time, flexible, remote)
 * Work schedules (5-day, shift work, etc.)
 * Probation period management
-* Contract allowances (seniority, hazard, intensity)
+* Version allowances (seniority, hazard, intensity)
 * Termination reasons according to Ukrainian Labor Code
 * Staffing table integration
 * Tariff grade support
 * Diia.City employee support
+* Job combining management
+
+Uses native Odoo 19 hr.version model instead of separate hr.contract.
 
 Requires l10n_ua_hr_base module.
     """,
@@ -35,18 +38,17 @@ Requires l10n_ua_hr_base module.
         'data/hr_work_schedule_data.xml',
         'data/hr_termination_reason_data.xml',
         'views/hr_allowance_type_views.xml',
-        'views/hr_contract_allowance_views.xml',
-        'views/hr_contract_views.xml',
-        'views/hr_contract_salary_change_views.xml',
+        'views/hr_version_allowance_views.xml',
+        'views/hr_version_views.xml',
+        'views/hr_version_salary_change_views.xml',
         'views/hr_job_combining_views.xml',
-        'views/hr_contract_amendment_views.xml',
+        'views/hr_version_amendment_views.xml',
         'views/hr_work_schedule_views.xml',
         'views/hr_termination_reason_views.xml',
         'views/hr_employee_views.xml',
         'views/menu_views.xml',
     ],
     'demo': [
-        'demo/hr_contract_demo.xml',
     ],
     'images': ['static/description/banner.png'],
     'installable': True,

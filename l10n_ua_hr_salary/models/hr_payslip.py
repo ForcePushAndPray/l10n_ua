@@ -22,10 +22,10 @@ class HrPayslip(models.Model):
         required=True,
         tracking=True
     )
-    contract_id = fields.Many2one(
-        'hr.contract.ua',
-        string='Contract',
-        compute='_compute_contract_id',
+    version_id = fields.Many2one(
+        'hr.version',
+        string='Employee Version',
+        compute='_compute_version_id',
         store=True,
         readonly=False
     )
@@ -213,17 +213,17 @@ class HrPayslip(models.Model):
     notes = fields.Text(string='Notes')
 
     @api.depends('employee_id', 'date_from')
-    def _compute_contract_id(self):
+    def _compute_version_id(self):
         for payslip in self:
             if payslip.employee_id:
-                contracts = payslip.employee_id.contract_ua_ids.filtered(
-                    lambda c: c.state == 'open' and 
-                    c.date_start <= (payslip.date_from or fields.Date.today()) and
-                    (not c.date_end or c.date_end >= (payslip.date_from or fields.Date.today()))
-                )
-                payslip.contract_id = contracts[0] if contracts else False
+                # Get version at payslip date
+                date = payslip.date_from or fields.Date.today()
+                versions = payslip.employee_id.version_ids.filtered(
+                    lambda v: v.date_version <= date and v.contract_date_start
+                ).sorted('date_version', reverse=True)
+                payslip.version_id = versions[0] if versions else payslip.employee_id.current_version_id
             else:
-                payslip.contract_id = False
+                payslip.version_id = False
 
     @api.depends('gross_salary', 'psp_type')
     def _compute_psp(self):
@@ -349,36 +349,36 @@ class HrPayslip(models.Model):
             self.worked_hours = scheduled * 8.0
 
     def _generate_accruals(self):
-        """Generate accrual lines based on contract"""
+        """Generate accrual lines based on employee version"""
         self.ensure_one()
         self.accrual_ids.unlink()
-        
-        if not self.contract_id:
+
+        if not self.version_id:
             return
-        
-        contract = self.contract_id
-        
+
+        version = self.version_id
+
         # Base salary
         salary_type = self.env['hr.accrual.type'].search([('code', '=', 'SALARY')], limit=1)
-        if salary_type and contract.wage:
+        if salary_type and version.wage:
             # Prorate salary based on worked days
             if self.scheduled_days > 0:
-                amount = contract.wage * self.worked_days / self.scheduled_days
+                amount = version.wage * self.worked_days / self.scheduled_days
             else:
-                amount = contract.wage
-            
+                amount = version.wage
+
             self.env['hr.payslip.accrual'].create({
                 'payslip_id': self.id,
                 'accrual_type_id': salary_type.id,
                 'quantity': self.worked_days,
-                'rate': contract.wage / self.scheduled_days if self.scheduled_days else 0,
+                'rate': version.wage / self.scheduled_days if self.scheduled_days else 0,
                 'amount': round(amount, 2),
             })
-        
-        # Contract allowances
+
+        # Version allowances
         allowance_type = self.env['hr.accrual.type'].search([('code', '=', 'ALLOWANCE')], limit=1)
-        if allowance_type:
-            for allowance in contract.allowance_ids.filtered('is_active'):
+        if allowance_type and hasattr(version, 'allowance_ids'):
+            for allowance in version.allowance_ids.filtered('is_active'):
                 self.env['hr.payslip.accrual'].create({
                     'payslip_id': self.id,
                     'accrual_type_id': allowance_type.id,

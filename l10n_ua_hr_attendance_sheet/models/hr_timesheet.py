@@ -102,12 +102,11 @@ class HrTimesheet(models.Model):
         employees = self.env['hr.employee'].search(domain)
         
         for employee in employees:
-            # Check if employee has active contract (if hr_contract installed)
-            if 'contract_ids' in self.env['hr.employee']._fields:
-                contracts = employee.contract_ids.filtered(lambda c: c.state == 'open')
-                if not contracts:
-                    continue
-            
+            # Check if employee has active contract via hr.version
+            version = employee.current_version_id
+            if version and version.contract_date_start and not version.is_in_contract:
+                continue
+
             line = self.env['hr.timesheet.line'].create({
                 'timesheet_id': self.id,
                 'employee_id': employee.id,
