@@ -22,7 +22,7 @@ downloaded from the electronic tax cabinet.
     'license': 'LGPL-3',
     'depends': [
         'l10n_ua_tax',
-        'l10n_ua_base',
+        'l10n_ua_account_base',
     ],
     'data': [
         'security/ir.model.access.csv',

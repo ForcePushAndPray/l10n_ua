@@ -5,9 +5,9 @@
 ## Архітектура модулів
 
 ```
-                         ┌─────────────────┐
-                         │   l10n_ua_base  │  ← Фундамент для всіх модулів
-                         └────────┬────────┘
+                         ┌─────────────────────┐
+                         │l10n_ua_account_base │  ← Фундамент для всіх модулів
+                         └──────────┬──────────┘
         ┌────────────────────────┼────────────────────────┬──────────────────┐
         ▼                        ▼                        ▼                  ▼
 ┌───────────────┐      ┌──────────────────┐    ┌────────────────┐  ┌────────────────┐
@@ -40,7 +40,7 @@
 
 ## Базовий модуль
 
-### l10n_ua_base — Фундамент локалізації
+### l10n_ua_account_base — Фундамент локалізації
 
 **Призначення:** Спільні довідники та утиліти для всіх модулів.
 
@@ -266,7 +266,7 @@
 ### Базові модулі:
 ```bash
 # Фундамент
-odoo-bin -d <database> -i l10n_ua_base --stop-after-init
+odoo-bin -d <database> -i l10n_ua_account_base --stop-after-init
 
 # Бухгалтерія + податки
 odoo-bin -d <database> -i l10n_ua_accounting,l10n_ua_tax --stop-after-init
@@ -282,7 +282,7 @@ odoo-bin -d <database> -i l10n_ua_hr_base,l10n_ua_hr_contract,l10n_ua_hr_documen
 
 ### Оновлення:
 ```bash
-odoo-bin -d <database> -u l10n_ua_base,l10n_ua_tax_cabinet --stop-after-init
+odoo-bin -d <database> -u l10n_ua_account_base,l10n_ua_tax_cabinet --stop-after-init
 ```
 
 ---

@@ -20,14 +20,14 @@ Ukrainian accounting localization providing:
 * Cash book, PKO, VKO
 * Advance reports
 
-Requires l10n_ua_base module.
+Requires l10n_ua_account_base module.
     """,
     'author': 'Svyatoslav Nadozirny',
     'website': 'https://ndev.online',
     'license': 'LGPL-3',
     'depends': [
         'account',
-        'l10n_ua_base',
+        'l10n_ua_account_base',
     ],
     'data': [
         'security/ir.model.access.csv',

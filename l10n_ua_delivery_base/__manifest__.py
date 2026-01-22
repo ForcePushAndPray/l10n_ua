@@ -14,14 +14,14 @@ Base module for Ukrainian delivery carrier integrations providing:
 * Common warehouse/branch model
 * Shipment tracking base
 
-Requires l10n_ua_base module.
+Requires l10n_ua_account_base module.
     """,
     'author': 'Svyatoslav Nadozirny',
     'website': 'https://ndev.online',
     'license': 'LGPL-3',
     'depends': [
         'delivery',
-        'l10n_ua_base',
+        'l10n_ua_account_base',
     ],
     'data': [
         'security/ir.model.access.csv',

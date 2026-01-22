@@ -15,7 +15,7 @@ Base module for Ukrainian marketplace integrations providing:
 * Order import base
 * Category mapping
 
-Requires l10n_ua_base module.
+Requires l10n_ua_account_base module.
     """,
     'author': 'Svyatoslav Nadozirny',
     'website': 'https://ndev.online',
@@ -23,7 +23,7 @@ Requires l10n_ua_base module.
     'depends': [
         'sale',
         'stock',
-        'l10n_ua_base',
+        'l10n_ua_account_base',
     ],
     'data': [
         'security/ir.model.access.csv',
