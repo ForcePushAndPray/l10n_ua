@@ -1,5 +1,5 @@
 {
-    'name': 'Ukraine - VAT',
+    'name': 'Ukraine - Account VAT',
     'version': '19.0.1.0.0',
     'category': 'Accounting/Localization',
     'summary': 'Ukrainian VAT accounting',
