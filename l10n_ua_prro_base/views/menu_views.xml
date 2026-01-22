@@ -3,7 +3,7 @@
 
     <menuitem id="menu_l10n_ua_prro"
               name="PRRO"
-              parent="l10n_ua_base.menu_l10n_ua_root"
+              parent="l10n_ua_account_base.menu_l10n_ua_root"
               sequence="50"/>
 
     <menuitem id="menu_l10n_ua_prro_config"

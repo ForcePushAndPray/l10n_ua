@@ -1,7 +1,7 @@
 from odoo import api, fields, models, _
 from odoo.exceptions import ValidationError
 
-from odoo.addons.l10n_ua_base.tools.validators import validate_iban_ua
+from odoo.addons.l10n_ua_account_base.tools.validators import validate_iban_ua
 
 
 class ResPartnerBank(models.Model):

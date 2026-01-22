@@ -3,7 +3,7 @@
 
     <menuitem id="menu_l10n_ua_tax"
               name="Taxes"
-              parent="l10n_ua_base.menu_l10n_ua_root"
+              parent="l10n_ua_account_base.menu_l10n_ua_root"
               sequence="30"/>
 
     <menuitem id="menu_l10n_ua_tax_periods"
