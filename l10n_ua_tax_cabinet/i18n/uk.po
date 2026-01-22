@@ -1,0 +1,197 @@
+# Ukrainian translation for l10n_ua_tax_cabinet
+# Copyright (C) 2026 Svyatoslav Nadozirny
+# This file is distributed under the same license as the l10n_ua_tax_cabinet module.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-22 00:00+0000\n"
+"PO-Revision-Date: 2026-01-22 00:00+0000\n"
+"Last-Translator: Svyatoslav Nadozirny <sv@ndev.online>\n"
+"Language-Team: Ukrainian\n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#. module: l10n_ua_tax_cabinet
+#: model:l10n_ua.tax.document.type,name:l10n_ua_tax_cabinet.tax_document_type_ep_declaration_v9
+msgid "Single Tax Declaration (FOP) v9"
+msgstr "Декларація платника єдиного податку (ФОП) v9"
+
+#. module: l10n_ua_tax_cabinet
+#: model:l10n_ua.tax.document.type,name:l10n_ua_tax_cabinet.tax_document_type_ep_declaration
+msgid "Single Tax Declaration (FOP) v5"
+msgstr "Декларація платника єдиного податку (ФОП) v5"
+
+#. module: l10n_ua_tax_cabinet
+#: model:l10n_ua.tax.document.type,name:l10n_ua_tax_cabinet.tax_document_type_esv_declaration
+msgid "ESV Report"
+msgstr "Звіт з ЄСВ"
+
+#. module: l10n_ua_tax_cabinet
+#: model:l10n_ua.tax.document.type,name:l10n_ua_tax_cabinet.tax_document_type_vat_declaration
+msgid "VAT Declaration"
+msgstr "Декларація з ПДВ"
+
+#. module: l10n_ua_tax_cabinet
+#: model:l10n_ua.tax.document.type,name:l10n_ua_tax_cabinet.tax_document_type_income_declaration
+msgid "Income Tax Declaration"
+msgstr "Декларація з податку на прибуток"
+
+#. module: l10n_ua_tax_cabinet
+#: model:l10n_ua.tax.document.type,name:l10n_ua_tax_cabinet.tax_document_type_receipt_1
+msgid "Receipt Type 1 (Accepted)"
+msgstr "Квитанція 1 (Прийнято)"
+
+#. module: l10n_ua_tax_cabinet
+#: model:l10n_ua.tax.document.type,description:l10n_ua_tax_cabinet.tax_document_type_receipt_1
+msgid "Confirmation of document acceptance"
+msgstr "Підтвердження прийняття документа"
+
+#. module: l10n_ua_tax_cabinet
+#: model:l10n_ua.tax.document.type,name:l10n_ua_tax_cabinet.tax_document_type_receipt_2
+msgid "Receipt Type 2 (Registered)"
+msgstr "Квитанція 2 (Зареєстровано)"
+
+#. module: l10n_ua_tax_cabinet
+#: model:l10n_ua.tax.document.type,description:l10n_ua_tax_cabinet.tax_document_type_receipt_2
+msgid "Confirmation of document registration"
+msgstr "Підтвердження реєстрації документа"
+
+#. module: l10n_ua_tax_cabinet
+#: model:l10n_ua.tax.document.type,name:l10n_ua_tax_cabinet.tax_document_type_notification
+msgid "Tax Notification"
+msgstr "Податкове повідомлення"
+
+#. module: l10n_ua_tax_cabinet
+#: model:l10n_ua.tax.document.type,name:l10n_ua_tax_cabinet.tax_document_type_tax_invoice
+msgid "Tax Invoice"
+msgstr "Податкова накладна"
+
+#. module: l10n_ua_tax_cabinet
+#: model:l10n_ua.tax.document.type,name:l10n_ua_tax_cabinet.tax_document_type_adjustment_calc
+msgid "Adjustment Calculation"
+msgstr "Розрахунок коригування"
+
+#. module: l10n_ua_tax_cabinet
+#: model:l10n_ua.tax.document.type,name:l10n_ua_tax_cabinet.tax_document_type_other
+msgid "Other Document"
+msgstr "Інший документ"
+
+#. module: l10n_ua_tax_cabinet
+#: selection:l10n_ua.tax.document.type,category:0
+msgid "Declaration"
+msgstr "Декларація"
+
+#. module: l10n_ua_tax_cabinet
+#: selection:l10n_ua.tax.document.type,category:0
+msgid "Report"
+msgstr "Звіт"
+
+#. module: l10n_ua_tax_cabinet
+#: selection:l10n_ua.tax.document.type,category:0
+msgid "Receipt"
+msgstr "Квитанція"
+
+#. module: l10n_ua_tax_cabinet
+#: selection:l10n_ua.tax.document.type,category:0
+msgid "Notification"
+msgstr "Повідомлення"
+
+#. module: l10n_ua_tax_cabinet
+#: selection:l10n_ua.tax.document.type,category:0
+msgid "Request"
+msgstr "Запит"
+
+#. module: l10n_ua_tax_cabinet
+#: selection:l10n_ua.tax.document.type,category:0
+msgid "Response"
+msgstr "Відповідь"
+
+#. module: l10n_ua_tax_cabinet
+#: selection:l10n_ua.tax.document.type,category:0
+msgid "Other"
+msgstr "Інше"
+
+#. module: l10n_ua_tax_cabinet
+#: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_document_view_form
+msgid "Tax Document"
+msgstr "Податковий документ"
+
+#. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_document_type__name
+msgid "Name"
+msgstr "Назва"
+
+#. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_document_type__code
+msgid "Code"
+msgstr "Код"
+
+#. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_document_type__category
+msgid "Category"
+msgstr "Категорія"
+
+#. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_document_type__description
+msgid "Description"
+msgstr "Опис"
+
+#. module: l10n_ua_tax_cabinet
+#: model:ir.model,name:l10n_ua_tax_cabinet.model_l10n_ua_tax_document_type
+msgid "Tax Document Type"
+msgstr "Тип податкового документа"
+
+#. module: l10n_ua_tax_cabinet
+#: model:ir.model,name:l10n_ua_tax_cabinet.model_l10n_ua_tax_cabinet_document
+msgid "Tax Cabinet Document"
+msgstr "Документ податкового кабінету"
+
+#. module: l10n_ua_tax_cabinet
+#: model:ir.model,name:l10n_ua_tax_cabinet.model_l10n_ua_tax_cabinet_config
+msgid "Tax Cabinet Configuration"
+msgstr "Налаштування податкового кабінету"
+
+#. module: l10n_ua_tax_cabinet
+#: selection:l10n_ua.tax.cabinet.document,state:0
+msgid "Draft"
+msgstr "Чернетка"
+
+#. module: l10n_ua_tax_cabinet
+#: selection:l10n_ua.tax.cabinet.document,state:0
+msgid "Signed"
+msgstr "Підписано"
+
+#. module: l10n_ua_tax_cabinet
+#: selection:l10n_ua.tax.cabinet.document,state:0
+msgid "Sent"
+msgstr "Відправлено"
+
+#. module: l10n_ua_tax_cabinet
+#: selection:l10n_ua.tax.cabinet.document,state:0
+msgid "Accepted"
+msgstr "Прийнято"
+
+#. module: l10n_ua_tax_cabinet
+#: selection:l10n_ua.tax.cabinet.document,state:0
+msgid "Rejected"
+msgstr "Відхилено"
+
+#. module: l10n_ua_tax_cabinet
+#: model:ir.actions.act_window,name:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_document_action
+msgid "Tax Documents"
+msgstr "Податкові документи"
+
+#. module: l10n_ua_tax_cabinet
+#: model:ir.ui.menu,name:l10n_ua_tax_cabinet.menu_l10n_ua_tax_cabinet_documents
+msgid "Documents"
+msgstr "Документи"
+
+#. module: l10n_ua_tax_cabinet
+#: model:ir.ui.menu,name:l10n_ua_tax_cabinet.menu_l10n_ua_tax_cabinet_config
+msgid "Configuration"
+msgstr "Налаштування"

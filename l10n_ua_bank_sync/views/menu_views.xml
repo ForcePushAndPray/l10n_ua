@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ============================================== -->
+    <!-- Bank UA - submenu under Invoicing              -->
+    <!-- Following l10n_ua menu structure guidelines    -->
+    <!-- ============================================== -->
+
+    <menuitem id="menu_ua_bank_root"
+              name="Bank UA"
+              sequence="53"
+              web_icon="l10n_ua_bank_sync,static/description/icon.png"/>
+
+    <!-- Statements -->
+    <menuitem id="menu_ua_bank_statements"
+              name="Bank Statements"
+              parent="menu_ua_bank_root"
+              action="l10n_ua_bank_statement_action"
+              sequence="10"/>
+
+    <!-- Sync Jobs -->
+    <menuitem id="menu_ua_bank_jobs"
+              name="Import Jobs"
+              parent="menu_ua_bank_root"
+              action="l10n_ua_bank_sync_job_action"
+              sequence="20"/>
+
+    <!-- Configuration submenu -->
+    <menuitem id="menu_ua_bank_config"
+              name="Configuration"
+              parent="menu_ua_bank_root"
+              sequence="90"/>
+
+    <menuitem id="menu_ua_bank_connections"
+              name="Bank Connections"
+              parent="menu_ua_bank_config"
+              action="l10n_ua_bank_sync_config_action"
+              sequence="10"/>
+
+</odoo>

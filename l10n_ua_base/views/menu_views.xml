@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_l10n_ua_root"
+              name="Ukraine"
+              web_icon="l10n_ua_base,static/description/icon.png"
+              sequence="100"/>
+
+    <menuitem id="menu_l10n_ua_directories"
+              name="Directories"
+              parent="menu_l10n_ua_root"
+              sequence="10"/>
+
+    <menuitem id="menu_l10n_ua_koatuu"
+              name="KOATUU/KATOTTG"
+              parent="menu_l10n_ua_directories"
+              action="l10n_ua_koatuu_action"
+              sequence="10"/>
+
+    <menuitem id="menu_l10n_ua_kved"
+              name="KVED-2010"
+              parent="menu_l10n_ua_directories"
+              action="l10n_ua_kved_action"
+              sequence="20"/>
+
+    <menuitem id="menu_l10n_ua_tax_office"
+              name="Tax Offices (ДПІ)"
+              parent="menu_l10n_ua_directories"
+              action="l10n_ua_tax_office_action"
+              sequence="30"/>
+
+</odoo>

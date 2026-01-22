@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_l10n_ua_assets"
+              name="Fixed Assets"
+              parent="l10n_ua_base.menu_l10n_ua_root"
+              sequence="25"/>
+
+    <menuitem id="menu_l10n_ua_mnma"
+              name="MNMA"
+              parent="menu_l10n_ua_assets"
+              action="l10n_ua_mnma_action"
+              sequence="10"/>
+
+</odoo>

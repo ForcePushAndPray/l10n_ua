@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_l10n_ua_accounting"
+              name="UA Accounting"
+              parent="l10n_ua_base.menu_l10n_ua_root"
+              sequence="20"/>
+
+    <menuitem id="menu_l10n_ua_journal_orders"
+              name="Journal Orders"
+              parent="menu_l10n_ua_accounting"
+              action="l10n_ua_journal_order_action"
+              sequence="10"/>
+
+    <menuitem id="menu_l10n_ua_osv"
+              name="Trial Balance (OSV)"
+              parent="menu_l10n_ua_accounting"
+              action="l10n_ua_osv_action"
+              sequence="20"/>
+
+</odoo>

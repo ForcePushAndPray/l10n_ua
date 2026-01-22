@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_tax_cabinet_config_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.tax.cabinet.config.form</field>
+        <field name="model">l10n_ua.tax.cabinet.config</field>
+        <field name="arch" type="xml">
+            <form string="Tax Cabinet Configuration">
+                <header>
+                    <button name="action_test_connection" string="Test Connection" type="object"
+                            class="btn-secondary"/>
+                    <button name="action_open_sync_wizard" string="Sync Documents" type="object"
+                            class="btn-primary"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="%(l10n_ua_tax_cabinet_document_action)d" type="action"
+                                class="oe_stat_button" icon="fa-file-text-o"
+                                context="{'search_default_company_id': company_id}">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Documents</span>
+                            </div>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. Tax Cabinet Connection"/></h1>
+                    </div>
+                    <group>
+                        <group string="Company">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="taxpayer_code"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Sync Settings">
+                            <field name="auto_download_pdf"/>
+                            <field name="auto_download_xml"/>
+                            <field name="last_sync_date"/>
+                        </group>
+                    </group>
+
+                    <group string="Authentication">
+                        <field name="auth_method" widget="radio"/>
+                    </group>
+
+                    <!-- KEP Authentication -->
+                    <group string="KEP Settings" invisible="auth_method != 'kep'">
+                        <group>
+                            <field name="kep_key_file" placeholder="/path/to/key.dat"/>
+                            <field name="kep_password" password="True"/>
+                        </group>
+                        <group>
+                            <field name="iit_lib_path" placeholder="/opt/iit/eu/sw"/>
+                            <field name="iit_cert_path" placeholder="/opt/iit/certificates"/>
+                        </group>
+                    </group>
+
+                    <!-- Manual Token Auth -->
+                    <group string="Manual Token" invisible="auth_method != 'token'">
+                        <field name="auth_token" placeholder="MIIStwYJKoZIhvcNAQ..."/>
+                    </group>
+
+                    <div class="alert alert-info" role="alert" invisible="auth_method != 'kep'">
+                        <p><strong>KEP Authentication Setup:</strong></p>
+                        <ol>
+                            <li>Install IIT library: <code>sudo dpkg -i euswi.64.deb</code> (download from <a href="https://iit.com.ua/downloads" target="_blank">iit.com.ua</a>)</li>
+                            <li>Place CA certificates in the certificates directory</li>
+                            <li>Place your user certificates (.cer files) in the same directory</li>
+                            <li>Enter the path to your private key file (.dat, .jks, .pfx)</li>
+                            <li>Enter the password for your private key</li>
+                        </ol>
+                    </div>
+
+                    <div class="alert alert-warning" role="alert" invisible="auth_method != 'token'">
+                        <p><strong>Manual Token Authentication:</strong></p>
+                        <p>Paste the signed authorization token from browser Developer Tools (Authorization header value after logging into cabinet.tax.gov.ua).</p>
+                        <p><em>Note: This token expires and needs to be refreshed manually.</em></p>
+                    </div>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_tax_cabinet_config_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.tax.cabinet.config.list</field>
+        <field name="model">l10n_ua.tax.cabinet.config</field>
+        <field name="arch" type="xml">
+            <list string="Tax Cabinet Configurations">
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="taxpayer_code"/>
+                <field name="auth_method"/>
+                <field name="last_sync_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_tax_cabinet_config_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.tax.cabinet.config.search</field>
+        <field name="model">l10n_ua.tax.cabinet.config</field>
+        <field name="arch" type="xml">
+            <search string="Tax Cabinet Configurations">
+                <field name="name"/>
+                <field name="company_id"/>
+                <field name="taxpayer_code"/>
+                <filter name="inactive" string="Archived" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_tax_cabinet_config_action" model="ir.actions.act_window">
+        <field name="name">Cabinet Connections</field>
+        <field name="res_model">l10n_ua.tax.cabinet.config</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first Tax Cabinet connection
+            </p>
+            <p>
+                Configure connection to cabinet.tax.gov.ua for syncing tax documents using KEP (qualified electronic signature).
+            </p>
+        </field>
+    </record>
+
+</odoo>

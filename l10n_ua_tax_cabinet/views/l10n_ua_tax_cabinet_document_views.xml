@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_tax_cabinet_document_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.tax.cabinet.document.form</field>
+        <field name="model">l10n_ua.tax.cabinet.document</field>
+        <field name="arch" type="xml">
+            <form string="Tax Document">
+                <header>
+                    <button name="action_fill_data" string="Fill Data" type="object"
+                            invisible="state != 'draft'" class="btn-primary"
+                            help="Open wizard to fill document data"/>
+                    <button name="action_submit_to_cabinet" string="Submit to Cabinet" type="object"
+                            invisible="not file_xml or state != 'draft'" class="btn-secondary"
+                            help="Sign, encrypt and submit document to cabinet.tax.gov.ua"/>
+                    <button name="action_export_for_submission" string="Sign &amp; Export" type="object"
+                            invisible="not file_xml or state == 'accepted'" class="btn-secondary"
+                            help="Sign document with KEP and download for external submission"/>
+                    <button name="action_sign_document" string="Sign Document" type="object"
+                            invisible="not file_xml or file_signed or state == 'accepted'" class="btn-secondary"/>
+                    <button name="action_mark_submitted" string="Mark Submitted" type="object"
+                            invisible="state != 'draft'"/>
+                    <button name="action_mark_accepted" string="Mark Accepted" type="object"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_mark_rejected" string="Mark Rejected" type="object"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_reset_draft" string="Reset to Draft" type="object"
+                            invisible="state in ('draft', 'accepted')"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,submitted,accepted"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_download_signed" type="object" class="oe_stat_button"
+                                icon="fa-certificate" invisible="not file_signed">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Signed</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="Document name" readonly="state == 'accepted'"/></h1>
+                    </div>
+                    <group>
+                        <group string="Document Info">
+                            <field name="document_type_id" readonly="state == 'accepted'"/>
+                            <field name="document_number" readonly="state == 'accepted'"/>
+                            <field name="document_date" readonly="state == 'accepted'"/>
+                            <field name="taxpayer_code" readonly="state == 'accepted'"/>
+                        </group>
+                        <group string="Period">
+                            <field name="year" readonly="state == 'accepted'"/>
+                            <field name="period" readonly="state == 'accepted'"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="state == 'accepted'"/>
+                            <field name="source" readonly="state == 'accepted'"/>
+                        </group>
+                    </group>
+                    <group string="Status" invisible="not status_message">
+                        <field name="status_message" nolabel="1" colspan="2" readonly="1"/>
+                    </group>
+                    <notebook>
+                        <page string="PDF" name="pdf_content" invisible="not file_pdf">
+                            <field name="file_pdf" widget="pdf_viewer" nolabel="1"/>
+                        </page>
+                        <page string="XML" name="xml_content" invisible="not file_xml">
+                            <field name="file_xml" widget="xml_viewer" nolabel="1"/>
+                        </page>
+                        
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Additional notes..." readonly="state == 'accepted'"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_tax_cabinet_document_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.tax.cabinet.document.list</field>
+        <field name="model">l10n_ua.tax.cabinet.document</field>
+        <field name="arch" type="xml">
+            <list string="Tax Documents" decoration-success="state == 'accepted'"
+                  decoration-danger="state == 'rejected'" decoration-info="state == 'submitted'">
+                <field name="document_date"/>
+                <field name="name"/>
+                <field name="document_type_id"/>
+                <field name="document_number" optional="show"/>
+                <field name="year"/>
+                <field name="period"/>
+                <field name="taxpayer_code" optional="hide"/>
+                <field name="source" optional="hide"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_tax_cabinet_document_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.tax.cabinet.document.search</field>
+        <field name="model">l10n_ua.tax.cabinet.document</field>
+        <field name="arch" type="xml">
+            <search string="Tax Documents">
+                <field name="name"/>
+                <field name="document_number"/>
+                <field name="document_type_id"/>
+                <field name="taxpayer_code"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="submitted" string="Submitted" domain="[('state', '=', 'submitted')]"/>
+                <filter name="accepted" string="Accepted" domain="[('state', '=', 'accepted')]"/>
+                <separator/>
+                <filter name="this_year" string="This Year" domain="[('year', '=', context_today().year)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_tax_cabinet_document_action" model="ir.actions.act_window">
+        <field name="name">Tax Documents</field>
+        <field name="res_model">l10n_ua.tax.cabinet.document</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Document Type views -->
+    <record id="l10n_ua_tax_document_type_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.tax.document.type.list</field>
+        <field name="model">l10n_ua.tax.document.type</field>
+        <field name="arch" type="xml">
+            <list string="Document Types" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="code"/>
+                <field name="name"/>
+                <field name="category"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_tax_document_type_action" model="ir.actions.act_window">
+        <field name="name">Document Types</field>
+        <field name="res_model">l10n_ua.tax.document.type</field>
+        <field name="view_mode">list</field>
+    </record>
+
+</odoo>

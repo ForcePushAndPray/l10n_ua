@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_l10n_ua_vat"
+              name="VAT"
+              parent="l10n_ua_tax.menu_l10n_ua_tax"
+              sequence="30"/>
+
+    <menuitem id="menu_l10n_ua_tax_invoices"
+              name="Tax Invoices"
+              parent="menu_l10n_ua_vat"
+              action="l10n_ua_tax_invoice_action"
+              sequence="10"/>
+
+    <menuitem id="menu_l10n_ua_vat_registers"
+              name="VAT Registers"
+              parent="menu_l10n_ua_vat"
+              action="l10n_ua_vat_register_action"
+              sequence="20"/>
+
+    <menuitem id="menu_l10n_ua_vat_declarations"
+              name="VAT Declarations"
+              parent="menu_l10n_ua_vat"
+              action="l10n_ua_vat_declaration_action"
+              sequence="30"/>
+
+</odoo>

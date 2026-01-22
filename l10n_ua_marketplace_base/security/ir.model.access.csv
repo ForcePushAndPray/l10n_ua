@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_l10n_ua_marketplace_config_user,l10n_ua.marketplace.config.user,model_l10n_ua_marketplace_config,sales_team.group_sale_salesman,1,0,0,0
+access_l10n_ua_marketplace_config_manager,l10n_ua.marketplace.config.manager,model_l10n_ua_marketplace_config,sales_team.group_sale_manager,1,1,1,1
+access_l10n_ua_marketplace_category_user,l10n_ua.marketplace.category.user,model_l10n_ua_marketplace_category,sales_team.group_sale_salesman,1,0,0,0
+access_l10n_ua_marketplace_category_manager,l10n_ua.marketplace.category.manager,model_l10n_ua_marketplace_category,sales_team.group_sale_manager,1,1,1,1
+access_l10n_ua_marketplace_order_user,l10n_ua.marketplace.order.user,model_l10n_ua_marketplace_order,sales_team.group_sale_salesman,1,1,1,0
+access_l10n_ua_marketplace_order_manager,l10n_ua.marketplace.order.manager,model_l10n_ua_marketplace_order,sales_team.group_sale_manager,1,1,1,1

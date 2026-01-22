@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_l10n_ua_bank_sync_config_user,l10n_ua.bank.sync.config.user,model_l10n_ua_bank_sync_config,base.group_user,1,0,0,0
+access_l10n_ua_bank_sync_config_manager,l10n_ua.bank.sync.config.manager,model_l10n_ua_bank_sync_config,account.group_account_manager,1,1,1,1
+access_l10n_ua_bank_sync_job_user,l10n_ua.bank.sync.job.user,model_l10n_ua_bank_sync_job,base.group_user,1,1,1,0
+access_l10n_ua_bank_sync_job_manager,l10n_ua.bank.sync.job.manager,model_l10n_ua_bank_sync_job,account.group_account_manager,1,1,1,1
+access_l10n_ua_bank_sync_log_user,l10n_ua.bank.sync.log.user,model_l10n_ua_bank_sync_log,base.group_user,1,1,1,0
+access_l10n_ua_bank_sync_log_manager,l10n_ua.bank.sync.log.manager,model_l10n_ua_bank_sync_log,account.group_account_manager,1,1,1,1
+access_l10n_ua_bank_statement_user,l10n_ua.bank.statement.user,model_l10n_ua_bank_statement,base.group_user,1,1,1,0
+access_l10n_ua_bank_statement_manager,l10n_ua.bank.statement.manager,model_l10n_ua_bank_statement,account.group_account_manager,1,1,1,1
+access_l10n_ua_bank_statement_line_user,l10n_ua.bank.statement.line.user,model_l10n_ua_bank_statement_line,base.group_user,1,1,1,0
+access_l10n_ua_bank_statement_line_manager,l10n_ua.bank.statement.line.manager,model_l10n_ua_bank_statement_line,account.group_account_manager,1,1,1,1
+access_l10n_ua_bank_sync_wizard_user,l10n_ua.bank.sync.wizard.user,model_l10n_ua_bank_sync_wizard,base.group_user,1,1,1,1

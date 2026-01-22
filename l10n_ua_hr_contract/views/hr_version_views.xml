@@ -39,16 +39,16 @@
                 <field name="work_rate"/>
                 <field name="working_hours_week"/>
             </xpath>
-            <!-- Add Ukrainian specifics page -->
+            <!-- Add consolidated Ukrainian contract page -->
             <xpath expr="//page[@name='hr_settings']" position="before">
-                <page string="Ukrainian Specifics" name="ua_specifics" groups="hr.group_hr_user">
+                <page string="UA: Контракт" name="ua_contract" groups="hr.group_hr_user">
                     <group>
-                        <group string="Staffing">
+                        <group string="Штатний розпис">
                             <field name="staffing_line_id"/>
                             <field name="tariff_grade_id"/>
                             <field name="work_schedule_ua_id"/>
                         </group>
-                        <group string="Work Conditions">
+                        <group string="Умови праці">
                             <field name="work_conditions"/>
                             <field name="work_conditions_class" invisible="work_conditions == 'normal'"/>
                             <field name="work_conditions_subclass" invisible="work_conditions == 'normal'"/>
@@ -56,65 +56,63 @@
                             <field name="diia_city_employee"/>
                         </group>
                     </group>
-                    <group string="Orders">
-                        <group>
+                    <group>
+                        <group string="Накази">
                             <field name="hire_order_number"/>
                             <field name="hire_order_date"/>
-                        </group>
-                        <group>
                             <field name="termination_order_number"/>
                             <field name="termination_order_date"/>
                             <field name="termination_reason_ua_id"/>
                         </group>
-                    </group>
-                    <group string="Probation">
-                        <group>
+                        <group string="Випробувальний термін">
                             <field name="probation_period_days"/>
                             <field name="probation_end_date"/>
                         </group>
                     </group>
-                </page>
-                <page string="Allowances" name="allowances" groups="hr.group_hr_user">
-                    <field name="allowance_ids" nolabel="1">
-                        <list editable="bottom">
-                            <field name="allowance_type_id"/>
-                            <field name="calculation_method"/>
-                            <field name="amount"/>
-                            <field name="percent"/>
-                            <field name="calculated_amount" sum="Total"/>
-                            <field name="date_from"/>
-                            <field name="date_to"/>
-                            <field name="is_active"/>
-                        </list>
-                    </field>
-                </page>
-                <page string="Salary Changes" name="salary_changes" groups="hr.group_hr_manager">
-                    <field name="salary_change_ids" nolabel="1">
-                        <list>
-                            <field name="effective_date"/>
-                            <field name="old_wage"/>
-                            <field name="new_wage"/>
-                            <field name="change_percent"/>
-                            <field name="order_number"/>
-                            <field name="state" widget="badge"
-                                   decoration-success="state == 'applied'"
-                                   decoration-info="state == 'draft'"
-                                   decoration-warning="state == 'confirmed'"/>
-                        </list>
-                    </field>
-                </page>
-                <page string="Amendments" name="amendments" groups="hr.group_hr_user">
-                    <field name="amendment_ids" nolabel="1">
-                        <list>
-                            <field name="amendment_date"/>
-                            <field name="amendment_type"/>
-                            <field name="description"/>
-                            <field name="order_number"/>
-                            <field name="state" widget="badge"
-                                   decoration-success="state == 'confirmed'"
-                                   decoration-info="state == 'draft'"/>
-                        </list>
-                    </field>
+                    <notebook>
+                        <page string="Надбавки" name="allowances_inner">
+                            <field name="allowance_ids" nolabel="1">
+                                <list editable="bottom">
+                                    <field name="allowance_type_id"/>
+                                    <field name="calculation_method"/>
+                                    <field name="amount"/>
+                                    <field name="percent"/>
+                                    <field name="calculated_amount" sum="Total"/>
+                                    <field name="date_from"/>
+                                    <field name="date_to"/>
+                                    <field name="is_active"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Зміни зарплати" name="salary_changes_inner" groups="hr.group_hr_manager">
+                            <field name="salary_change_ids" nolabel="1">
+                                <list>
+                                    <field name="effective_date"/>
+                                    <field name="old_wage"/>
+                                    <field name="new_wage"/>
+                                    <field name="change_percent"/>
+                                    <field name="order_number"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'applied'"
+                                           decoration-info="state == 'draft'"
+                                           decoration-warning="state == 'confirmed'"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Додаткові угоди" name="amendments_inner">
+                            <field name="amendment_ids" nolabel="1">
+                                <list>
+                                    <field name="amendment_date"/>
+                                    <field name="amendment_type"/>
+                                    <field name="description"/>
+                                    <field name="order_number"/>
+                                    <field name="state" widget="badge"
+                                           decoration-success="state == 'confirmed'"
+                                           decoration-info="state == 'draft'"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
                 </page>
             </xpath>
         </field>

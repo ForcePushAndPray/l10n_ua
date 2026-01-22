@@ -1,0 +1,607 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ua_base
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260103\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-22 18:44+0000\n"
+"PO-Revision-Date: 2026-01-22 18:44+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_koatuu__active
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_kved__active
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__active
+#: model_terms:ir.ui.view,arch_db:l10n_ua_base.l10n_ua_tax_office_view_search
+msgid "Active"
+msgstr "Активний"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__address
+msgid "Address"
+msgstr "Адреса"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,help:l10n_ua_base.field_res_partner__kved_ids
+#: model:ir.model.fields,help:l10n_ua_base.field_res_users__kved_ids
+msgid "All economic activity codes"
+msgstr "Усі коди економічної діяльності"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_address_mixin__ua_apartment
+msgid "Apartment"
+msgstr "Квартира"
+
+#. module: l10n_ua_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_base.l10n_ua_tax_office_view_search
+msgid "Archived"
+msgstr "Архівовано"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__res_partner__legal_form__bf
+msgid "BF (Charitable Foundation)"
+msgstr "БФ (Благодійний фонд)"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_address_mixin__ua_building
+msgid "Building"
+msgstr "Будинок"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_koatuu__category
+msgid "Category"
+msgstr "Категорія"
+
+#. module: l10n_ua_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_base.l10n_ua_tax_office_view_search
+msgid "Central"
+msgstr "Центральний"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__l10n_ua_tax_office__office_type__central
+msgid "Central Office (ДПС)"
+msgstr "Центральний офіс (ДПС)"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__child_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_base.l10n_ua_tax_office_view_form
+msgid "Child Offices"
+msgstr "Підпорядковані офіси"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_koatuu__child_ids
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_kved__child_ids
+msgid "Children"
+msgstr "Дочірні"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__l10n_ua_koatuu__category__city
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__l10n_ua_koatuu__level__city
+msgid "City"
+msgstr "Місто"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_address_mixin__ua_city
+msgid "City/Village"
+msgstr "Місто/Село"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_koatuu__code
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_kved__code
+msgid "Code"
+msgstr "Код"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__code
+msgid "Code (C_STI)"
+msgstr "Код (C_STI)"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_address_mixin__ua_community
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__l10n_ua_koatuu__level__community
+msgid "Community (Hromada)"
+msgstr "Громада"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_koatuu__complete_name
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_kved__complete_name
+msgid "Complete Name"
+msgstr "Повна назва"
+
+#. module: l10n_ua_base
+#: model:ir.model,name:l10n_ua_base.model_res_partner
+msgid "Contact"
+msgstr "Контакт"
+
+#. module: l10n_ua_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_base.l10n_ua_tax_office_view_form
+msgid "Contact Information"
+msgstr "Контактна інформація"
+
+#. module: l10n_ua_base
+#: model_terms:ir.actions.act_window,help:l10n_ua_base.l10n_ua_tax_office_action
+msgid "Create a tax office"
+msgstr "Створити податкову інспекцію"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_koatuu__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_kved__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__create_uid
+msgid "Created by"
+msgstr "Створено"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_koatuu__create_date
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_kved__create_date
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__create_date
+msgid "Created on"
+msgstr "Дата створення"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__res_partner__legal_form__dp
+msgid "DP (State Enterprise)"
+msgstr "ДП (Державне підприємство)"
+
+#. module: l10n_ua_base
+#: model:ir.ui.menu,name:l10n_ua_base.menu_l10n_ua_directories
+msgid "Directories"
+msgstr "Довідники"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_address_mixin__display_name
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_document_mixin__display_name
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_koatuu__display_name
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_kved__display_name
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__display_name
+#: model:ir.model.fields,field_description:l10n_ua_base.field_res_partner__display_name
+msgid "Display Name"
+msgstr "Назва для відображення"
+
+#. module: l10n_ua_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_base.l10n_ua_tax_office_view_search
+msgid "District"
+msgstr "Район"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_address_mixin__ua_district
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__l10n_ua_koatuu__level__district
+msgid "District (Raion)"
+msgstr "Район"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__c_raj
+msgid "District Code (C_RAJ)"
+msgstr "Код району (C_RAJ)"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__l10n_ua_tax_office__office_type__district
+msgid "District Office (ДПІ)"
+msgstr "Районна інспекція (ДПІ)"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,help:l10n_ua_base.field_l10n_ua_tax_office__c_raj
+msgid "District code (last 2 digits of C_STI)"
+msgstr "Код району (останні 2 цифри C_STI)"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_document_mixin__ua_doc_date
+msgid "Document Date"
+msgstr "Дата документа"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_document_mixin__ua_doc_number
+msgid "Document Number"
+msgstr "Номер документа"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_res_partner__edrpou
+#: model:ir.model.fields,field_description:l10n_ua_base.field_res_users__edrpou
+msgid "EDRPOU"
+msgstr "ЄДРПОУ"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__email
+msgid "Email"
+msgstr "Електронна пошта"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__res_partner__legal_form__fop
+msgid "FOP (Individual Entrepreneur)"
+msgstr "ФОП (Фізична особа-підприємець)"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_address_mixin__ua_full_address
+msgid "Full Address"
+msgstr "Повна адреса"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,help:l10n_ua_base.field_l10n_ua_tax_office__code
+msgid "Full tax office code (4 digits), e.g., 2658"
+msgstr "Повний код ДПІ (4 цифри), напр., 2658"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__res_partner__legal_form__go
+msgid "GO (Public Organization)"
+msgstr "ГО (Громадська організація)"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,help:l10n_ua_base.field_l10n_ua_kved__level
+msgid ""
+"Hierarchy level: 1=Section (A-U), 2=Division (01-99), 3=Group (01.1), "
+"4=Class (01.11)"
+msgstr "Рівень ієрархії: 1=Секція (A-U), 2=Розділ (01-99), 3=Група (01.1), "
+"4=Клас (01.11)"
+
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_address_mixin__id
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_document_mixin__id
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_koatuu__id
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_kved__id
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__id
+#: model:ir.model.fields,field_description:l10n_ua_base.field_res_partner__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_res_partner__ipn
+#: model:ir.model.fields,field_description:l10n_ua_base.field_res_users__ipn
+msgid "IPN/RNOKPP"
+msgstr "ІПН/РНОКПП"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,help:l10n_ua_base.field_res_partner__ipn
+#: model:ir.model.fields,help:l10n_ua_base.field_res_users__ipn
+msgid ""
+"Individual Tax Number / Registration Number of the Taxpayer Account Card (10"
+" or 12 digits)"
+msgstr "Індивідуальний податковий номер / Реєстраційний номер облікової картки платника податків (10 або 12 цифр)"
+
+#. module: l10n_ua_base
+#. odoo-python
+#: code:addons/l10n_ua_base/models/res_partner.py:0
+msgid "Invalid EDRPOU: %s"
+msgstr "Невірний ЄДРПОУ: %s"
+
+#. module: l10n_ua_base
+#. odoo-python
+#: code:addons/l10n_ua_base/models/res_partner.py:0
+msgid "Invalid IPN/RNOKPP: %s"
+msgstr "Невірний ІПН/РНОКПП: %s"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_address_mixin__koatuu_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_base.l10n_ua_koatuu_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_base.l10n_ua_koatuu_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_base.l10n_ua_koatuu_view_search
+msgid "KOATUU"
+msgstr "КОАТУУ"
+
+#. module: l10n_ua_base
+#: model:ir.actions.act_window,name:l10n_ua_base.l10n_ua_koatuu_action
+#: model:ir.ui.menu,name:l10n_ua_base.menu_l10n_ua_koatuu
+msgid "KOATUU/KATOTTG"
+msgstr "КОАТУУ/КАТОТТГ"
+
+#. module: l10n_ua_base
+#: model:ir.model,name:l10n_ua_base.model_l10n_ua_koatuu
+msgid "KOATUU/KATOTTG Directory"
+msgstr "Довідник КОАТУУ/КАТОТТГ"
+
+#. module: l10n_ua_base
+#: model_terms:ir.actions.act_window,help:l10n_ua_base.l10n_ua_koatuu_action
+msgid ""
+"KOATUU/KATOTTG is the Ukrainian classification of administrative-territorial"
+" units."
+msgstr "КОАТУУ/КАТОТТГ — український класифікатор адміністративно-територіальних одиниць."
+
+#. module: l10n_ua_base
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__res_partner__legal_form__kp
+msgid "KP (Communal Enterprise)"
+msgstr "КП (Комунальне підприємство)"
+
+#. module: l10n_ua_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_base.l10n_ua_kved_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_base.l10n_ua_kved_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_base.l10n_ua_kved_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_base.view_partner_form_ua
+msgid "KVED"
+msgstr "КВЕД"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_res_partner__kved_ids
+#: model:ir.model.fields,field_description:l10n_ua_base.field_res_users__kved_ids
+msgid "KVED Codes"
+msgstr "Коди КВЕД"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,help:l10n_ua_base.field_l10n_ua_kved__code
+msgid "KVED code (e.g., 62.01)"
+msgstr "Код КВЕД (напр., 62.01)"
+
+#. module: l10n_ua_base
+#: model:ir.actions.act_window,name:l10n_ua_base.l10n_ua_kved_action
+#: model:ir.ui.menu,name:l10n_ua_base.menu_l10n_ua_kved
+msgid "KVED-2010"
+msgstr "КВЕД-2010"
+
+#. module: l10n_ua_base
+#: model:ir.model,name:l10n_ua_base.model_l10n_ua_kved
+msgid "KVED-2010 Classifier"
+msgstr "Класифікатор КВЕД-2010"
+
+#. module: l10n_ua_base
+#: model_terms:ir.actions.act_window,help:l10n_ua_base.l10n_ua_kved_action
+msgid "KVED-2010 is the Ukrainian classification of economic activities."
+msgstr "КВЕД-2010 — український класифікатор видів економічної діяльності."
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_koatuu__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_kved__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__write_uid
+msgid "Last Updated by"
+msgstr "Останнє оновлення"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_koatuu__write_date
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_kved__write_date
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__write_date
+msgid "Last Updated on"
+msgstr "Дата оновлення"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_res_partner__legal_form
+#: model:ir.model.fields,field_description:l10n_ua_base.field_res_users__legal_form
+msgid "Legal Form"
+msgstr "Організаційно-правова форма"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_koatuu__level
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_kved__level
+msgid "Level"
+msgstr "Рівень"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_koatuu__name
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_kved__name
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__name
+msgid "Name"
+msgstr "Назва"
+
+#. module: l10n_ua_base
+#: model_terms:ir.actions.act_window,help:l10n_ua_base.l10n_ua_koatuu_action
+msgid "No KOATUU records found"
+msgstr "Записи КОАТУУ не знайдено"
+
+#. module: l10n_ua_base
+#: model_terms:ir.actions.act_window,help:l10n_ua_base.l10n_ua_kved_action
+msgid "No KVED records found"
+msgstr "Записи КВЕД не знайдено"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__office_type
+msgid "Office Type"
+msgstr "Тип офісу"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__res_partner__legal_form__other
+msgid "Other"
+msgstr "Інше"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__res_partner__legal_form__pat
+msgid "PAT (Public Joint Stock Company)"
+msgstr "ПАТ (Публічне акціонерне товариство)"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__res_partner__legal_form__pp
+msgid "PP (Private Enterprise)"
+msgstr "ПП (Приватне підприємство)"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_koatuu__parent_id
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_kved__parent_id
+msgid "Parent"
+msgstr "Батьківський"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__parent_id
+msgid "Parent Office"
+msgstr "Головний офіс"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_koatuu__parent_path
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_kved__parent_path
+msgid "Parent Path"
+msgstr "Шлях батьківського"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,help:l10n_ua_base.field_l10n_ua_tax_office__parent_id
+msgid "Parent tax office (for district offices)"
+msgstr "Головна ДПІ (для районних інспекцій)"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__phone
+msgid "Phone"
+msgstr "Телефон"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_address_mixin__ua_postal_code
+msgid "Postal Code"
+msgstr "Поштовий індекс"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__res_partner__legal_form__prat
+msgid "PrAT (Private Joint Stock Company)"
+msgstr "ПрАТ (Приватне акціонерне товариство)"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_res_partner__primary_kved_id
+#: model:ir.model.fields,field_description:l10n_ua_base.field_res_users__primary_kved_id
+msgid "Primary KVED"
+msgstr "Основний КВЕД"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,help:l10n_ua_base.field_res_partner__primary_kved_id
+#: model:ir.model.fields,help:l10n_ua_base.field_res_users__primary_kved_id
+msgid "Primary economic activity code"
+msgstr "Основний код економічної діяльності"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__region_id
+msgid "Region"
+msgstr "Регіон"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_address_mixin__ua_region
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__l10n_ua_koatuu__level__region
+msgid "Region (Oblast)"
+msgstr "Область"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__c_reg
+msgid "Region Code (C_REG)"
+msgstr "Код регіону (C_REG)"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,help:l10n_ua_base.field_l10n_ua_tax_office__c_reg
+msgid "Region code (first 2 digits of C_STI)"
+msgstr "Код регіону (перші 2 цифри C_STI)"
+
+#. module: l10n_ua_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_base.l10n_ua_tax_office_view_search
+msgid "Regional"
+msgstr "Регіональний"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__l10n_ua_tax_office__office_type__regional
+msgid "Regional Office (ГУ ДПС)"
+msgstr "Регіональний офіс (ГУ ДПС)"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_kved__section
+msgid "Section"
+msgstr "Секція"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,help:l10n_ua_base.field_l10n_ua_kved__section
+msgid "Section letter (A-U)"
+msgstr "Літера секції (A-U)"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,help:l10n_ua_base.field_l10n_ua_address_mixin__koatuu_id
+msgid "Settlement from KOATUU/KATOTTG directory"
+msgstr "Населений пункт з довідника КОАТУУ/КАТОТТГ"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_tax_office__short_name
+msgid "Short Name"
+msgstr "Коротка назва"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_l10n_ua_address_mixin__ua_street
+msgid "Street"
+msgstr "Вулиця"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__res_partner__legal_form__tov
+msgid "TOV (LLC)"
+msgstr "ТОВ (Товариство з обмеженою відповідальністю)"
+
+#. module: l10n_ua_base
+#: model:ir.model,name:l10n_ua_base.model_l10n_ua_tax_office
+msgid "Tax Office (ДПІ)"
+msgstr ""
+
+#. module: l10n_ua_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_base.l10n_ua_tax_office_view_form
+msgid "Tax Office Name"
+msgstr "Назва ДПІ"
+
+#. module: l10n_ua_base
+#: model:ir.actions.act_window,name:l10n_ua_base.l10n_ua_tax_office_action
+#: model_terms:ir.ui.view,arch_db:l10n_ua_base.l10n_ua_tax_office_view_search
+msgid "Tax Offices"
+msgstr "Податкові інспекції"
+
+#. module: l10n_ua_base
+#: model:ir.ui.menu,name:l10n_ua_base.menu_l10n_ua_tax_office
+msgid "Tax Offices (ДПІ)"
+msgstr "Податкові інспекції (ДПІ)"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__l10n_ua_koatuu__category__town
+msgid "Town"
+msgstr "Селище міського типу"
+
+#. module: l10n_ua_base
+#: model:ir.ui.menu,name:l10n_ua_base.menu_l10n_ua_root
+msgid "Ukraine"
+msgstr "Україна"
+
+#. module: l10n_ua_base
+#: model:ir.model,name:l10n_ua_base.model_l10n_ua_address_mixin
+msgid "Ukrainian Address Mixin"
+msgstr "Міксин української адреси"
+
+#. module: l10n_ua_base
+#: model:ir.model,name:l10n_ua_base.model_l10n_ua_document_mixin
+msgid "Ukrainian Document Mixin"
+msgstr "Міксин українського документа"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,help:l10n_ua_base.field_l10n_ua_tax_office__region_id
+msgid "Ukrainian region (oblast)"
+msgstr "Українська область"
+
+#. module: l10n_ua_base
+#: model_terms:ir.actions.act_window,help:l10n_ua_base.l10n_ua_tax_office_action
+msgid "Ukrainian tax offices (ДПІ) directory."
+msgstr "Довідник податкових інспекцій (ДПІ) України."
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,help:l10n_ua_base.field_res_partner__edrpou
+#: model:ir.model.fields,help:l10n_ua_base.field_res_users__edrpou
+msgid ""
+"Unified State Register of Enterprises and Organizations of Ukraine (8 "
+"digits)"
+msgstr "Єдиний державний реєстр підприємств та організацій України (8 цифр)"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__l10n_ua_koatuu__category__settlement
+msgid "Urban Settlement"
+msgstr "Селище міського типу"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_res_partner__vat_certificate
+#: model:ir.model.fields,field_description:l10n_ua_base.field_res_users__vat_certificate
+msgid "VAT Certificate Number"
+msgstr "Номер свідоцтва ПДВ"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields,field_description:l10n_ua_base.field_res_partner__is_vat_payer
+#: model:ir.model.fields,field_description:l10n_ua_base.field_res_users__is_vat_payer
+msgid "VAT Payer"
+msgstr "Платник ПДВ"
+
+#. module: l10n_ua_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_base.view_partner_search_ua
+msgid "VAT Payers"
+msgstr "Платники ПДВ"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__l10n_ua_koatuu__category__village
+msgid "Village"
+msgstr "Село"
+
+#. module: l10n_ua_base
+#: model:ir.model.fields.selection,name:l10n_ua_base.selection__l10n_ua_koatuu__level__village
+msgid "Village/Settlement"
+msgstr "Село/Селище"

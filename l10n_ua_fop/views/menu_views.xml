@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_l10n_ua_fop"
+              name="FOP (Single Tax)"
+              parent="l10n_ua_tax.menu_l10n_ua_tax"
+              sequence="40"/>
+
+    <menuitem id="menu_l10n_ua_fop_income_books"
+              name="Income Books"
+              parent="menu_l10n_ua_fop"
+              action="l10n_ua_fop_income_book_action"
+              sequence="10"/>
+
+    <menuitem id="menu_l10n_ua_fop_declarations"
+              name="Declarations"
+              parent="menu_l10n_ua_fop"
+              action="l10n_ua_fop_declaration_action"
+              sequence="20"/>
+
+</odoo>

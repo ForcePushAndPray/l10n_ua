@@ -1,0 +1,9 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_l10n_ua_journal_order_user,l10n_ua.journal.order.user,model_l10n_ua_journal_order,account.group_account_user,1,0,0,0
+access_l10n_ua_journal_order_manager,l10n_ua.journal.order.manager,model_l10n_ua_journal_order,account.group_account_manager,1,1,1,1
+access_l10n_ua_journal_order_line_user,l10n_ua.journal.order.line.user,model_l10n_ua_journal_order_line,account.group_account_user,1,0,0,0
+access_l10n_ua_journal_order_line_manager,l10n_ua.journal.order.line.manager,model_l10n_ua_journal_order_line,account.group_account_manager,1,1,1,1
+access_l10n_ua_osv_user,l10n_ua.osv.user,model_l10n_ua_osv,account.group_account_user,1,0,0,0
+access_l10n_ua_osv_manager,l10n_ua.osv.manager,model_l10n_ua_osv,account.group_account_manager,1,1,1,1
+access_l10n_ua_osv_line_user,l10n_ua.osv.line.user,model_l10n_ua_osv_line,account.group_account_user,1,0,0,0
+access_l10n_ua_osv_line_manager,l10n_ua.osv.line.manager,model_l10n_ua_osv_line,account.group_account_manager,1,1,1,1

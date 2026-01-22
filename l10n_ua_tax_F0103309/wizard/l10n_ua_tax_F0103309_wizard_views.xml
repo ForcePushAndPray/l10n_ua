@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Extend base wizard form for F0103309 -->
+    <record id="l10n_ua_tax_document_wizard_view_form_F0103309" model="ir.ui.view">
+        <field name="name">l10n_ua.tax.document.wizard.form.F0103309</field>
+        <field name="model">l10n_ua.tax.document.wizard</field>
+        <field name="inherit_id" ref="l10n_ua_tax_cabinet.l10n_ua_tax_document_wizard_view_form"/>
+        <field name="arch" type="xml">
+            <!-- Add F0103309 specific fields - shown when document_type_code is F0103309 -->
+            <xpath expr="//group[@name='document_specific_fields']" position="inside">
+                <group string="Single Tax Declaration (F0103309)" colspan="2">
+                    <group string="Declaration Settings">
+                        <field name="declaration_type"/>
+                        <field name="fop_group"/>
+                        <field name="tax_rate"/>
+                    </group>
+                    <group string="Tax Office">
+                        <field name="tax_office_id" options="{'no_create': True}"/>
+                    </group>
+                </group>
+
+                <group string="Activity Codes (KVED)" colspan="2">
+                    <field name="activity_ids" nolabel="1" colspan="2">
+                        <list editable="bottom">
+                            <field name="kved_id" options="{'no_create': True}"/>
+                            <field name="is_primary"/>
+                        </list>
+                    </field>
+                </group>
+
+                <group string="Income by Quarter (Section 5)" colspan="2">
+                    <group>
+                        <field name="income_q1"/>
+                        <field name="income_q2"/>
+                        <field name="income_q3"/>
+                        <field name="income_q4"/>
+                        <field name="income_total" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="tax_q1"/>
+                        <field name="tax_q2"/>
+                        <field name="tax_q3"/>
+                        <field name="tax_q4"/>
+                        <field name="tax_total" readonly="1"/>
+                    </group>
+                </group>
+
+                <group string="ESV (Section 8)" colspan="2">
+                    <group>
+                        <field name="esv_base"/>
+                        <field name="esv_rate"/>
+                        <field name="esv_amount" readonly="1"/>
+                    </group>
+                    <group>
+                        <field name="has_employees"/>
+                        <field name="employee_count" invisible="not has_employees"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

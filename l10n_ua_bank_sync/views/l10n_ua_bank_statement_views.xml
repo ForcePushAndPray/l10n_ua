@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_bank_statement_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.statement.form</field>
+        <field name="model">l10n_ua.bank.statement</field>
+        <field name="arch" type="xml">
+            <form string="Bank Statement">
+                <header>
+                    <button name="action_import" string="Import" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_reconcile" string="Reconcile" type="object" class="btn-primary" invisible="state != 'imported'"/>
+                    <button name="action_draft" string="Set to Draft" type="object" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,imported,reconciled"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_sync_job" type="object"
+                                class="oe_stat_button" icon="fa-tasks"
+                                invisible="not sync_job_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Sync Job</span>
+                            </div>
+                        </button>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date"/>
+                            <field name="journal_id"/>
+                            <field name="sync_provider"/>
+                            <field name="sync_job_id" invisible="not sync_job_id"/>
+                        </group>
+                        <group>
+                            <field name="opening_balance"/>
+                            <field name="closing_balance"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group>
+                            <field name="total_debit"/>
+                            <field name="line_count" string="Lines"/>
+                        </group>
+                        <group>
+                            <field name="total_credit"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lines" name="lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="date"/>
+                                    <field name="external_id" optional="hide"/>
+                                    <field name="payment_ref"/>
+                                    <field name="description"/>
+                                    <field name="partner_id"/>
+                                    <field name="partner_name" optional="hide"/>
+                                    <field name="partner_iban" optional="hide"/>
+                                    <field name="partner_edrpou" optional="hide"/>
+                                    <field name="amount" sum="Total"/>
+                                    <field name="is_reconciled"/>
+                                    <field name="move_id" optional="hide"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_bank_statement_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.statement.list</field>
+        <field name="model">l10n_ua.bank.statement</field>
+        <field name="arch" type="xml">
+            <list string="Bank Statements">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="journal_id"/>
+                <field name="line_count" string="Lines"/>
+                <field name="total_debit" sum="Total"/>
+                <field name="total_credit" sum="Total"/>
+                <field name="sync_provider" optional="hide"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_bank_statement_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.statement.search</field>
+        <field name="model">l10n_ua.bank.statement</field>
+        <field name="arch" type="xml">
+            <search string="Bank Statements">
+                <field name="name"/>
+                <field name="journal_id"/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="imported" string="Imported" domain="[('state', '=', 'imported')]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_bank_statement_action" model="ir.actions.act_window">
+        <field name="name">Bank Statements</field>
+        <field name="res_model">l10n_ua.bank.statement</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

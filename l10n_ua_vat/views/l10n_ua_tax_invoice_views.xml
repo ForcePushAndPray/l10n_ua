@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_tax_invoice_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.tax.invoice.form</field>
+        <field name="model">l10n_ua.tax.invoice</field>
+        <field name="arch" type="xml">
+            <form string="Tax Invoice">
+                <header>
+                    <button name="action_register_erpn" string="Register in ERPN" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_generate_xml" string="Generate XML" type="object" invisible="state != 'draft'"/>
+                    <button name="action_cancel" string="Cancel" type="object" invisible="state != 'draft'"/>
+                    <button name="action_draft" string="Set to Draft" type="object" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,registered"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="invoice_type"/>
+                            <field name="number"/>
+                            <field name="date"/>
+                            <field name="move_id"/>
+                        </group>
+                        <group>
+                            <field name="partner_id"/>
+                            <field name="partner_ipn"/>
+                            <field name="erpn_number"/>
+                            <field name="erpn_date"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lines" name="lines">
+                            <field name="line_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="product_id"/>
+                                    <field name="name"/>
+                                    <field name="uktzed_code"/>
+                                    <field name="quantity"/>
+                                    <field name="uom_id"/>
+                                    <field name="price_unit"/>
+                                    <field name="base_amount" sum="Total"/>
+                                    <field name="vat_rate"/>
+                                    <field name="vat_amount" sum="Total"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                    <group class="oe_subtotal_footer">
+                        <field name="total_base"/>
+                        <field name="total_vat"/>
+                        <field name="total_amount" class="oe_subtotal_footer_separator"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_tax_invoice_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.tax.invoice.list</field>
+        <field name="model">l10n_ua.tax.invoice</field>
+        <field name="arch" type="xml">
+            <list string="Tax Invoices">
+                <field name="number"/>
+                <field name="date"/>
+                <field name="invoice_type"/>
+                <field name="partner_id"/>
+                <field name="total_base" sum="Total"/>
+                <field name="total_vat" sum="Total"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_tax_invoice_action" model="ir.actions.act_window">
+        <field name="name">Tax Invoices</field>
+        <field name="res_model">l10n_ua.tax.invoice</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

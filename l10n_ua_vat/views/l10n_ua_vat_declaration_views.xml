@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_vat_declaration_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.vat.declaration.form</field>
+        <field name="model">l10n_ua.vat.declaration</field>
+        <field name="arch" type="xml">
+            <form string="VAT Declaration">
+                <header>
+                    <button name="action_calculate" string="Calculate" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_submit" string="Submit" type="object" class="btn-primary" invisible="state != 'calculated'"/>
+                    <button name="action_accept" string="Mark Accepted" type="object" class="btn-success" invisible="state != 'submitted'"/>
+                    <button name="action_draft" string="Set to Draft" type="object" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,calculated,submitted,accepted"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="period_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Tax Liabilities" name="liabilities">
+                            <group>
+                                <group string="20%">
+                                    <field name="sales_20"/>
+                                    <field name="vat_20"/>
+                                </group>
+                                <group string="7%">
+                                    <field name="sales_7"/>
+                                    <field name="vat_7"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group string="0% and Exempt">
+                                    <field name="sales_0"/>
+                                    <field name="sales_exempt"/>
+                                </group>
+                                <group string="Total">
+                                    <field name="total_liabilities"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Tax Credit" name="credit">
+                            <group>
+                                <group string="20%">
+                                    <field name="purchases_20"/>
+                                    <field name="credit_20"/>
+                                </group>
+                                <group string="7%">
+                                    <field name="purchases_7"/>
+                                    <field name="credit_7"/>
+                                </group>
+                            </group>
+                            <group>
+                                <group string="Total">
+                                    <field name="total_credit"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Result" name="result">
+                            <group>
+                                <field name="vat_payable"/>
+                                <field name="vat_refundable"/>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_vat_declaration_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.vat.declaration.list</field>
+        <field name="model">l10n_ua.vat.declaration</field>
+        <field name="arch" type="xml">
+            <list string="VAT Declarations">
+                <field name="name"/>
+                <field name="period_id"/>
+                <field name="total_liabilities"/>
+                <field name="total_credit"/>
+                <field name="vat_payable"/>
+                <field name="vat_refundable"/>
+                <field name="state"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_vat_declaration_action" model="ir.actions.act_window">
+        <field name="name">VAT Declarations</field>
+        <field name="res_model">l10n_ua.vat.declaration</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

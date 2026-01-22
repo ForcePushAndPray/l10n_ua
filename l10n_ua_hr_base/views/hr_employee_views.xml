@@ -25,148 +25,98 @@
             </xpath>
 
             <xpath expr="//notebook" position="inside">
-                <!-- Position Details Tab (from hr.job) -->
-                <page string="Position Details" name="position_details_ua">
+                <!-- UA Personal: Documents, Addresses, Education, Military, Benefits, Family -->
+                <page string="UA: Персональне" name="ua_personal" groups="hr.group_hr_user">
                     <group>
-                        <group string="Класифікатор професій (КП)">
-                            <field name="job_kp_code" string="Код КП"/>
-                            <field name="job_kp_name" string="Назва КП"/>
-                        </group>
-                        <group string="Умови праці">
-                            <field name="job_work_conditions" string="Умови"/>
-                            <field name="job_hazard_class" string="Клас шкідливості"
-                                   invisible="job_work_conditions == 'normal'"/>
-                        </group>
-                    </group>
-                    <group>
-                        <group string="Оплата за посадою">
-                            <field name="job_min_salary" string="Мін. ставка"/>
-                            <field name="job_max_salary" string="Макс. оклад"/>
-                        </group>
-                        <group>
-                            <!-- Empty for balance -->
-                        </group>
-                    </group>
-                </page>
-
-                <!-- Documents Tab -->
-                <page string="Documents" name="documents_ua">
-                    <group>
-                        <group string="Tax Identification">
+                        <group string="Документи">
                             <field name="rnokpp" placeholder="1234567890"/>
-                        </group>
-                        <group string="Identity Document">
                             <field name="document_type"/>
                             <field name="passport_series" invisible="document_type != 'passport'"/>
-                            <field name="passport_id" string="Passport/ID Number"/>
+                            <field name="passport_id" string="Номер паспорта/ID"/>
                             <field name="passport_issued_by"/>
                             <field name="passport_issued_date"/>
-                            <field name="passport_expiration_date" string="Valid Until" invisible="document_type != 'id_card'"/>
+                            <field name="passport_expiration_date" string="Дійсний до" invisible="document_type != 'id_card'"/>
                             <field name="passport_record_number" invisible="document_type != 'id_card'"/>
                         </group>
-                    </group>
-                </page>
-
-                <!-- Addresses Tab -->
-                <page string="Addresses" name="addresses_ua">
-                    <group>
-                        <group string="Registration Address">
+                        <group string="Адреси">
                             <field name="registration_region_id"/>
                             <field name="registration_city"/>
                             <field name="registration_zip"/>
                             <field name="registration_address"/>
-                        </group>
-                        <group string="Actual Address">
                             <field name="actual_same_as_registration"/>
                             <field name="actual_address" invisible="actual_same_as_registration"/>
                         </group>
                     </group>
-                </page>
-
-                <!-- Education Tab -->
-                <page string="Education" name="education_ua">
                     <group>
-                        <group string="Education">
+                        <group string="Освіта">
                             <field name="education_level_id"/>
-                            <field name="study_school" string="Educational Institution"/>
-                            <field name="study_field" string="Specialty"/>
-                        </group>
-                        <group string="Diploma">
+                            <field name="study_school" string="Навчальний заклад"/>
+                            <field name="study_field" string="Спеціальність"/>
                             <field name="diploma_series"/>
                             <field name="diploma_number"/>
                             <field name="diploma_date"/>
                         </group>
+                        <group string="Сім'я">
+                            <field name="marital"/>
+                            <field name="spouse_complete_name" invisible="marital not in ('married', 'cohabitant')"/>
+                            <field name="spouse_birthdate" invisible="marital not in ('married', 'cohabitant')"/>
+                            <field name="spouse_rnokpp" invisible="marital not in ('married', 'cohabitant')"/>
+                            <field name="children_count" string="Кількість дітей"/>
+                            <field name="dependents_count"/>
+                        </group>
                     </group>
+                    <separator string="Діти"/>
+                    <field name="children_ids" nolabel="1"/>
                 </page>
 
-                <!-- Military Accounting Tab -->
-                <page string="Military Accounting" name="military_ua">
+                <!-- UA Work: Position, Experience, Military, Benefits -->
+                <page string="UA: Робота" name="ua_work" groups="hr.group_hr_user">
                     <group>
-                        <group string="Military Status">
+                        <group string="Класифікатор професій (КП)">
+                            <field name="job_kp_code" string="Код КП"/>
+                            <field name="job_kp_name" string="Назва КП"/>
+                            <field name="job_work_conditions" string="Умови праці"/>
+                            <field name="job_hazard_class" string="Клас шкідливості"
+                                   invisible="job_work_conditions == 'normal'"/>
+                        </group>
+                        <group string="Оплата за посадою">
+                            <field name="job_min_salary" string="Мін. ставка"/>
+                            <field name="job_max_salary" string="Макс. оклад"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Стаж роботи">
+                            <field name="hire_date"/>
+                            <field name="work_experience_total"/>
+                            <field name="work_experience_company"/>
+                            <field name="insurance_experience"/>
+                        </group>
+                        <group string="Банківські реквізити">
+                            <field name="bank_account_id"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Військовий облік">
                             <field name="military_status"/>
                             <field name="military_category" invisible="military_status not in ('liable', 'reserved')"/>
                             <field name="military_rank_id" invisible="military_status not in ('liable', 'reserved')"/>
                             <field name="military_specialty" invisible="military_status not in ('liable', 'reserved')"/>
                             <field name="military_fitness" invisible="military_status not in ('liable', 'reserved')"/>
-                        </group>
-                        <group string="Military Documents">
                             <field name="military_document_number" invisible="military_status not in ('liable', 'reserved')"/>
                             <field name="military_tcc_id" invisible="military_status not in ('liable', 'reserved')"/>
                             <field name="military_reservation" invisible="military_status not in ('liable', 'reserved')"/>
                             <field name="military_reservation_until" invisible="not military_reservation"/>
                             <field name="military_reservplus_id" invisible="not military_reservation"/>
                         </group>
-                    </group>
-                </page>
-
-                <!-- Benefits Tab -->
-                <page string="Benefits" name="benefits_ua">
-                    <group>
-                        <group string="Benefits">
+                        <group string="Пільги">
                             <field name="benefit_ids" widget="many2many_tags"/>
                             <field name="veteran_status"/>
                             <field name="chornobyl_category"/>
-                        </group>
-                        <group string="Disability">
                             <field name="disability_group"/>
                             <field name="disability_reason" invisible="disability_group == 'none'"/>
                             <field name="disability_document" invisible="disability_group == 'none'"/>
                             <field name="disability_date_from" invisible="disability_group == 'none'"/>
                             <field name="disability_date_to" invisible="disability_group == 'none'"/>
-                        </group>
-                    </group>
-                </page>
-
-                <!-- Family Tab -->
-                <page string="Family" name="family_ua" groups="hr.group_hr_user">
-                    <group>
-                        <group string="Marital Status">
-                            <field name="marital" groups="hr.group_hr_user"/>
-                            <field name="spouse_complete_name" invisible="marital not in ('married', 'cohabitant')" groups="hr.group_hr_user"/>
-                            <field name="spouse_birthdate" invisible="marital not in ('married', 'cohabitant')" groups="hr.group_hr_user"/>
-                            <field name="spouse_rnokpp" invisible="marital not in ('married', 'cohabitant')" groups="hr.group_hr_user"/>
-                        </group>
-                        <group string="Statistics">
-                            <field name="children" string="Children (Odoo)" groups="hr.group_hr_user"/>
-                            <field name="children_count" string="Children Count" groups="hr.group_hr_user"/>
-                            <field name="dependents_count" groups="hr.group_hr_user"/>
-                        </group>
-                    </group>
-                    <separator string="Children Details"/>
-                    <field name="children_ids" nolabel="1" groups="hr.group_hr_user"/>
-                </page>
-
-                <!-- Work Experience & Bank Tab -->
-                <page string="Experience &amp; Bank" name="experience_bank_ua">
-                    <group>
-                        <group string="Work Experience">
-                            <field name="hire_date"/>
-                            <field name="work_experience_total"/>
-                            <field name="work_experience_company"/>
-                            <field name="insurance_experience"/>
-                        </group>
-                        <group string="Bank Details">
-                            <field name="bank_account_id"/>
                         </group>
                     </group>
                 </page>

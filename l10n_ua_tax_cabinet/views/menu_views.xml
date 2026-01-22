@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Add Tax Cabinet menu under Invoicing -->
+    <menuitem id="menu_ua_tax_cabinet"
+              name="Tax Cabinet"
+              parent="account.menu_finance"
+              sequence="46"/>
+
+    <menuitem id="menu_ua_tax_cabinet_sync"
+              name="Sync Documents"
+              parent="menu_ua_tax_cabinet"
+              action="l10n_ua_tax_cabinet_sync_wizard_action"
+              sequence="5"/>
+
+    <menuitem id="menu_ua_tax_cabinet_documents"
+              name="Tax Documents"
+              parent="menu_ua_tax_cabinet"
+              action="l10n_ua_tax_cabinet_document_action"
+              sequence="10"/>
+
+    <menuitem id="menu_ua_tax_cabinet_config"
+              name="Configuration"
+              parent="menu_ua_tax_cabinet"
+              sequence="90"/>
+
+    <menuitem id="menu_ua_tax_cabinet_connections"
+              name="Cabinet Connections"
+              parent="menu_ua_tax_cabinet_config"
+              action="l10n_ua_tax_cabinet_config_action"
+              sequence="5"/>
+
+    <menuitem id="menu_ua_tax_cabinet_document_types"
+              name="Document Types"
+              parent="menu_ua_tax_cabinet_config"
+              action="l10n_ua_tax_document_type_action"
+              sequence="10"/>
+
+</odoo>

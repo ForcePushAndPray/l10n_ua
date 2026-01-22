@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_l10n_ua_tax"
+              name="Taxes"
+              parent="l10n_ua_base.menu_l10n_ua_root"
+              sequence="30"/>
+
+    <menuitem id="menu_l10n_ua_tax_periods"
+              name="Tax Periods"
+              parent="menu_l10n_ua_tax"
+              action="l10n_ua_tax_period_action"
+              sequence="10"/>
+
+    <menuitem id="menu_l10n_ua_tax_reports"
+              name="Tax Reports"
+              parent="menu_l10n_ua_tax"
+              action="l10n_ua_tax_report_action"
+              sequence="20"/>
+
+</odoo>

@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_bank_sync_job_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.sync.job.form</field>
+        <field name="model">l10n_ua.bank.sync.job</field>
+        <field name="arch" type="xml">
+            <form string="Sync Job">
+                <header>
+                    <button name="action_fetch" string="Fetch from Bank" type="object"
+                            class="btn-primary" invisible="state not in ('draft', 'error')"/>
+                    <button name="action_reprocess" string="Reprocess" type="object"
+                            invisible="not raw_payload or state == 'processing'"/>
+                    <button name="action_reset_to_draft" string="Reset to Draft" type="object"
+                            invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,fetched,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_statements" type="object" class="oe_stat_button" icon="fa-list-alt">
+                            <field name="statement_count" widget="statinfo" string="Statements"/>
+                        </button>
+                        <button name="action_view_logs" type="object" class="oe_stat_button" icon="fa-file-text-o"
+                                invisible="not log_ids">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">View Logs</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Configuration">
+                            <field name="config_id"/>
+                            <field name="provider"/>
+                            <field name="journal_id"/>
+                        </group>
+                        <group string="Period">
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="payload_fetched_at" invisible="not payload_fetched_at"/>
+                        </group>
+                    </group>
+                    <group string="Results" invisible="state in ('draft', 'fetching')">
+                        <group>
+                            <field name="transactions_count"/>
+                            <field name="imported_count"/>
+                        </group>
+                        <group>
+                            <field name="updated_count"/>
+                            <field name="error_count"/>
+                        </group>
+                    </group>
+                    <group string="Error" invisible="not error_message">
+                        <field name="error_message" nolabel="1" colspan="2"/>
+                    </group>
+                    <notebook>
+                        <page string="Raw Payload" name="raw_payload" invisible="not raw_payload">
+                            <field name="raw_payload" readonly="1" nolabel="1"/>
+                        </page>
+                        <page string="Logs" name="logs" invisible="not log_ids">
+                            <field name="log_ids" nolabel="1">
+                                <list>
+                                    <field name="timestamp"/>
+                                    <field name="level"/>
+                                    <field name="message"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_bank_sync_job_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.sync.job.list</field>
+        <field name="model">l10n_ua.bank.sync.job</field>
+        <field name="arch" type="xml">
+            <list string="Sync Jobs" decoration-danger="state == 'error'" decoration-success="state == 'done'">
+                <field name="name"/>
+                <field name="config_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="transactions_count"/>
+                <field name="imported_count"/>
+                <field name="updated_count"/>
+                <field name="error_count" optional="hide"/>
+                <field name="state"/>
+                <field name="create_date"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_bank_sync_job_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.sync.job.search</field>
+        <field name="model">l10n_ua.bank.sync.job</field>
+        <field name="arch" type="xml">
+            <search string="Sync Jobs">
+                <field name="name"/>
+                <field name="config_id"/>
+                <filter name="done" string="Done" domain="[('state', '=', 'done')]"/>
+                <filter name="error" string="Error" domain="[('state', '=', 'error')]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_bank_sync_job_action" model="ir.actions.act_window">
+        <field name="name">Import Jobs</field>
+        <field name="res_model">l10n_ua.bank.sync.job</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Log views -->
+    <record id="l10n_ua_bank_sync_log_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.sync.log.list</field>
+        <field name="model">l10n_ua.bank.sync.log</field>
+        <field name="arch" type="xml">
+            <list string="Sync Logs" decoration-danger="level == 'error'" decoration-warning="level == 'warning'">
+                <field name="timestamp"/>
+                <field name="job_id"/>
+                <field name="level"/>
+                <field name="message"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_bank_sync_log_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.sync.log.form</field>
+        <field name="model">l10n_ua.bank.sync.log</field>
+        <field name="arch" type="xml">
+            <form string="Log Entry">
+                <sheet>
+                    <group>
+                        <field name="timestamp"/>
+                        <field name="job_id"/>
+                        <field name="level"/>
+                    </group>
+                    <group string="Message">
+                        <field name="message" nolabel="1"/>
+                    </group>
+                    <group string="Data" invisible="not data">
+                        <field name="data" nolabel="1"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

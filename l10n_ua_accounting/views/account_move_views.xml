@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_move_form_ua" model="ir.ui.view">
+        <field name="name">account.move.form.ua</field>
+        <field name="model">account.move</field>
+        <field name="inherit_id" ref="account.view_move_form"/>
+        <field name="arch" type="xml">
+            <field name="ref" position="after">
+                <field name="ua_doc_type"/>
+                <field name="ua_doc_number"/>
+                <field name="ua_doc_date"/>
+                <field name="ua_counterparty_doc"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>
