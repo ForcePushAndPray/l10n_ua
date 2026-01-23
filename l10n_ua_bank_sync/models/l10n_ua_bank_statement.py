@@ -1,4 +1,5 @@
 from odoo import api, fields, models, _
+from odoo.exceptions import ValidationError
 
 
 class L10nUaBankStatement(models.Model):
@@ -56,23 +57,36 @@ class L10nUaBankStatement(models.Model):
         string='Closing Balance',
         currency_field='currency_id',
     )
-    total_debit = fields.Monetary(
-        string='Total Debit',
+    total_incoming = fields.Monetary(
+        string='Total Incoming (Кт)',
         compute='_compute_totals',
         store=True,
+        currency_field='currency_id',
+        help='Sum of positive amounts (incoming/credit)',
+    )
+    total_outgoing = fields.Monetary(
+        string='Total Outgoing (Дт)',
+        compute='_compute_totals',
+        store=True,
+        currency_field='currency_id',
+        help='Sum of negative amounts (outgoing/debit)',
+    )
+    # Keep old field names for compatibility
+    total_debit = fields.Monetary(
+        string='Total Debit',
+        related='total_outgoing',
         currency_field='currency_id',
     )
     total_credit = fields.Monetary(
         string='Total Credit',
-        compute='_compute_totals',
-        store=True,
+        related='total_incoming',
         currency_field='currency_id',
     )
     state = fields.Selection(
         selection=[
             ('draft', 'Draft'),
-            ('imported', 'Imported'),
-            ('reconciled', 'Reconciled'),
+            ('confirmed', 'Confirmed'),
+            ('posted', 'Posted'),
         ],
         string='State',
         default='draft',
@@ -106,17 +120,128 @@ class L10nUaBankStatement(models.Model):
     @api.depends('line_ids.amount')
     def _compute_totals(self):
         for record in self:
-            record.total_debit = sum(line.amount for line in record.line_ids if line.amount > 0)
-            record.total_credit = sum(abs(line.amount) for line in record.line_ids if line.amount < 0)
+            # Incoming (Кт) = positive amounts (credit to bank account)
+            record.total_incoming = sum(line.amount for line in record.line_ids if line.amount > 0)
+            # Outgoing (Дт) = negative amounts (debit from bank account)
+            record.total_outgoing = sum(abs(line.amount) for line in record.line_ids if line.amount < 0)
 
-    def action_import(self):
-        self.write({'state': 'imported'})
+    def action_confirm(self):
+        """Confirm statement - create draft journal entries."""
+        for statement in self:
+            if statement.state != 'draft':
+                continue
+            if not statement.line_ids:
+                raise ValidationError(_("Cannot confirm empty statement."))
+            statement._create_account_moves()
+        self.write({'state': 'confirmed'})
 
-    def action_reconcile(self):
-        self.write({'state': 'reconciled'})
+    def action_post(self):
+        """Post statement - post all journal entries."""
+        for statement in self:
+            if statement.state != 'confirmed':
+                continue
+            # Post all draft moves
+            draft_moves = statement.line_ids.mapped('move_id').filtered(
+                lambda m: m.state == 'draft'
+            )
+            draft_moves.action_post()
+        self.write({'state': 'posted'})
 
     def action_draft(self):
+        """Reset to draft - only if no posted moves."""
+        for statement in self:
+            posted_moves = statement.line_ids.filtered(
+                lambda l: l.move_id and l.move_id.state == 'posted'
+            )
+            if posted_moves:
+                raise ValidationError(
+                    _("Cannot reset to draft: %d lines have posted journal entries. "
+                      "Cancel them first.") % len(posted_moves)
+                )
+            # Unlink draft moves
+            draft_moves = statement.line_ids.mapped('move_id').filtered(
+                lambda m: m.state == 'draft'
+            )
+            if draft_moves:
+                draft_moves.unlink()
+            statement.line_ids.write({'move_id': False, 'is_reconciled': False})
         self.write({'state': 'draft'})
+
+    def _create_account_moves(self):
+        """Create journal entries for statement lines."""
+        self.ensure_one()
+
+        if not self.journal_id.default_account_id:
+            raise ValidationError(
+                _("Journal '%s' has no default account configured.") % self.journal_id.name
+            )
+
+        bank_account = self.journal_id.default_account_id
+
+        for line in self.line_ids:
+            if line.move_id:
+                continue  # Already has a move
+
+            # Determine counterpart account
+            # For now use suspense account, user can change later
+            suspense_account = self.company_id.account_journal_suspense_account_id
+            if not suspense_account:
+                raise ValidationError(
+                    _("Company has no suspense account configured. "
+                      "Go to Settings > Accounting > Default Accounts.")
+                )
+
+            # Create journal entry
+            move_vals = {
+                'journal_id': self.journal_id.id,
+                'date': line.date,
+                'ref': line.payment_ref or line.external_id or '',
+                'narration': line.description,
+                'partner_id': line.partner_id.id if line.partner_id else False,
+                'move_type': 'entry',
+                'line_ids': [],
+            }
+
+            if line.amount > 0:
+                # Incoming: Debit Bank, Credit Suspense
+                move_vals['line_ids'] = [
+                    (0, 0, {
+                        'account_id': bank_account.id,
+                        'partner_id': line.partner_id.id if line.partner_id else False,
+                        'name': line.description or line.payment_ref or '/',
+                        'debit': line.amount,
+                        'credit': 0,
+                    }),
+                    (0, 0, {
+                        'account_id': suspense_account.id,
+                        'partner_id': line.partner_id.id if line.partner_id else False,
+                        'name': line.description or line.payment_ref or '/',
+                        'debit': 0,
+                        'credit': line.amount,
+                    }),
+                ]
+            else:
+                # Outgoing: Debit Suspense, Credit Bank
+                amount = abs(line.amount)
+                move_vals['line_ids'] = [
+                    (0, 0, {
+                        'account_id': suspense_account.id,
+                        'partner_id': line.partner_id.id if line.partner_id else False,
+                        'name': line.description or line.payment_ref or '/',
+                        'debit': amount,
+                        'credit': 0,
+                    }),
+                    (0, 0, {
+                        'account_id': bank_account.id,
+                        'partner_id': line.partner_id.id if line.partner_id else False,
+                        'name': line.description or line.payment_ref or '/',
+                        'debit': 0,
+                        'credit': amount,
+                    }),
+                ]
+
+            move = self.env['account.move'].create(move_vals)
+            line.move_id = move
 
     def action_view_sync_job(self):
         """Open related sync job."""

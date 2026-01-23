@@ -139,7 +139,9 @@ class L10nUaBankSyncConfig(models.Model):
             return []
 
         for item in items:
-            # monobank amounts are in cents
+            # monobank amounts are in kopeks (cents) and already signed:
+            # - Positive = incoming (credit to account, Кт)
+            # - Negative = outgoing (debit from account, Дт)
             amount = item.get('amount', 0) / 100.0
 
             # Get transaction time

@@ -18,6 +18,13 @@
               action="l10n_ua_bank_statement_action"
               sequence="10"/>
 
+    <!-- Statement Lines -->
+    <menuitem id="menu_ua_bank_statement_lines"
+              name="Statement Lines"
+              parent="menu_ua_bank_root"
+              action="l10n_ua_bank_statement_line_action"
+              sequence="15"/>
+
     <!-- Sync Jobs -->
     <menuitem id="menu_ua_bank_jobs"
               name="Import Jobs"

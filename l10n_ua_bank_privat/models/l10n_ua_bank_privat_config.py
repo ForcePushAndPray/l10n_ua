@@ -203,16 +203,69 @@ class L10nUaBankSyncConfig(models.Model):
         return transactions
 
     def _privat_parse_amount(self, item):
-        """Parse amount from API response item."""
-        # Try different field names
+        """
+        Parse amount from API response item.
+
+        Returns signed amount:
+        - Positive = incoming (credit to account, Кт)
+        - Negative = outgoing (debit from account, Дт)
+
+        PrivatBank Autoclient API uses TRANTYPE field:
+        - TRANTYPE: "C" = Credit (incoming)
+        - TRANTYPE: "D" = Debit (outgoing)
+        """
+        # Try different field names for amount
         amount_str = (
             item.get('SUM') or
             item.get('SUMA') or
+            item.get('SUM_E') or
             item.get('amount') or
             item.get('cardamount') or
             '0'
         )
-        return self._privat_clean_amount(amount_str)
+        amount = self._privat_clean_amount(amount_str)
+
+        # Determine direction (debit/credit)
+
+        # Method 1: Check TRANTYPE field (PrivatBank Autoclient API)
+        # "C" = Credit (incoming), "D" = Debit (outgoing)
+        trantype = str(item.get('TRANTYPE', '')).upper()
+        if trantype == 'D':
+            return -abs(amount)  # Debit = outgoing = negative
+        elif trantype == 'C':
+            return abs(amount)   # Credit = incoming = positive
+
+        # Method 2: Check DEBIT flag (1 = outgoing/debit, 0 = incoming/credit)
+        debit_flag = item.get('DEBIT')
+        if debit_flag is not None:
+            if str(debit_flag) == '1':
+                return -abs(amount)  # Outgoing = negative
+            else:
+                return abs(amount)   # Incoming = positive
+
+        # Method 3: Check BPL field ("D" = debit, "C" = credit)
+        bpl = item.get('BPL', '').upper()
+        if bpl == 'D':
+            return -abs(amount)  # Debit = outgoing = negative
+        elif bpl == 'C':
+            return abs(amount)   # Credit = incoming = positive
+
+        # Method 4: Check if amount string already has sign
+        # (some API responses include "-" for outgoing)
+        if isinstance(amount_str, str) and amount_str.strip().startswith('-'):
+            return -abs(amount)
+
+        # Method 5: Compare accounts - if MY_ACC is sender, it's outgoing
+        my_acc = item.get('AUT_MY_ACC', '')
+        # If OSND (description) contains patterns indicating outgoing
+        osnd = str(item.get('OSND', '')).lower()
+        if any(pattern in osnd for pattern in ['комісія', 'списання', 'оплата', 'переказ']):
+            # Check if it's not an incoming transfer
+            if 'зарахування' not in osnd and 'надходження' not in osnd:
+                return -abs(amount)
+
+        # Default: return positive (assume incoming if unknown)
+        return abs(amount)
 
     def _privat_clean_amount(self, amount_str):
         """Clean and convert amount string to float."""

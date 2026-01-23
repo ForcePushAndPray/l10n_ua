@@ -1,16 +1,78 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Server Actions for Mass Operations -->
+    <record id="action_bank_statement_mass_confirm" model="ir.actions.server">
+        <field name="name">Create Journal Entries</field>
+        <field name="model_id" ref="model_l10n_ua_bank_statement"/>
+        <field name="binding_model_id" ref="model_l10n_ua_bank_statement"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    records.filtered(lambda r: r.state == 'draft').action_confirm()
+        </field>
+    </record>
+
+    <record id="action_bank_statement_mass_post" model="ir.actions.server">
+        <field name="name">Post Journal Entries</field>
+        <field name="model_id" ref="model_l10n_ua_bank_statement"/>
+        <field name="binding_model_id" ref="model_l10n_ua_bank_statement"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    records.filtered(lambda r: r.state == 'confirmed').action_post()
+        </field>
+    </record>
+
+    <record id="action_bank_statement_mass_draft" model="ir.actions.server">
+        <field name="name">Reset to Draft</field>
+        <field name="model_id" ref="model_l10n_ua_bank_statement"/>
+        <field name="binding_model_id" ref="model_l10n_ua_bank_statement"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    records.filtered(lambda r: r.state != 'draft').action_draft()
+        </field>
+    </record>
+
+    <!-- Server Actions for Statement Lines Mass Operations -->
+    <record id="action_bank_statement_line_mass_reconcile" model="ir.actions.server">
+        <field name="name">Mark as Reconciled</field>
+        <field name="model_id" ref="model_l10n_ua_bank_statement_line"/>
+        <field name="binding_model_id" ref="model_l10n_ua_bank_statement_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    records.write({'is_reconciled': True})
+        </field>
+    </record>
+
+    <record id="action_bank_statement_line_mass_unreconcile" model="ir.actions.server">
+        <field name="name">Mark as Not Reconciled</field>
+        <field name="model_id" ref="model_l10n_ua_bank_statement_line"/>
+        <field name="binding_model_id" ref="model_l10n_ua_bank_statement_line"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    records.write({'is_reconciled': False})
+        </field>
+    </record>
+
     <record id="l10n_ua_bank_statement_view_form" model="ir.ui.view">
         <field name="name">l10n_ua.bank.statement.form</field>
         <field name="model">l10n_ua.bank.statement</field>
         <field name="arch" type="xml">
             <form string="Bank Statement">
                 <header>
-                    <button name="action_import" string="Import" type="object" class="btn-primary" invisible="state != 'draft'"/>
-                    <button name="action_reconcile" string="Reconcile" type="object" class="btn-primary" invisible="state != 'imported'"/>
-                    <button name="action_draft" string="Set to Draft" type="object" invisible="state == 'draft'"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,imported,reconciled"/>
+                    <button name="action_confirm" string="Create Journal Entries" type="object" class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_post" string="Post Journal Entries" type="object" class="btn-primary" invisible="state != 'confirmed'"/>
+                    <button name="action_draft" string="Reset to Draft" type="object" invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,posted"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -37,16 +99,16 @@
                     </group>
                     <group>
                         <group>
-                            <field name="total_debit"/>
+                            <field name="total_incoming"/>
                             <field name="line_count" string="Lines"/>
                         </group>
                         <group>
-                            <field name="total_credit"/>
+                            <field name="total_outgoing"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Lines" name="lines">
-                            <field name="line_ids">
+                            <field name="line_ids" readonly="state != 'draft'">
                                 <list editable="bottom">
                                     <field name="date"/>
                                     <field name="external_id" optional="hide"/>
@@ -57,8 +119,8 @@
                                     <field name="partner_iban" optional="hide"/>
                                     <field name="partner_edrpou" optional="hide"/>
                                     <field name="amount" sum="Total"/>
-                                    <field name="is_reconciled"/>
-                                    <field name="move_id" optional="hide"/>
+                                    <field name="is_reconciled" column_invisible="parent.state == 'draft'"/>
+                                    <field name="move_id" optional="show" column_invisible="parent.state != 'posted'"/>
                                 </list>
                             </field>
                         </page>
@@ -78,8 +140,8 @@
                 <field name="date"/>
                 <field name="journal_id"/>
                 <field name="line_count" string="Lines"/>
-                <field name="total_debit" sum="Total"/>
-                <field name="total_credit" sum="Total"/>
+                <field name="total_incoming" sum="Total"/>
+                <field name="total_outgoing" sum="Total"/>
                 <field name="sync_provider" optional="hide"/>
                 <field name="state"/>
             </list>
@@ -93,8 +155,15 @@
             <search string="Bank Statements">
                 <field name="name"/>
                 <field name="journal_id"/>
+                <separator/>
                 <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
-                <filter name="imported" string="Imported" domain="[('state', '=', 'imported')]"/>
+                <filter name="confirmed" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <filter name="posted" string="Posted" domain="[('state', '=', 'posted')]"/>
+                <group>
+                    <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                    <filter name="group_date" string="Date" context="{'group_by': 'date'}"/>
+                    <filter name="group_journal" string="Journal" context="{'group_by': 'journal_id'}"/>
+                </group>
             </search>
         </field>
     </record>
@@ -103,6 +172,59 @@
         <field name="name">Bank Statements</field>
         <field name="res_model">l10n_ua.bank.statement</field>
         <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Statement Lines Views -->
+    <record id="l10n_ua_bank_statement_line_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.statement.line.list</field>
+        <field name="model">l10n_ua.bank.statement.line</field>
+        <field name="arch" type="xml">
+            <list string="Statement Lines" multi_edit="1">
+                <field name="date"/>
+                <field name="statement_id"/>
+                <field name="payment_ref" optional="show"/>
+                <field name="description"/>
+                <field name="partner_id"/>
+                <field name="partner_name" optional="hide"/>
+                <field name="partner_iban" optional="hide"/>
+                <field name="partner_edrpou" optional="hide"/>
+                <field name="amount" sum="Total"/>
+                <field name="is_reconciled"/>
+                <field name="move_id" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_bank_statement_line_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.statement.line.search</field>
+        <field name="model">l10n_ua.bank.statement.line</field>
+        <field name="arch" type="xml">
+            <search string="Statement Lines">
+                <field name="description"/>
+                <field name="partner_id"/>
+                <field name="partner_name"/>
+                <field name="partner_edrpou"/>
+                <field name="payment_ref"/>
+                <separator/>
+                <filter name="incoming" string="Incoming" domain="[('amount', '&gt;', 0)]"/>
+                <filter name="outgoing" string="Outgoing" domain="[('amount', '&lt;', 0)]"/>
+                <separator/>
+                <filter name="reconciled" string="Reconciled" domain="[('is_reconciled', '=', True)]"/>
+                <filter name="not_reconciled" string="Not Reconciled" domain="[('is_reconciled', '=', False)]"/>
+                <group>
+                    <filter name="group_statement" string="Statement" context="{'group_by': 'statement_id'}"/>
+                    <filter name="group_date" string="Date" context="{'group_by': 'date'}"/>
+                    <filter name="group_partner" string="Partner" context="{'group_by': 'partner_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_bank_statement_line_action" model="ir.actions.act_window">
+        <field name="name">Statement Lines</field>
+        <field name="res_model">l10n_ua.bank.statement.line</field>
+        <field name="view_mode">list</field>
+        <field name="context">{'search_default_not_reconciled': 1}</field>
     </record>
 
 </odoo>
