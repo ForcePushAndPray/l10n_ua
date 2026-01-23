@@ -30,6 +30,6 @@ Extends l10n_ua_bank_sync with monobank-specific functionality.
     'installable': True,
     'application': False,
     'auto_install': False,
-    'price': 0,
+    'price': 20,
     'currency': 'EUR',
 }
