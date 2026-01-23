@@ -24,10 +24,15 @@ class L10nUaBankStatementWizard(models.TransientModel):
         required=True,
         default=fields.Date.today,
     )
-    compute_opening_balance = fields.Boolean(
-        string='Compute Opening Balance',
-        default=True,
-        help='Calculate opening balance from prior transactions',
+    statement_type = fields.Selection(
+        selection=[
+            ('both', 'Both'),
+            ('incoming', 'Incoming'),
+            ('outgoing', 'Outgoing'),
+        ],
+        string='Type',
+        default='both',
+        required=True,
     )
 
     # Preview
@@ -53,7 +58,7 @@ class L10nUaBankStatementWizard(models.TransientModel):
     def _default_journal_id(self):
         return self.env['account.journal'].search([('type', '=', 'bank')], limit=1)
 
-    @api.depends('journal_id', 'date_from', 'date_to')
+    @api.depends('journal_id', 'date_from', 'date_to', 'statement_type')
     def _compute_preview(self):
         for wizard in self:
             if not wizard.journal_id or not wizard.date_from or not wizard.date_to:
@@ -62,11 +67,17 @@ class L10nUaBankStatementWizard(models.TransientModel):
                 wizard.total_outgoing = 0
                 continue
 
-            transactions = self.env['l10n_ua.bank.transaction'].search([
+            domain = [
                 ('journal_id', '=', wizard.journal_id.id),
                 ('date', '>=', wizard.date_from),
                 ('date', '<=', wizard.date_to),
-            ])
+            ]
+            if wizard.statement_type == 'incoming':
+                domain.append(('amount', '>', 0))
+            elif wizard.statement_type == 'outgoing':
+                domain.append(('amount', '<', 0))
+
+            transactions = self.env['l10n_ua.bank.transaction'].search(domain)
 
             wizard.transaction_count = len(transactions)
             wizard.total_incoming = sum(t.amount for t in transactions if t.amount > 0)
@@ -79,11 +90,12 @@ class L10nUaBankStatementWizard(models.TransientModel):
         if self.date_from > self.date_to:
             raise UserError(_("Date From must be before Date To"))
 
-        # Check for existing statement in this period
+        # Check for existing statement in this period with same type
         existing = self.env['l10n_ua.bank.statement'].search([
             ('journal_id', '=', self.journal_id.id),
             ('date_from', '<=', self.date_to),
             ('date_to', '>=', self.date_from),
+            ('statement_type', '=', self.statement_type),
         ], limit=1)
 
         if existing:
@@ -92,32 +104,18 @@ class L10nUaBankStatementWizard(models.TransientModel):
                 "Please delete it first or choose a different period."
             ) % existing.name)
 
-        # Calculate opening balance
-        opening_balance = 0
-        if self.compute_opening_balance:
-            prior_trans = self.env['l10n_ua.bank.transaction'].search([
-                ('journal_id', '=', self.journal_id.id),
-                ('date', '<', self.date_from),
-            ])
-            opening_balance = sum(prior_trans.mapped('amount'))
-
         # Create statement
         statement = self.env['l10n_ua.bank.statement'].create({
             'journal_id': self.journal_id.id,
             'date_from': self.date_from,
             'date_to': self.date_to,
-            'opening_balance': opening_balance,
+            'statement_type': self.statement_type,
             'company_id': self.journal_id.company_id.id,
             'sync_provider': 'manual',
         })
 
-        # Link transactions
-        transactions = self.env['l10n_ua.bank.transaction'].search([
-            ('journal_id', '=', self.journal_id.id),
-            ('date', '>=', self.date_from),
-            ('date', '<=', self.date_to),
-        ])
-        transactions.write({'statement_id': statement.id})
+        # Generate: link transactions and compute opening balance
+        statement.action_generate()
 
         # Open statement form
         return {

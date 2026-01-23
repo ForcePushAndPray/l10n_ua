@@ -8,14 +8,12 @@
         <field name="arch" type="xml">
             <form string="Bank Statement">
                 <header>
-                    <button name="action_link_transactions" string="Link Transactions" type="object"
-                            class="btn-secondary"/>
-                    <button name="action_compute_opening_balance" string="Compute Opening Balance" type="object"
-                            class="btn-secondary"/>
+                    <button name="action_generate" string="Generate" type="object"
+                            class="btn-primary" icon="fa-refresh"/>
                     <button name="action_export_xlsx" string="Export XLSX" type="object"
-                            class="btn-primary" icon="fa-file-excel-o"/>
+                            class="btn-secondary" icon="fa-file-excel-o"/>
                     <button name="action_print_pdf" string="Print PDF" type="object"
-                            class="btn-primary" icon="fa-file-pdf-o"/>
+                            class="btn-secondary" icon="fa-file-pdf-o"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
@@ -39,7 +37,8 @@
                             <field name="journal_id"/>
                             <field name="date_from"/>
                             <field name="date_to"/>
-                            <field name="sync_provider"/>
+                            <field name="statement_type" widget="radio" options="{'horizontal': true}"/>
+                            <field name="sync_provider" invisible="1"/>
                         </group>
                         <group string="Balances">
                             <field name="opening_balance"/>
@@ -91,12 +90,12 @@
                 <field name="journal_id"/>
                 <field name="date_from"/>
                 <field name="date_to"/>
+                <field name="statement_type" optional="hide"/>
                 <field name="transaction_count" string="Trans"/>
                 <field name="opening_balance" sum="Total"/>
                 <field name="total_incoming" sum="Total"/>
                 <field name="total_outgoing" sum="Total"/>
                 <field name="closing_balance" sum="Total"/>
-                <field name="sync_provider" optional="hide"/>
             </list>
         </field>
     </record>

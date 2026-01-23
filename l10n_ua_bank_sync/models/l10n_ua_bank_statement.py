@@ -37,8 +37,13 @@ class L10nUaBankStatement(models.Model):
     )
     currency_id = fields.Many2one(
         'res.currency',
-        related='journal_id.currency_id',
+        compute='_compute_currency_id',
     )
+
+    @api.depends('journal_id', 'company_id')
+    def _compute_currency_id(self):
+        for record in self:
+            record.currency_id = record.journal_id.currency_id or record.company_id.currency_id
 
     # Period
     date_from = fields.Date(
@@ -50,6 +55,16 @@ class L10nUaBankStatement(models.Model):
         string='Date To',
         required=True,
         tracking=True,
+    )
+    statement_type = fields.Selection(
+        selection=[
+            ('both', 'Both'),
+            ('incoming', 'Incoming'),
+            ('outgoing', 'Outgoing'),
+        ],
+        string='Type',
+        default='both',
+        required=True,
     )
     # Keep 'date' as alias for compatibility
     date = fields.Date(
@@ -118,16 +133,18 @@ class L10nUaBankStatement(models.Model):
         ondelete='set null',
     )
 
-    @api.depends('journal_id', 'date_from', 'date_to')
+    @api.depends('journal_id', 'date_from', 'date_to', 'statement_type')
     def _compute_name(self):
+        type_labels = {'both': '', 'incoming': ' (Incoming)', 'outgoing': ' (Outgoing)'}
         for record in self:
             journal_name = record.journal_id.name if record.journal_id else ''
             date_from = record.date_from.strftime('%d.%m.%Y') if record.date_from else ''
             date_to = record.date_to.strftime('%d.%m.%Y') if record.date_to else ''
+            type_suffix = type_labels.get(record.statement_type, '')
             if date_from == date_to:
-                record.name = f'{journal_name} {date_from}'
+                record.name = f'{journal_name} {date_from}{type_suffix}'
             else:
-                record.name = f'{journal_name} {date_from} - {date_to}'
+                record.name = f'{journal_name} {date_from} - {date_to}{type_suffix}'
 
     @api.depends('date_from')
     def _compute_date(self):
@@ -147,35 +164,43 @@ class L10nUaBankStatement(models.Model):
         for record in self:
             record.closing_balance = record.opening_balance + record.total_incoming - record.total_outgoing
 
-    def action_compute_opening_balance(self):
-        """Calculate opening balance from transactions before this period."""
-        for record in self:
-            if not record.date_from or not record.journal_id:
-                continue
-
-            # Sum all transactions before date_from
-            prior_trans = self.env['l10n_ua.bank.transaction'].search([
-                ('journal_id', '=', record.journal_id.id),
-                ('date', '<', record.date_from),
-            ])
-            record.opening_balance = sum(prior_trans.mapped('amount'))
-
-    def action_link_transactions(self):
-        """Link transactions from the period to this statement."""
+    def action_generate(self):
+        """Generate statement: link transactions and compute opening balance."""
         for record in self:
             if not record.date_from or not record.date_to or not record.journal_id:
                 continue
 
-            # Find transactions in period that are not linked to any statement
-            transactions = self.env['l10n_ua.bank.transaction'].search([
+            # 1. Unlink existing transactions from this statement
+            record.transaction_ids.write({'statement_id': False})
+
+            # 2. Build domain based on statement type
+            domain = [
                 ('journal_id', '=', record.journal_id.id),
                 ('date', '>=', record.date_from),
                 ('date', '<=', record.date_to),
-                '|',
                 ('statement_id', '=', False),
-                ('statement_id', '=', record.id),
-            ])
+            ]
+            if record.statement_type == 'incoming':
+                domain.append(('amount', '>', 0))
+            elif record.statement_type == 'outgoing':
+                domain.append(('amount', '<', 0))
+
+            # 3. Link matching transactions
+            transactions = self.env['l10n_ua.bank.transaction'].search(domain)
             transactions.write({'statement_id': record.id})
+
+            # 4. Compute opening balance from transactions before period
+            prior_domain = [
+                ('journal_id', '=', record.journal_id.id),
+                ('date', '<', record.date_from),
+            ]
+            if record.statement_type == 'incoming':
+                prior_domain.append(('amount', '>', 0))
+            elif record.statement_type == 'outgoing':
+                prior_domain.append(('amount', '<', 0))
+
+            prior_trans = self.env['l10n_ua.bank.transaction'].search(prior_domain)
+            record.opening_balance = sum(prior_trans.mapped('amount'))
 
     def action_view_transactions(self):
         """View transactions for this statement."""

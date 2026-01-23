@@ -65,25 +65,25 @@
                                 <tr>
                                     <td class="label">Opening Balance:</td>
                                     <td class="text-right">
-                                        <span t-field="doc.opening_balance" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                        <span t-esc="'{:,.2f}'.format(doc.opening_balance)"/>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="label">Total Incoming:</td>
                                     <td class="text-right amount-positive">
-                                        +<span t-field="doc.total_incoming" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                        +<span t-esc="'{:,.2f}'.format(doc.total_incoming)"/>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td class="label">Total Outgoing:</td>
                                     <td class="text-right amount-negative">
-                                        -<span t-field="doc.total_outgoing" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/>
+                                        -<span t-esc="'{:,.2f}'.format(doc.total_outgoing)"/>
                                     </td>
                                 </tr>
                                 <tr style="border-top: 2px solid #000;">
                                     <td class="label">Closing Balance:</td>
                                     <td class="text-right">
-                                        <strong><span t-field="doc.closing_balance" t-options="{'widget': 'monetary', 'display_currency': doc.currency_id}"/></strong>
+                                        <strong><span t-esc="'{:,.2f}'.format(doc.closing_balance)"/></strong>
                                     </td>
                                 </tr>
                             </table>

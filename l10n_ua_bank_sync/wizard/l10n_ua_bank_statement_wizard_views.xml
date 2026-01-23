@@ -11,7 +11,7 @@
                         <field name="journal_id"/>
                         <field name="date_from"/>
                         <field name="date_to"/>
-                        <field name="compute_opening_balance"/>
+                        <field name="statement_type" widget="radio" options="{'horizontal': true}"/>
                     </group>
                     <group string="Preview">
                         <field name="transaction_count"/>
