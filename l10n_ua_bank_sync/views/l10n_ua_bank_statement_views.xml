@@ -1,81 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Server Actions for Mass Operations -->
-    <record id="action_bank_statement_mass_confirm" model="ir.actions.server">
-        <field name="name">Create Journal Entries</field>
-        <field name="model_id" ref="model_l10n_ua_bank_statement"/>
-        <field name="binding_model_id" ref="model_l10n_ua_bank_statement"/>
-        <field name="binding_view_types">list</field>
-        <field name="state">code</field>
-        <field name="code">
-if records:
-    records.filtered(lambda r: r.state == 'draft').action_confirm()
-        </field>
-    </record>
-
-    <record id="action_bank_statement_mass_post" model="ir.actions.server">
-        <field name="name">Post Journal Entries</field>
-        <field name="model_id" ref="model_l10n_ua_bank_statement"/>
-        <field name="binding_model_id" ref="model_l10n_ua_bank_statement"/>
-        <field name="binding_view_types">list</field>
-        <field name="state">code</field>
-        <field name="code">
-if records:
-    records.filtered(lambda r: r.state == 'confirmed').action_post()
-        </field>
-    </record>
-
-    <record id="action_bank_statement_mass_draft" model="ir.actions.server">
-        <field name="name">Reset to Draft</field>
-        <field name="model_id" ref="model_l10n_ua_bank_statement"/>
-        <field name="binding_model_id" ref="model_l10n_ua_bank_statement"/>
-        <field name="binding_view_types">list</field>
-        <field name="state">code</field>
-        <field name="code">
-if records:
-    records.filtered(lambda r: r.state != 'draft').action_draft()
-        </field>
-    </record>
-
-    <!-- Server Actions for Statement Lines Mass Operations -->
-    <record id="action_bank_statement_line_mass_reconcile" model="ir.actions.server">
-        <field name="name">Mark as Reconciled</field>
-        <field name="model_id" ref="model_l10n_ua_bank_statement_line"/>
-        <field name="binding_model_id" ref="model_l10n_ua_bank_statement_line"/>
-        <field name="binding_view_types">list</field>
-        <field name="state">code</field>
-        <field name="code">
-if records:
-    records.write({'is_reconciled': True})
-        </field>
-    </record>
-
-    <record id="action_bank_statement_line_mass_unreconcile" model="ir.actions.server">
-        <field name="name">Mark as Not Reconciled</field>
-        <field name="model_id" ref="model_l10n_ua_bank_statement_line"/>
-        <field name="binding_model_id" ref="model_l10n_ua_bank_statement_line"/>
-        <field name="binding_view_types">list</field>
-        <field name="state">code</field>
-        <field name="code">
-if records:
-    records.write({'is_reconciled': False})
-        </field>
-    </record>
-
+    <!-- Statement Form View -->
     <record id="l10n_ua_bank_statement_view_form" model="ir.ui.view">
         <field name="name">l10n_ua.bank.statement.form</field>
         <field name="model">l10n_ua.bank.statement</field>
         <field name="arch" type="xml">
             <form string="Bank Statement">
                 <header>
-                    <button name="action_confirm" string="Create Journal Entries" type="object" class="btn-primary" invisible="state != 'draft'"/>
-                    <button name="action_post" string="Post Journal Entries" type="object" class="btn-primary" invisible="state != 'confirmed'"/>
-                    <button name="action_draft" string="Reset to Draft" type="object" invisible="state == 'draft'"/>
-                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,posted"/>
+                    <button name="action_link_transactions" string="Link Transactions" type="object"
+                            class="btn-secondary"/>
+                    <button name="action_compute_opening_balance" string="Compute Opening Balance" type="object"
+                            class="btn-secondary"/>
+                    <button name="action_export_xlsx" string="Export XLSX" type="object"
+                            class="btn-primary" icon="fa-file-excel-o"/>
+                    <button name="action_print_pdf" string="Print PDF" type="object"
+                            class="btn-primary" icon="fa-file-pdf-o"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
+                        <button name="action_view_transactions" type="object"
+                                class="oe_stat_button" icon="fa-list">
+                            <field name="transaction_count" widget="statinfo" string="Transactions"/>
+                        </button>
                         <button name="action_view_sync_job" type="object"
                                 class="oe_stat_button" icon="fa-tasks"
                                 invisible="not sync_job_id">
@@ -84,43 +31,46 @@ if records:
                             </div>
                         </button>
                     </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
                     <group>
-                        <group>
-                            <field name="date"/>
+                        <group string="Period">
                             <field name="journal_id"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
                             <field name="sync_provider"/>
-                            <field name="sync_job_id" invisible="not sync_job_id"/>
                         </group>
-                        <group>
+                        <group string="Balances">
                             <field name="opening_balance"/>
                             <field name="closing_balance"/>
+                            <field name="currency_id" invisible="1"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <group>
-                        <group>
+                        <group string="Totals">
                             <field name="total_incoming"/>
-                            <field name="line_count" string="Lines"/>
-                        </group>
-                        <group>
                             <field name="total_outgoing"/>
+                            <field name="turnover"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Lines" name="lines">
-                            <field name="line_ids" readonly="state != 'draft'">
-                                <list editable="bottom">
+                        <page string="Transactions" name="transactions">
+                            <field name="transaction_ids">
+                                <list decoration-success="amount &gt; 0" decoration-danger="amount &lt; 0">
                                     <field name="date"/>
-                                    <field name="external_id" optional="hide"/>
                                     <field name="payment_ref"/>
                                     <field name="description"/>
-                                    <field name="partner_id"/>
-                                    <field name="partner_name" optional="hide"/>
+                                    <field name="partner_name"/>
+                                    <field name="partner_id" optional="hide"/>
                                     <field name="partner_iban" optional="hide"/>
-                                    <field name="partner_edrpou" optional="hide"/>
                                     <field name="amount" sum="Total"/>
-                                    <field name="is_reconciled" column_invisible="parent.state == 'draft'"/>
-                                    <field name="move_id" optional="show" column_invisible="parent.state != 'posted'"/>
+                                    <field name="state" widget="badge"
+                                           decoration-info="state == 'new'"
+                                           decoration-warning="state == 'draft'"
+                                           decoration-success="state == 'posted'"
+                                           optional="hide"/>
                                 </list>
                             </field>
                         </page>
@@ -131,23 +81,27 @@ if records:
         </field>
     </record>
 
+    <!-- Statement List View -->
     <record id="l10n_ua_bank_statement_view_list" model="ir.ui.view">
         <field name="name">l10n_ua.bank.statement.list</field>
         <field name="model">l10n_ua.bank.statement</field>
         <field name="arch" type="xml">
             <list string="Bank Statements">
                 <field name="name"/>
-                <field name="date"/>
                 <field name="journal_id"/>
-                <field name="line_count" string="Lines"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="transaction_count" string="Trans"/>
+                <field name="opening_balance" sum="Total"/>
                 <field name="total_incoming" sum="Total"/>
                 <field name="total_outgoing" sum="Total"/>
+                <field name="closing_balance" sum="Total"/>
                 <field name="sync_provider" optional="hide"/>
-                <field name="state"/>
             </list>
         </field>
     </record>
 
+    <!-- Statement Search View -->
     <record id="l10n_ua_bank_statement_view_search" model="ir.ui.view">
         <field name="name">l10n_ua.bank.statement.search</field>
         <field name="model">l10n_ua.bank.statement</field>
@@ -155,76 +109,19 @@ if records:
             <search string="Bank Statements">
                 <field name="name"/>
                 <field name="journal_id"/>
-                <separator/>
-                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
-                <filter name="confirmed" string="Confirmed" domain="[('state', '=', 'confirmed')]"/>
-                <filter name="posted" string="Posted" domain="[('state', '=', 'posted')]"/>
                 <group>
-                    <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
-                    <filter name="group_date" string="Date" context="{'group_by': 'date'}"/>
                     <filter name="group_journal" string="Journal" context="{'group_by': 'journal_id'}"/>
+                    <filter name="group_month" string="Month" context="{'group_by': 'date_from:month'}"/>
                 </group>
             </search>
         </field>
     </record>
 
+    <!-- Statement Action -->
     <record id="l10n_ua_bank_statement_action" model="ir.actions.act_window">
         <field name="name">Bank Statements</field>
         <field name="res_model">l10n_ua.bank.statement</field>
         <field name="view_mode">list,form</field>
-    </record>
-
-    <!-- Statement Lines Views -->
-    <record id="l10n_ua_bank_statement_line_view_list" model="ir.ui.view">
-        <field name="name">l10n_ua.bank.statement.line.list</field>
-        <field name="model">l10n_ua.bank.statement.line</field>
-        <field name="arch" type="xml">
-            <list string="Statement Lines" multi_edit="1">
-                <field name="date"/>
-                <field name="statement_id"/>
-                <field name="payment_ref" optional="show"/>
-                <field name="description"/>
-                <field name="partner_id"/>
-                <field name="partner_name" optional="hide"/>
-                <field name="partner_iban" optional="hide"/>
-                <field name="partner_edrpou" optional="hide"/>
-                <field name="amount" sum="Total"/>
-                <field name="is_reconciled"/>
-                <field name="move_id" optional="hide"/>
-            </list>
-        </field>
-    </record>
-
-    <record id="l10n_ua_bank_statement_line_view_search" model="ir.ui.view">
-        <field name="name">l10n_ua.bank.statement.line.search</field>
-        <field name="model">l10n_ua.bank.statement.line</field>
-        <field name="arch" type="xml">
-            <search string="Statement Lines">
-                <field name="description"/>
-                <field name="partner_id"/>
-                <field name="partner_name"/>
-                <field name="partner_edrpou"/>
-                <field name="payment_ref"/>
-                <separator/>
-                <filter name="incoming" string="Incoming" domain="[('amount', '&gt;', 0)]"/>
-                <filter name="outgoing" string="Outgoing" domain="[('amount', '&lt;', 0)]"/>
-                <separator/>
-                <filter name="reconciled" string="Reconciled" domain="[('is_reconciled', '=', True)]"/>
-                <filter name="not_reconciled" string="Not Reconciled" domain="[('is_reconciled', '=', False)]"/>
-                <group>
-                    <filter name="group_statement" string="Statement" context="{'group_by': 'statement_id'}"/>
-                    <filter name="group_date" string="Date" context="{'group_by': 'date'}"/>
-                    <filter name="group_partner" string="Partner" context="{'group_by': 'partner_id'}"/>
-                </group>
-            </search>
-        </field>
-    </record>
-
-    <record id="l10n_ua_bank_statement_line_action" model="ir.actions.act_window">
-        <field name="name">Statement Lines</field>
-        <field name="res_model">l10n_ua.bank.statement.line</field>
-        <field name="view_mode">list</field>
-        <field name="context">{'search_default_not_reconciled': 1}</field>
     </record>
 
 </odoo>

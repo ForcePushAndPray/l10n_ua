@@ -2,8 +2,7 @@
 <odoo>
 
     <!-- ============================================== -->
-    <!-- Bank UA - submenu under Invoicing              -->
-    <!-- Following l10n_ua menu structure guidelines    -->
+    <!-- Bank UA - Main menu                            -->
     <!-- ============================================== -->
 
     <menuitem id="menu_ua_bank_root"
@@ -11,26 +10,48 @@
               sequence="53"
               web_icon="l10n_ua_bank_sync,static/description/icon.png"/>
 
-    <!-- Statements -->
-    <menuitem id="menu_ua_bank_statements"
-              name="Bank Statements"
+    <!-- Dashboard -->
+    <menuitem id="menu_ua_bank_dashboard"
+              name="Dashboard"
               parent="menu_ua_bank_root"
+              action="l10n_ua_bank_dashboard_action"
+              sequence="1"/>
+
+    <!-- Statements submenu -->
+    <menuitem id="menu_ua_bank_statements_root"
+              name="Statements"
+              parent="menu_ua_bank_root"
+              sequence="10"/>
+
+    <menuitem id="menu_ua_bank_statements"
+              name="Statements"
+              parent="menu_ua_bank_statements_root"
               action="l10n_ua_bank_statement_action"
               sequence="10"/>
 
-    <!-- Statement Lines -->
-    <menuitem id="menu_ua_bank_statement_lines"
-              name="Statement Lines"
-              parent="menu_ua_bank_root"
-              action="l10n_ua_bank_statement_line_action"
-              sequence="15"/>
-
-    <!-- Sync Jobs -->
-    <menuitem id="menu_ua_bank_jobs"
-              name="Import Jobs"
-              parent="menu_ua_bank_root"
-              action="l10n_ua_bank_sync_job_action"
+    <menuitem id="menu_ua_bank_transactions"
+              name="Transactions"
+              parent="menu_ua_bank_statements_root"
+              action="l10n_ua_bank_transaction_action"
               sequence="20"/>
+
+    <menuitem id="menu_ua_bank_generate_statement"
+              name="Generate Statement"
+              parent="menu_ua_bank_statements_root"
+              action="l10n_ua_bank_statement_wizard_action"
+              sequence="30"/>
+
+    <!-- Sync Jobs submenu -->
+    <menuitem id="menu_ua_bank_sync_root"
+              name="Sync Jobs"
+              parent="menu_ua_bank_root"
+              sequence="20"/>
+
+    <menuitem id="menu_ua_bank_jobs"
+              name="Jobs"
+              parent="menu_ua_bank_sync_root"
+              action="l10n_ua_bank_sync_job_action"
+              sequence="10"/>
 
     <!-- Configuration submenu -->
     <menuitem id="menu_ua_bank_config"
@@ -39,7 +60,7 @@
               sequence="90"/>
 
     <menuitem id="menu_ua_bank_connections"
-              name="Bank Connections"
+              name="Connections"
               parent="menu_ua_bank_config"
               action="l10n_ua_bank_sync_config_action"
               sequence="10"/>

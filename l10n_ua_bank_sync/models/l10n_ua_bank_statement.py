@@ -3,20 +3,19 @@ from odoo.exceptions import ValidationError
 
 
 class L10nUaBankStatement(models.Model):
+    """
+    Bank Statement - summary of transactions for a period.
+    Can be generated from transactions for reporting/export.
+    """
     _name = 'l10n_ua.bank.statement'
     _description = 'Ukrainian Bank Statement'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _order = 'date desc, id desc'
+    _order = 'date_from desc, id desc'
 
     name = fields.Char(
         string='Name',
         compute='_compute_name',
         store=True,
-    )
-    date = fields.Date(
-        string='Date',
-        required=True,
-        tracking=True,
     )
     journal_id = fields.Many2one(
         'account.journal',
@@ -40,61 +39,75 @@ class L10nUaBankStatement(models.Model):
         'res.currency',
         related='journal_id.currency_id',
     )
-    line_ids = fields.One2many(
-        'l10n_ua.bank.statement.line',
+
+    # Period
+    date_from = fields.Date(
+        string='Date From',
+        required=True,
+        tracking=True,
+    )
+    date_to = fields.Date(
+        string='Date To',
+        required=True,
+        tracking=True,
+    )
+    # Keep 'date' as alias for compatibility
+    date = fields.Date(
+        string='Date',
+        compute='_compute_date',
+        store=True,
+    )
+
+    # Transactions
+    transaction_ids = fields.One2many(
+        'l10n_ua.bank.transaction',
         'statement_id',
-        string='Lines',
+        string='Transactions',
     )
-    line_count = fields.Integer(
-        string='Line Count',
-        compute='_compute_line_count',
+    transaction_count = fields.Integer(
+        string='Transaction Count',
+        compute='_compute_totals',
+        store=True,
     )
+
+    # Balances
     opening_balance = fields.Monetary(
         string='Opening Balance',
         currency_field='currency_id',
+        help='Balance at the start of the period',
     )
     closing_balance = fields.Monetary(
         string='Closing Balance',
+        compute='_compute_closing_balance',
+        store=True,
         currency_field='currency_id',
+        help='Balance at the end of the period',
     )
     total_incoming = fields.Monetary(
-        string='Total Incoming (Кт)',
+        string='Total Incoming',
         compute='_compute_totals',
         store=True,
         currency_field='currency_id',
-        help='Sum of positive amounts (incoming/credit)',
     )
     total_outgoing = fields.Monetary(
-        string='Total Outgoing (Дт)',
+        string='Total Outgoing',
         compute='_compute_totals',
         store=True,
         currency_field='currency_id',
-        help='Sum of negative amounts (outgoing/debit)',
     )
-    # Keep old field names for compatibility
-    total_debit = fields.Monetary(
-        string='Total Debit',
-        related='total_outgoing',
+    turnover = fields.Monetary(
+        string='Turnover',
+        compute='_compute_totals',
+        store=True,
         currency_field='currency_id',
+        help='Sum of incoming and outgoing',
     )
-    total_credit = fields.Monetary(
-        string='Total Credit',
-        related='total_incoming',
-        currency_field='currency_id',
-    )
-    state = fields.Selection(
-        selection=[
-            ('draft', 'Draft'),
-            ('confirmed', 'Confirmed'),
-            ('posted', 'Posted'),
-        ],
-        string='State',
-        default='draft',
-        tracking=True,
-    )
+
     sync_provider = fields.Selection(
         selection=[
             ('manual', 'Manual'),
+            ('privatbank', 'PrivatBank'),
+            ('monobank', 'Monobank'),
         ],
         string='Source',
         default='manual',
@@ -105,143 +118,93 @@ class L10nUaBankStatement(models.Model):
         ondelete='set null',
     )
 
-    @api.depends('journal_id', 'date')
+    @api.depends('journal_id', 'date_from', 'date_to')
     def _compute_name(self):
         for record in self:
             journal_name = record.journal_id.name if record.journal_id else ''
-            date_str = record.date.strftime('%d.%m.%Y') if record.date else ''
-            record.name = f'{journal_name} {date_str}'
+            date_from = record.date_from.strftime('%d.%m.%Y') if record.date_from else ''
+            date_to = record.date_to.strftime('%d.%m.%Y') if record.date_to else ''
+            if date_from == date_to:
+                record.name = f'{journal_name} {date_from}'
+            else:
+                record.name = f'{journal_name} {date_from} - {date_to}'
 
-    @api.depends('line_ids')
-    def _compute_line_count(self):
+    @api.depends('date_from')
+    def _compute_date(self):
         for record in self:
-            record.line_count = len(record.line_ids)
+            record.date = record.date_from
 
-    @api.depends('line_ids.amount')
+    @api.depends('transaction_ids', 'transaction_ids.amount')
     def _compute_totals(self):
         for record in self:
-            # Incoming (Кт) = positive amounts (credit to bank account)
-            record.total_incoming = sum(line.amount for line in record.line_ids if line.amount > 0)
-            # Outgoing (Дт) = negative amounts (debit from bank account)
-            record.total_outgoing = sum(abs(line.amount) for line in record.line_ids if line.amount < 0)
+            record.transaction_count = len(record.transaction_ids)
+            record.total_incoming = sum(t.amount for t in record.transaction_ids if t.amount > 0)
+            record.total_outgoing = sum(abs(t.amount) for t in record.transaction_ids if t.amount < 0)
+            record.turnover = record.total_incoming + record.total_outgoing
 
-    def action_confirm(self):
-        """Confirm statement - create draft journal entries."""
-        for statement in self:
-            if statement.state != 'draft':
+    @api.depends('opening_balance', 'total_incoming', 'total_outgoing')
+    def _compute_closing_balance(self):
+        for record in self:
+            record.closing_balance = record.opening_balance + record.total_incoming - record.total_outgoing
+
+    def action_compute_opening_balance(self):
+        """Calculate opening balance from transactions before this period."""
+        for record in self:
+            if not record.date_from or not record.journal_id:
                 continue
-            if not statement.line_ids:
-                raise ValidationError(_("Cannot confirm empty statement."))
-            statement._create_account_moves()
-        self.write({'state': 'confirmed'})
 
-    def action_post(self):
-        """Post statement - post all journal entries."""
-        for statement in self:
-            if statement.state != 'confirmed':
+            # Sum all transactions before date_from
+            prior_trans = self.env['l10n_ua.bank.transaction'].search([
+                ('journal_id', '=', record.journal_id.id),
+                ('date', '<', record.date_from),
+            ])
+            record.opening_balance = sum(prior_trans.mapped('amount'))
+
+    def action_link_transactions(self):
+        """Link transactions from the period to this statement."""
+        for record in self:
+            if not record.date_from or not record.date_to or not record.journal_id:
                 continue
-            # Post all draft moves
-            draft_moves = statement.line_ids.mapped('move_id').filtered(
-                lambda m: m.state == 'draft'
-            )
-            draft_moves.action_post()
-        self.write({'state': 'posted'})
 
-    def action_draft(self):
-        """Reset to draft - only if no posted moves."""
-        for statement in self:
-            posted_moves = statement.line_ids.filtered(
-                lambda l: l.move_id and l.move_id.state == 'posted'
-            )
-            if posted_moves:
-                raise ValidationError(
-                    _("Cannot reset to draft: %d lines have posted journal entries. "
-                      "Cancel them first.") % len(posted_moves)
-                )
-            # Unlink draft moves
-            draft_moves = statement.line_ids.mapped('move_id').filtered(
-                lambda m: m.state == 'draft'
-            )
-            if draft_moves:
-                draft_moves.unlink()
-            statement.line_ids.write({'move_id': False, 'is_reconciled': False})
-        self.write({'state': 'draft'})
+            # Find transactions in period that are not linked to any statement
+            transactions = self.env['l10n_ua.bank.transaction'].search([
+                ('journal_id', '=', record.journal_id.id),
+                ('date', '>=', record.date_from),
+                ('date', '<=', record.date_to),
+                '|',
+                ('statement_id', '=', False),
+                ('statement_id', '=', record.id),
+            ])
+            transactions.write({'statement_id': record.id})
 
-    def _create_account_moves(self):
-        """Create journal entries for statement lines."""
+    def action_view_transactions(self):
+        """View transactions for this statement."""
         self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Transactions'),
+            'res_model': 'l10n_ua.bank.transaction',
+            'view_mode': 'list,form',
+            'domain': [('statement_id', '=', self.id)],
+            'context': {
+                'default_statement_id': self.id,
+                'default_journal_id': self.journal_id.id,
+            },
+        }
 
-        if not self.journal_id.default_account_id:
-            raise ValidationError(
-                _("Journal '%s' has no default account configured.") % self.journal_id.name
-            )
+    def action_export_xlsx(self):
+        """Export statement to XLSX."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/l10n_ua_bank_sync/export_statement_xlsx/{self.id}',
+            'target': 'self',
+        }
 
-        bank_account = self.journal_id.default_account_id
-
-        for line in self.line_ids:
-            if line.move_id:
-                continue  # Already has a move
-
-            # Determine counterpart account
-            # For now use suspense account, user can change later
-            suspense_account = self.company_id.account_journal_suspense_account_id
-            if not suspense_account:
-                raise ValidationError(
-                    _("Company has no suspense account configured. "
-                      "Go to Settings > Accounting > Default Accounts.")
-                )
-
-            # Create journal entry
-            move_vals = {
-                'journal_id': self.journal_id.id,
-                'date': line.date,
-                'ref': line.payment_ref or line.external_id or '',
-                'narration': line.description,
-                'partner_id': line.partner_id.id if line.partner_id else False,
-                'move_type': 'entry',
-                'line_ids': [],
-            }
-
-            if line.amount > 0:
-                # Incoming: Debit Bank, Credit Suspense
-                move_vals['line_ids'] = [
-                    (0, 0, {
-                        'account_id': bank_account.id,
-                        'partner_id': line.partner_id.id if line.partner_id else False,
-                        'name': line.description or line.payment_ref or '/',
-                        'debit': line.amount,
-                        'credit': 0,
-                    }),
-                    (0, 0, {
-                        'account_id': suspense_account.id,
-                        'partner_id': line.partner_id.id if line.partner_id else False,
-                        'name': line.description or line.payment_ref or '/',
-                        'debit': 0,
-                        'credit': line.amount,
-                    }),
-                ]
-            else:
-                # Outgoing: Debit Suspense, Credit Bank
-                amount = abs(line.amount)
-                move_vals['line_ids'] = [
-                    (0, 0, {
-                        'account_id': suspense_account.id,
-                        'partner_id': line.partner_id.id if line.partner_id else False,
-                        'name': line.description or line.payment_ref or '/',
-                        'debit': amount,
-                        'credit': 0,
-                    }),
-                    (0, 0, {
-                        'account_id': bank_account.id,
-                        'partner_id': line.partner_id.id if line.partner_id else False,
-                        'name': line.description or line.payment_ref or '/',
-                        'debit': 0,
-                        'credit': amount,
-                    }),
-                ]
-
-            move = self.env['account.move'].create(move_vals)
-            line.move_id = move
+    def action_print_pdf(self):
+        """Print statement as PDF."""
+        self.ensure_one()
+        return self.env.ref('l10n_ua_bank_sync.action_report_bank_statement').report_action(self)
 
     def action_view_sync_job(self):
         """Open related sync job."""
@@ -255,71 +218,3 @@ class L10nUaBankStatement(models.Model):
             'view_mode': 'form',
             'res_id': self.sync_job_id.id,
         }
-
-
-class L10nUaBankStatementLine(models.Model):
-    _name = 'l10n_ua.bank.statement.line'
-    _description = 'Ukrainian Bank Statement Line'
-    _order = 'date, id'
-
-    statement_id = fields.Many2one(
-        'l10n_ua.bank.statement',
-        string='Statement',
-        required=True,
-        ondelete='cascade',
-    )
-    date = fields.Date(
-        string='Date',
-        required=True,
-    )
-    external_id = fields.Char(
-        string='External ID',
-        index=True,
-        help='Unique transaction ID from bank',
-    )
-    payment_ref = fields.Char(
-        string='Payment Reference',
-    )
-    description = fields.Text(
-        string='Description',
-    )
-    partner_id = fields.Many2one(
-        'res.partner',
-        string='Partner',
-    )
-    partner_name = fields.Char(
-        string='Partner Name',
-    )
-    partner_iban = fields.Char(
-        string='Partner IBAN',
-    )
-    partner_edrpou = fields.Char(
-        string='Partner EDRPOU',
-    )
-    amount = fields.Monetary(
-        string='Amount',
-        currency_field='currency_id',
-        help='Positive for incoming, negative for outgoing',
-    )
-    currency_id = fields.Many2one(
-        'res.currency',
-        related='statement_id.currency_id',
-    )
-    journal_id = fields.Many2one(
-        related='statement_id.journal_id',
-        store=True,
-    )
-    move_id = fields.Many2one(
-        'account.move',
-        string='Journal Entry',
-    )
-    is_reconciled = fields.Boolean(
-        string='Reconciled',
-        default=False,
-    )
-
-    _sql_constraints = [
-        ('external_id_journal_uniq',
-         'unique(external_id, journal_id)',
-         'External ID must be unique per journal!'),
-    ]

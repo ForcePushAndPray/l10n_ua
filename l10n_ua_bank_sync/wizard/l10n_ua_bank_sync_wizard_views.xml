@@ -8,6 +8,7 @@
             <form string="Sync Bank Statements">
                 <group>
                     <field name="config_id" readonly="1" force_save="1"/>
+                    <field name="last_job_id" readonly="1" invisible="not last_job_id"/>
                     <field name="period" widget="radio"/>
                 </group>
                 <group string="Date Range">

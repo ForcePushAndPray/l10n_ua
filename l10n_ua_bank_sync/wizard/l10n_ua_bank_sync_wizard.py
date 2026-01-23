@@ -16,17 +16,61 @@ class L10nUaBankSyncWizard(models.TransientModel):
     date_from = fields.Date(
         string='Date From',
         required=True,
-        default=lambda self: fields.Date.today() - timedelta(days=7),
+        compute='_compute_dates_from_last_job',
+        store=True,
+        readonly=False,
     )
     date_to = fields.Date(
         string='Date To',
         required=True,
-        default=fields.Date.today,
+        compute='_compute_dates_from_last_job',
+        store=True,
+        readonly=False,
     )
+    last_job_id = fields.Many2one(
+        'l10n_ua.bank.sync.job',
+        string='Last Job',
+        compute='_compute_last_job',
+    )
+
+    @api.depends('config_id')
+    def _compute_last_job(self):
+        for wizard in self:
+            if not wizard.config_id:
+                wizard.last_job_id = False
+                continue
+            wizard.last_job_id = self.env['l10n_ua.bank.sync.job'].search([
+                ('config_id', '=', wizard.config_id.id),
+                ('state', '=', 'done'),
+            ], limit=1, order='date_to desc')
+
+    @api.depends('config_id')
+    def _compute_dates_from_last_job(self):
+        for wizard in self:
+            if not wizard.config_id:
+                wizard.date_from = fields.Date.today() - timedelta(days=7)
+                wizard.date_to = fields.Date.today()
+                continue
+
+            # Find last completed job for this config
+            last_job = self.env['l10n_ua.bank.sync.job'].search([
+                ('config_id', '=', wizard.config_id.id),
+                ('state', '=', 'done'),
+            ], limit=1, order='date_to desc')
+
+            if last_job:
+                # Set date_from to last job's date_to + 1 day
+                wizard.date_from = last_job.date_to + timedelta(days=1)
+                wizard.date_to = fields.Date.today()
+            else:
+                # No previous job - default to last 7 days
+                wizard.date_from = fields.Date.today() - timedelta(days=7)
+                wizard.date_to = fields.Date.today()
 
     # Quick select buttons
     period = fields.Selection(
         selection=[
+            ('from_last', 'From Last Sync'),
             ('custom', 'Custom Period'),
             ('today', 'Today'),
             ('yesterday', 'Yesterday'),
@@ -36,14 +80,23 @@ class L10nUaBankSyncWizard(models.TransientModel):
             ('last_month', 'Last Month'),
         ],
         string='Quick Select',
-        default='custom',
+        default='from_last',
     )
 
     @api.onchange('period')
     def _onchange_period(self):
         today = fields.Date.today()
 
-        if self.period == 'today':
+        if self.period == 'from_last':
+            # Set dates from last completed job
+            if self.last_job_id:
+                self.date_from = self.last_job_id.date_to + timedelta(days=1)
+                self.date_to = today
+            else:
+                # No previous job - default to last 7 days
+                self.date_from = today - timedelta(days=7)
+                self.date_to = today
+        elif self.period == 'today':
             self.date_from = today
             self.date_to = today
         elif self.period == 'yesterday':

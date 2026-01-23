@@ -1,0 +1,231 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Server Actions for Mass Operations -->
+    <record id="action_transaction_mass_create_moves" model="ir.actions.server">
+        <field name="name">Create Journal Entries</field>
+        <field name="model_id" ref="model_l10n_ua_bank_transaction"/>
+        <field name="binding_model_id" ref="model_l10n_ua_bank_transaction"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    for rec in records.filtered(lambda r: not r.move_id):
+        rec.action_create_move()
+        </field>
+    </record>
+
+    <record id="action_transaction_mass_post_moves" model="ir.actions.server">
+        <field name="name">Post Journal Entries</field>
+        <field name="model_id" ref="model_l10n_ua_bank_transaction"/>
+        <field name="binding_model_id" ref="model_l10n_ua_bank_transaction"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    records.filtered(lambda r: r.move_id and r.move_id.state == 'draft').action_post_move()
+        </field>
+    </record>
+
+    <record id="action_transaction_mass_create_and_post" model="ir.actions.server">
+        <field name="name">Create &amp; Post Entries</field>
+        <field name="model_id" ref="model_l10n_ua_bank_transaction"/>
+        <field name="binding_model_id" ref="model_l10n_ua_bank_transaction"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    records.action_create_and_post_move()
+        </field>
+    </record>
+
+    <record id="action_transaction_mass_delete_moves" model="ir.actions.server">
+        <field name="name">Delete Draft Entries</field>
+        <field name="model_id" ref="model_l10n_ua_bank_transaction"/>
+        <field name="binding_model_id" ref="model_l10n_ua_bank_transaction"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    records.filtered(lambda r: r.move_id and r.move_id.state == 'draft').action_delete_move()
+        </field>
+    </record>
+
+    <record id="action_transaction_mass_reconcile" model="ir.actions.server">
+        <field name="name">Mark as Reconciled</field>
+        <field name="model_id" ref="model_l10n_ua_bank_transaction"/>
+        <field name="binding_model_id" ref="model_l10n_ua_bank_transaction"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    records.write({'is_reconciled': True})
+        </field>
+    </record>
+
+    <record id="action_transaction_mass_unreconcile" model="ir.actions.server">
+        <field name="name">Mark as Not Reconciled</field>
+        <field name="model_id" ref="model_l10n_ua_bank_transaction"/>
+        <field name="binding_model_id" ref="model_l10n_ua_bank_transaction"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    records.write({'is_reconciled': False})
+        </field>
+    </record>
+
+    <!-- Transaction Form View -->
+    <record id="l10n_ua_bank_transaction_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.transaction.form</field>
+        <field name="model">l10n_ua.bank.transaction</field>
+        <field name="arch" type="xml">
+            <form string="Bank Transaction">
+                <header>
+                    <button name="action_create_move" string="Create Entry" type="object"
+                            class="btn-primary" invisible="state != 'new'"/>
+                    <button name="action_post_move" string="Post Entry" type="object"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_delete_move" string="Delete Entry" type="object"
+                            class="btn-secondary" invisible="state != 'draft'"/>
+                    <button name="action_view_move" string="View Entry" type="object"
+                            invisible="state == 'new'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="new,draft,posted"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_move" type="object"
+                                class="oe_stat_button" icon="fa-book"
+                                invisible="not move_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Journal Entry</span>
+                            </div>
+                        </button>
+                    </div>
+                    <group>
+                        <group string="Transaction">
+                            <field name="date"/>
+                            <field name="amount"/>
+                            <field name="payment_ref"/>
+                            <field name="external_id"/>
+                        </group>
+                        <group string="Bank">
+                            <field name="journal_id"/>
+                            <field name="statement_id"/>
+                            <field name="sync_job_id"/>
+                            <field name="is_reconciled"/>
+                        </group>
+                    </group>
+                    <group string="Description">
+                        <field name="description" nolabel="1" colspan="2"/>
+                    </group>
+                    <group>
+                        <group string="Partner">
+                            <field name="partner_id"/>
+                            <field name="partner_name"/>
+                            <field name="partner_iban"/>
+                            <field name="partner_edrpou"/>
+                        </group>
+                        <group string="Accounting">
+                            <field name="move_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Transaction List View -->
+    <record id="l10n_ua_bank_transaction_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.transaction.list</field>
+        <field name="model">l10n_ua.bank.transaction</field>
+        <field name="arch" type="xml">
+            <list string="Bank Transactions" multi_edit="1"
+                  decoration-success="amount &gt; 0"
+                  decoration-danger="amount &lt; 0"
+                  decoration-muted="state == 'posted'">
+                <field name="date"/>
+                <field name="journal_id" optional="hide"/>
+                <field name="external_id" optional="hide"/>
+                <field name="payment_ref" optional="show"/>
+                <field name="description"/>
+                <field name="partner_id"/>
+                <field name="partner_name" optional="hide"/>
+                <field name="partner_iban" optional="hide"/>
+                <field name="partner_edrpou" optional="hide"/>
+                <field name="amount" sum="Total"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'new'"
+                       decoration-warning="state == 'draft'"
+                       decoration-success="state == 'posted'"/>
+                <field name="is_reconciled" optional="hide"/>
+                <field name="move_id" optional="hide"/>
+                <field name="sync_job_id" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Transaction Search View -->
+    <record id="l10n_ua_bank_transaction_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.transaction.search</field>
+        <field name="model">l10n_ua.bank.transaction</field>
+        <field name="arch" type="xml">
+            <search string="Bank Transactions">
+                <field name="description"/>
+                <field name="partner_id"/>
+                <field name="partner_name"/>
+                <field name="partner_edrpou"/>
+                <field name="payment_ref"/>
+                <field name="external_id"/>
+                <separator/>
+                <filter name="new" string="New" domain="[('state', '=', 'new')]"/>
+                <filter name="draft" string="Draft Entry" domain="[('state', '=', 'draft')]"/>
+                <filter name="posted" string="Posted" domain="[('state', '=', 'posted')]"/>
+                <separator/>
+                <filter name="incoming" string="Incoming" domain="[('amount', '&gt;', 0)]"/>
+                <filter name="outgoing" string="Outgoing" domain="[('amount', '&lt;', 0)]"/>
+                <separator/>
+                <filter name="reconciled" string="Reconciled" domain="[('is_reconciled', '=', True)]"/>
+                <filter name="not_reconciled" string="Not Reconciled" domain="[('is_reconciled', '=', False)]"/>
+                <group>
+                    <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                    <filter name="group_date" string="Date" context="{'group_by': 'date'}"/>
+                    <filter name="group_journal" string="Journal" context="{'group_by': 'journal_id'}"/>
+                    <filter name="group_partner" string="Partner" context="{'group_by': 'partner_id'}"/>
+                    <filter name="group_job" string="Sync Job" context="{'group_by': 'sync_job_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Transaction Action -->
+    <record id="l10n_ua_bank_transaction_action" model="ir.actions.act_window">
+        <field name="name">Transactions</field>
+        <field name="res_model">l10n_ua.bank.transaction</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                No transactions yet
+            </p>
+            <p>
+                Sync transactions from your bank to see them here.
+            </p>
+        </field>
+    </record>
+
+    <!-- Action for New Transactions only -->
+    <record id="l10n_ua_bank_transaction_action_new" model="ir.actions.act_window">
+        <field name="name">New Transactions</field>
+        <field name="res_model">l10n_ua.bank.transaction</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_new': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                All transactions have been processed
+            </p>
+        </field>
+    </record>
+
+</odoo>

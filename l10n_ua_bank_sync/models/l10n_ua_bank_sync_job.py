@@ -1,6 +1,6 @@
 import json
 import logging
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
@@ -90,7 +90,18 @@ class L10nUaBankSyncJob(models.Model):
         readonly=True,
     )
 
-    # Related statements
+    # Related transactions
+    transaction_ids = fields.One2many(
+        'l10n_ua.bank.transaction',
+        'sync_job_id',
+        string='Transactions',
+    )
+    transaction_count = fields.Integer(
+        string='Transaction Count',
+        compute='_compute_transaction_count',
+    )
+
+    # Related statements (legacy)
     statement_ids = fields.One2many(
         'l10n_ua.bank.statement',
         'sync_job_id',
@@ -120,10 +131,61 @@ class L10nUaBankSyncJob(models.Model):
             date_to = rec.date_to.strftime('%d.%m.%Y') if rec.date_to else ''
             rec.name = f"{config_name}: {date_from} - {date_to}"
 
+    @api.onchange('config_id')
+    def _onchange_config_id(self):
+        """Pre-fill dates based on last completed job for selected config."""
+        if not self.config_id:
+            return
+
+        # Find last completed job for this config
+        last_job = self.env['l10n_ua.bank.sync.job'].search([
+            ('config_id', '=', self.config_id.id),
+            ('state', '=', 'done'),
+        ], limit=1, order='date_to desc')
+
+        if last_job:
+            # Set date_from to last job's date_to + 1 day
+            self.date_from = last_job.date_to + timedelta(days=1)
+            self.date_to = fields.Date.today()
+        else:
+            # No previous job - default to last 7 days
+            self.date_from = fields.Date.today() - timedelta(days=7)
+            self.date_to = fields.Date.today()
+
+    @api.depends('transaction_ids')
+    def _compute_transaction_count(self):
+        for rec in self:
+            rec.transaction_count = len(rec.transaction_ids)
+
     @api.depends('statement_ids')
     def _compute_statement_count(self):
         for rec in self:
             rec.statement_count = len(rec.statement_ids)
+
+    def _update_dates_from_lines(self):
+        """Update date_from and date_to based on actual transaction dates."""
+        self.ensure_one()
+
+        # Get all transactions for this job
+        transactions = self.env['l10n_ua.bank.transaction'].search([
+            ('sync_job_id', '=', self.id),
+        ])
+
+        if not transactions:
+            return
+
+        dates = transactions.mapped('date')
+        dates = [d for d in dates if d]  # Filter out False/None
+
+        if dates:
+            min_date = min(dates)
+            max_date = max(dates)
+
+            self.write({
+                'date_from': min_date,
+                'date_to': max_date,
+            })
+            self._log(f"Updated dates from transactions: {min_date} - {max_date}")
 
     def _log(self, message, level='info', data=None):
         """Add log entry."""
@@ -217,6 +279,9 @@ class L10nUaBankSyncJob(models.Model):
                     errors += 1
                     self._log(f"Error processing transaction: {str(e)}", level='error', data=trans)
 
+            # Update dates from actual statement lines
+            self._update_dates_from_lines()
+
             self.write({
                 'imported_count': imported,
                 'updated_count': updated,
@@ -276,7 +341,7 @@ class L10nUaBankSyncJob(models.Model):
 
     def _process_transaction(self, trans):
         """
-        Process single transaction - create or update.
+        Process single transaction - create or update in l10n_ua.bank.transaction.
 
         Args:
             trans: dict with transaction data:
@@ -291,7 +356,11 @@ class L10nUaBankSyncJob(models.Model):
         Returns:
             'imported' or 'updated'
         """
+        Transaction = self.env['l10n_ua.bank.transaction']
+
         trans_id = trans.get('id') or trans.get('ref') or ''
+        if not trans_id:
+            raise UserError(_("Transaction has no ID"))
 
         # Parse transaction date
         trans_date = trans.get('date')
@@ -314,13 +383,8 @@ class L10nUaBankSyncJob(models.Model):
         if isinstance(amount, str):
             amount = float(amount.replace(' ', '').replace(',', '.'))
 
-        # Check if already imported
-        existing = self.env['l10n_ua.bank.statement.line'].search([
-            ('external_id', '=', trans_id),
-            ('statement_id.journal_id', '=', self.journal_id.id),
-        ], limit=1)
-
-        line_vals = {
+        # Prepare transaction values
+        trans_vals = {
             'date': trans_date,
             'payment_ref': trans_id,
             'description': trans.get('description') or trans.get('purpose') or '',
@@ -329,29 +393,34 @@ class L10nUaBankSyncJob(models.Model):
             'partner_name': trans.get('partner_name') or trans.get('CNTR_NAME') or '',
             'partner_iban': trans.get('partner_iban') or trans.get('CNTR_ACC') or '',
             'partner_edrpou': trans.get('partner_edrpou') or trans.get('CNTR_CRF') or '',
+            'sync_job_id': self.id,
         }
 
+        # Check if already exists by external_id (unique constraint: external_id + journal_id)
+        existing = Transaction.search([
+            ('external_id', '=', trans_id),
+            ('journal_id', '=', self.journal_id.id),
+        ], limit=1)
+
         if existing:
-            # Update existing record
-            existing.write(line_vals)
-            self._log(f"Updated transaction: {trans_id}", level='debug')
+            # Update existing record (but keep original sync_job_id and external_id)
+            trans_vals.pop('sync_job_id')
+            existing.write(trans_vals)
+            self._log(f"Updated transaction by external_id: {trans_id}", level='debug')
             return 'updated'
 
-        # Get or create statement for transaction date
-        statement = self._get_or_create_statement(trans_date)
-
-        # Create new statement line
-        line_vals.update({
-            'statement_id': statement.id,
+        # Create new transaction (no date+amount matching - allows duplicates)
+        trans_vals.update({
             'external_id': trans_id,
+            'journal_id': self.journal_id.id,
         })
-        self.env['l10n_ua.bank.statement.line'].create(line_vals)
+        Transaction.create(trans_vals)
         self._log(f"Created transaction: {trans_id}", level='debug')
 
         return 'imported'
 
     def _get_or_create_statement(self, date):
-        """Get existing or create new statement for date."""
+        """Get existing or create new statement for date. (Legacy - kept for compatibility)"""
         Statement = self.env['l10n_ua.bank.statement']
 
         # Search by journal and date only (not by job_id to avoid duplicates)
@@ -394,8 +463,19 @@ class L10nUaBankSyncJob(models.Model):
 
         return partner
 
+    def action_view_transactions(self):
+        """View transactions created by this job."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Transactions'),
+            'res_model': 'l10n_ua.bank.transaction',
+            'view_mode': 'list,form',
+            'domain': [('sync_job_id', '=', self.id)],
+        }
+
     def action_view_statements(self):
-        """View created statements."""
+        """View created statements (legacy)."""
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',

@@ -1,6 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Server Actions for Mass Operations -->
+    <record id="action_sync_job_mass_reprocess" model="ir.actions.server">
+        <field name="name">Reprocess Jobs</field>
+        <field name="model_id" ref="model_l10n_ua_bank_sync_job"/>
+        <field name="binding_model_id" ref="model_l10n_ua_bank_sync_job"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    for job in records.filtered(lambda j: j.raw_payload and j.state != 'processing'):
+        job.write({'state': 'fetched', 'imported_count': 0, 'updated_count': 0, 'error_count': 0})
+        job.action_process()
+        </field>
+    </record>
+
+    <record id="action_sync_job_mass_reset" model="ir.actions.server">
+        <field name="name">Reset to Draft</field>
+        <field name="model_id" ref="model_l10n_ua_bank_sync_job"/>
+        <field name="binding_model_id" ref="model_l10n_ua_bank_sync_job"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    records.filtered(lambda j: j.state != 'draft').action_reset_to_draft()
+        </field>
+    </record>
+
+    <record id="action_sync_job_mass_fetch" model="ir.actions.server">
+        <field name="name">Fetch from Bank</field>
+        <field name="model_id" ref="model_l10n_ua_bank_sync_job"/>
+        <field name="binding_model_id" ref="model_l10n_ua_bank_sync_job"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    for job in records.filtered(lambda j: j.state in ('draft', 'error')):
+        job.action_fetch()
+        </field>
+    </record>
+
     <record id="l10n_ua_bank_sync_job_view_form" model="ir.ui.view">
         <field name="name">l10n_ua.bank.sync.job.form</field>
         <field name="model">l10n_ua.bank.sync.job</field>
@@ -17,7 +57,11 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_view_statements" type="object" class="oe_stat_button" icon="fa-list-alt">
+                        <button name="action_view_transactions" type="object" class="oe_stat_button" icon="fa-exchange">
+                            <field name="transaction_count" widget="statinfo" string="Transactions"/>
+                        </button>
+                        <button name="action_view_statements" type="object" class="oe_stat_button" icon="fa-list-alt"
+                                invisible="not statement_ids" groups="base.group_no_one">
                             <field name="statement_count" widget="statinfo" string="Statements"/>
                         </button>
                         <button name="action_view_logs" type="object" class="oe_stat_button" icon="fa-file-text-o"
@@ -82,15 +126,20 @@
         <field name="arch" type="xml">
             <list string="Sync Jobs" decoration-danger="state == 'error'" decoration-success="state == 'done'">
                 <field name="name"/>
-                <field name="config_id"/>
+                <field name="config_id" optional="hide"/>
+                <field name="journal_id"/>
                 <field name="date_from"/>
                 <field name="date_to"/>
-                <field name="transactions_count"/>
-                <field name="imported_count"/>
-                <field name="updated_count"/>
+                <field name="transaction_count" string="Trans"/>
+                <field name="imported_count" string="New"/>
+                <field name="updated_count" string="Upd"/>
                 <field name="error_count" optional="hide"/>
-                <field name="state"/>
-                <field name="create_date"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-warning="state in ('fetching', 'processing', 'fetched')"
+                       decoration-success="state == 'done'"
+                       decoration-danger="state == 'error'"/>
+                <field name="create_date" optional="hide"/>
             </list>
         </field>
     </record>
@@ -102,8 +151,19 @@
             <search string="Sync Jobs">
                 <field name="name"/>
                 <field name="config_id"/>
+                <field name="journal_id"/>
+                <separator/>
+                <filter name="draft" string="Draft" domain="[('state', '=', 'draft')]"/>
+                <filter name="fetched" string="Fetched" domain="[('state', '=', 'fetched')]"/>
                 <filter name="done" string="Done" domain="[('state', '=', 'done')]"/>
                 <filter name="error" string="Error" domain="[('state', '=', 'error')]"/>
+                <separator/>
+                <filter name="has_payload" string="Has Payload" domain="[('raw_payload', '!=', False)]"/>
+                <group>
+                    <filter name="group_state" string="State" context="{'group_by': 'state'}"/>
+                    <filter name="group_config" string="Configuration" context="{'group_by': 'config_id'}"/>
+                    <filter name="group_journal" string="Journal" context="{'group_by': 'journal_id'}"/>
+                </group>
             </search>
         </field>
     </record>

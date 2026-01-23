@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_bank_statement_wizard_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.statement.wizard.form</field>
+        <field name="model">l10n_ua.bank.statement.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Generate Bank Statement">
+                <group>
+                    <group>
+                        <field name="journal_id"/>
+                        <field name="date_from"/>
+                        <field name="date_to"/>
+                        <field name="compute_opening_balance"/>
+                    </group>
+                    <group string="Preview">
+                        <field name="transaction_count"/>
+                        <field name="total_incoming"/>
+                        <field name="total_outgoing"/>
+                        <field name="currency_id" invisible="1"/>
+                    </group>
+                </group>
+                <footer>
+                    <button name="action_generate" string="Generate Statement" type="object" class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_bank_statement_wizard_action" model="ir.actions.act_window">
+        <field name="name">Generate Statement</field>
+        <field name="res_model">l10n_ua.bank.statement.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>
