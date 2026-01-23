@@ -56,12 +56,19 @@
                     <div class="alert alert-info" role="alert">
                         <p><strong>KEP Authentication Setup:</strong></p>
                         <ol>
-                            <li>Install IIT library: <code>sudo dpkg -i euswi.64.deb</code> (download from <a href="https://iit.com.ua/downloads" target="_blank">iit.com.ua</a>)</li>
+                            <li>Install IIT library: <code>sudo dpkg -i euswi.64.deb</code> (download from iit.com.ua)</li>
                             <li>Place CA certificates in the certificates directory</li>
                             <li>Place your user certificates (.cer files) in the same directory</li>
                             <li>Upload your private key file (.dat, .jks, .pfx)</li>
                         </ol>
                         <p class="text-muted"><em>Note: Password is never stored. You will be prompted for it when needed.</em></p>
+                        <hr/>
+                        <p><strong>Useful Links:</strong></p>
+                        <ul>
+                            <li>Tax Cabinet: https://cabinet.tax.gov.ua</li>
+                            <li>IIT EUSignCP Library: https://iit.com.ua/downloads</li>
+                            <li>DPS Ukraine CA: https://acskidd.gov.ua</li>
+                        </ul>
                     </div>
                 </sheet>
                 <chatter/>
