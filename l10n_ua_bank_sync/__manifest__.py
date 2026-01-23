@@ -48,6 +48,6 @@ from this module and implement bank-specific API calls.
     'installable': True,
     'application': False,
     'auto_install': False,
-    'price': 19,
+    'price': 10,
     'currency': 'EUR',
 }
