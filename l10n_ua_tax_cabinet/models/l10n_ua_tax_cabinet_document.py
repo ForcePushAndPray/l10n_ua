@@ -180,9 +180,12 @@ class L10nUaTaxCabinetDocument(models.Model):
         return super().create(vals_list)
 
     def write(self, vals):
-        # Prevent modifications to accepted documents
+        # Prevent modifications to accepted documents (except file re-downloads)
+        allowed_fields = {'file_pdf', 'file_pdf_name', 'file_xml', 'file_xml_name', 'file_signed', 'file_signed_name'}
+        is_file_only = set(vals.keys()).issubset(allowed_fields)
+
         for record in self:
-            if record.state == 'accepted':
+            if record.state == 'accepted' and not is_file_only:
                 raise UserError(_("Cannot modify accepted document '%s'. Accepted documents are read-only.") % record.name)
         return super().write(vals)
 
@@ -226,8 +229,81 @@ class L10nUaTaxCabinetDocument(models.Model):
             },
         }
 
+    def action_redownload_files(self):
+        """Open password wizard to re-download PDF/XML from Tax Cabinet."""
+        self.ensure_one()
+
+        if self.source != 'cabinet' or not self.external_id:
+            raise UserError(_("Can only re-download documents synced from Tax Cabinet."))
+
+        # Get tax cabinet config for company
+        config = self.env['l10n_ua.tax.cabinet.config'].search([
+            ('company_id', '=', self.company_id.id),
+        ], limit=1)
+
+        if not config:
+            raise UserError(_("No Tax Cabinet configuration found for company %s.") % self.company_id.name)
+
+        if not config.kep_key_file:
+            raise UserError(_("KEP key file is required. Please upload your private key."))
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Enter KEP Password'),
+            'res_model': 'l10n_ua.tax.cabinet.password.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_config_id': config.id,
+                'default_action': 'redownload',
+                'default_document_id': self.id,
+            },
+        }
+
+    def _do_redownload_files(self, config):
+        """Re-download PDF and XML files from Tax Cabinet. Config should have password in context."""
+        self.ensure_one()
+
+        if not self.external_id:
+            raise UserError(_("No external ID - cannot re-download."))
+
+        doc_year = self.year or fields.Date.today().year
+        external_id = self.external_id
+
+        # Determine document type for API
+        # Default to reg_doc, could be enhanced based on document metadata
+        doc_type = 'reg_doc'
+
+        downloaded = []
+
+        # Download XML
+        try:
+            xml_content = config._api_download_document_xml(doc_year, external_id, doc_type)
+            if xml_content:
+                self.write({
+                    'file_xml': xml_content,
+                    'file_xml_name': self.file_xml_name or f"{external_id}.xml",
+                })
+                downloaded.append('XML')
+        except Exception as e:
+            _logger.warning("Could not download XML for %s: %s", external_id, str(e))
+
+        # Download PDF
+        try:
+            pdf_content = config._api_download_document_pdf(doc_year, external_id, doc_type)
+            if pdf_content:
+                self.write({
+                    'file_pdf': pdf_content,
+                    'file_pdf_name': self.file_pdf_name or f"{external_id}.pdf",
+                })
+                downloaded.append('PDF')
+        except Exception as e:
+            _logger.warning("Could not download PDF for %s: %s", external_id, str(e))
+
+        return downloaded
+
     def action_sign_document(self):
-        """Sign the XML document with KEP."""
+        """Open password wizard to sign the XML document with KEP."""
         self.ensure_one()
         if not self.file_xml:
             raise UserError(_("No XML file to sign"))
@@ -235,64 +311,19 @@ class L10nUaTaxCabinetDocument(models.Model):
         # Get tax cabinet config for company
         config = self.env['l10n_ua.tax.cabinet.config'].search([
             ('company_id', '=', self.company_id.id),
-            ('auth_method', '=', 'kep'),
         ], limit=1)
 
         if not config:
             raise UserError(_(
                 "No KEP configuration found for company %s. "
-                "Please configure Tax Cabinet connection with KEP authentication."
+                "Please configure Tax Cabinet connection."
             ) % self.company_id.name)
 
-        if not config.kep_key_file or not config.kep_password:
-            raise UserError(_("KEP key file and password are required for signing."))
+        if not config.kep_key_file:
+            raise UserError(_("KEP key file is required. Please upload your private key."))
 
-        try:
-            from ..lib.tax_cabinet_auth import KEPSigner
-        except ImportError as e:
-            raise UserError(_("KEP signing library not available: %s") % str(e))
-
-        import os
-        lib_path = config.iit_lib_path or '/opt/iit/eu/sw'
-        cert_path = config.iit_cert_path or '/opt/iit/certificates'
-
-        os.environ['IIT_LIB_PATH'] = lib_path
-        os.environ['IIT_CERT_PATH'] = cert_path
-
-        # Decode XML content
-        xml_content = base64.b64decode(self.file_xml)
-
-        try:
-            with KEPSigner(lib_path=lib_path, cert_path=cert_path) as signer:
-                signer.load_certificates()
-                signer.load_private_key(config.kep_key_file, config.kep_password)
-                signed_data = signer.sign_data(xml_content)
-
-            # Generate filename
-            base_name = self.file_xml_name or f'document_{self.id}'
-            if base_name.lower().endswith('.xml'):
-                base_name = base_name[:-4]
-            signed_filename = f'{base_name}.p7s'
-
-            # Store signed document
-            self.write({
-                'file_signed': base64.b64encode(signed_data.encode('utf-8')),
-                'file_signed_name': signed_filename,
-            })
-
-            return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': _('Success'),
-                    'message': _('Document signed successfully! Download the signed file.'),
-                    'type': 'success',
-                }
-            }
-
-        except Exception as e:
-            _logger.error("Signing failed: %s", str(e))
-            raise UserError(_("Signing failed: %s") % str(e))
+        # TODO: Implement signing via password wizard
+        raise UserError(_("Document signing requires password wizard - not yet implemented."))
 
     def action_download_signed(self):
         """Download signed document."""
@@ -327,97 +358,143 @@ class L10nUaTaxCabinetDocument(models.Model):
         # Get tax cabinet config for company
         config = self.env['l10n_ua.tax.cabinet.config'].search([
             ('company_id', '=', self.company_id.id),
-            ('auth_method', '=', 'kep'),
         ], limit=1)
 
         if not config:
             raise UserError(_("No KEP configuration found for company %s.") % self.company_id.name)
 
-        if not config.kep_key_file or not config.kep_password:
-            raise UserError(_("KEP key file and password are required for submission."))
+        if not config.kep_key_file:
+            raise UserError(_("KEP key file is required. Please upload your private key."))
 
-        try:
-            from ..lib.tax_cabinet_auth import KEPSigner, TaxCabinetAuthError
-        except ImportError as e:
-            raise UserError(_("KEP signing library not available: %s") % str(e))
+        # TODO: Implement submission via password wizard
+        raise UserError(_("Document submission requires password wizard - not yet implemented."))
 
-        import os
-        import requests
+    # ========== Sync methods (called from password wizard) ==========
 
-        lib_path = config.iit_lib_path or '/opt/iit/eu/sw'
-        cert_path = config.iit_cert_path or '/opt/iit/certificates'
+    @api.model
+    def _sync_reported_documents(self, config, year, month):
+        """Sync reported documents from cabinet. Config should have password in context."""
+        docs_data = config._api_get_document_list(year, month)
+        return self._process_api_documents(config, docs_data, 'reg_doc', year)
 
-        os.environ['IIT_LIB_PATH'] = lib_path
-        os.environ['IIT_CERT_PATH'] = cert_path
+    @api.model
+    def _sync_incoming_documents(self, config):
+        """Sync incoming correspondence from cabinet. Config should have password in context."""
+        docs_data = config._api_get_incoming_documents()
+        return self._process_api_documents(config, docs_data, 'incoming')
 
-        # Find DPS encryption certificate
-        dps_cert_path = os.path.join(cert_path, 'Шлюз ДПС (Сервіс обміну з державними установами -2).cer')
-        if not os.path.exists(dps_cert_path):
-            # Try alternative name
-            import glob
-            cert_files = glob.glob(os.path.join(cert_path, '*Шлюз*ДПС*.cer'))
-            if cert_files:
-                dps_cert_path = cert_files[0]
-            else:
-                raise UserError(_("DPS encryption certificate not found in %s") % cert_path)
+    @api.model
+    def _sync_sent_documents(self, config):
+        """Sync sent correspondence from cabinet. Config should have password in context."""
+        docs_data = config._api_get_sent_documents()
+        return self._process_api_documents(config, docs_data, 'sent')
 
-        with open(dps_cert_path, 'rb') as f:
-            dps_cert = f.read()
+    @api.model
+    def _process_api_documents(self, config, docs_data, doc_type, year=None):
+        """Process documents from API response."""
+        if year is None:
+            year = fields.Date.today().year
 
-        # Decode XML content
-        xml_content = base64.b64decode(self.file_xml)
+        created_count = 0
 
-        try:
-            with KEPSigner(lib_path=lib_path, cert_path=cert_path) as signer:
-                signer.load_certificates()
-                signer.load_private_key(config.kep_key_file, config.kep_password)
+        if not docs_data:
+            return created_count
 
-                # Sign and envelope the document
-                enveloped_data = signer.sign_and_envelope(xml_content, dps_cert)
+        # Handle paginated response from cabinet.tax.gov.ua
+        if isinstance(docs_data, dict):
+            docs_data = docs_data.get('content', docs_data.get('items', docs_data.get('data', [])))
 
-            # Get auth headers
-            auth_header = config._get_auth_headers()
+        for doc_item in docs_data:
+            # reg_doc uses 'codRegdoc', correspondence uses 'id'
+            external_id = str(doc_item.get('codRegdoc') or doc_item.get('id', ''))
+            if not external_id:
+                continue
 
-            # Submit to cabinet API
-            submit_url = "https://cabinet.tax.gov.ua/cabinet/public/api/exchange/report"
+            # Check if already synced
+            existing = self.search([
+                ('external_id', '=', external_id),
+                ('source', '=', 'cabinet'),
+            ], limit=1)
 
-            headers = {
-                'Authorization': auth_header,
-                'Content-Type': 'application/octet-stream',
-                'Accept': 'application/json',
-            }
+            if existing:
+                _logger.debug("Document %s already synced", external_id)
+                continue
 
-            # Submit as binary data
-            response = requests.post(
-                submit_url,
-                headers=headers,
-                data=enveloped_data,
-                timeout=60
-            )
+            # Create document
+            doc_vals = self._prepare_api_document_vals(config, doc_item, doc_type, year)
+            doc = self.create(doc_vals)
+            created_count += 1
 
-            _logger.info("Cabinet submission response: %s %s", response.status_code, response.text[:500])
+            # Download files (config already has password in context)
+            doc_year = doc_vals.get('year', year)
 
-            if response.status_code in (200, 201, 202):
-                # Success
-                self.write({
-                    'state': 'submitted',
-                    'status_message': _("Submitted successfully: %s") % response.text[:200],
-                })
-                return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'title': _('Success'),
-                        'message': _('Document submitted to cabinet.tax.gov.ua!'),
-                        'type': 'success',
-                    }
-                }
-            else:
-                raise UserError(_("Submission failed: %s %s") % (response.status_code, response.text))
+            if config.auto_download_xml and doc_type != 'sent':
+                try:
+                    xml_content = config._api_download_document_xml(doc_year, external_id, doc_type)
+                    if xml_content:
+                        doc.write({
+                            'file_xml': xml_content,
+                            'file_xml_name': f"{external_id}.xml",
+                        })
+                except Exception as e:
+                    _logger.warning("Could not download XML for %s: %s", external_id, str(e))
 
-        except TaxCabinetAuthError as e:
-            _logger.error("Submission failed: %s", str(e))
-            raise UserError(_("Submission failed: %s") % str(e))
-        except Exception as e:
-            _logger.error("Submission failed: %s", str(e))
-            raise UserError(_("Submission failed: %s") % str(e))
+            if config.auto_download_pdf:
+                try:
+                    pdf_content = config._api_download_document_pdf(doc_year, external_id, doc_type)
+                    if pdf_content:
+                        doc.write({
+                            'file_pdf': pdf_content,
+                            'file_pdf_name': f"{external_id}.pdf",
+                        })
+                except Exception as e:
+                    _logger.warning("Could not download PDF for %s: %s", external_id, str(e))
+
+            _logger.info("Synced tax document: %s", doc.name)
+
+        return created_count
+
+    @api.model
+    def _prepare_api_document_vals(self, config, doc_item, doc_type, year):
+        """Prepare document values from API response."""
+        # Get document code
+        doc_code = doc_item.get('doc') or doc_item.get('cdoc') or 'OTHER'
+
+        # Try to find document type by code
+        doc_type_record = self.env['l10n_ua.tax.document.type'].search([
+            ('code', '=', doc_code)
+        ], limit=1)
+
+        if not doc_type_record:
+            doc_type_record = self.env.ref(
+                'l10n_ua_tax_cabinet.tax_document_type_other',
+                raise_if_not_found=False
+            ) or self.env['l10n_ua.tax.document.type'].search([], limit=1)
+
+        # Parse date
+        doc_date_str = doc_item.get('dget') or doc_item.get('dateIn') or doc_item.get('dateOut')
+        doc_date = fields.Date.today()
+        if doc_date_str:
+            try:
+                doc_date = fields.Date.from_string(doc_date_str[:10])
+            except Exception:
+                pass
+
+        external_id = str(doc_item.get('codRegdoc') or doc_item.get('id', ''))
+        doc_name = doc_item.get('docName') or doc_item.get('name') or f'Document {external_id}'
+        reg_num = str(doc_item.get('nreg') or doc_item.get('text') or '')
+
+        return {
+            'name': doc_name,
+            'document_type_id': doc_type_record.id if doc_type_record else False,
+            'document_number': reg_num,
+            'document_date': doc_date,
+            'year': doc_item.get('periodYear', year),
+            'period': str(doc_item.get('periodMonth', '')).zfill(2) if doc_item.get('periodMonth') else False,
+            'company_id': config.company_id.id,
+            'taxpayer_code': config.taxpayer_code,
+            'source': 'cabinet',
+            'external_id': external_id,
+            'sync_date': fields.Datetime.now(),
+            'state': 'accepted',
+        }

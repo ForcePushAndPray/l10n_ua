@@ -41,15 +41,11 @@
                         </group>
                     </group>
 
-                    <group string="Authentication">
-                        <field name="auth_method" widget="radio"/>
-                    </group>
-
                     <!-- KEP Authentication -->
-                    <group string="KEP Settings" invisible="auth_method != 'kep'">
+                    <group string="KEP Settings">
                         <group>
-                            <field name="kep_key_file" placeholder="/path/to/key.dat"/>
-                            <field name="kep_password" password="True"/>
+                            <field name="kep_key_file" filename="kep_key_filename"/>
+                            <field name="kep_key_filename" invisible="1"/>
                         </group>
                         <group>
                             <field name="iit_lib_path" placeholder="/opt/iit/eu/sw"/>
@@ -57,26 +53,15 @@
                         </group>
                     </group>
 
-                    <!-- Manual Token Auth -->
-                    <group string="Manual Token" invisible="auth_method != 'token'">
-                        <field name="auth_token" placeholder="MIIStwYJKoZIhvcNAQ..."/>
-                    </group>
-
-                    <div class="alert alert-info" role="alert" invisible="auth_method != 'kep'">
+                    <div class="alert alert-info" role="alert">
                         <p><strong>KEP Authentication Setup:</strong></p>
                         <ol>
                             <li>Install IIT library: <code>sudo dpkg -i euswi.64.deb</code> (download from <a href="https://iit.com.ua/downloads" target="_blank">iit.com.ua</a>)</li>
                             <li>Place CA certificates in the certificates directory</li>
                             <li>Place your user certificates (.cer files) in the same directory</li>
-                            <li>Enter the path to your private key file (.dat, .jks, .pfx)</li>
-                            <li>Enter the password for your private key</li>
+                            <li>Upload your private key file (.dat, .jks, .pfx)</li>
                         </ol>
-                    </div>
-
-                    <div class="alert alert-warning" role="alert" invisible="auth_method != 'token'">
-                        <p><strong>Manual Token Authentication:</strong></p>
-                        <p>Paste the signed authorization token from browser Developer Tools (Authorization header value after logging into cabinet.tax.gov.ua).</p>
-                        <p><em>Note: This token expires and needs to be refreshed manually.</em></p>
+                        <p class="text-muted"><em>Note: Password is never stored. You will be prompted for it when needed.</em></p>
                     </div>
                 </sheet>
                 <chatter/>
@@ -92,7 +77,6 @@
                 <field name="name"/>
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="taxpayer_code"/>
-                <field name="auth_method"/>
                 <field name="last_sync_date"/>
             </list>
         </field>

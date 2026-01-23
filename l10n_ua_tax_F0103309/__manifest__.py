@@ -32,5 +32,5 @@ Requires l10n_ua_tax_cabinet module.
     'demo': [],
     'installable': True,
     'application': False,
-    'auto_install': False,
+    'auto_install': True,
 }

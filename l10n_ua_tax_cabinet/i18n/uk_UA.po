@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0-20260103\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-01-22 19:01+0000\n"
-"PO-Revision-Date: 2026-01-22 19:01+0000\n"
+"POT-Creation-Date: 2026-01-23 14:25+0000\n"
+"PO-Revision-Date: 2026-01-23 14:25+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -15,28 +15,29 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
 
-
 #. module: l10n_ua_tax_cabinet
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
-msgid "<em>Note: This token expires and needs to be refreshed manually.</em>"
-msgstr "<em>Примітка: Цей токен закінчується і потребує ручного оновлення.</em>"
+msgid ""
+"<em>Note: Password is never stored. You will be prompted for it when "
+"needed.</em>"
+msgstr "<em>Пароль ніколи не зберігається. Ви будете запитані за ним, коли "
+"потрібно.</em>"
 
 #. module: l10n_ua_tax_cabinet
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
 msgid "<span class=\"o_stat_text\">Documents</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">Документи</span>"
 
 #. module: l10n_ua_tax_cabinet
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_document_view_form
 msgid "<span class=\"o_stat_text\">Signed</span>"
-msgstr ""
+msgstr "<span class=\"o_stat_text\">Підписаний</span>"
 
 #. module: l10n_ua_tax_cabinet
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_sync_wizard_view_form
 msgid ""
-"<strong>Authentication:</strong> Uses KEP (qualified electronic signature) "
-"configured in the Tax Cabinet connection."
-msgstr "<strong>Автентифікація:</strong> Використовує КЕП (кваліфікований електронний підпис), налаштований у підключенні до Податкового кабінету."
+"<strong>Authentication:</strong> Uses KEP (qualified electronic signature)."
+msgstr "<strong>Автентифікація:</strong> Використовується KEP (кваліфікована електронна підпис)."
 
 #. module: l10n_ua_tax_cabinet
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
@@ -44,9 +45,12 @@ msgid "<strong>KEP Authentication Setup:</strong>"
 msgstr "<strong>Налаштування автентифікації КЕП:</strong>"
 
 #. module: l10n_ua_tax_cabinet
-#: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
-msgid "<strong>Manual Token Authentication:</strong>"
-msgstr "<strong>Ручна автентифікація токеном:</strong>"
+#: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_password_wizard_view_form
+msgid ""
+"<strong>Security Notice:</strong> Your password is not stored and will only "
+"be used for this operation."
+msgstr "<strong>Попередження:</strong> Ваш пароль не зберігається і буде використано "
+"лише для цієї операції."
 
 #. module: l10n_ua_tax_cabinet
 #. odoo-python
@@ -59,6 +63,11 @@ msgstr "Помилка API %s: %s"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_document_view_search
 msgid "Accepted"
 msgstr "Прийнято"
+
+#. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_password_wizard__action
+msgid "Action"
+msgstr "Дія"
 
 #. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__message_needaction
@@ -114,6 +123,11 @@ msgid "Adjustment Calculation"
 msgstr "Розрахунок коригування"
 
 #. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_password_wizard__sync_mode__all
+msgid "All Documents"
+msgstr "Всі документи"
+
+#. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_document__period__04
 #: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_sync_wizard__month__4
 #: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_sync_wizard_file__period__04
@@ -142,21 +156,6 @@ msgid "August"
 msgstr "Серпень"
 
 #. module: l10n_ua_tax_cabinet
-#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__auth_method
-msgid "Auth Method"
-msgstr "Метод автентифікації"
-
-#. module: l10n_ua_tax_cabinet
-#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__auth_token
-msgid "Auth Token"
-msgstr "Токен автентифікації"
-
-#. module: l10n_ua_tax_cabinet
-#: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
-msgid "Authentication"
-msgstr "Автентифікація"
-
-#. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__auto_download_pdf
 msgid "Auto Download PDF"
 msgstr "Автозавантаження PDF"
@@ -183,6 +182,7 @@ msgid "Cabinet Connections"
 msgstr "Підключення до кабінету"
 
 #. module: l10n_ua_tax_cabinet
+#: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_password_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_sync_wizard_view_form
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_document_wizard_view_form
 msgid "Cancel"
@@ -197,8 +197,14 @@ msgstr "Неможливо видалити прийнятий документ 
 #. module: l10n_ua_tax_cabinet
 #. odoo-python
 #: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_document.py:0
-msgid "Cannot modify accepted document '%s'. Accepted documents are read-only."
-msgstr "Неможливо змінити прийнятий документ '%s'. Прийняті документи доступні лише для читання."
+msgid ""
+"Cannot modify accepted document '%s'. Accepted documents are read-only."
+"Cannot modify accepted document '%s'. Accepted documents are read-only."
+"Cannot modify accepted document '%s'. Accepted documents are read-only."
+"Cannot modify accepted document '%s'. Accepted documents are read-only."
+msgstr ""
+"Неможливо змінити прийнятий документ '%s'. Прийняті документи доступні лише "
+"для читання."
 
 #. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_document_type__category
@@ -232,6 +238,7 @@ msgid "Company Activity Code (KVED)"
 msgstr "Код діяльності компанії (КВЕД)"
 
 #. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_password_wizard__config_id
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_sync_wizard__config_id
 #: model:ir.ui.menu,name:l10n_ua_tax_cabinet.menu_ua_tax_cabinet_config
 msgid "Configuration"
@@ -239,8 +246,16 @@ msgstr "Налаштування"
 
 #. module: l10n_ua_tax_cabinet
 #: model_terms:ir.actions.act_window,help:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_action
-msgid "Configure connection to cabinet.tax.gov.ua for syncing tax documents using KEP (qualified electronic signature)."
-msgstr "Налаштуйте підключення до cabinet.tax.gov.ua для синхронізації податкових документів за допомогою КЕП (кваліфікованого електронного підпису)."
+msgid ""
+"Configure connection to cabinet.tax.gov.ua for syncing tax documents using "
+"KEP (qualified electronic signature)."
+msgstr "Налаштуйте підключення до cabinet.tax.gov.ua для синхронізації податкових "
+"документів за допомогою КЕП (кваліфікованого електронного підпису)."
+
+#. module: l10n_ua_tax_cabinet
+#: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_password_wizard_view_form
+msgid "Confirm"
+msgstr "Підтвердити"
 
 #. module: l10n_ua_tax_cabinet
 #: model:l10n_ua.tax.document.type,description:l10n_ua_tax_cabinet.tax_document_type_receipt_1
@@ -254,13 +269,13 @@ msgstr "Підтвердження реєстрації документа"
 
 #. module: l10n_ua_tax_cabinet
 #. odoo-python
-#: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_config.py:0
+#: code:addons/l10n_ua_tax_cabinet/wizard/l10n_ua_tax_cabinet_password_wizard.py:0
 msgid "Connection failed: %s"
 msgstr "Помилка підключення: %s"
 
 #. module: l10n_ua_tax_cabinet
 #. odoo-python
-#: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_config.py:0
+#: code:addons/l10n_ua_tax_cabinet/wizard/l10n_ua_tax_cabinet_password_wizard.py:0
 msgid "Connection successful! Taxpayer: %s"
 msgstr "Підключення успішне! Платник податків: %s"
 
@@ -273,6 +288,7 @@ msgstr "Створіть перше підключення до Податков
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_company_kved__create_uid
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__create_uid
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_document__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_password_wizard__create_uid
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_sync_wizard__create_uid
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_sync_wizard_file__create_uid
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_document_type__create_uid
@@ -284,18 +300,13 @@ msgstr "Створено"
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_company_kved__create_date
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__create_date
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_document__create_date
+#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_password_wizard__create_date
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_sync_wizard__create_date
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_sync_wizard_file__create_date
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_document_type__create_date
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_document_wizard__create_date
 msgid "Created on"
 msgstr "Дата створення"
-
-#. module: l10n_ua_tax_cabinet
-#. odoo-python
-#: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_document.py:0
-msgid "DPS encryption certificate not found in %s"
-msgstr "Сертифікат шифрування ДПС не знайдено в %s"
 
 #. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields,help:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_document__sync_date
@@ -324,6 +335,7 @@ msgstr "Опис"
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_company_kved__display_name
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__display_name
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_document__display_name
+#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_password_wizard__display_name
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_sync_wizard__display_name
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_sync_wizard_file__display_name
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_document_type__display_name
@@ -392,14 +404,14 @@ msgstr "Назва документа"
 #. module: l10n_ua_tax_cabinet
 #. odoo-python
 #: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_document.py:0
-msgid "Document signed successfully! Download the signed file."
-msgstr "Документ успішно підписано! Завантажте підписаний файл."
+msgid "Document signing requires password wizard - not yet implemented."
+msgstr "Підписання документа потребує майстра паролів - ще не реалізовано."
 
 #. module: l10n_ua_tax_cabinet
 #. odoo-python
 #: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_document.py:0
-msgid "Document submitted to cabinet.tax.gov.ua!"
-msgstr "Документ подано до cabinet.tax.gov.ua!"
+msgid "Document submission requires password wizard - not yet implemented."
+msgstr "Подання документа потребує майстра паролів - ще не реалізовано."
 
 #. module: l10n_ua_tax_cabinet
 #. odoo-python
@@ -407,7 +419,9 @@ msgstr "Документ подано до cabinet.tax.gov.ua!"
 msgid ""
 "Document type '%s' is not supported yet. Please install the corresponding "
 "module (l10n_ua_tax_%s)."
-msgstr "Тип документа '%s' ще не підтримується. Будь ласка, встановіть відповідний модуль (l10n_ua_tax_%s)."
+msgstr ""
+"Тип документа '%s' ще не підтримується. Будь ласка, встановіть відповідний "
+"модуль (l10n_ua_tax_%s)."
 
 #. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_document__state__draft
@@ -426,19 +440,26 @@ msgid "EDRPOU or RNOKPP"
 msgstr "ЄДРПОУ або РНОКПП"
 
 #. module: l10n_ua_tax_cabinet
+#: model:l10n_ua.tax.document.type,name:l10n_ua_tax_cabinet.tax_document_type_esv_declaration
+msgid "ESV Report"
+msgstr "Декларація єдиного податку (ФОП) v8"
+
+#. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_document_wizard__taxpayer_email
 msgid "Email"
 msgstr "Електронна пошта"
 
 #. module: l10n_ua_tax_cabinet
-#: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
-msgid "Enter the password for your private key"
-msgstr "Введіть пароль для вашого приватного ключа"
+#. odoo-python
+#: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_config.py:0
+#: code:addons/l10n_ua_tax_cabinet/wizard/l10n_ua_tax_cabinet_sync_wizard.py:0
+msgid "Enter KEP Password"
+msgstr "Введіть пароль КЕП"
 
 #. module: l10n_ua_tax_cabinet
-#: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
-msgid "Enter the path to your private key file (.dat, .jks, .pfx)"
-msgstr "Введіть шлях до файлу приватного ключа (.dat, .jks, .pfx)"
+#: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_password_wizard_view_form
+msgid "Enter KEP password"
+msgstr "Введіть пароль КЕП"
 
 #. module: l10n_ua_tax_cabinet
 #. odoo-javascript
@@ -537,6 +558,7 @@ msgstr "Має повідомлення"
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_company_kved__id
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__id
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_document__id
+#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_password_wizard__id
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_sync_wizard__id
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_sync_wizard_file__id
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_document_type__id
@@ -580,19 +602,29 @@ msgid "If checked, some messages have a delivery error."
 msgstr "Якщо позначено, деякі повідомлення мають помилку доставки."
 
 #. module: l10n_ua_tax_cabinet
+#. odoo-python
+#: code:addons/l10n_ua_tax_cabinet/wizard/l10n_ua_tax_cabinet_password_wizard.py:0
+msgid "Imported %d documents"
+msgstr "Імпортовано %d документів"
+
+#. module: l10n_ua_tax_cabinet
 #: model:l10n_ua.tax.document.type,name:l10n_ua_tax_cabinet.tax_document_type_income_declaration
 msgid "Income Tax Declaration"
 msgstr "Декларація про доходи"
 
 #. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_password_wizard__sync_mode__incoming
 #: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_sync_wizard__sync_type__incoming
 msgid "Incoming Correspondence"
 msgstr "Вхідна кореспонденція"
 
 #. module: l10n_ua_tax_cabinet
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
-msgid "Install IIT library: <code>sudo dpkg -i euswi.64.deb</code> (download from"
-msgstr "Встановіть бібліотеку ІІТ: <code>sudo dpkg -i euswi.64.deb</code> (завантажити з"
+msgid ""
+"Install IIT library: <code>sudo dpkg -i euswi.64.deb</code> (download from"
+msgstr ""
+"Встановіть бібліотеку ІІТ: <code>sudo dpkg -i euswi.64.deb</code> "
+"(завантажити з"
 
 #. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__message_is_follower
@@ -625,19 +657,20 @@ msgid "June"
 msgstr "Червень"
 
 #. module: l10n_ua_tax_cabinet
-#: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_config__auth_method__kep
-msgid "KEP (Private Key)"
-msgstr "КЕП (Приватний ключ)"
-
-#. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__kep_key_file
 msgid "KEP Key File"
 msgstr "Файл ключа КЕП"
 
 #. module: l10n_ua_tax_cabinet
-#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__kep_password
+#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_password_wizard__password
+#: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_password_wizard_view_form
 msgid "KEP Password"
 msgstr "Пароль КЕП"
+
+#. module: l10n_ua_tax_cabinet
+#: model:ir.model,name:l10n_ua_tax_cabinet.model_l10n_ua_tax_cabinet_password_wizard
+msgid "KEP Password Wizard"
+msgstr "Майстер пароля КЕП"
 
 #. module: l10n_ua_tax_cabinet
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
@@ -646,39 +679,25 @@ msgstr "Налаштування КЕП"
 
 #. module: l10n_ua_tax_cabinet
 #. odoo-python
+#: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_config.py:0
+#: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_document.py:0
+msgid "KEP key file is required. Please upload your private key."
+msgstr "Потрібен файл ключа КЕП. Будь ласка, завантажте ваш приватний ключ."
+
+#. module: l10n_ua_tax_cabinet
+#. odoo-python
 #: code:addons/l10n_ua_tax_cabinet/wizard/l10n_ua_tax_cabinet_sync_wizard.py:0
 msgid ""
-"KEP authentication not configured.\n"
+"KEP key not configured.\n"
 "\n"
-"Please configure in the Tax Cabinet connection:\n"
-"1. KEP Key File path (.dat, .jks, .pfx)\n"
-"2. KEP Password\n"
-"3. IIT Library and Certificates paths"
-msgstr "Автентифікація КЕП не налаштована.\n\nБудь ласка, налаштуйте в підключенні до Податкового кабінету:\n1. Шлях до файлу ключа КЕП (.dat, .jks, .pfx)\n2. Пароль КЕП\n3. Шляхи до бібліотеки ІІТ та сертифікатів"
+"Please upload your private key file in the Tax Cabinet connection settings."
+msgstr "Ключ КЕП не налаштований.\n\nБудь ласка, завантажте ваш приватний ключ у налаштуваннях підключення до Податкового кабінету."
 
 #. module: l10n_ua_tax_cabinet
 #. odoo-python
 #: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_config.py:0
-msgid "KEP key file and password are required for KEP authentication."
-msgstr "Файл ключа КЕП та пароль необхідні для автентифікації КЕП."
-
-#. module: l10n_ua_tax_cabinet
-#. odoo-python
-#: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_document.py:0
-msgid "KEP key file and password are required for signing."
-msgstr "Файл ключа КЕП та пароль необхідні для підписання."
-
-#. module: l10n_ua_tax_cabinet
-#. odoo-python
-#: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_document.py:0
-msgid "KEP key file and password are required for submission."
-msgstr "Файл ключа КЕП та пароль необхідні для подання."
-
-#. module: l10n_ua_tax_cabinet
-#. odoo-python
-#: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_config.py:0
-msgid "KEP key file not found: %s"
-msgstr "Файл ключа КЕП не знайдено: %s"
+msgid "KEP password is required for signing."
+msgstr "Пароль КЕП необхідний для підписання."
 
 #. module: l10n_ua_tax_cabinet
 #. odoo-python
@@ -689,7 +708,6 @@ msgstr "Помилка підписання КЕП: %s"
 #. module: l10n_ua_tax_cabinet
 #. odoo-python
 #: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_config.py:0
-#: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_document.py:0
 msgid "KEP signing library not available: %s"
 msgstr "Бібліотека підписання КЕП недоступна: %s"
 
@@ -709,6 +727,11 @@ msgid "KVED code (e.g., 62.01)"
 msgstr "Код КВЕД (напр., 62.01)"
 
 #. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__kep_key_filename
+msgid "Key Filename"
+msgstr "Назва файлу ключа"
+
+#. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__last_sync_date
 msgid "Last Sync"
 msgstr "Остання синхронізація"
@@ -717,6 +740,7 @@ msgstr "Остання синхронізація"
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_company_kved__write_uid
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__write_uid
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_document__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_password_wizard__write_uid
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_sync_wizard__write_uid
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_sync_wizard_file__write_uid
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_document_type__write_uid
@@ -728,6 +752,7 @@ msgstr "Останнє оновлення"
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_company_kved__write_date
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__write_date
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_document__write_date
+#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_password_wizard__write_date
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_sync_wizard__write_date
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_sync_wizard_file__write_date
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_document_type__write_date
@@ -751,19 +776,13 @@ msgstr "Завантаження..."
 msgid "M.E.Doc"
 msgstr "M.E.Doc"
 
-
 #. module: l10n_ua_tax_cabinet
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_sync_wizard_view_form
 msgid ""
-"Make sure KEP key file and password are set in the configuration before "
-"syncing."
-msgstr "Переконайтеся, що файл ключа КЕП та пароль налаштовані в налаштуванні перед синхронізацією."
-
-#. module: l10n_ua_tax_cabinet
-#: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_config__auth_method__token
-#: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
-msgid "Manual Token"
-msgstr "Ручний токен"
+"Make sure KEP key file is uploaded in the configuration. Password will be "
+"requested when syncing."
+msgstr "Переконайтеся, що файл ключа КЕП завантажений у налаштуваннях. "
+"Пароль буде запитаний при синхронізації."
 
 #. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_document__source__manual
@@ -829,6 +848,7 @@ msgid "Mode"
 msgstr "Режим"
 
 #. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_password_wizard__month
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_sync_wizard__month
 msgid "Month"
 msgstr "Місяць"
@@ -878,8 +898,9 @@ msgstr "Налаштування КЕП для компанії %s не знай
 #: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_document.py:0
 msgid ""
 "No KEP configuration found for company %s. Please configure Tax Cabinet "
-"connection with KEP authentication."
-msgstr "Налаштування КЕП для компанії %s не знайдено. Будь ласка, налаштуйте підключення до Податкового кабінету з автентифікацією КЕП."
+"connection."
+msgstr "Налаштування КЕП для компанії %s не знайдено. Будь ласка, налаштуйте "
+"підключення до Податкового кабінету."
 
 #. module: l10n_ua_tax_cabinet
 #. odoo-javascript
@@ -907,30 +928,9 @@ msgstr "Немає XML файлу для подання"
 
 #. module: l10n_ua_tax_cabinet
 #. odoo-python
-#: code:addons/l10n_ua_tax_cabinet/wizard/l10n_ua_tax_cabinet_sync_wizard.py:0
-msgid ""
-"No authorization token.\n"
-"\n"
-"Please paste the signed authorization token from browser Developer Tools."
-msgstr "Немає токену авторизації.\n\nБудь ласка, вставте підписаний токен авторизації з розробника браузера."
-
-#. module: l10n_ua_tax_cabinet
-#. odoo-python
-#: code:addons/l10n_ua_tax_cabinet/wizard/l10n_ua_tax_cabinet_sync_wizard.py:0
-msgid "No new documents found."
-msgstr "Нових документів не знайдено."
-
-#. module: l10n_ua_tax_cabinet
-#. odoo-python
 #: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_document.py:0
 msgid "No signed file. Please sign the document first."
 msgstr "Немає підписаного файлу. Спочатку підпишіть документ."
-
-#. module: l10n_ua_tax_cabinet
-#. odoo-python
-#: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_config.py:0
-msgid "No valid authorization. Configure KEP key or provide auth token."
-msgstr "Немає дійсної авторизації. Налаштуйте ключ КЕП або надайте токен авторизації."
 
 #. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_document__notes
@@ -1014,16 +1014,9 @@ msgid "PDF Filename"
 msgstr "Назва PDF файлу"
 
 #. module: l10n_ua_tax_cabinet
-#: model:ir.model.fields,help:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__kep_password
-msgid "Password for the private key file"
-msgstr "Пароль для файлу приватного ключа"
-
-#. module: l10n_ua_tax_cabinet
-#: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
-msgid ""
-"Paste the signed authorization token from browser Developer Tools "
-"(Authorization header value after logging into cabinet.tax.gov.ua)."
-msgstr "Вставте підписаний токен авторизації з розробника браузера (значення заголовка Authorization після входу на cabinet.tax.gov.ua)."
+#: model:ir.model.fields,help:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_password_wizard__password
+msgid "Password for your private key (not stored)"
+msgstr "Пароль для вашого приватного ключа (не зберігається)"
 
 #. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields,help:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__iit_lib_path
@@ -1033,12 +1026,8 @@ msgstr "Шлях до бібліотеки IIT EUSignCP"
 #. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields,help:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__iit_cert_path
 msgid "Path to certificates directory (CA certs, user certs)"
-msgstr "Шлях до каталогу сертифікатів (сертифікати ЦСК, сертифікати користувача)"
-
-#. module: l10n_ua_tax_cabinet
-#: model:ir.model.fields,help:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__kep_key_file
-msgid "Path to private key file (.dat, .jks, .pfx)"
-msgstr "Шлях до файлу приватного ключа (.dat, .jks, .pfx)"
+msgstr ""
+"Шлях до каталогу сертифікатів (сертифікати ЦСК, сертифікати користувача)"
 
 #. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_document__period
@@ -1062,7 +1051,8 @@ msgstr "Розмістіть сертифікати ЦСК у каталозі �
 #. module: l10n_ua_tax_cabinet
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
 msgid "Place your user certificates (.cer files) in the same directory"
-msgstr "Розмістіть ваші сертифікати користувача (.cer файли) у тому ж каталозі"
+msgstr ""
+"Розмістіть ваші сертифікати користувача (.cer файли) у тому ж каталозі"
 
 #. module: l10n_ua_tax_cabinet
 #. odoo-python
@@ -1086,6 +1076,11 @@ msgstr "Спочатку виберіть або створіть налашту
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_company_kved__is_primary
 msgid "Primary"
 msgstr "Основний"
+
+#. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields,help:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__kep_key_file
+msgid "Private key file (.dat, .jks, .pfx)"
+msgstr "Шлях до файлу приватного ключа (.dat, .jks, .pfx)"
 
 #. module: l10n_ua_tax_cabinet
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_sync_wizard_view_form
@@ -1146,6 +1141,7 @@ msgid "Report"
 msgstr "Звіт"
 
 #. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_password_wizard__sync_mode__reported
 #: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_sync_wizard__sync_type__reported
 msgid "Reported Documents"
 msgstr "Подані документи"
@@ -1177,6 +1173,7 @@ msgid "SMS Delivery error"
 msgstr "Помилка доставки SMS"
 
 #. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_password_wizard__sync_mode__sent
 #: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_sync_wizard__sync_type__sent
 msgid "Sent Correspondence"
 msgstr "Надіслана кореспонденція"
@@ -1226,25 +1223,9 @@ msgid "Signed Filename"
 msgstr "Назва підписаного файлу"
 
 #. module: l10n_ua_tax_cabinet
-#: model:ir.model.fields,help:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_config__auth_token
-msgid "Signed authorization token (for manual auth)"
-msgstr "Підписаний токен авторизації (для ручної автентифікації)"
-
-#. module: l10n_ua_tax_cabinet
-#. odoo-python
-#: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_document.py:0
-msgid "Signing failed: %s"
-msgstr "Помилка підписання: %s"
-
-#. module: l10n_ua_tax_cabinet
 #: model:l10n_ua.tax.document.type,name:l10n_ua_tax_cabinet.tax_document_type_ep_declaration
-msgid "Single Tax Declaration (FOP)"
+msgid "Single Tax Declaration (FOP) v5"
 msgstr "Декларація єдиного податку (ФОП)"
-
-#. module: l10n_ua_tax_cabinet
-#: model:l10n_ua.tax.document.type,name:l10n_ua_tax_cabinet.tax_document_type_esv_declaration
-msgid "Single Tax Declaration (FOP) v8"
-msgstr "Декларація єдиного податку (ФОП) v8"
 
 #. module: l10n_ua_tax_cabinet
 #: model:l10n_ua.tax.document.type,name:l10n_ua_tax_cabinet.tax_document_type_ep_declaration_v9
@@ -1271,18 +1252,18 @@ msgstr "Статус"
 msgid "Status Message"
 msgstr "Повідомлення статусу"
 
-
 #. module: l10n_ua_tax_cabinet
-#. odoo-python
-#: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_document.py:0
-msgid "Submission failed: %s"
-msgstr "Помилка подання: %s"
-
-#. module: l10n_ua_tax_cabinet
-#. odoo-python
-#: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_document.py:0
-msgid "Submission failed: %s %s"
-msgstr "Помилка подання: %s %s"
+#: model:ir.model.fields,help:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_document__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr "Статус на основі активностей\nПрострочено: Термін вже минув\nСьогодні: Дата активності сьогодні\nЗаплановано: Майбутні активності."
 
 #. module: l10n_ua_tax_cabinet
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_document_view_form
@@ -1297,20 +1278,13 @@ msgstr "Подано"
 
 #. module: l10n_ua_tax_cabinet
 #. odoo-python
-#: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_document.py:0
-msgid "Submitted successfully: %s"
-msgstr "Успішно подано: %s"
-
-#. module: l10n_ua_tax_cabinet
-#. odoo-python
-#: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_config.py:0
-#: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_document.py:0
+#: code:addons/l10n_ua_tax_cabinet/wizard/l10n_ua_tax_cabinet_password_wizard.py:0
 msgid "Success"
 msgstr "Успіх"
 
 #. module: l10n_ua_tax_cabinet
 #. odoo-python
-#: code:addons/l10n_ua_tax_cabinet/wizard/l10n_ua_tax_cabinet_sync_wizard.py:0
+#: code:addons/l10n_ua_tax_cabinet/wizard/l10n_ua_tax_cabinet_password_wizard.py:0
 msgid "Sync Complete"
 msgstr "Синхронізацію завершено"
 
@@ -1320,10 +1294,21 @@ msgid "Sync Date"
 msgstr "Дата синхронізації"
 
 #. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_password_wizard__action__sync
 #: model:ir.ui.menu,name:l10n_ua_tax_cabinet.menu_ua_tax_cabinet_sync
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
 msgid "Sync Documents"
 msgstr "Синхронізувати документи"
+
+#. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_password_wizard__sync_mode
+msgid "Sync Mode"
+msgstr "Режим синхронізації"
+
+#. module: l10n_ua_tax_cabinet
+#: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_password_wizard_view_form
+msgid "Sync Options"
+msgstr "Параметри синхронізації"
 
 #. module: l10n_ua_tax_cabinet
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
@@ -1332,7 +1317,7 @@ msgstr "Налаштування синхронізації"
 
 #. module: l10n_ua_tax_cabinet
 #. odoo-python
-#: code:addons/l10n_ua_tax_cabinet/wizard/l10n_ua_tax_cabinet_sync_wizard.py:0
+#: code:addons/l10n_ua_tax_cabinet/wizard/l10n_ua_tax_cabinet_password_wizard.py:0
 msgid "Sync failed: %s"
 msgstr "Помилка синхронізації: %s"
 
@@ -1450,6 +1435,7 @@ msgid "Taxpayer TIN (РНОКПП/ЄДРПОУ)"
 msgstr ""
 
 #. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_password_wizard__action__test
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
 msgid "Test Connection"
 msgstr "Перевірити підключення"
@@ -1473,6 +1459,11 @@ msgstr "Завантажити документи"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_sync_wizard_view_form
 msgid "Upload Files"
 msgstr "Завантажити файли"
+
+#. module: l10n_ua_tax_cabinet
+#: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
+msgid "Upload your private key file (.dat, .jks, .pfx)"
+msgstr "Завантажте файл приватного ключа (.dat, .jks, .pfx)"
 
 #. module: l10n_ua_tax_cabinet
 #: model:l10n_ua.tax.document.type,name:l10n_ua_tax_cabinet.tax_document_type_vat_declaration
@@ -1518,6 +1509,7 @@ msgstr "Назва XML файлу"
 
 #. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_document__year
+#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_password_wizard__year
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_sync_wizard__year
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_sync_wizard_file__year
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_document_wizard__year
@@ -1531,14 +1523,3 @@ msgstr "Рік"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
 msgid "e.g. Tax Cabinet Connection"
 msgstr "напр. Підключення до Податкового кабінету"
-
-#. module: l10n_ua_tax_cabinet
-#. odoo-python
-#: code:addons/l10n_ua_tax_cabinet/wizard/l10n_ua_tax_cabinet_sync_wizard.py:0
-msgid "id"
-msgstr "id"
-
-#. module: l10n_ua_tax_cabinet
-#: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
-msgid "iit.com.ua"
-msgstr "iit.com.ua"

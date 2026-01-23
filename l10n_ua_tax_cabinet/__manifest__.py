@@ -28,6 +28,7 @@ downloaded from the electronic tax cabinet.
         'security/ir.model.access.csv',
         'data/l10n_ua_tax_document_type_data.xml',
         'wizard/l10n_ua_tax_cabinet_sync_wizard_views.xml',
+        'wizard/l10n_ua_tax_cabinet_password_wizard_views.xml',
         'wizard/l10n_ua_tax_document_wizard_views.xml',
         'views/res_company_views.xml',
         'views/l10n_ua_tax_cabinet_document_views.xml',

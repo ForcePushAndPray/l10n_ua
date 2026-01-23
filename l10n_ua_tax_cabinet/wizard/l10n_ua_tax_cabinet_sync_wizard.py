@@ -216,77 +216,41 @@ class L10nUaTaxCabinetSyncWizard(models.TransientModel):
             _logger.warning("Could not parse XML document: %s", str(e))
 
     def _process_sync(self):
-        """Sync documents from cabinet.tax.gov.ua API."""
+        """Open password wizard for sync - password is never stored."""
         self.ensure_one()
 
         if not self.config_id:
             raise UserError(_("Please select or create a Tax Cabinet configuration first."))
 
-        # Validate authentication is configured
-        if self.config_id.auth_method == 'kep':
-            if not self.config_id.kep_key_file or not self.config_id.kep_password:
-                raise UserError(_(
-                    "KEP authentication not configured.\n\n"
-                    "Please configure in the Tax Cabinet connection:\n"
-                    "1. KEP Key File path (.dat, .jks, .pfx)\n"
-                    "2. KEP Password\n"
-                    "3. IIT Library and Certificates paths"
-                ))
-        elif self.config_id.auth_method == 'token':
-            if not self.config_id.auth_token:
-                raise UserError(_(
-                    "No authorization token.\n\n"
-                    "Please paste the signed authorization token from browser Developer Tools."
-                ))
+        # Validate KEP key is uploaded
+        if not self.config_id.kep_key_file:
+            raise UserError(_(
+                "KEP key not configured.\n\n"
+                "Please upload your private key file in the Tax Cabinet connection settings."
+            ))
 
-        created_docs = self.env['l10n_ua.tax.cabinet.document']
+        # Map sync_type to password wizard sync_mode
+        sync_mode_map = {
+            'reported': 'reported',
+            'incoming': 'incoming',
+            'sent': 'sent',
+        }
 
-        try:
-            if self.sync_type == 'reported':
-                docs = self._sync_reported_documents()
-            elif self.sync_type == 'incoming':
-                docs = self._sync_incoming_documents()
-            elif self.sync_type == 'sent':
-                docs = self._sync_sent_documents()
-            else:
-                docs = self.env['l10n_ua.tax.cabinet.document']
-
-            created_docs |= docs
-
-            # Update last sync date
-            self.config_id.last_sync_date = fields.Datetime.now()
-
-        except Exception as e:
-            _logger.error("Sync error: %s", str(e))
-            raise UserError(_("Sync failed: %s") % str(e))
-
-        # Show result
-        if not created_docs:
-            return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': _('Sync Complete'),
-                    'message': _('No new documents found.'),
-                    'type': 'info',
-                }
-            }
-        elif len(created_docs) == 1:
-            return {
-                'type': 'ir.actions.act_window',
-                'name': _('Tax Document'),
-                'res_model': 'l10n_ua.tax.cabinet.document',
-                'view_mode': 'form',
-                'res_id': created_docs.id,
-            }
-        else:
-            return {
-                'type': 'ir.actions.act_window',
-                'name': _('Tax Documents'),
-                'res_model': 'l10n_ua.tax.cabinet.document',
-                'view_mode': 'list,form',
-                'domain': [('id', 'in', created_docs.ids)],
-            }
+        # Open password wizard to request password
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Enter KEP Password'),
+            'res_model': 'l10n_ua.tax.cabinet.password.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_config_id': self.config_id.id,
+                'default_action': 'sync',
+                'default_sync_mode': sync_mode_map.get(self.sync_type, 'all'),
+                'default_year': self.year,
+                'default_month': int(self.month) if self.month else fields.Date.today().month,
+            },
+        }
 
     def _sync_reported_documents(self):
         """Sync reported documents from cabinet."""

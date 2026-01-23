@@ -39,8 +39,8 @@
                 </group>
 
                 <div class="alert alert-info" role="alert" invisible="mode != 'sync'">
-                    <p><strong>Authentication:</strong> Uses KEP (qualified electronic signature) configured in the Tax Cabinet connection.</p>
-                    <p>Make sure KEP key file and password are set in the configuration before syncing.</p>
+                    <p><strong>Authentication:</strong> Uses KEP (qualified electronic signature).</p>
+                    <p>Make sure KEP key file is uploaded in the configuration. Password will be requested when syncing.</p>
                 </div>
 
                 <footer>

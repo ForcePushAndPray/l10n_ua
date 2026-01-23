@@ -49,25 +49,14 @@ class L10nUaTaxCabinetConfig(models.Model):
         default=True,
     )
 
-    # KEP Authentication
-    auth_method = fields.Selection(
-        selection=[
-            ('kep', 'KEP (Private Key)'),
-            ('token', 'Manual Token'),
-        ],
-        string='Auth Method',
-        default='kep',
-        required=True,
-    )
-
     # KEP settings
-    kep_key_file = fields.Char(
+    kep_key_file = fields.Binary(
         string='KEP Key File',
-        help='Path to private key file (.dat, .jks, .pfx)',
+        attachment=True,
+        help='Private key file (.dat, .jks, .pfx)',
     )
-    kep_password = fields.Char(
-        string='KEP Password',
-        help='Password for the private key file',
+    kep_key_filename = fields.Char(
+        string='Key Filename',
     )
     iit_lib_path = fields.Char(
         string='IIT Library Path',
@@ -79,12 +68,7 @@ class L10nUaTaxCabinetConfig(models.Model):
         default=DEFAULT_IIT_CERT_PATH,
         help='Path to certificates directory (CA certs, user certs)',
     )
-
-    # Manual token auth (fallback)
-    auth_token = fields.Char(
-        string='Auth Token',
-        help='Signed authorization token (for manual auth)',
-    )
+    # Note: Password is NOT stored - always requested via wizard
 
     # Sync settings
     last_sync_date = fields.Datetime(
@@ -117,15 +101,20 @@ class L10nUaTaxCabinetConfig(models.Model):
             del _AUTH_HEADER_CACHE[self.id]
             _logger.debug("Cleared auth header cache for config %s", self.id)
 
-    def _sign_with_kep(self, data):
-        """Sign data using KEP (qualified electronic signature)."""
+    def _sign_with_kep(self, data, password):
+        """Sign data using KEP (qualified electronic signature).
+
+        Args:
+            data: Data to sign
+            password: KEP password (not stored, passed from wizard)
+        """
         self.ensure_one()
 
-        if not self.kep_key_file or not self.kep_password:
-            raise UserError(_("KEP key file and password are required for KEP authentication."))
+        if not self.kep_key_file:
+            raise UserError(_("KEP key file is required. Please upload your private key."))
 
-        if not os.path.exists(self.kep_key_file):
-            raise UserError(_("KEP key file not found: %s") % self.kep_key_file)
+        if not password:
+            raise UserError(_("KEP password is required for signing."))
 
         try:
             from ..lib.tax_cabinet_auth import KEPSigner
@@ -139,57 +128,76 @@ class L10nUaTaxCabinetConfig(models.Model):
         os.environ['IIT_LIB_PATH'] = lib_path
         os.environ['IIT_CERT_PATH'] = cert_path
 
+        # Decode binary key file to temp file
+        import tempfile
+        key_data = base64.b64decode(self.kep_key_file)
+
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.dat') as tmp_key:
+            tmp_key.write(key_data)
+            tmp_key_path = tmp_key.name
+
         try:
             with KEPSigner(lib_path=lib_path, cert_path=cert_path) as signer:
                 signer.load_certificates()
-                signer.load_private_key(self.kep_key_file, self.kep_password)
+                signer.load_private_key(tmp_key_path, password)
                 return signer.sign_data(data)
         except Exception as e:
             _logger.error("KEP signing failed: %s", str(e))
             raise UserError(_("KEP signing failed: %s") % str(e))
+        finally:
+            # Always clean up temp file
+            if os.path.exists(tmp_key_path):
+                os.unlink(tmp_key_path)
 
-    def _get_auth_headers(self, use_cache=True):
+    def _get_auth_headers(self, password=None, use_cache=True):
         """Get authorization headers for API requests.
 
         Args:
+            password: KEP password (required if cache is empty/expired). Can also be in context.
             use_cache: If True, use cached signed header (default). Set False to force re-sign.
         """
         self.ensure_one()
 
-        if self.auth_method == 'kep':
-            # Check cache first
-            cache_key = self.id
-            now = time.time()
+        if not self.kep_key_file:
+            raise UserError(_("KEP key file is required. Please upload your private key."))
 
-            if use_cache and cache_key in _AUTH_HEADER_CACHE:
-                cached = _AUTH_HEADER_CACHE[cache_key]
-                if now - cached['timestamp'] < _AUTH_CACHE_TTL:
-                    auth_header = cached['header']
-                    _logger.debug("Using cached KEP auth header (age: %.1fs)", now - cached['timestamp'])
-                else:
-                    # Expired, remove from cache
-                    del _AUTH_HEADER_CACHE[cache_key]
-                    auth_header = None
-            else:
-                auth_header = None
+        # Get password from argument or context
+        if not password:
+            password = self.env.context.get('kep_password')
 
-            if not auth_header:
-                # Sign taxpayer code with KEP
-                signed_data = self._sign_with_kep(self.taxpayer_code)
-                auth_header = signed_data
-                # Cache it
-                _AUTH_HEADER_CACHE[cache_key] = {
-                    'header': auth_header,
-                    'timestamp': now,
+        # Check cache first
+        cache_key = self.id
+        now = time.time()
+
+        if use_cache and cache_key in _AUTH_HEADER_CACHE:
+            cached = _AUTH_HEADER_CACHE[cache_key]
+            if now - cached['timestamp'] < _AUTH_CACHE_TTL:
+                auth_header = cached['header']
+                _logger.debug("Using cached KEP auth header (age: %.1fs)", now - cached['timestamp'])
+                return {
+                    'Authorization': auth_header,
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json, text/plain, */*',
+                    'Lang': 'uk',
                 }
-                _logger.debug("Created and cached new KEP auth header")
+            else:
+                # Expired, remove from cache
+                del _AUTH_HEADER_CACHE[cache_key]
 
-        elif self.auth_method == 'token' and self.auth_token:
-            auth_header = self.auth_token.strip()
-        else:
-            raise UserError(_(
-                "No valid authorization. Configure KEP key or provide auth token."
-            ))
+        # Need password to sign
+        if not password:
+            raise UserError(_("KEP password is required for signing."))
+
+        # Sign taxpayer code with KEP
+        signed_data = self._sign_with_kep(self.taxpayer_code, password)
+        auth_header = signed_data
+
+        # Cache it
+        _AUTH_HEADER_CACHE[cache_key] = {
+            'header': auth_header,
+            'timestamp': now,
+        }
+        _logger.debug("Created and cached new KEP auth header")
 
         return {
             'Authorization': auth_header,
@@ -199,11 +207,26 @@ class L10nUaTaxCabinetConfig(models.Model):
         }
 
     def action_test_connection(self):
-        """Test API connection."""
+        """Open password wizard to test API connection."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Enter KEP Password'),
+            'res_model': 'l10n_ua.tax.cabinet.password.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_config_id': self.id,
+                'default_action': 'test',
+            },
+        }
+
+    def _do_test_connection(self, password):
+        """Actually test API connection with provided password."""
         self.ensure_one()
         try:
             # Try to get payer card (basic info)
-            headers = self._get_auth_headers()
+            headers = self._get_auth_headers(password=password)
             url = f"{TAX_CABINET_API_URL}/payer_card"
 
             _logger.info("Tax Cabinet API: Testing connection to %s", url)
@@ -217,21 +240,12 @@ class L10nUaTaxCabinetConfig(models.Model):
                     if item.get('values', {}).get('FULL_NAME'):
                         name = item['values']['FULL_NAME']
                         break
-
-                return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'title': _('Success'),
-                        'message': _('Connection successful! Taxpayer: %s') % name,
-                        'type': 'success',
-                    }
-                }
+                return True, name
             else:
-                raise UserError(_("API error %s: %s") % (response.status_code, response.text))
+                return False, _("API error %s: %s") % (response.status_code, response.text)
 
         except Exception as e:
-            raise UserError(_("Connection failed: %s") % str(e))
+            return False, str(e)
 
     def _api_get_document_list(self, year, month):
         """

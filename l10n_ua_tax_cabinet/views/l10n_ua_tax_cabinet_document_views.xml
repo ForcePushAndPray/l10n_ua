@@ -36,6 +36,12 @@
                                 <span class="o_stat_text">Signed</span>
                             </div>
                         </button>
+                        <button name="action_redownload_files" type="object" class="oe_stat_button"
+                                icon="fa-download" invisible="source != 'cabinet' or not external_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Re-download</span>
+                            </div>
+                        </button>
                     </div>
                     <div class="oe_title">
                         <label for="name"/>
@@ -65,7 +71,6 @@
                         <page string="XML" name="xml_content" invisible="not file_xml">
                             <field name="file_xml" widget="xml_viewer" nolabel="1"/>
                         </page>
-                        
                         <page string="Notes" name="notes">
                             <field name="notes" placeholder="Additional notes..." readonly="state == 'accepted'"/>
                         </page>
