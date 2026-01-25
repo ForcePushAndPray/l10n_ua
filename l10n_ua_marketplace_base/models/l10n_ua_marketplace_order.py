@@ -140,10 +140,10 @@ class L10nUaMarketplaceOrder(models.Model):
         help='Original order data from marketplace',
     )
 
-    _sql_constraints = [
-        ('external_id_marketplace_uniq', 'unique(external_id, marketplace_config_id)',
-         'External order ID must be unique per marketplace!'),
-    ]
+    _unique_external_marketplace = models.Constraint(
+        'UNIQUE(external_id, marketplace_config_id)',
+        'External order ID must be unique per marketplace!',
+    )
 
     def action_create_sale_order(self):
         """Create sale order from marketplace order."""

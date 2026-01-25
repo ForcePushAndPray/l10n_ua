@@ -14,7 +14,7 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="%(l10n_ua_tax_cabinet_document_action)d" type="action"
+                        <button name="%(l10n_ua_tax.l10n_ua_tax_document_action)d" type="action"
                                 class="oe_stat_button" icon="fa-file-text-o"
                                 context="{'search_default_company_id': company_id}">
                             <div class="o_stat_info">
@@ -24,6 +24,8 @@
                     </div>
                     <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger"
                             invisible="active"/>
+                    <widget name="web_ribbon" title="TEST MODE" bg_color="text-bg-warning"
+                            invisible="not use_test_environment"/>
                     <div class="oe_title">
                         <label for="name"/>
                         <h1><field name="name" placeholder="e.g. Tax Cabinet Connection"/></h1>
@@ -38,6 +40,7 @@
                             <field name="auto_download_pdf"/>
                             <field name="auto_download_xml"/>
                             <field name="last_sync_date"/>
+                            <field name="use_test_environment"/>
                         </group>
                     </group>
 
@@ -66,9 +69,14 @@
                         <p><strong>Useful Links:</strong></p>
                         <ul>
                             <li>Tax Cabinet: https://cabinet.tax.gov.ua</li>
+                            <li>Test API: https://cabinet.tax.gov.ua:9443</li>
                             <li>IIT EUSignCP Library: https://iit.com.ua/downloads</li>
                             <li>DPS Ukraine CA: https://acskidd.gov.ua</li>
                         </ul>
+                        <p class="text-muted"><em>
+                            <strong>Test Mode:</strong> Enable "Use Test Environment" to submit documents to the test API.
+                            Documents submitted in test mode are NOT fiscal and do not go to the real tax office.
+                        </em></p>
                     </div>
                 </sheet>
                 <chatter/>
@@ -80,10 +88,11 @@
         <field name="name">l10n_ua.tax.cabinet.config.list</field>
         <field name="model">l10n_ua.tax.cabinet.config</field>
         <field name="arch" type="xml">
-            <list string="Tax Cabinet Configurations">
+            <list string="Tax Cabinet Configurations" decoration-warning="use_test_environment">
                 <field name="name"/>
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="taxpayer_code"/>
+                <field name="use_test_environment" string="Test"/>
                 <field name="last_sync_date"/>
             </list>
         </field>

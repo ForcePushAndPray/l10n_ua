@@ -40,6 +40,7 @@ class L10nUaTaxDocumentType(models.Model):
         default=True,
     )
 
-    _sql_constraints = [
-        ('code_uniq', 'unique(code)', 'Document type code must be unique!'),
-    ]
+    _unique_code = models.Constraint(
+        'UNIQUE(code)',
+        'Document type code must be unique!',
+    )

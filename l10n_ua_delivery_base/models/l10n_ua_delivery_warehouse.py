@@ -68,10 +68,10 @@ class L10nUaDeliveryWarehouse(models.Model):
         default=True,
     )
 
-    _sql_constraints = [
-        ('warehouse_ref_carrier_uniq', 'unique(warehouse_ref, carrier_type)',
-         'Warehouse reference must be unique per carrier!'),
-    ]
+    _unique_ref_carrier = models.Constraint(
+        'UNIQUE(warehouse_ref, carrier_type)',
+        'Warehouse reference must be unique per carrier!',
+    )
 
     @api.model
     def name_search(self, name='', args=None, operator='ilike', limit=100):

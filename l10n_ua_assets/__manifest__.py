@@ -16,14 +16,14 @@ Ukrainian fixed assets localization providing:
 * Commissioning act
 * Write-off act
 
-Requires l10n_ua_accounting module.
+Requires l10n_ua_account_base module.
     """,
     'author': 'Svyatoslav Nadozirny',
     'website': 'https://ndev.online',
     'license': 'LGPL-3',
     'depends': [
         'account_asset',
-        'l10n_ua_accounting',
+        'l10n_ua_account_base',
     ],
     'data': [
         'security/ir.model.access.csv',

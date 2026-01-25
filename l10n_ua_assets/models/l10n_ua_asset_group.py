@@ -27,6 +27,7 @@ class L10nUaAssetGroup(models.Model):
         default=True,
     )
 
-    _sql_constraints = [
-        ('code_uniq', 'unique(code)', 'Asset group code must be unique!'),
-    ]
+    _unique_code = models.Constraint(
+        'UNIQUE(code)',
+        'Asset group code must be unique!',
+    )

@@ -109,9 +109,10 @@ class HrCertificateType(models.Model):
         compute='_compute_certificates_count'
     )
 
-    _sql_constraints = [
-        ('code_uniq', 'unique(code, company_id)', 'Certificate type code must be unique per company!')
-    ]
+    _unique_code_company = models.Constraint(
+        'UNIQUE(code, company_id)',
+        'Certificate type code must be unique per company!',
+    )
 
     def _compute_certificates_count(self):
         for record in self:

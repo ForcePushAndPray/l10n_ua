@@ -9,24 +9,29 @@ Ukraine Tax Cabinet Integration
 
 Integration with cabinet.tax.gov.ua (Electronic Tax Cabinet) providing:
 
-* Tax document storage (declarations, reports, receipts)
+* Sync documents from Tax Cabinet (download existing declarations)
+* Sign documents with KEP (electronic signature)
+* Submit documents to Tax Cabinet
 * Manual document upload (XML, PDF)
-* Document categorization by type and period
-* API sync with KEP authentication (token-based)
 
-Allows FOP and companies to store and manage their tax documents
-downloaded from the electronic tax cabinet.
+Features:
+1. Download previous documents from cabinet
+2. Prepare and manually upload documents
+3. (Future) Automatic submission to tax office
+
+Extends l10n_ua.tax.document with cabinet-specific fields and actions.
     """,
     'author': 'Svyatoslav Nadozirny',
     'website': 'https://ndev.online',
     'license': 'LGPL-3',
+    'external_dependencies': {
+        'python': ['httpx', 'h2'],  # HTTP/2 support for Tax Cabinet API
+    },
     'depends': [
         'l10n_ua_tax',
-        'l10n_ua_account_base',
     ],
     'data': [
         'security/ir.model.access.csv',
-        'data/l10n_ua_tax_document_type_data.xml',
         'wizard/l10n_ua_tax_cabinet_sync_wizard_views.xml',
         'wizard/l10n_ua_tax_cabinet_password_wizard_views.xml',
         'wizard/l10n_ua_tax_document_wizard_views.xml',

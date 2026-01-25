@@ -5,3 +5,7 @@ from . import l10n_ua_tax_office
 from . import l10n_ua_legal_form
 from . import l10n_ua_address_mixin
 from . import l10n_ua_document_mixin
+from . import account_account
+from . import account_move
+from . import l10n_ua_journal_order
+from . import l10n_ua_osv

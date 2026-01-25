@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Ukraine Configuration - under Accounting Configuration -->
     <menuitem id="menu_l10n_ua_root"
               name="Ukraine"
-              web_icon="l10n_ua_base,static/description/icon.png"
+              parent="account.menu_finance_configuration"
               sequence="100"/>
 
     <menuitem id="menu_l10n_ua_directories"
@@ -23,10 +24,24 @@
               action="l10n_ua_kved_action"
               sequence="20"/>
 
-    <menuitem id="menu_l10n_ua_tax_office"
-              name="Tax Offices (ДПІ)"
-              parent="menu_l10n_ua_directories"
-              action="l10n_ua_tax_office_action"
-              sequence="30"/>
+    <!-- Tax Offices moved to l10n_ua_tax module (Taxes UA -> Configuration) -->
+
+    <!-- UA Accounting -->
+    <menuitem id="menu_l10n_ua_accounting"
+              name="UA Accounting"
+              parent="menu_l10n_ua_root"
+              sequence="20"/>
+
+    <menuitem id="menu_l10n_ua_journal_orders"
+              name="Journal Orders"
+              parent="menu_l10n_ua_accounting"
+              action="l10n_ua_journal_order_action"
+              sequence="10"/>
+
+    <menuitem id="menu_l10n_ua_osv"
+              name="Trial Balance (OSV)"
+              parent="menu_l10n_ua_accounting"
+              action="l10n_ua_osv_action"
+              sequence="20"/>
 
 </odoo>

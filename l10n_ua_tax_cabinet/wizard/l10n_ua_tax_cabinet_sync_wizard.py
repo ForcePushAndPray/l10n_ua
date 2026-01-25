@@ -107,11 +107,11 @@ class L10nUaTaxCabinetSyncWizard(models.TransientModel):
         if not self.file_ids:
             raise UserError(_("Please add files to upload"))
 
-        created_docs = self.env['l10n_ua.tax.cabinet.document']
+        created_docs = self.env['l10n_ua.tax.document']
 
         for file_line in self.file_ids:
             doc_vals = self._prepare_document_vals(file_line)
-            doc = self.env['l10n_ua.tax.cabinet.document'].create(doc_vals)
+            doc = self.env['l10n_ua.tax.document'].create(doc_vals)
             created_docs |= doc
             _logger.info("Created tax document: %s", doc.name)
 
@@ -120,7 +120,7 @@ class L10nUaTaxCabinetSyncWizard(models.TransientModel):
             return {
                 'type': 'ir.actions.act_window',
                 'name': _('Tax Document'),
-                'res_model': 'l10n_ua.tax.cabinet.document',
+                'res_model': 'l10n_ua.tax.document',
                 'view_mode': 'form',
                 'res_id': created_docs.id,
             }
@@ -128,7 +128,7 @@ class L10nUaTaxCabinetSyncWizard(models.TransientModel):
             return {
                 'type': 'ir.actions.act_window',
                 'name': _('Tax Documents'),
-                'res_model': 'l10n_ua.tax.cabinet.document',
+                'res_model': 'l10n_ua.tax.document',
                 'view_mode': 'list,form',
                 'domain': [('id', 'in', created_docs.ids)],
             }
@@ -269,8 +269,8 @@ class L10nUaTaxCabinetSyncWizard(models.TransientModel):
 
     def _process_api_documents(self, docs_data, doc_type):
         """Process documents from API response."""
-        created_docs = self.env['l10n_ua.tax.cabinet.document']
-        Document = self.env['l10n_ua.tax.cabinet.document']
+        created_docs = self.env['l10n_ua.tax.document']
+        Document = self.env['l10n_ua.tax.document']
 
         if not docs_data:
             return created_docs

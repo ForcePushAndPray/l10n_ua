@@ -25,7 +25,7 @@ from this module and implement bank-specific API calls.
     'website': 'https://ndev.online',
     'license': 'LGPL-3',
     'depends': [
-        'l10n_ua_accounting',
+        'l10n_ua_account_base',
         'mail',
     ],
     'data': [

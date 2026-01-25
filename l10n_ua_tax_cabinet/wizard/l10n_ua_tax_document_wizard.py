@@ -20,7 +20,7 @@ class L10nUaTaxDocumentWizard(models.TransientModel):
     _description = 'Tax Document Data Wizard'
 
     document_id = fields.Many2one(
-        'l10n_ua.tax.cabinet.document',
+        'l10n_ua.tax.document',
         string='Document',
         required=True,
         readonly=True,

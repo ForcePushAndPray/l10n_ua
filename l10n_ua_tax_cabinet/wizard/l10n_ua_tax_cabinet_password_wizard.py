@@ -17,6 +17,8 @@ class L10nUaTaxCabinetPasswordWizard(models.TransientModel):
             ('test', 'Test Connection'),
             ('sync', 'Sync Documents'),
             ('redownload', 'Re-download Files'),
+            ('sign', 'Sign Document'),
+            ('submit', 'Submit to Cabinet'),
         ],
         string='Action',
         required=True,
@@ -30,7 +32,7 @@ class L10nUaTaxCabinetPasswordWizard(models.TransientModel):
 
     # For redownload action
     document_id = fields.Many2one(
-        'l10n_ua.tax.cabinet.document',
+        'l10n_ua.tax.document',
         string='Document',
     )
 
@@ -64,6 +66,10 @@ class L10nUaTaxCabinetPasswordWizard(models.TransientModel):
             return self._do_sync_documents()
         elif self.action == 'redownload':
             return self._do_redownload_files()
+        elif self.action == 'sign':
+            return self._do_sign_document()
+        elif self.action == 'submit':
+            return self._do_submit_document()
 
     def _do_test_connection(self):
         """Test connection with provided password."""
@@ -88,7 +94,7 @@ class L10nUaTaxCabinetPasswordWizard(models.TransientModel):
         # Pass password in context for all operations
         ctx = dict(self.env.context, kep_password=self.password)
         config = self.config_id.with_context(ctx)
-        Document = self.env['l10n_ua.tax.cabinet.document'].with_context(ctx)
+        Document = self.env['l10n_ua.tax.document'].with_context(ctx)
 
         imported = 0
 
@@ -145,7 +151,7 @@ class L10nUaTaxCabinetPasswordWizard(models.TransientModel):
                         'sticky': False,
                         'next': {
                             'type': 'ir.actions.act_window',
-                            'res_model': 'l10n_ua.tax.cabinet.document',
+                            'res_model': 'l10n_ua.tax.document',
                             'res_id': self.document_id.id,
                             'view_mode': 'form',
                             'views': [(False, 'form')],
@@ -166,3 +172,83 @@ class L10nUaTaxCabinetPasswordWizard(models.TransientModel):
 
         except Exception as e:
             raise UserError(_("Download failed: %s") % str(e))
+
+    def _do_sign_document(self):
+        """Sign document XML with KEP."""
+        if not self.document_id:
+            raise UserError(_("No document specified for signing."))
+
+        if not self.document_id.file_xml:
+            raise UserError(_("Document has no XML file to sign."))
+
+        # Pass password in context
+        ctx = dict(self.env.context, kep_password=self.password)
+        config = self.config_id.with_context(ctx)
+
+        try:
+            # Sign the document
+            self.document_id._do_sign_document(config, self.password)
+
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Document Signed'),
+                    'message': _('Document has been signed with KEP.'),
+                    'type': 'success',
+                    'sticky': False,
+                    'next': {
+                        'type': 'ir.actions.act_window',
+                        'res_model': 'l10n_ua.tax.document',
+                        'res_id': self.document_id.id,
+                        'view_mode': 'form',
+                        'views': [(False, 'form')],
+                    },
+                }
+            }
+
+        except Exception as e:
+            raise UserError(_("Signing failed: %s") % str(e))
+
+    def _do_submit_document(self):
+        """Submit signed document to cabinet.tax.gov.ua."""
+        if not self.document_id:
+            raise UserError(_("No document specified for submission."))
+
+        if not self.document_id.file_signed:
+            raise UserError(_("Document must be signed first. Use 'Sign Document' button."))
+
+        # Pass password in context
+        ctx = dict(self.env.context, kep_password=self.password)
+        config = self.config_id.with_context(ctx)
+
+        try:
+            # Submit to cabinet (document already signed)
+            result = self.document_id._do_submit_to_cabinet(config, self.password)
+
+            # Update document state
+            self.document_id.write({
+                'state': 'submitted',
+                'status_message': result.get('message', _('Submitted successfully')),
+            })
+
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Document Submitted'),
+                    'message': _('Document has been submitted to Tax Cabinet.'),
+                    'type': 'success',
+                    'sticky': False,
+                    'next': {
+                        'type': 'ir.actions.act_window',
+                        'res_model': 'l10n_ua.tax.document',
+                        'res_id': self.document_id.id,
+                        'view_mode': 'form',
+                        'views': [(False, 'form')],
+                    },
+                }
+            }
+
+        except Exception as e:
+            raise UserError(_("Submission failed: %s") % str(e))

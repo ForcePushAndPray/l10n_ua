@@ -14,13 +14,13 @@ Base module for Ukrainian PRRO (fiscal registrar) integrations providing:
 * Shift management
 * Abstract mixin for PRRO providers
 
-Requires l10n_ua_accounting module.
+Requires l10n_ua_account_base module.
     """,
     'author': 'Svyatoslav Nadozirny',
     'website': 'https://ndev.online',
     'license': 'LGPL-3',
     'depends': [
-        'l10n_ua_accounting',
+        'l10n_ua_account_base',
         'point_of_sale',
     ],
     'data': [

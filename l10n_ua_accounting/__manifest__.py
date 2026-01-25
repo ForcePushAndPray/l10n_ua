@@ -1,47 +1,39 @@
 {
-    'name': 'Ukraine - Accounting',
+    'name': 'Ukraine - Full Accounting Suite',
     'version': '19.0.1.0.0',
     'category': 'Accounting/Localization',
-    'summary': 'Ukrainian chart of accounts (P(S)BO)',
+    'summary': 'Complete Ukrainian accounting localization (cumulative module)',
     'description': """
-Ukraine Accounting Module
-=========================
+Ukraine Full Accounting Suite
+=============================
 
-Ukrainian accounting localization providing:
+This is a cumulative module that installs the complete Ukrainian
+accounting localization for Odoo.
 
-* Chart of accounts according to P(S)BO (classes 0-9)
-* Account extensions (ua_class, ua_subaccount, analytics_type)
-* Document extensions (ua_doc_type, ua_doc_number)
-* Journal orders (Журнали-ордери №1-7)
-* General ledger (Головна книга)
-* Trial balance / OSV (Оборотно-сальдова відомість)
-* Balance sheet (Form №1)
-* Income statement (Form №2)
-* Cash book, PKO, VKO
-* Advance reports
+Includes:
+* l10n_ua_account_base - Base localization (directories, chart of accounts)
+* l10n_ua_tax - Tax management (periods, reports, budget codes)
+* l10n_ua_tax_cabinet - Tax Cabinet integration (cabinet.tax.gov.ua)
+* l10n_ua_bank_sync - Bank synchronization (PrivatBank, Mono, PUMB)
+* l10n_ua_bank_currency_sync - Currency rates (NBU, PrivatBank, Mono)
 
-Requires l10n_ua_account_base module.
+Install this module to get all Ukrainian accounting features at once.
     """,
     'author': 'Svyatoslav Nadozirny',
     'website': 'https://ndev.online',
     'license': 'LGPL-3',
     'depends': [
-        'account',
         'l10n_ua_account_base',
+        'l10n_ua_tax',
+        'l10n_ua_tax_cabinet',
+        'l10n_ua_bank_sync',
+        'l10n_ua_bank_currency_sync',
     ],
-    'data': [
-        'security/ir.model.access.csv',
-        'data/account_chart_template_data.xml',
-        'views/account_account_views.xml',
-        'views/account_move_views.xml',
-        'views/l10n_ua_journal_order_views.xml',
-        'views/l10n_ua_osv_views.xml',
-        'views/menu_views.xml',
-    ],
+    'data': [],
     'demo': [],
     'images': ['static/description/icon.png'],
     'installable': True,
-    'application': False,
+    'application': True,
     'auto_install': False,
     'price': 0,
     'currency': 'EUR',

@@ -60,9 +60,10 @@ class L10nUaKoatuu(models.Model):
         default=True,
     )
 
-    _sql_constraints = [
-        ('code_uniq', 'unique(code)', 'KOATUU code must be unique!'),
-    ]
+    _unique_code = models.Constraint(
+        'UNIQUE(code)',
+        'KOATUU code must be unique!',
+    )
 
     @api.depends('name', 'parent_id.complete_name')
     def _compute_complete_name(self):

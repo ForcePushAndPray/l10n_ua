@@ -1,7 +1,10 @@
+import base64
 import logging
+import re
 from datetime import date
 
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -11,6 +14,18 @@ class L10nUaTaxDocumentWizardF0103309(models.TransientModel):
     Extension of base tax document wizard for F0103309 (Single Tax Declaration).
 
     This is the "Декларація платника єдиного податку" form version 9.
+
+    XML field mapping (actual Tax Cabinet format):
+    - R006G3: Total income for period
+    - R008G3: Taxable income (same as R006G3 for Group 3)
+    - R011G3: Single tax amount (income * tax_rate)
+    - R012G3: Tax payable (same as R011G3)
+    - R013G3: Tax already paid (from previous quarters)
+    - R0141G3: Tax to pay this period (R011G3 - R013G3)
+    - R014G3: Total tax to pay (same as R0141G3)
+    - R023G3: Military tax (income * military_rate)
+    - R024G3: Military tax already paid
+    - R025G3: Military tax to pay (R023G3 - R024G3)
     """
     _inherit = 'l10n_ua.tax.document.wizard'
 
@@ -57,18 +72,23 @@ class L10nUaTaxDocumentWizardF0103309(models.TransientModel):
         default='3',
     )
     tax_rate = fields.Float(
-        string='Tax Rate (%)',
+        string='Single Tax Rate (%)',
         default=5.0,
         help='Single tax rate: 5% for Group 3 (standard), 2% for e-residents, etc.',
     )
+    military_rate = fields.Float(
+        string='Military Tax Rate (%)',
+        default=1.0,
+        help='Military tax rate (збір): 1% of income',
+    )
     declaration_type = fields.Selection(
         selection=[
-            ('00', 'Reporting'),
-            ('01', 'New Reporting'),
-            ('02', 'Clarifying'),
+            ('0', 'Reporting'),
+            ('1', 'New Reporting'),
+            ('2', 'Clarifying'),
         ],
         string='Declaration Type',
-        default='00',
+        default='0',
     )
 
     # Tax authority info
@@ -78,38 +98,53 @@ class L10nUaTaxDocumentWizardF0103309(models.TransientModel):
         domain=[('office_type', '=', 'district')],
     )
 
-    # Income fields (Section 5)
-    income_q1 = fields.Float(string='Q1 Income', digits=(16, 2))
-    income_q2 = fields.Float(string='Q2 Income', digits=(16, 2))
-    income_q3 = fields.Float(string='Q3 Income', digits=(16, 2))
-    income_q4 = fields.Float(string='Q4 Income', digits=(16, 2))
+    # Income fields - cumulative for period
     income_total = fields.Float(
-        string='Total Income',
-        compute='_compute_income_total',
-        store=True,
+        string='Total Income (R006G3)',
         digits=(16, 2),
+        help='Total income for the reporting period',
     )
 
-    # Tax fields (Section 6)
-    tax_q1 = fields.Float(string='Q1 Tax', digits=(16, 2))
-    tax_q2 = fields.Float(string='Q2 Tax', digits=(16, 2))
-    tax_q3 = fields.Float(string='Q3 Tax', digits=(16, 2))
-    tax_q4 = fields.Float(string='Q4 Tax', digits=(16, 2))
-    tax_total = fields.Float(
-        string='Total Tax',
-        compute='_compute_tax_total',
+    # Single tax fields
+    tax_amount = fields.Float(
+        string='Single Tax (R011G3)',
+        compute='_compute_tax_amounts',
         store=True,
         digits=(16, 2),
+        help='Single tax amount = income × tax_rate',
+    )
+    tax_paid_prev = fields.Float(
+        string='Tax Paid Previously (R013G3)',
+        digits=(16, 2),
+        help='Tax already paid in previous quarters of this year',
+    )
+    tax_to_pay = fields.Float(
+        string='Tax to Pay (R0141G3)',
+        compute='_compute_tax_amounts',
+        store=True,
+        digits=(16, 2),
+        help='Tax to pay = tax_amount - tax_paid_prev',
     )
 
-    # ESV fields (Section 8)
-    esv_base = fields.Float(string='ESV Base', digits=(16, 2))
-    esv_rate = fields.Float(string='ESV Rate (%)', default=22.0)
-    esv_amount = fields.Float(
-        string='ESV Amount',
-        compute='_compute_esv_amount',
+    # Military tax fields
+    military_amount = fields.Float(
+        string='Military Tax (R023G3)',
+        compute='_compute_tax_amounts',
         store=True,
         digits=(16, 2),
+        help='Military tax = income × military_rate',
+    )
+    military_paid_prev = fields.Float(
+        string='Military Paid Previously (R024G3)',
+        digits=(16, 2),
+        help='Military tax already paid in previous quarters',
+    )
+    military_to_pay = fields.Float(
+        string='Military to Pay (R025G3)',
+        compute='_compute_tax_amounts',
+        store=True,
+        digits=(16, 2),
+        help='Military to pay = military_amount - military_paid_prev',
     )
 
     # Activity codes (KVED)
@@ -123,29 +158,170 @@ class L10nUaTaxDocumentWizardF0103309(models.TransientModel):
     has_employees = fields.Boolean(string='Has Employees', default=False)
     employee_count = fields.Integer(string='Employee Count', default=0)
 
-    @api.depends('income_q1', 'income_q2', 'income_q3', 'income_q4')
-    def _compute_income_total(self):
-        for rec in self:
-            rec.income_total = rec.income_q1 + rec.income_q2 + rec.income_q3 + rec.income_q4
+    # Bank journals for auto-fill
+    journal_ids = fields.Many2many(
+        'account.journal',
+        string='Bank Journals',
+        domain=[('type', '=', 'bank')],
+        help='Select bank journals to compute income from transactions',
+    )
 
-    @api.depends('tax_q1', 'tax_q2', 'tax_q3', 'tax_q4')
-    def _compute_tax_total(self):
+    @api.depends('income_total', 'tax_rate', 'military_rate', 'tax_paid_prev', 'military_paid_prev')
+    def _compute_tax_amounts(self):
         for rec in self:
-            rec.tax_total = rec.tax_q1 + rec.tax_q2 + rec.tax_q3 + rec.tax_q4
+            # Single tax calculation
+            rec.tax_amount = rec.income_total * rec.tax_rate / 100
+            rec.tax_to_pay = rec.tax_amount - rec.tax_paid_prev
 
-    @api.depends('esv_base', 'esv_rate')
-    def _compute_esv_amount(self):
-        for rec in self:
-            rec.esv_amount = rec.esv_base * rec.esv_rate / 100
+            # Military tax calculation
+            rec.military_amount = rec.income_total * rec.military_rate / 100
+            rec.military_to_pay = rec.military_amount - rec.military_paid_prev
 
-    @api.onchange('income_q1', 'income_q2', 'income_q3', 'income_q4', 'tax_rate')
-    def _onchange_income(self):
-        """Auto-calculate tax from income."""
-        rate = self.tax_rate / 100
-        self.tax_q1 = self.income_q1 * rate
-        self.tax_q2 = self.income_q2 * rate
-        self.tax_q3 = self.income_q3 * rate
-        self.tax_q4 = self.income_q4 * rate
+    def action_fill_from_bank(self):
+        """Fill income from bank transactions."""
+        self.ensure_one()
+
+        if not self.journal_ids:
+            raise UserError(_("Please select at least one bank journal first."))
+
+        if not self.year:
+            raise UserError(_("Please select a year first."))
+
+        period = self.period
+        year = self.year
+
+        # Calculate date range based on period
+        date_from = date(year, 1, 1)
+
+        # Determine end date based on period
+        if period in ('03', 'q1'):
+            date_to = date(year, 3, 31)
+        elif period in ('06', 'q2', 'h1'):
+            date_to = date(year, 6, 30)
+        elif period in ('09', 'q3'):
+            date_to = date(year, 9, 30)
+        elif period in ('12', 'q4', 'year'):
+            date_to = date(year, 12, 31)
+        else:
+            # For monthly periods, calculate end of month
+            try:
+                month = int(period)
+                if month == 12:
+                    date_to = date(year, 12, 31)
+                elif month == 2:
+                    # Handle leap year
+                    date_to = date(year, 2, 29 if year % 4 == 0 and (year % 100 != 0 or year % 400 == 0) else 28)
+                elif month in (4, 6, 9, 11):
+                    date_to = date(year, month, 30)
+                else:
+                    date_to = date(year, month, 31)
+            except (ValueError, TypeError):
+                date_to = date(year, 12, 31)
+
+        # Check if l10n_ua_bank_sync module is installed
+        BankTransaction = self.env.get('l10n_ua.bank.transaction')
+        if BankTransaction is None:
+            raise UserError(_(
+                "Bank sync module (l10n_ua_bank_sync) is not installed. "
+                "Please install it to use auto-fill from bank transactions."
+            ))
+
+        # Get bank transactions for the period from ALL selected journals
+        transactions = BankTransaction.search([
+            ('journal_id', 'in', self.journal_ids.ids),
+            ('date', '>=', date_from),
+            ('date', '<=', date_to),
+            ('amount', '>', 0),  # Only incoming (positive) amounts
+        ])
+
+        if not transactions:
+            journal_names = ', '.join(self.journal_ids.mapped('name'))
+            raise UserError(_(
+                "No incoming transactions found for journals '%s' "
+                "in period %s/%s (from %s to %s)."
+            ) % (journal_names, period, year, date_from, date_to))
+
+        # Calculate total income from all journals
+        total_income = sum(tx.amount for tx in transactions)
+
+        # Update income field using write() to persist to database
+        self.write({'income_total': total_income})
+
+        # Reopen the wizard to show updated values
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': self._name,
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'new',
+        }
+
+    def action_fill_prev_payments(self):
+        """Fill previously paid taxes from earlier declarations of this year."""
+        self.ensure_one()
+
+        if not self.year:
+            raise UserError(_("Please select a year first."))
+
+        # Determine previous period based on current period
+        period = self.period
+        prev_periods = []
+
+        if period in ('06', 'q2', 'h1'):
+            prev_periods = ['03', 'q1']
+        elif period in ('09', 'q3'):
+            prev_periods = ['03', 'q1', '06', 'q2', 'h1']
+        elif period in ('12', 'q4', 'year'):
+            prev_periods = ['03', 'q1', '06', 'q2', 'h1', '09', 'q3']
+
+        if not prev_periods:
+            raise UserError(_("No previous period for Q1 declaration."))
+
+        # Search for previous declarations
+        Document = self.env['l10n_ua.tax.document']
+        prev_docs = Document.search([
+            ('year', '=', self.year),
+            ('period', 'in', prev_periods),
+            ('document_type_id.code', '=', 'F0103309'),
+            ('company_id', '=', self.company_id.id),
+            ('state', '=', 'accepted'),
+        ], order='period desc', limit=1)
+
+        if not prev_docs:
+            raise UserError(_("No accepted previous declaration found for this year."))
+
+        if not prev_docs.file_xml:
+            raise UserError(_("Previous declaration has no XML file."))
+
+        # Parse XML to extract tax amounts
+        try:
+            xml_content = base64.b64decode(prev_docs.file_xml).decode('windows-1251', errors='replace')
+
+            # Extract R011G3 (single tax amount)
+            tax_match = re.search(r'<R011G3>([0-9.]+)</R011G3>', xml_content)
+            tax_paid = float(tax_match.group(1)) if tax_match else 0.0
+
+            # Extract R023G3 (military tax amount)
+            military_match = re.search(r'<R023G3>([0-9.]+)</R023G3>', xml_content)
+            military_paid = float(military_match.group(1)) if military_match else 0.0
+
+            # Update fields
+            self.write({
+                'tax_paid_prev': tax_paid,
+                'military_paid_prev': military_paid,
+            })
+
+            # Reopen wizard to show updated values
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': self._name,
+                'res_id': self.id,
+                'view_mode': 'form',
+                'target': 'new',
+            }
+
+        except Exception as e:
+            raise UserError(_("Error parsing previous declaration XML: %s") % str(e))
 
     def _generate_xml_F0103309(self):
         """Generate XML for Single Tax Declaration (F0103309)."""
@@ -163,16 +339,42 @@ class L10nUaTaxDocumentWizardF0103309(models.TransientModel):
 
         return xml, filename
 
+    def _get_quarter_marker(self):
+        """Get quarter marker tag (H1KV, H2KV, H3KV, H4KV) based on period."""
+        period = self.period
+        if period in ('03', 'q1'):
+            return 'H1KV'
+        elif period in ('06', 'q2', 'h1'):
+            return 'H2KV'
+        elif period in ('09', 'q3'):
+            return 'H3KV'
+        elif period in ('12', 'q4', 'year'):
+            return 'H4KV'
+        else:
+            # For monthly, determine quarter
+            try:
+                month = int(period)
+                if month <= 3:
+                    return 'H1KV'
+                elif month <= 6:
+                    return 'H2KV'
+                elif month <= 9:
+                    return 'H3KV'
+                else:
+                    return 'H4KV'
+            except (ValueError, TypeError):
+                return 'H4KV'
+
     def _build_F0103309_xml(self, period_type, period_month):
-        """Build the XML content for F0103309."""
+        """Build the XML content for F0103309 matching Tax Cabinet format."""
         today = date.today()
 
         # Build activity codes XML
         activities_xml = ''
         for idx, activity in enumerate(self.activity_ids, 1):
-            activities_xml += f'''    <T1RXXXXG1S ROWNUM="{idx}">{self._escape_xml(activity.code)}</T1RXXXXG1S>
-    <T1RXXXXG2S ROWNUM="{idx}">{self._escape_xml(activity.name)}</T1RXXXXG2S>
-'''
+            activities_xml += f'<T1RXXXXG1S ROWNUM="{idx}" >{self._escape_xml(activity.code)}</T1RXXXXG1S>\n'
+        for idx, activity in enumerate(self.activity_ids, 1):
+            activities_xml += f'<T1RXXXXG2S ROWNUM="{idx}" >{self._escape_xml(activity.name)}</T1RXXXXG2S>\n'
 
         # Get tax office codes
         tax_office_code = self.tax_office_id.code if self.tax_office_id else ''
@@ -180,13 +382,16 @@ class L10nUaTaxDocumentWizardF0103309(models.TransientModel):
         c_raj = tax_office_code[2:4] if len(tax_office_code) >= 4 else ''
         tax_office_name = self.tax_office_id.name if self.tax_office_id else ''
 
+        # Quarter marker
+        quarter_marker = self._get_quarter_marker()
+
         xml = f'''<?xml version="1.0" encoding="windows-1251"?>
-<DECLAR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="F0103309.xsd">
-  <DECLARHEAD>
+        <DECLAR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="F0103309.XSD">
+<DECLARHEAD>
     <TIN>{self._escape_xml(self.taxpayer_tin)}</TIN>
     <C_DOC>F01</C_DOC>
     <C_DOC_SUB>033</C_DOC_SUB>
-    <C_DOC_VER>09</C_DOC_VER>
+    <C_DOC_VER>9</C_DOC_VER>
     <C_DOC_TYPE>{self.declaration_type}</C_DOC_TYPE>
     <C_DOC_CNT>1</C_DOC_CNT>
     <C_REG>{c_reg}</C_REG>
@@ -195,36 +400,33 @@ class L10nUaTaxDocumentWizardF0103309(models.TransientModel):
     <PERIOD_TYPE>{period_type}</PERIOD_TYPE>
     <PERIOD_YEAR>{self.year}</PERIOD_YEAR>
     <C_STI_ORIG>{tax_office_code}</C_STI_ORIG>
-    <C_DOC_STAN>1</C_DOC_STAN>
-    <D_FILL>{today.strftime('%d%m%Y')}</D_FILL>
-  </DECLARHEAD>
-  <DECLARBODY>
-    <HFILL>{today.strftime('%d%m%Y')}</HFILL>
-    <HZY>{self.year}</HZY>
-    <HSTI>{self._escape_xml(tax_office_name)}</HSTI>
-    <HNAME>{self._escape_xml(self.taxpayer_name)}</HNAME>
-    <HLOC>{self._escape_xml(self.taxpayer_address or '')}</HLOC>
-    <HEMAIL>{self._escape_xml(self.taxpayer_email or '')}</HEMAIL>
-    <HTEL>{self._escape_xml(self.taxpayer_phone or '')}</HTEL>
-    <HTIN>{self._escape_xml(self.taxpayer_tin)}</HTIN>
-    <HNACTLG3>{1 if self.has_employees else 0}</HNACTLG3>
-    <HNACTL>{self.employee_count}</HNACTL>
-{activities_xml}    <R01G1>{self._format_amount(self.income_q1)}</R01G1>
-    <R01G2>{self._format_amount(self.income_q2)}</R01G2>
-    <R01G3>{self._format_amount(self.income_q3)}</R01G3>
-    <R01G4>{self._format_amount(self.income_q4)}</R01G4>
-    <R01G5>{self._format_amount(self.income_total)}</R01G5>
-    <R02G1>{self._format_amount(self.tax_q1)}</R02G1>
-    <R02G2>{self._format_amount(self.tax_q2)}</R02G2>
-    <R02G3>{self._format_amount(self.tax_q3)}</R02G3>
-    <R02G4>{self._format_amount(self.tax_q4)}</R02G4>
-    <R02G5>{self._format_amount(self.tax_total)}</R02G5>
-    <R03G1>{self._format_amount(self.esv_base)}</R03G1>
-    <R03G2>{self._format_amount(self.esv_amount)}</R03G2>
-    <HGROUP>{self.fop_group}</HGROUP>
-    <HRATE>{self._format_amount(self.tax_rate)}</HRATE>
-  </DECLARBODY>
-</DECLAR>'''
+    <C_DOC_STAN>1</C_DOC_STAN><D_FILL>{today.strftime('%d%m%Y')}</D_FILL>
+</DECLARHEAD>
+        <DECLARBODY>
+<HZ>1</HZ>
+<{quarter_marker}>1</{quarter_marker}>
+<HZY>{self.year}</HZY>
+<HSTI>{self._escape_xml(tax_office_name)}</HSTI>
+<HNAME>{self._escape_xml(self.taxpayer_name)}</HNAME>
+<HLOC>{self._escape_xml(self.taxpayer_address or '')}</HLOC>
+<HEMAIL>{self._escape_xml(self.taxpayer_email or '')}</HEMAIL>
+<HTEL>{self._escape_xml(self.taxpayer_phone or '')}</HTEL>
+<HTIN>{self._escape_xml(self.taxpayer_tin)}</HTIN>
+<HNACTL>{self.employee_count}</HNACTL>
+{activities_xml}<R006G3>{self._format_amount(self.income_total)}</R006G3>
+<R008G3>{self._format_amount(self.income_total)}</R008G3>
+<R011G3>{self._format_amount(self.tax_amount)}</R011G3>
+<R012G3>{self._format_amount(self.tax_amount)}</R012G3>
+<R013G3>{self._format_amount(self.tax_paid_prev)}</R013G3>
+<R0141G3>{self._format_amount(self.tax_to_pay)}</R0141G3>
+<R014G3>{self._format_amount(self.tax_to_pay)}</R014G3>
+<R023G3>{self._format_amount(self.military_amount)}</R023G3>
+<R024G3>{self._format_amount(self.military_paid_prev)}</R024G3>
+<R025G3>{self._format_amount(self.military_to_pay)}</R025G3>
+<HFILL>{today.strftime('%d%m%Y')}</HFILL>
+<HKEXECUTOR>{self._escape_xml(self.taxpayer_tin)}</HKEXECUTOR>
+<HBOS>{self._escape_xml(self.taxpayer_name)}</HBOS>
+</DECLARBODY></DECLAR>'''
         return xml
 
     def _format_amount(self, value):

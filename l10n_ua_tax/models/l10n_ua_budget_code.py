@@ -32,6 +32,7 @@ class L10nUaBudgetCode(models.Model):
         default=True,
     )
 
-    _sql_constraints = [
-        ('code_uniq', 'unique(code)', 'Budget code must be unique!'),
-    ]
+    _unique_code = models.Constraint(
+        'UNIQUE(code)',
+        'Budget code must be unique!',
+    )

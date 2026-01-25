@@ -53,9 +53,10 @@ class L10nUaKved(models.Model):
         help='Hierarchy level: 1=Section (A-U), 2=Division (01-99), 3=Group (01.1), 4=Class (01.11)',
     )
 
-    _sql_constraints = [
-        ('code_uniq', 'unique(code)', 'KVED code must be unique!'),
-    ]
+    _unique_code = models.Constraint(
+        'UNIQUE(code)',
+        'KVED code must be unique!',
+    )
 
     @api.depends('code', 'name')
     def _compute_complete_name(self):

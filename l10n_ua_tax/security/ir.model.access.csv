@@ -3,5 +3,7 @@ access_l10n_ua_budget_code_user,l10n_ua.budget.code.user,model_l10n_ua_budget_co
 access_l10n_ua_budget_code_manager,l10n_ua.budget.code.manager,model_l10n_ua_budget_code,account.group_account_manager,1,1,1,1
 access_l10n_ua_tax_period_user,l10n_ua.tax.period.user,model_l10n_ua_tax_period,account.group_account_user,1,0,0,0
 access_l10n_ua_tax_period_manager,l10n_ua.tax.period.manager,model_l10n_ua_tax_period,account.group_account_manager,1,1,1,1
-access_l10n_ua_tax_report_user,l10n_ua.tax.report.user,model_l10n_ua_tax_report,account.group_account_user,1,1,1,0
-access_l10n_ua_tax_report_manager,l10n_ua.tax.report.manager,model_l10n_ua_tax_report,account.group_account_manager,1,1,1,1
+access_l10n_ua_tax_document_type_user,l10n_ua.tax.document.type.user,model_l10n_ua_tax_document_type,account.group_account_user,1,0,0,0
+access_l10n_ua_tax_document_type_manager,l10n_ua.tax.document.type.manager,model_l10n_ua_tax_document_type,account.group_account_manager,1,1,1,1
+access_l10n_ua_tax_document_user,l10n_ua.tax.document.user,model_l10n_ua_tax_document,account.group_account_user,1,1,1,0
+access_l10n_ua_tax_document_manager,l10n_ua.tax.document.manager,model_l10n_ua_tax_document,account.group_account_manager,1,1,1,1

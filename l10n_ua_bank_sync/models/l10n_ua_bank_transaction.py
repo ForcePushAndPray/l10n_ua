@@ -124,11 +124,10 @@ class L10nUaBankTransaction(models.Model):
         default=False,
     )
 
-    _sql_constraints = [
-        ('external_id_journal_uniq',
-         'unique(external_id, journal_id)',
-         'Transaction with this External ID already exists for this journal!'),
-    ]
+    _unique_external_journal = models.Constraint(
+        'UNIQUE(external_id, journal_id)',
+        'Transaction with this External ID already exists for this journal!',
+    )
 
     @api.depends('date', 'amount', 'partner_name')
     def _compute_display_name(self):

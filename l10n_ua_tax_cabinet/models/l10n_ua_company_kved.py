@@ -41,7 +41,7 @@ class L10nUaCompanyKved(models.Model):
         default=10,
     )
 
-    _sql_constraints = [
-        ('company_kved_uniq', 'unique(company_id, kved_id)',
-         'This KVED code is already added to the company!'),
-    ]
+    _unique_company_kved = models.Constraint(
+        'UNIQUE(company_id, kved_id)',
+        'This KVED code is already added to the company!',
+    )

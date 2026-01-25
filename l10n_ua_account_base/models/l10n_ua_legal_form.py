@@ -41,9 +41,10 @@ class L10nUaLegalForm(models.Model):
         default=True,
     )
 
-    _sql_constraints = [
-        ('code_uniq', 'unique(code)', 'Legal form code must be unique!'),
-    ]
+    _unique_code = models.Constraint(
+        'UNIQUE(code)',
+        'Legal form code must be unique!',
+    )
 
     def name_get(self):
         return [(rec.id, f"{rec.short_name or rec.code} - {rec.name}") for rec in self]

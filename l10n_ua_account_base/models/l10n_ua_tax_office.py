@@ -81,9 +81,10 @@ class L10nUaTaxOffice(models.Model):
         default=True,
     )
 
-    _sql_constraints = [
-        ('code_uniq', 'unique(code)', 'Tax office code must be unique!'),
-    ]
+    _unique_code = models.Constraint(
+        'UNIQUE(code)',
+        'Tax office code must be unique!',
+    )
 
     @api.depends('code')
     def _compute_codes(self):

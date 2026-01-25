@@ -39,7 +39,7 @@ class L10nUaMarketplaceCategory(models.Model):
         default=True,
     )
 
-    _sql_constraints = [
-        ('external_id_marketplace_uniq', 'unique(external_id, marketplace_type)',
-         'External ID must be unique per marketplace!'),
-    ]
+    _unique_external_marketplace = models.Constraint(
+        'UNIQUE(external_id, marketplace_type)',
+        'External ID must be unique per marketplace!',
+    )

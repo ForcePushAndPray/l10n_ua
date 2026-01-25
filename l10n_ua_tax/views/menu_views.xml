@@ -1,21 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <menuitem id="menu_l10n_ua_tax"
-              name="Taxes"
-              parent="l10n_ua_account_base.menu_l10n_ua_root"
-              sequence="30"/>
+    <!-- ============================================== -->
+    <!-- Taxes UA - Main root menu                      -->
+    <!-- ============================================== -->
 
-    <menuitem id="menu_l10n_ua_tax_periods"
-              name="Tax Periods"
-              parent="menu_l10n_ua_tax"
-              action="l10n_ua_tax_period_action"
+    <menuitem id="menu_ua_tax_root"
+              name="Taxes UA"
+              sequence="54"
+              web_icon="l10n_ua_tax,static/description/icon.png"/>
+
+    <!-- Tax Documents (main menu) -->
+    <menuitem id="menu_ua_tax_documents"
+              name="Tax Documents"
+              parent="menu_ua_tax_root"
+              action="l10n_ua_tax_document_action"
               sequence="10"/>
 
-    <menuitem id="menu_l10n_ua_tax_reports"
-              name="Tax Reports"
-              parent="menu_l10n_ua_tax"
-              action="l10n_ua_tax_report_action"
+    <!-- Tax Periods -->
+    <menuitem id="menu_ua_tax_periods"
+              name="Tax Periods"
+              parent="menu_ua_tax_root"
+              action="l10n_ua_tax_period_action"
               sequence="20"/>
+
+    <!-- Configuration submenu -->
+    <menuitem id="menu_ua_tax_config"
+              name="Configuration"
+              parent="menu_ua_tax_root"
+              sequence="90"/>
+
+    <menuitem id="menu_ua_tax_document_types"
+              name="Document Types"
+              parent="menu_ua_tax_config"
+              action="l10n_ua_tax_document_type_action"
+              sequence="5"/>
+
+    <menuitem id="menu_ua_tax_budget_codes"
+              name="Budget Codes"
+              parent="menu_ua_tax_config"
+              action="l10n_ua_budget_code_action"
+              sequence="10"/>
+
+    <menuitem id="menu_ua_tax_offices"
+              name="Tax Offices (ДПІ)"
+              parent="menu_ua_tax_config"
+              action="l10n_ua_account_base.l10n_ua_tax_office_action"
+              sequence="15"/>
 
 </odoo>

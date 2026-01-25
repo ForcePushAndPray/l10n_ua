@@ -14,9 +14,12 @@
                         <field name="declaration_type"/>
                         <field name="fop_group"/>
                         <field name="tax_rate"/>
+                        <field name="military_rate"/>
                     </group>
                     <group string="Tax Office">
                         <field name="tax_office_id" options="{'no_create': True}"/>
+                        <field name="has_employees"/>
+                        <field name="employee_count" invisible="not has_employees"/>
                     </group>
                 </group>
 
@@ -29,32 +32,60 @@
                     </field>
                 </group>
 
-                <group string="Income by Quarter (Section 5)" colspan="2">
+                <group string="Fill from Bank Transactions" colspan="2">
                     <group>
-                        <field name="income_q1"/>
-                        <field name="income_q2"/>
-                        <field name="income_q3"/>
-                        <field name="income_q4"/>
-                        <field name="income_total" readonly="1"/>
+                        <field name="journal_ids" widget="many2many_tags"
+                               options="{'no_create': True}"
+                               placeholder="Select bank accounts..."/>
                     </group>
                     <group>
-                        <field name="tax_q1"/>
-                        <field name="tax_q2"/>
-                        <field name="tax_q3"/>
-                        <field name="tax_q4"/>
-                        <field name="tax_total" readonly="1"/>
+                        <button name="action_fill_from_bank" string="Fill Income from Bank"
+                                type="object" class="btn-secondary"
+                                help="Compute total income from bank transactions for the period"/>
+                        <button name="action_fill_prev_payments" string="Load Previous Payments"
+                                type="object" class="btn-secondary"
+                                help="Try to load tax payments from previous declarations"/>
                     </group>
                 </group>
 
-                <group string="ESV (Section 8)" colspan="2">
+                <group string="Income (Section 5)" colspan="2">
                     <group>
-                        <field name="esv_base"/>
-                        <field name="esv_rate"/>
-                        <field name="esv_amount" readonly="1"/>
+                        <field name="income_total"/>
                     </group>
                     <group>
-                        <field name="has_employees"/>
-                        <field name="employee_count" invisible="not has_employees"/>
+                        <div class="text-muted">
+                            <p>R006G3 - Total income for the reporting period</p>
+                        </div>
+                    </group>
+                </group>
+
+                <group string="Single Tax (Section 6)" colspan="2">
+                    <group>
+                        <field name="tax_amount" readonly="1"/>
+                        <field name="tax_paid_prev"/>
+                        <field name="tax_to_pay" readonly="1"/>
+                    </group>
+                    <group>
+                        <div class="text-muted">
+                            <p>R011G3 - Tax calculated (income × rate)</p>
+                            <p>R013G3 - Tax paid in previous quarters</p>
+                            <p>R0141G3 - Tax to pay this period</p>
+                        </div>
+                    </group>
+                </group>
+
+                <group string="Military Tax (Section 7)" colspan="2">
+                    <group>
+                        <field name="military_amount" readonly="1"/>
+                        <field name="military_paid_prev"/>
+                        <field name="military_to_pay" readonly="1"/>
+                    </group>
+                    <group>
+                        <div class="text-muted">
+                            <p>R023G3 - Military tax (income × 1%)</p>
+                            <p>R024G3 - Military tax paid previously</p>
+                            <p>R025G3 - Military tax to pay</p>
+                        </div>
                     </group>
                 </group>
             </xpath>
