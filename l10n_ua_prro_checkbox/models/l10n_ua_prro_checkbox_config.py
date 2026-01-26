@@ -1,4 +1,5 @@
 import logging
+from datetime import timedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
@@ -30,11 +31,14 @@ class L10nUaPrroCheckboxConfig(models.Model):
     )
     
     # Checkbox API credentials
-    test_mode = fields.Boolean(
-        string='Test Mode',
-        default=False,
-        help='Use Checkbox development API',
-        tracking=True,
+    auth_type = fields.Selection(
+        selection=[
+            ('login', 'Login and Password'),
+            ('pin', 'PIN Code'),
+        ],
+        string='Authentication Type',
+        default='login',
+        required=True,
     )
     license_key = fields.Char(
         string='License Key',
@@ -49,6 +53,25 @@ class L10nUaPrroCheckboxConfig(models.Model):
     cashier_pin = fields.Char(
         string='Cashier PIN',
     )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            self._clean_auth_fields(vals)
+        return super().create(vals_list)
+
+    def write(self, vals):
+        if 'auth_type' in vals:
+            self._clean_auth_fields(vals)
+        return super().write(vals)
+
+    def _clean_auth_fields(self, vals):
+        auth_type = vals.get('auth_type')
+        if auth_type == 'pin':
+            vals['cashier_login'] = False
+            vals['cashier_password'] = False
+        elif auth_type == 'login':
+            vals['cashier_pin'] = False
     
     # Cash register info (from API)
     cash_register_id = fields.Char(
@@ -123,7 +146,6 @@ class L10nUaPrroCheckboxConfig(models.Model):
         return CheckboxAPI(
             license_key=self.license_key,
             access_token=self.access_token,
-            test_mode=self.test_mode,
         )
 
     def _clear_error(self):
@@ -140,18 +162,22 @@ class L10nUaPrroCheckboxConfig(models.Model):
         self.ensure_one()
         self._clear_error()
 
-        if not self.cashier_login or not self.cashier_password:
-            raise UserError(_('Please provide cashier login and password.'))
-
         try:
             api = CheckboxAPI(
                 license_key=self.license_key,
-                test_mode=self.test_mode,
             )
-            response = api.cashier_signin(self.cashier_login, self.cashier_password)
+            if self.auth_type == 'pin':
+                if not self.cashier_pin:
+                    raise UserError(_('Please provide cashier PIN code.'))
+                response = api.cashier_signin_pincode(self.cashier_pin)
+            else:
+                if not self.cashier_login or not self.cashier_password:
+                    raise UserError(_('Please provide cashier login and password.'))
+                response = api.cashier_signin_login_password(self.cashier_login, self.cashier_password)
 
             self.write({
                 'access_token': response.get('access_token'),
+                'token_expiry': fields.Datetime.now() + timedelta(weeks=1),
                 'state': 'authenticated',
             })
 
@@ -188,6 +214,7 @@ class L10nUaPrroCheckboxConfig(models.Model):
                 pass
         self.write({
             'access_token': False,
+            'token_expiry': False,
             'state': 'configured' if self.license_key else 'draft',
         })
         self.message_post(body=_('Signed out from Checkbox API.'))

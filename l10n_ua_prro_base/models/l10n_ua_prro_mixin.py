@@ -8,6 +8,7 @@ class L10nUaPrroMixin(models.AbstractModel):
     prro_provider = fields.Selection(
         selection=[],
         string='PRRO Provider',
+        default=False,
     )
 
     def action_open_shift(self):

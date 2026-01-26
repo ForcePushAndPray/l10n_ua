@@ -9,19 +9,19 @@ from odoo import _, exceptions
 
 _logger = logging.getLogger(__name__)
 
-CHECKBOX_PROD_URL = 'https://api.checkbox.in.ua/api/v1/'
-CHECKBOX_DEV_URL = 'https://dev-api.checkbox.in.ua/api/v1/'
+CHECKBOX_URL = 'https://api.checkbox.in.ua/api/v1/'
+
+# TODO: Make timeout configurable. 30 sec is very small for some operations.
 REQUEST_TIMEOUT = 30
 
 
 class CheckboxAPI:
     """Checkbox PRRO API client."""
 
-    def __init__(self, license_key=None, access_token=None, test_mode=False):
+    def __init__(self, license_key=None, access_token=None):
         self.license_key = license_key
         self.access_token = access_token
-        self.test_mode = test_mode
-        self.base_url = CHECKBOX_DEV_URL if test_mode else CHECKBOX_PROD_URL
+        self.base_url = CHECKBOX_URL
 
     def _get_url(self, endpoint):
         return urljoin(self.base_url, endpoint.lstrip('/'))
@@ -95,12 +95,22 @@ class CheckboxAPI:
         return self._request('POST', endpoint, data=data, **kwargs)
 
     # Authentication
-    def cashier_signin(self, login, password):
+    def cashier_signin_login_password(self, login, password):
         response = self._post(
             '/cashier/signin',
             data={'login': login, 'password': password},
             with_auth=False,
             with_license=False,
+        )
+        self.access_token = response.get('access_token')
+        return response
+
+    def cashier_signin_pincode(self, pin_code):
+        response = self._post(
+            '/cashier/signinPinCode',
+            data={'pin_code': pin_code},
+            with_auth=False,
+            with_license=True,
         )
         self.access_token = response.get('access_token')
         return response
