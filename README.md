@@ -22,25 +22,13 @@
 
 ![Module Architecture](diagrams/full_architecture.svg)
 
-```
-                              ┌─────────────────────┐
-                              │ l10n_ua_account_base│  ← Фундамент
-                              └──────────┬──────────┘
-       ┌──────────────┬───────────┬──────┴──────┬───────────┬──────────────┐
-       ▼              ▼           ▼             ▼           ▼              ▼
-┌─────────────┐ ┌───────────┐ ┌─────────┐ ┌──────────┐ ┌──────────┐ ┌───────────┐
-│   HR Base   │ │Accounting │ │Bank Sync│ │PRRO Base │ │ Delivery │ │Marketplace│
-│  (10 модулів)│ │  + Tax    │ │(4 модулі)│ │(2 модулі)│ │(4 модулі)│ │ (3 модулі)│
-└─────────────┘ └───────────┘ └─────────┘ └──────────┘ └──────────┘ └───────────┘
-```
-
 ---
 
 ## Базовий модуль
 
 ### l10n_ua_account_base — Фундамент локалізації
 
-**Призначення:** Спільні довідники та утиліти для всіх модулів.
+**Призначення:** Базовий модуль для всіх українських локалізацій — довідники, валідації, утиліти та базовий облік.
 
 | Модель | Опис | Записів |
 |--------|------|---------|
@@ -48,11 +36,17 @@
 | `l10n_ua.koatuu` | Довідник КАТОТТГ | 19000+ |
 | `l10n_ua.tax.office` | Податкові інспекції (ДПІ) | ~40 |
 | `l10n_ua.legal.form` | Організаційно-правові форми | 19 |
+| `l10n_ua.journal.order` | Журнали-ордери (№1-7) | — |
+| `l10n_ua.osv` | Оборотно-сальдова відомість | — |
 
 **Розширення res.partner:**
 - ЄДРПОУ (8 цифр з контрольною сумою)
 - ІПН/РНОКПП (10 цифр з контрольною сумою)
 - КВЕД (основний та додаткові)
+
+**Розширення account.account:**
+- План рахунків України (класи 0-9)
+- Українська класифікація рахунків
 
 **Утиліти (tools/):**
 - `validators.py` — валідація ЄДРПОУ, ІПН, IBAN
@@ -62,13 +56,20 @@
 
 ## Бухгалтерія та податки
 
-### l10n_ua_accounting — План рахунків П(С)БО
+### l10n_ua_accounting — Функціонал бухгалтера (PLANNED)
 
-- План рахунків України (класи 0-9)
-- Журнали-ордери, головна книга
-- Оборотно-сальдова відомість
+**Поточний стан:** Кумулятивний модуль (bundle), встановлює залежності.
+
+**План розвитку:**
+- Кореневе меню "Бухгалтерія UA" (sequence=51)
+- ПКО (Прибутковий касовий ордер, КО-1)
+- ВКО (Видатковий касовий ордер, КО-2)
+- Касова книга
+- Акти наданих послуг
+- Акти звірки взаєморозрахунків
 - Баланс (Форма №1), Звіт про фінрезультати (Форма №2)
-- Касова книга, ПКО, ВКО
+
+> **Примітка:** План рахунків, ОСВ та журнали-ордери реалізовані в `l10n_ua_account_base`.
 
 ### l10n_ua_assets — Основні засоби
 
@@ -388,6 +389,149 @@ odoo-bin -d <database> -u l10n_ua_account_base --stop-after-init
 
 ---
 
+## Структура меню
+
+![Menu Structure](diagrams/menu_structure.svg)
+
+### Кореневі меню
+
+| Меню | Sequence | Модуль | Опис |
+|------|----------|--------|------|
+| Invoicing | 50 | Odoo (account) | Стандартне меню → розширюємо |
+| **Payroll** | 30 | l10n_ua_hr_salary | Зарплата |
+| **Timesheet** | 50 | l10n_ua_hr_attendance_sheet | Табель обліку |
+| **Bank UA** | 53 | l10n_ua_bank_sync | Банківські виписки |
+| **Taxes UA** | 54 | l10n_ua_tax | Податковий облік |
+| Employees | 60 | Odoo (hr) | Стандартне меню → розширюємо |
+
+### Invoicing → Configuration → Ukraine
+
+```
+Ukraine
+├── Directories
+│   ├── KOATUU/KATOTTG          (l10n_ua_account_base)
+│   └── KVED-2010               (l10n_ua_account_base)
+├── UA Accounting
+│   ├── Journal Orders          (l10n_ua_account_base)
+│   └── Trial Balance (OSV)     (l10n_ua_account_base)
+├── Fixed Assets
+│   └── MNMA                    (l10n_ua_assets)
+├── PRRO
+│   ├── Configurations          (l10n_ua_prro_base)
+│   ├── Shifts                  (l10n_ua_prro_base)
+│   ├── Receipts                (l10n_ua_prro_base)
+│   └── Checkbox                (l10n_ua_prro_checkbox)
+├── Delivery
+│   └── Warehouses              (l10n_ua_delivery_base)
+└── Marketplaces
+    ├── Configurations          (l10n_ua_marketplace_base)
+    ├── Orders                  (l10n_ua_marketplace_base)
+    └── Category Mapping        (l10n_ua_marketplace_base)
+```
+
+### Bank UA
+
+```
+Bank UA
+├── Dashboard
+├── Statements
+│   ├── Statements
+│   ├── Transactions
+│   └── Generate Statement
+├── Sync Jobs
+│   └── Jobs
+└── Configuration
+    ├── Connections             (l10n_ua_bank_sync)
+    ├── Currencies              (l10n_ua_bank_currency_sync)
+    ├── Currency Rates          (l10n_ua_bank_currency_sync)
+    └── Rate Providers          (l10n_ua_bank_currency_sync)
+```
+
+### Taxes UA
+
+```
+Taxes UA
+├── Tax Documents               (l10n_ua_tax)
+├── Tax Periods                 (l10n_ua_tax)
+├── Tax Cabinet
+│   └── Sync Documents          (l10n_ua_tax_cabinet)
+├── VAT
+│   ├── Tax Invoices            (l10n_ua_account_vat)
+│   ├── VAT Registers           (l10n_ua_account_vat)
+│   └── VAT Declarations        (l10n_ua_account_vat)
+├── FOP (Single Tax)
+│   ├── Income Books            (l10n_ua_fop)
+│   └── Declarations            (l10n_ua_fop)
+└── Configuration
+    ├── Document Types          (l10n_ua_tax)
+    ├── Budget Codes            (l10n_ua_tax)
+    ├── Tax Offices (ДПІ)       (l10n_ua_account_base)
+    └── Cabinet Connections     (l10n_ua_tax_cabinet)
+```
+
+### Employees (HR)
+
+```
+Employees
+├── Documents
+│   ├── Штатний розпис          (l10n_ua_hr_base)
+│   ├── Salary Changes          (l10n_ua_hr_contract)
+│   ├── Job Combining           (l10n_ua_hr_contract)
+│   ├── Amendments              (l10n_ua_hr_contract)
+│   ├── Кадрові накази          (l10n_ua_hr_documents)
+│   ├── Order Templates         (l10n_ua_hr_documents)
+│   ├── Personal Files          (l10n_ua_hr_documents)
+│   └── Certificates            (l10n_ua_hr_documents_certificates)
+├── Configuration → Ukraine
+│   ├── Classifiers
+│   │   ├── Professions (KP 2010)
+│   │   ├── Education Levels
+│   │   ├── Tariff Grades
+│   │   └── Employee Benefits
+│   └── Military Accounting
+│       ├── Military Ranks
+│       └── Territorial Centers
+└── Reports
+    ├── 1DF Reports             (l10n_ua_hr_reports)
+    ├── D5 ESV Reports          (l10n_ua_hr_reports)
+    └── Generate Report         (l10n_ua_hr_reports)
+```
+
+### Payroll
+
+```
+Payroll
+├── Payslips                    (l10n_ua_hr_salary)
+├── Batches                     (l10n_ua_hr_salary)
+├── Execution Documents         (l10n_ua_hr_salary)
+└── Configuration
+    ├── PSP Parameters
+    ├── Accrual Types
+    └── Deduction Types
+```
+
+### Time Off (Відпустки)
+
+```
+Time Off
+├── Sick Leaves                 (l10n_ua_hr_holidays)
+├── Vacation Balances           (l10n_ua_hr_holidays)
+├── Vacation Schedules          (l10n_ua_hr_holidays)
+└── Vacation Calendar           (l10n_ua_hr_holidays)
+```
+
+### Timesheet (Табель)
+
+```
+Timesheet
+├── Timesheets                  (l10n_ua_hr_attendance_sheet)
+└── Configuration
+    ├── Production Calendars
+    └── Timesheet Codes
+```
+
+---
+
 ## Діаграми
 
 Всі діаграми знаходяться в папці `diagrams/`:
@@ -395,6 +539,7 @@ odoo-bin -d <database> -u l10n_ua_account_base --stop-after-init
 | Файл | Опис |
 |------|------|
 | `full_architecture.puml` | Загальна архітектура всіх модулів |
+| `menu_structure.puml` | Структура меню |
 | `module_architecture.puml` | Архітектура HR модулів |
 | `data_model.puml` | Модель даних HR |
 | `prro_workflow.puml` | Процес фіскалізації чека |
@@ -408,7 +553,7 @@ odoo-bin -d <database> -u l10n_ua_account_base --stop-after-init
 
 ## Контакти
 
-**Автор:** Святослав Надозірний
+**Автори:** Святослав Надозірний, Ярослав Кравець
 **Website:** https://ndev.online
 
 ---
