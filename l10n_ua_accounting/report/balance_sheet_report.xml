@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Balance Sheet Report Action -->
+    <record id="action_report_balance_sheet" model="ir.actions.report">
+        <field name="name">Баланс (Форма №1)</field>
+        <field name="model">l10n_ua.balance.report.wizard</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_accounting.report_balance_sheet_document</field>
+        <field name="report_file">l10n_ua_accounting.report_balance_sheet_document</field>
+        <field name="print_report_name">'Баланс_%s' % object.date_to</field>
+    </record>
+
+    <!-- Balance Sheet Report Template -->
+    <template id="report_balance_sheet_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="wizard">
+                <t t-call="web.external_layout">
+                    <t t-call="l10n_ua_accounting.report_ua_styles"/>
+                    <t t-set="data" t-value="wizard._get_report_data()"/>
+                    <div class="page ua-report">
+                        <!-- Header -->
+                        <div class="text-center mb-2">
+                            <div class="small">Додаток 1 до Національного положення (стандарту)</div>
+                            <div class="small">бухгалтерського обліку 1 «Загальні вимоги до фінансової звітності»</div>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-8">
+                                <table class="table-borderless" style="width: 100%;">
+                                    <tr>
+                                        <td style="width: 120px;">Підприємство</td>
+                                        <td class="border-bottom" t-field="wizard.company_id.name"/>
+                                    </tr>
+                                    <tr t-if="wizard.company_id.company_registry">
+                                        <td>за ЄДРПОУ</td>
+                                        <td class="border-bottom" t-field="wizard.company_id.company_registry"/>
+                                    </tr>
+                                </table>
+                            </div>
+                            <div class="col-4 text-right">
+                                <div class="small">КОДИ</div>
+                                <table class="small" style="float: right;">
+                                    <tr>
+                                        <td class="border">Дата (рік, місяць, число)</td>
+                                        <td class="border text-center" t-esc="wizard.date_to.strftime('%Y.%m.%d')"/>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="ua-report-title">
+                            БАЛАНС<br/>
+                            (Звіт про фінансовий стан)
+                        </div>
+                        <div class="ua-report-subtitle mb-3">
+                            на <span t-field="wizard.date_to" t-options='{"widget": "date"}'/> р.
+                        </div>
+
+                        <div class="small text-center mb-2">Форма № 1</div>
+
+                        <!-- ASSETS -->
+                        <div class="bold mb-2">АКТИВ</div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 50%;">Стаття</th>
+                                    <th style="width: 10%;">Код рядка</th>
+                                    <th style="width: 20%;">На початок звітного періоду</th>
+                                    <th style="width: 20%;">На кінець звітного періоду</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="bold">I. Необоротні активи</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <t t-foreach="['intangible_assets', 'unfinished_capex', 'fixed_assets', 'investment_property', 'long_term_receivables', 'deferred_tax_assets']" t-as="key">
+                                    <tr t-if="data['assets'].get(key)">
+                                        <td t-esc="data['assets'][key]['name']"/>
+                                        <td class="text-center" t-esc="data['assets'][key]['code']"/>
+                                        <td class="text-right" t-esc="'%.0f' % data['assets'][key]['previous']"/>
+                                        <td class="text-right" t-esc="'%.0f' % data['assets'][key]['current']"/>
+                                    </tr>
+                                </t>
+                                <tr>
+                                    <td class="bold">Усього за розділом I</td>
+                                    <td class="text-center">1095</td>
+                                    <td class="text-right bold" t-esc="'%.0f' % data['totals']['non_current_assets']"/>
+                                    <td class="text-right bold" t-esc="'%.0f' % data['totals']['non_current_assets']"/>
+                                </tr>
+
+                                <tr>
+                                    <td class="bold">II. Оборотні активи</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <t t-foreach="['inventories', 'receivables_goods', 'receivables_budget', 'other_current_receivables', 'cash', 'prepaid_expenses']" t-as="key">
+                                    <tr t-if="data['assets'].get(key)">
+                                        <td t-esc="data['assets'][key]['name']"/>
+                                        <td class="text-center" t-esc="data['assets'][key]['code']"/>
+                                        <td class="text-right" t-esc="'%.0f' % data['assets'][key]['previous']"/>
+                                        <td class="text-right" t-esc="'%.0f' % data['assets'][key]['current']"/>
+                                    </tr>
+                                </t>
+                                <tr>
+                                    <td class="bold">Усього за розділом II</td>
+                                    <td class="text-center">1195</td>
+                                    <td class="text-right bold" t-esc="'%.0f' % data['totals']['current_assets']"/>
+                                    <td class="text-right bold" t-esc="'%.0f' % data['totals']['current_assets']"/>
+                                </tr>
+
+                                <tr style="border-top: 2px solid black;">
+                                    <td class="bold">БАЛАНС</td>
+                                    <td class="text-center">1300</td>
+                                    <td class="text-right bold" t-esc="'%.0f' % data['totals']['total_assets']"/>
+                                    <td class="text-right bold" t-esc="'%.0f' % data['totals']['total_assets']"/>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- LIABILITIES -->
+                        <div class="bold mb-2 mt-4">ПАСИВ</div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th style="width: 50%;">Стаття</th>
+                                    <th style="width: 10%;">Код рядка</th>
+                                    <th style="width: 20%;">На початок звітного періоду</th>
+                                    <th style="width: 20%;">На кінець звітного періоду</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="bold">I. Власний капітал</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <t t-foreach="['registered_capital', 'additional_capital', 'reserve_capital', 'retained_earnings']" t-as="key">
+                                    <tr t-if="data['liabilities'].get(key)">
+                                        <td t-esc="data['liabilities'][key]['name']"/>
+                                        <td class="text-center" t-esc="data['liabilities'][key]['code']"/>
+                                        <td class="text-right" t-esc="'%.0f' % data['liabilities'][key]['previous']"/>
+                                        <td class="text-right" t-esc="'%.0f' % data['liabilities'][key]['current']"/>
+                                    </tr>
+                                </t>
+                                <tr>
+                                    <td class="bold">Усього за розділом I</td>
+                                    <td class="text-center">1495</td>
+                                    <td class="text-right bold" t-esc="'%.0f' % data['totals']['equity']"/>
+                                    <td class="text-right bold" t-esc="'%.0f' % data['totals']['equity']"/>
+                                </tr>
+
+                                <tr>
+                                    <td class="bold">II. Довгострокові зобов'язання</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <t t-foreach="['long_term_loans', 'long_term_liabilities']" t-as="key">
+                                    <tr t-if="data['liabilities'].get(key)">
+                                        <td t-esc="data['liabilities'][key]['name']"/>
+                                        <td class="text-center" t-esc="data['liabilities'][key]['code']"/>
+                                        <td class="text-right" t-esc="'%.0f' % data['liabilities'][key]['previous']"/>
+                                        <td class="text-right" t-esc="'%.0f' % data['liabilities'][key]['current']"/>
+                                    </tr>
+                                </t>
+                                <tr>
+                                    <td class="bold">Усього за розділом II</td>
+                                    <td class="text-center">1595</td>
+                                    <td class="text-right bold" t-esc="'%.0f' % data['totals']['long_term_liabilities']"/>
+                                    <td class="text-right bold" t-esc="'%.0f' % data['totals']['long_term_liabilities']"/>
+                                </tr>
+
+                                <tr>
+                                    <td class="bold">III. Поточні зобов'язання</td>
+                                    <td></td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <t t-foreach="['short_term_loans', 'payables_goods', 'payables_budget', 'payables_insurance', 'payables_wages', 'other_current_liabilities']" t-as="key">
+                                    <tr t-if="data['liabilities'].get(key)">
+                                        <td t-esc="data['liabilities'][key]['name']"/>
+                                        <td class="text-center" t-esc="data['liabilities'][key]['code']"/>
+                                        <td class="text-right" t-esc="'%.0f' % data['liabilities'][key]['previous']"/>
+                                        <td class="text-right" t-esc="'%.0f' % data['liabilities'][key]['current']"/>
+                                    </tr>
+                                </t>
+                                <tr>
+                                    <td class="bold">Усього за розділом III</td>
+                                    <td class="text-center">1695</td>
+                                    <td class="text-right bold" t-esc="'%.0f' % data['totals']['current_liabilities']"/>
+                                    <td class="text-right bold" t-esc="'%.0f' % data['totals']['current_liabilities']"/>
+                                </tr>
+
+                                <tr style="border-top: 2px solid black;">
+                                    <td class="bold">БАЛАНС</td>
+                                    <td class="text-center">1900</td>
+                                    <td class="text-right bold" t-esc="'%.0f' % data['totals']['total_liabilities']"/>
+                                    <td class="text-right bold" t-esc="'%.0f' % data['totals']['total_liabilities']"/>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- Signatures -->
+                        <div class="row mt-5">
+                            <div class="col-6">
+                                <div class="signature-row">
+                                    <span>Керівник</span>
+                                    <span class="signature-line"></span>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="signature-row">
+                                    <span>Головний бухгалтер</span>
+                                    <span class="signature-line"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

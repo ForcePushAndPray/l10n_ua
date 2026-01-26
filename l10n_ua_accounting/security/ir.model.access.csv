@@ -1,3 +1,9 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-access_cash_book_wizard_user,l10n_ua.cash.book.wizard.user,model_l10n_ua_cash_book_wizard,l10n_ua_account_base.group_ua_accountant,1,1,1,1
-access_reconciliation_act_wizard_user,l10n_ua.reconciliation.act.wizard.user,model_l10n_ua_reconciliation_act_wizard,l10n_ua_account_base.group_ua_accountant,1,1,1,1
+access_cash_book_wizard_user,l10n_ua.cash.book.wizard.user,model_l10n_ua_cash_book_wizard,account.group_account_user,1,1,1,1
+access_reconciliation_act_wizard_user,l10n_ua.reconciliation.act.wizard.user,model_l10n_ua_reconciliation_act_wizard,account.group_account_user,1,1,1,1
+access_balance_report_wizard_user,l10n_ua.balance.report.wizard.user,model_l10n_ua_balance_report_wizard,account.group_account_user,1,1,1,1
+access_pnl_report_wizard_user,l10n_ua.pnl.report.wizard.user,model_l10n_ua_pnl_report_wizard,account.group_account_user,1,1,1,1
+access_service_act_user,l10n_ua.service.act.user,model_l10n_ua_service_act,account.group_account_user,1,1,1,1
+access_service_act_line_user,l10n_ua.service.act.line.user,model_l10n_ua_service_act_line,account.group_account_user,1,1,1,1
+access_advance_report_user,l10n_ua.advance.report.user,model_l10n_ua_advance_report,account.group_account_user,1,1,1,1
+access_advance_report_line_user,l10n_ua.advance.report.line.user,model_l10n_ua_advance_report_line,account.group_account_user,1,1,1,1

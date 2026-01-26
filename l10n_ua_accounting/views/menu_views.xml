@@ -29,8 +29,19 @@
               action="action_ua_invoices"
               sequence="10"/>
 
-    <!-- Service Acts - will be implemented later as separate model -->
-    <!-- For now, link to invoices with service type -->
+    <!-- Service Acts -->
+    <menuitem id="menu_ua_docs_service_acts"
+              name="Акти наданих послуг"
+              parent="menu_ua_docs"
+              action="action_service_act"
+              sequence="20"/>
+
+    <!-- Advance Reports -->
+    <menuitem id="menu_ua_docs_advance_reports"
+              name="Авансові звіти"
+              parent="menu_ua_docs"
+              action="action_advance_report"
+              sequence="40"/>
 
     <!-- ==================== Каса та банк ==================== -->
     <menuitem id="menu_ua_cash_bank"
@@ -70,13 +81,13 @@
               sequence="50"/> -->
 
     <!-- ==================== Основні засоби ==================== -->
-    <menuitem id="menu_ua_assets"
+    <!-- Commented out - no active children, will be enabled when l10n_ua_assets module is ready -->
+    <!-- <menuitem id="menu_ua_assets"
               name="Основні засоби"
               parent="menu_ua_accounting_root"
               sequence="30"/>
 
-    <!-- Asset Cards - placeholder for l10n_ua_assets module -->
-    <!-- <menuitem id="menu_ua_assets_cards"
+    <menuitem id="menu_ua_assets_cards"
               name="Картки ОЗ"
               parent="menu_ua_assets"
               action="l10n_ua_assets.action_asset_cards"
@@ -107,18 +118,19 @@
               action="account.action_account_moves_all"
               sequence="25"/>
 
-    <!-- Balance Sheet and P&L - will be implemented as wizards -->
-    <!-- <menuitem id="menu_ua_reports_balance"
+    <!-- Balance Sheet (Форма №1) -->
+    <menuitem id="menu_ua_reports_balance"
               name="Баланс (Форма №1)"
               parent="menu_ua_reports"
-              action="action_ua_balance_report"
+              action="action_balance_report_wizard"
               sequence="30"/>
 
+    <!-- P&L (Форма №2) -->
     <menuitem id="menu_ua_reports_pnl"
               name="Звіт про фін. результати (Форма №2)"
               parent="menu_ua_reports"
-              action="action_ua_pnl_report"
-              sequence="40"/> -->
+              action="action_pnl_report_wizard"
+              sequence="40"/>
 
     <!-- ==================== Налаштування ==================== -->
     <menuitem id="menu_ua_config"

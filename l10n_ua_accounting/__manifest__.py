@@ -1,8 +1,8 @@
 {
     'name': 'Ukraine - Accounting Suite',
-    'version': '19.0.2.0.0',
+    'version': '19.0.3.0.0',
     'category': 'Accounting/Localization',
-    'summary': 'Ukrainian accounting: PKO/VKO, Cash Book, Reconciliation Acts',
+    'summary': 'Ukrainian accounting: PKO/VKO, Cash Book, Balance Sheet, P&L',
     'description': """
 Ukraine Accounting Suite
 ========================
@@ -27,6 +27,13 @@ Complete Ukrainian accounting functionality for Odoo:
 * Opening/closing balances
 * Printable format for signing
 
+**Financial Statements:**
+* Balance Sheet (Баланс, Форма №1)
+* Profit & Loss Statement (Звіт про фінансові результати, Форма №2)
+* Automatic calculation from Chart of Accounts
+* Comparison with previous period
+* PDF export
+
 **Menu "Бухгалтерія UA":**
 * Root menu with sequence 51
 * Documents, Cash, Reports, Settings sections
@@ -42,6 +49,10 @@ Dependencies:
     'license': 'LGPL-3',
     'depends': [
         'account',
+        'mail',
+        'hr',
+        'product',
+        'uom',
         'l10n_ua_account_base',
         'l10n_ua_tax',
         'l10n_ua_tax_cabinet',
@@ -54,8 +65,13 @@ Dependencies:
         # Views
         'views/account_payment_views.xml',
         'views/account_journal_views.xml',
+        'views/service_act_views.xml',
+        'views/advance_report_views.xml',
+        # Wizards
         'wizard/cash_book_wizard_views.xml',
         'wizard/reconciliation_act_wizard_views.xml',
+        'wizard/balance_report_wizard_views.xml',
+        'wizard/pnl_report_wizard_views.xml',
         # Menu
         'views/menu_views.xml',
         # Reports
@@ -64,6 +80,10 @@ Dependencies:
         'report/vko_report.xml',
         'report/cash_book_report.xml',
         'report/reconciliation_act_report.xml',
+        'report/balance_sheet_report.xml',
+        'report/pnl_report.xml',
+        'report/service_act_report.xml',
+        'report/advance_report_report.xml',
     ],
     'demo': [],
     'images': ['static/description/icon.png'],
