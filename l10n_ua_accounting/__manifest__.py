@@ -1,35 +1,70 @@
 {
-    'name': 'Ukraine - Full Accounting Suite',
-    'version': '19.0.1.0.0',
+    'name': 'Ukraine - Accounting Suite',
+    'version': '19.0.2.0.0',
     'category': 'Accounting/Localization',
-    'summary': 'Complete Ukrainian accounting localization (cumulative module)',
+    'summary': 'Ukrainian accounting: PKO/VKO, Cash Book, Reconciliation Acts',
     'description': """
-Ukraine Full Accounting Suite
-=============================
+Ukraine Accounting Suite
+========================
 
-This is a cumulative module that installs the complete Ukrainian
-accounting localization for Odoo.
+Complete Ukrainian accounting functionality for Odoo:
 
-Includes:
-* l10n_ua_account_base - Base localization (directories, chart of accounts)
-* l10n_ua_tax - Tax management (periods, reports, budget codes)
-* l10n_ua_tax_cabinet - Tax Cabinet integration (cabinet.tax.gov.ua)
-* l10n_ua_bank_sync - Bank synchronization (PrivatBank, Mono, PUMB)
-* l10n_ua_bank_currency_sync - Currency rates (NBU, PrivatBank, Mono)
+**Cash Operations (ПКО/ВКО):**
+* Cash Receipt Orders (Прибуткові касові ордери, форма КО-1)
+* Cash Disbursement Orders (Видаткові касові ордери, форма КО-2)
+* Automatic numbering sequences per cash journal
+* Ukrainian printed forms
 
-Install this module to get all Ukrainian accounting features at once.
+**Cash Book (Касова книга):**
+* Daily cash movements report
+* Opening/closing balances
+* Automatic calculations from posted payments
+* Printable format
+
+**Reconciliation Acts (Акти звірки):**
+* Partner balance reconciliation
+* Receivable/Payable filtering
+* Opening/closing balances
+* Printable format for signing
+
+**Menu "Бухгалтерія UA":**
+* Root menu with sequence 51
+* Documents, Cash, Reports, Settings sections
+* Links to OSV, Journal Orders from l10n_ua_account_base
+
+Dependencies:
+* l10n_ua_account_base - Base localization (directories, validators)
+* l10n_ua_tax - Tax management
+* l10n_ua_bank_sync - Bank synchronization
     """,
     'author': 'Svyatoslav Nadozirny',
     'website': 'https://ndev.online',
     'license': 'LGPL-3',
     'depends': [
+        'account',
         'l10n_ua_account_base',
         'l10n_ua_tax',
         'l10n_ua_tax_cabinet',
         'l10n_ua_bank_sync',
         'l10n_ua_bank_currency_sync',
     ],
-    'data': [],
+    'data': [
+        # Security
+        'security/ir.model.access.csv',
+        # Views
+        'views/account_payment_views.xml',
+        'views/account_journal_views.xml',
+        'wizard/cash_book_wizard_views.xml',
+        'wizard/reconciliation_act_wizard_views.xml',
+        # Menu
+        'views/menu_views.xml',
+        # Reports
+        'report/report_templates.xml',
+        'report/pko_report.xml',
+        'report/vko_report.xml',
+        'report/cash_book_report.xml',
+        'report/reconciliation_act_report.xml',
+    ],
     'demo': [],
     'images': ['static/description/icon.png'],
     'installable': True,

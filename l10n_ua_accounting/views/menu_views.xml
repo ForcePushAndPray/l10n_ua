@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Root Menu: Бухгалтерія UA -->
+    <menuitem id="menu_ua_accounting_root"
+              name="Бухгалтерія UA"
+              sequence="51"
+              groups="account.group_account_user"
+              web_icon="l10n_ua_accounting,static/description/icon.png"/>
+
+    <!-- ==================== Документи ==================== -->
+    <menuitem id="menu_ua_docs"
+              name="Документи"
+              parent="menu_ua_accounting_root"
+              sequence="10"/>
+
+    <!-- Invoices filter: Customer Invoices -->
+    <record id="action_ua_invoices" model="ir.actions.act_window">
+        <field name="name">Рахунки</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('move_type', 'in', ('out_invoice', 'out_refund'))]</field>
+        <field name="context">{'default_move_type': 'out_invoice'}</field>
+    </record>
+
+    <menuitem id="menu_ua_docs_invoices"
+              name="Рахунки"
+              parent="menu_ua_docs"
+              action="action_ua_invoices"
+              sequence="10"/>
+
+    <!-- Service Acts - will be implemented later as separate model -->
+    <!-- For now, link to invoices with service type -->
+
+    <!-- ==================== Каса та банк ==================== -->
+    <menuitem id="menu_ua_cash_bank"
+              name="Каса та банк"
+              parent="menu_ua_accounting_root"
+              sequence="20"/>
+
+    <menuitem id="menu_ua_cash_pko"
+              name="ПКО (Прибуткові)"
+              parent="menu_ua_cash_bank"
+              action="action_account_payment_pko"
+              sequence="10"/>
+
+    <menuitem id="menu_ua_cash_vko"
+              name="ВКО (Видаткові)"
+              parent="menu_ua_cash_bank"
+              action="action_account_payment_vko"
+              sequence="20"/>
+
+    <menuitem id="menu_ua_cash_book"
+              name="Касова книга"
+              parent="menu_ua_cash_bank"
+              action="action_cash_book_wizard"
+              sequence="30"/>
+
+    <menuitem id="menu_ua_reconciliation"
+              name="Акти звірки"
+              parent="menu_ua_cash_bank"
+              action="action_reconciliation_act_wizard"
+              sequence="40"/>
+
+    <!-- Bank statements - link to bank sync module if installed -->
+    <!-- <menuitem id="menu_ua_bank_statements"
+              name="Банківські виписки"
+              parent="menu_ua_cash_bank"
+              action="l10n_ua_bank_sync.action_bank_statement"
+              sequence="50"/> -->
+
+    <!-- ==================== Основні засоби ==================== -->
+    <menuitem id="menu_ua_assets"
+              name="Основні засоби"
+              parent="menu_ua_accounting_root"
+              sequence="30"/>
+
+    <!-- Asset Cards - placeholder for l10n_ua_assets module -->
+    <!-- <menuitem id="menu_ua_assets_cards"
+              name="Картки ОЗ"
+              parent="menu_ua_assets"
+              action="l10n_ua_assets.action_asset_cards"
+              sequence="10"/> -->
+
+    <!-- ==================== Звітність ==================== -->
+    <menuitem id="menu_ua_reports"
+              name="Звітність"
+              parent="menu_ua_accounting_root"
+              sequence="40"/>
+
+    <menuitem id="menu_ua_reports_osv"
+              name="Оборотно-сальдова відомість"
+              parent="menu_ua_reports"
+              action="l10n_ua_account_base.l10n_ua_osv_action"
+              sequence="10"/>
+
+    <menuitem id="menu_ua_reports_journal_orders"
+              name="Журнали-ордери"
+              parent="menu_ua_reports"
+              action="l10n_ua_account_base.l10n_ua_journal_order_action"
+              sequence="20"/>
+
+    <!-- General Ledger / Journal Items - standard Odoo -->
+    <menuitem id="menu_ua_reports_general_ledger"
+              name="Головна книга"
+              parent="menu_ua_reports"
+              action="account.action_account_moves_all"
+              sequence="25"/>
+
+    <!-- Balance Sheet and P&L - will be implemented as wizards -->
+    <!-- <menuitem id="menu_ua_reports_balance"
+              name="Баланс (Форма №1)"
+              parent="menu_ua_reports"
+              action="action_ua_balance_report"
+              sequence="30"/>
+
+    <menuitem id="menu_ua_reports_pnl"
+              name="Звіт про фін. результати (Форма №2)"
+              parent="menu_ua_reports"
+              action="action_ua_pnl_report"
+              sequence="40"/> -->
+
+    <!-- ==================== Налаштування ==================== -->
+    <menuitem id="menu_ua_config"
+              name="Налаштування"
+              parent="menu_ua_accounting_root"
+              sequence="90"/>
+
+    <menuitem id="menu_ua_config_chart"
+              name="План рахунків"
+              parent="menu_ua_config"
+              action="account.action_account_form"
+              sequence="10"/>
+
+    <menuitem id="menu_ua_config_journals"
+              name="Журнали"
+              parent="menu_ua_config"
+              action="account.action_account_journal_form"
+              sequence="20"/>
+
+    <!-- Link to Ukraine directories from l10n_ua_account_base -->
+    <menuitem id="menu_ua_config_directories"
+              name="Довідники"
+              parent="menu_ua_config"
+              action="l10n_ua_account_base.l10n_ua_koatuu_action"
+              sequence="30"/>
+
+</odoo>

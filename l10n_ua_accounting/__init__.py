@@ -1,1 +1,2 @@
-# Cumulative module - no models, all functionality in dependencies
+from . import models
+from . import wizard

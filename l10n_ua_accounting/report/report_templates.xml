@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Base styles for Ukrainian accounting reports -->
+    <template id="report_ua_styles">
+        <style>
+            /* Ukrainian accounting report styles */
+            .ua-report {
+                font-family: 'Times New Roman', Times, serif;
+                font-size: 10pt;
+            }
+            .ua-report table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            .ua-report th, .ua-report td {
+                border: 1px solid black;
+                padding: 3px 5px;
+                vertical-align: top;
+            }
+            .ua-report th {
+                background-color: #f0f0f0;
+                text-align: center;
+                font-weight: bold;
+            }
+            .ua-report .text-center { text-align: center; }
+            .ua-report .text-right { text-align: right; }
+            .ua-report .text-left { text-align: left; }
+            .ua-report .bold { font-weight: bold; }
+            .ua-report .italic { font-style: italic; }
+            .ua-report .underline { text-decoration: underline; }
+            .ua-report .no-border { border: none !important; }
+            .ua-report .border-bottom { border-bottom: 1px solid black; }
+            .ua-report .small { font-size: 8pt; }
+            .ua-report .large { font-size: 12pt; }
+
+            /* Header styles */
+            .ua-report-header {
+                margin-bottom: 15px;
+            }
+            .ua-report-title {
+                font-size: 14pt;
+                font-weight: bold;
+                text-align: center;
+                margin: 10px 0;
+            }
+            .ua-report-subtitle {
+                text-align: center;
+                font-size: 10pt;
+                margin: 5px 0;
+            }
+
+            /* Form number box */
+            .form-number-box {
+                float: right;
+                border: 1px solid black;
+                padding: 5px;
+                text-align: center;
+                font-size: 9pt;
+            }
+
+            /* Signature lines */
+            .signature-line {
+                display: inline-block;
+                border-bottom: 1px solid black;
+                min-width: 150px;
+                margin: 0 10px;
+            }
+            .signature-block {
+                margin-top: 20px;
+            }
+            .signature-row {
+                margin: 15px 0;
+            }
+
+            /* Amount in words */
+            .amount-words {
+                font-style: italic;
+                border-bottom: 1px solid black;
+            }
+
+            /* Monetary amounts */
+            .money {
+                text-align: right;
+                white-space: nowrap;
+            }
+
+            /* Company header */
+            .company-header {
+                margin-bottom: 10px;
+            }
+            .company-name {
+                font-weight: bold;
+            }
+            .company-code {
+                font-size: 9pt;
+            }
+        </style>
+    </template>
+
+    <!-- Report action for PKO -->
+    <record id="action_report_pko" model="ir.actions.report">
+        <field name="name">ПКО (Прибутковий касовий ордер)</field>
+        <field name="model">account.payment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_accounting.report_pko_document</field>
+        <field name="report_file">l10n_ua_accounting.report_pko_document</field>
+        <field name="print_report_name">'ПКО-%s' % (object.ua_cash_order_number or object.name)</field>
+        <field name="binding_model_id" ref="account.model_account_payment"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Report action for VKO -->
+    <record id="action_report_vko" model="ir.actions.report">
+        <field name="name">ВКО (Видатковий касовий ордер)</field>
+        <field name="model">account.payment</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_accounting.report_vko_document</field>
+        <field name="report_file">l10n_ua_accounting.report_vko_document</field>
+        <field name="print_report_name">'ВКО-%s' % (object.ua_cash_order_number or object.name)</field>
+        <field name="binding_model_id" ref="account.model_account_payment"/>
+        <field name="binding_type">report</field>
+    </record>
+
+</odoo>

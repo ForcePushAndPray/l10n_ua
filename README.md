@@ -391,8 +391,6 @@ odoo-bin -d <database> -u l10n_ua_account_base --stop-after-init
 
 ## Структура меню
 
-![Menu Structure](diagrams/menu_structure.svg)
-
 ### Кореневі меню
 
 | Меню | Sequence | Модуль | Опис |

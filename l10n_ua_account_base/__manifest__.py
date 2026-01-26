@@ -34,6 +34,7 @@ This module is required for all other l10n_ua_* modules.
         'account',
     ],
     'data': [
+        'security/security.xml',
         'security/ir.model.access.csv',
         'data/res_country_state_data.xml',
         'data/l10n_ua_koatuu_data.xml',
