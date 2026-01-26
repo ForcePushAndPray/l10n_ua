@@ -25,6 +25,7 @@ Requires l10n_ua_accounting module.
     ],
     'data': [
         'security/ir.model.access.csv',
+        'data/pos_payment_method_data.xml',
         'views/l10n_ua_prro_config_views.xml',
         'views/l10n_ua_prro_receipt_views.xml',
         'views/l10n_ua_prro_shift_views.xml',
