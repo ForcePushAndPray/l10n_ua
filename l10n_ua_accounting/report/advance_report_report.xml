@@ -11,6 +11,7 @@
         <field name="print_report_name">'АЗ_%s_%s' % (object.name, object.employee_id.name)</field>
         <field name="binding_model_id" ref="model_l10n_ua_advance_report"/>
         <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_ua_report"/>
     </record>
 
     <!-- Advance Report Template -->
@@ -53,7 +54,7 @@
                             <table class="table-borderless" style="width: 100%;">
                                 <tr>
                                     <td style="width: 200px;">Підзвітна особа:</td>
-                                    <td class="border-bottom" t-field="report.employee_id.name"/>
+                                    <td class="border-bottom"><span t-field="report.employee_id.name"/></td>
                                 </tr>
                                 <tr>
                                     <td>Посада:</td>
@@ -65,7 +66,7 @@
                                 </tr>
                                 <tr>
                                     <td>Призначення авансу:</td>
-                                    <td class="border-bottom" t-field="report.purpose"/>
+                                    <td class="border-bottom"><span t-field="report.purpose"/></td>
                                 </tr>
                             </table>
                         </div>
@@ -126,7 +127,7 @@
                                 <t t-foreach="report.line_ids" t-as="line">
                                     <tr>
                                         <td class="text-center" t-esc="line_index + 1"/>
-                                        <td class="text-center" t-field="line.date" t-options='{"widget": "date"}'/>
+                                        <td class="text-center"><span t-field="line.date" t-options='{"widget": "date"}'/></td>
                                         <td>
                                             <t t-if="line.expense_type == 'transport'">Транспорт</t>
                                             <t t-if="line.expense_type == 'accommodation'">Проживання</t>
@@ -135,7 +136,7 @@
                                             <t t-if="line.expense_type == 'supplies'">Канцтовари</t>
                                             <t t-if="line.expense_type == 'other'">Інше</t>
                                         </td>
-                                        <td t-field="line.description"/>
+                                        <td><span t-field="line.description"/></td>
                                         <td>
                                             <t t-if="line.document_number">
                                                 <span t-field="line.document_number"/>

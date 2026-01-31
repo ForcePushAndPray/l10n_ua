@@ -9,6 +9,7 @@
         <field name="report_name">l10n_ua_accounting.report_balance_sheet_document</field>
         <field name="report_file">l10n_ua_accounting.report_balance_sheet_document</field>
         <field name="print_report_name">'Баланс_%s' % object.date_to</field>
+        <field name="paperformat_id" ref="paperformat_ua_report"/>
     </record>
 
     <!-- Balance Sheet Report Template -->
@@ -30,11 +31,11 @@
                                 <table class="table-borderless" style="width: 100%;">
                                     <tr>
                                         <td style="width: 120px;">Підприємство</td>
-                                        <td class="border-bottom" t-field="wizard.company_id.name"/>
+                                        <td class="border-bottom"><span t-field="wizard.company_id.name"/></td>
                                     </tr>
                                     <tr t-if="wizard.company_id.company_registry">
                                         <td>за ЄДРПОУ</td>
-                                        <td class="border-bottom" t-field="wizard.company_id.company_registry"/>
+                                        <td class="border-bottom"><span t-field="wizard.company_id.company_registry"/></td>
                                     </tr>
                                 </table>
                             </div>

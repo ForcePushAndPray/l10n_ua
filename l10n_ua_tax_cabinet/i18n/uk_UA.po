@@ -1432,7 +1432,7 @@ msgstr "Назва платника податків"
 #. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_document_wizard__taxpayer_tin
 msgid "Taxpayer TIN (РНОКПП/ЄДРПОУ)"
-msgstr ""
+msgstr "ІПН платника (РНОКПП/ЄДРПОУ)"
 
 #. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_password_wizard__action__test

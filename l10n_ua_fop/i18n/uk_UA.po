@@ -1,0 +1,264 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* l10n_ua_fop
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-31 21:06+0000\n"
+"PO-Revision-Date: 2026-01-31 21:06+0000\n"
+"Last-Translator: \n"
+"Language-Team: Ukrainian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: uk_UA\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#. module: l10n_ua_fop
+#: model:ir.module.module,name:l10n_ua_fop.module_l10n_ua_fop
+msgid "Ukraine - FOP (Single Tax)"
+msgstr "Україна - ФОП (Єдиний податок)"
+
+#. module: l10n_ua_fop
+#: model:ir.module.module,summary:l10n_ua_fop.module_l10n_ua_fop
+msgid "Ukrainian single tax for individual entrepreneurs (FOP)"
+msgstr "Єдиний податок для фізичних осіб-підприємців (ФОП)"
+
+#. module: l10n_ua_fop
+#: model:ir.model,name:l10n_ua_fop.model_l10n_ua_fop_group
+msgid "FOP Tax Group"
+msgstr "Група єдиного податку ФОП"
+
+msgid "Group 1"
+msgstr "Група 1"
+
+msgid "Group 2"
+msgstr "Група 2"
+
+msgid "Group 3 (no VAT)"
+msgstr "Група 3 (без ПДВ)"
+
+msgid "Group 3 (with VAT)"
+msgstr "Група 3 (з ПДВ)"
+
+msgid "Group"
+msgstr "Група"
+
+msgid "Name"
+msgstr "Назва"
+
+msgid "Tax Rate (%)"
+msgstr "Ставка податку (%)"
+
+msgid "Single tax rate as percentage of income"
+msgstr "Ставка єдиного податку у відсотках від доходу"
+
+msgid "Annual Income Limit"
+msgstr "Річний ліміт доходу"
+
+msgid "Can Hire Employees"
+msgstr "Може наймати працівників"
+
+msgid "Max Employees"
+msgstr "Максимальна кількість працівників"
+
+msgid "Description"
+msgstr "Опис"
+
+#. module: l10n_ua_fop
+#: model:ir.model,name:l10n_ua_fop.model_l10n_ua_fop_income_book
+msgid "FOP Income Book (Книга обліку доходів)"
+msgstr "Книга обліку доходів ФОП"
+
+#. module: l10n_ua_fop
+#: model:ir.model,name:l10n_ua_fop.model_l10n_ua_fop_income_book_line
+msgid "FOP Income Book Line"
+msgstr "Рядок книги обліку доходів ФОП"
+
+msgid "Year"
+msgstr "Рік"
+
+msgid "Q1"
+msgstr "I кв."
+
+msgid "Q2"
+msgstr "II кв."
+
+msgid "Q3"
+msgstr "III кв."
+
+msgid "Q4"
+msgstr "IV кв."
+
+msgid "Quarter"
+msgstr "Квартал"
+
+msgid "FOP Group"
+msgstr "Група ФОП"
+
+msgid "Company"
+msgstr "Компанія"
+
+msgid "Lines"
+msgstr "Рядки"
+
+msgid "Total Income"
+msgstr "Загальний дохід"
+
+msgid "Draft"
+msgstr "Чернетка"
+
+msgid "Confirmed"
+msgstr "Підтверджено"
+
+msgid "State"
+msgstr "Стан"
+
+msgid "Income Book"
+msgstr "Книга доходів"
+
+msgid "Date"
+msgstr "Дата"
+
+msgid "Document Number"
+msgstr "Номер документа"
+
+msgid "Cash"
+msgstr "Готівка"
+
+msgid "Bank Transfer"
+msgstr "Банківський переказ"
+
+msgid "Card Payment"
+msgstr "Оплата карткою"
+
+msgid "Income Type"
+msgstr "Тип доходу"
+
+msgid "Amount"
+msgstr "Сума"
+
+msgid "Partner"
+msgstr "Контрагент"
+
+msgid "Bank Statement Line"
+msgstr "Рядок банківської виписки"
+
+#. module: l10n_ua_fop
+#: model:ir.model,name:l10n_ua_fop.model_l10n_ua_fop_declaration
+msgid "FOP Single Tax Declaration"
+msgstr "Декларація платника єдиного податку ФОП"
+
+msgid "H1 (Half Year)"
+msgstr "Півріччя"
+
+msgid "9 Months"
+msgstr "9 місяців"
+
+msgid "Period"
+msgstr "Період"
+
+msgid "Single Tax"
+msgstr "Єдиний податок"
+
+msgid "ESV Base (Min Wage)"
+msgstr "База ЄСВ (мін. зарплата)"
+
+msgid "ESV Rate (%)"
+msgstr "Ставка ЄСВ (%)"
+
+msgid "ESV Amount"
+msgstr "Сума ЄСВ"
+
+msgid "Total Payable"
+msgstr "Всього до сплати"
+
+msgid "Calculated"
+msgstr "Розраховано"
+
+msgid "Submitted"
+msgstr "Подано"
+
+msgid "Accepted"
+msgstr "Прийнято"
+
+msgid "Submission Date"
+msgstr "Дата подання"
+
+msgid "XML File"
+msgstr "XML файл"
+
+msgid "XML Filename"
+msgstr "Ім'я XML файлу"
+
+msgid "Confirm"
+msgstr "Підтвердити"
+
+msgid "Set to Draft"
+msgstr "Повернути в чернетку"
+
+msgid "Calculate"
+msgstr "Розрахувати"
+
+msgid "Generate XML"
+msgstr "Згенерувати XML"
+
+msgid "Submit"
+msgstr "Подати"
+
+msgid "Mark Accepted"
+msgstr "Позначити прийнятою"
+
+msgid "Income Lines"
+msgstr "Рядки доходів"
+
+msgid "Income Books"
+msgstr "Книги обліку доходів"
+
+msgid "FOP Declaration"
+msgstr "Декларація ФОП"
+
+msgid "FOP Declarations"
+msgstr "Декларації ФОП"
+
+msgid "Income"
+msgstr "Дохід"
+
+msgid "Taxes"
+msgstr "Податки"
+
+msgid "ESV"
+msgstr "ЄСВ"
+
+msgid "FOP (Single Tax)"
+msgstr "ФОП (Єдиний податок)"
+
+msgid "Declarations"
+msgstr "Декларації"
+
+msgid "Group 1 - Retail trade, services to population"
+msgstr "Група 1 - Роздрібна торгівля, послуги населенню"
+
+msgid "Fixed rate based on minimum wage. Retail trade at markets, household services to population."
+msgstr "Фіксована ставка від мінімальної зарплати. Торгівля на ринках, побутові послуги населенню."
+
+msgid "Group 2 - Services to FOP and legal entities"
+msgstr "Група 2 - Послуги ФОП та юридичним особам"
+
+msgid "Fixed rate based on minimum wage. Services to other FOP and legal entities, production."
+msgstr "Фіксована ставка від мінімальної зарплати. Послуги іншим ФОП та юрособам, виробництво."
+
+msgid "Group 3 - Without VAT"
+msgstr "Група 3 - Без ПДВ"
+
+msgid "5% of income. Any activity except prohibited. No employee limit."
+msgstr "5% від доходу. Будь-яка діяльність крім забороненої. Без обмеження працівників."
+
+msgid "Group 3 - With VAT"
+msgstr "Група 3 - З ПДВ"
+
+msgid "3% of income + VAT. Any activity except prohibited. No employee limit."
+msgstr "3% від доходу + ПДВ. Будь-яка діяльність крім забороненої. Без обмеження працівників."
+

@@ -75,7 +75,6 @@ class PnLReportWizard(models.TransientModel):
             float: Sum of turnovers
         """
         domain = [
-            ('company_id', '=', self.company_id.id),
             ('date', '>=', date_from),
             ('date', '<=', date_to),
             ('parent_state', '=', 'posted'),

@@ -80,7 +80,6 @@ class ReconciliationActWizard(models.TransientModel):
         """Get domain for account.move.line search."""
         domain = [
             ('partner_id', '=', self.partner_id.id),
-            ('company_id', '=', self.company_id.id),
             ('date', '>=', self.date_from),
             ('date', '<=', self.date_to),
             ('parent_state', '=', 'posted'),
@@ -167,11 +166,10 @@ class ReconciliationActWizard(models.TransientModel):
             JOIN account_move am ON am.id = aml.move_id
             JOIN account_account aa ON aa.id = aml.account_id
             WHERE aml.partner_id = %s
-              AND aml.company_id = %s
               AND am.state = 'posted'
               AND aml.date < %s
               AND aa.account_type IN %s
-        """, (self.partner_id.id, self.company_id.id, self.date_from, tuple(account_types)))
+        """, (self.partner_id.id, self.date_from, tuple(account_types)))
 
         result = self.env.cr.fetchone()
         return result[0] if result else 0.0

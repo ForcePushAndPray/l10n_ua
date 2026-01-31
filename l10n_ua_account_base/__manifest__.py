@@ -32,6 +32,7 @@ This module is required for all other l10n_ua_* modules.
     'license': 'LGPL-3',
     'depends': [
         'account',
+        'l10n_ua',
     ],
     'data': [
         'security/security.xml',

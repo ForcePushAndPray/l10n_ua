@@ -1730,5 +1730,15 @@ msgstr "напр., 36, 38, 40"
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_termination_reason__paragraph
 msgid "e.g., п. 1, п. 2"
-msgstr ""
+msgstr "напр., п. 1, п. 2"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.ui.menu,name:l10n_ua_hr_contract.menu_hr_version_salary_change
+msgid "Salary Changes"
+msgstr "Зміни окладу"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.ui.menu,name:l10n_ua_hr_contract.menu_hr_version_amendment
+msgid "Amendments"
+msgstr "Додаткові угоди"
 

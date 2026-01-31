@@ -84,6 +84,7 @@ Dependencies:
         'report/pnl_report.xml',
         'report/service_act_report.xml',
         'report/advance_report_report.xml',
+        'report/invoice_report_inherit.xml',
     ],
     'demo': [],
     'images': ['static/description/icon.png'],

@@ -3,7 +3,7 @@
 
     <menuitem id="menu_l10n_ua_vat"
               name="VAT"
-              parent="l10n_ua_tax.menu_l10n_ua_tax"
+              parent="l10n_ua_tax.menu_ua_tax_root"
               sequence="30"/>
 
     <menuitem id="menu_l10n_ua_tax_invoices"

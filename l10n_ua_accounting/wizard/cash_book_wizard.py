@@ -78,7 +78,7 @@ class CashBookWizard(models.TransientModel):
             ('journal_id', '=', self.journal_id.id),
             ('date', '>=', self.date_from),
             ('date', '<=', self.date_to),
-            ('state', '=', 'paid'),
+            ('state', 'in', ('posted', 'in_process', 'paid', 'reconciled', 'sent')),
         ], order='date, id')
 
         # Group by date
@@ -138,10 +138,9 @@ class CashBookWizard(models.TransientModel):
             FROM account_move_line aml
             JOIN account_move am ON am.id = aml.move_id
             WHERE aml.account_id = %s
-              AND aml.company_id = %s
               AND am.state = 'posted'
               AND aml.date < %s
-        """, (account.id, self.company_id.id, self.date_from))
+        """, (account.id, self.date_from))
 
         result = self.env.cr.fetchone()
         return result[0] if result else 0.0
@@ -164,7 +163,7 @@ class CashBookWizard(models.TransientModel):
             ('journal_id', '=', self.journal_id.id),
             ('date', '>=', self.date_from),
             ('date', '<=', self.date_to),
-            ('state', '=', 'paid'),
+            ('state', 'in', ('posted', 'in_process', 'paid', 'reconciled', 'sent')),
         ], order='date, id')
 
         lines = []

@@ -1,0 +1,618 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+#	* l10n_ua_accounting
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-01-31 21:08+0000\n"
+"PO-Revision-Date: 2026-01-31 21:08+0000\n"
+"Last-Translator: \n"
+"Language-Team: Ukrainian\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: uk_UA\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+msgid "Ukraine - Accounting Suite"
+msgstr "Україна - Бухгалтерський облік"
+
+msgid "Ukrainian accounting: PKO/VKO, Cash Book, Balance Sheet, P&L"
+msgstr "Бухгалтерія України: ПКО/ВКО, Касова книга, Баланс, Звіт про фін. результати"
+
+msgid "PKO Sequence"
+msgstr "Послідовність ПКО"
+
+msgid "Sequence for Ukrainian Cash Receipt Orders (ПКО)"
+msgstr "Послідовність для прибуткових касових ордерів (ПКО)"
+
+msgid "VKO Sequence"
+msgstr "Послідовність ВКО"
+
+msgid "Sequence for Ukrainian Cash Disbursement Orders (ВКО)"
+msgstr "Послідовність для видаткових касових ордерів (ВКО)"
+
+msgid "Cash Order Number"
+msgstr "Номер касового ордера"
+
+msgid "Ukrainian cash order number (auto-generated for cash journals)"
+msgstr "Номер українського касового ордера (автоматично для касових журналів)"
+
+msgid "Payment Basis"
+msgstr "Підстава платежу"
+
+msgid "Basis/reason for this cash operation (підстава)"
+msgstr "Підстава/причина касової операції"
+
+msgid "Cash Person"
+msgstr "Особа"
+
+msgid "Person who received (for VKO) or paid (for PKO) cash"
+msgstr "Особа, яка отримала (для ВКО) або внесла (для ПКО) готівку"
+
+msgid "Person Document"
+msgstr "Документ особи"
+
+msgid "Document of the person (passport, ID card)"
+msgstr "Документ особи (паспорт, ID-картка)"
+
+msgid "Appendix"
+msgstr "Додатки"
+
+msgid "List of appendix documents (додатки)"
+msgstr "Перелік додаткових документів"
+
+msgid "Cash Order Type"
+msgstr "Тип касового ордера"
+
+msgid "Is Cash Order"
+msgstr "Є касовим ордером"
+
+msgid "Service Act"
+msgstr "Акт наданих послуг"
+
+msgid "Number"
+msgstr "Номер"
+
+msgid "Date"
+msgstr "Дата"
+
+msgid "Customer"
+msgstr "Замовник"
+
+msgid "Company"
+msgstr "Компанія"
+
+msgid "Currency"
+msgstr "Валюта"
+
+msgid "Contract Number"
+msgstr "Номер договору"
+
+msgid "Reference to the contract under which services are provided"
+msgstr "Посилання на договір, за яким надаються послуги"
+
+msgid "Contract Date"
+msgstr "Дата договору"
+
+msgid "Period From"
+msgstr "Період з"
+
+msgid "Start date of service period"
+msgstr "Дата початку періоду надання послуг"
+
+msgid "Period To"
+msgstr "Період по"
+
+msgid "End date of service period"
+msgstr "Дата закінчення періоду надання послуг"
+
+msgid "Lines"
+msgstr "Рядки"
+
+msgid "Untaxed Amount"
+msgstr "Сума без податків"
+
+msgid "Tax Amount"
+msgstr "Сума податків"
+
+msgid "Total"
+msgstr "Разом"
+
+msgid "Draft"
+msgstr "Чернетка"
+
+msgid "Confirmed"
+msgstr "Підтверджено"
+
+msgid "Invoiced"
+msgstr "Виставлено рахунок"
+
+msgid "Cancelled"
+msgstr "Скасовано"
+
+msgid "Status"
+msgstr "Статус"
+
+msgid "Invoice"
+msgstr "Рахунок"
+
+msgid "Notes"
+msgstr "Примітки"
+
+msgid "Only draft acts can be confirmed."
+msgstr "Тільки чернеткові акти можна підтвердити."
+
+msgid "Cannot confirm an act without lines."
+msgstr "Неможливо підтвердити акт без рядків."
+
+msgid "Cannot reset an invoiced act to draft."
+msgstr "Неможливо повернути в чернетку акт з виставленим рахунком."
+
+msgid "Cannot cancel an invoiced act."
+msgstr "Неможливо скасувати акт з виставленим рахунком."
+
+msgid "Only confirmed acts can be invoiced."
+msgstr "Тільки підтверджені акти можна виставити рахунком."
+
+msgid "Invoice already exists for this act."
+msgstr "Рахунок для цього акту вже існує."
+
+msgid "No invoice exists for this act."
+msgstr "Рахунок для цього акту не існує."
+
+msgid "Service Act Line"
+msgstr "Рядок акту наданих послуг"
+
+msgid "Sequence"
+msgstr "Послідовність"
+
+msgid "Service"
+msgstr "Послуга"
+
+msgid "Description"
+msgstr "Опис"
+
+msgid "Quantity"
+msgstr "Кількість"
+
+msgid "Unit of Measure"
+msgstr "Одиниця виміру"
+
+msgid "Unit Price"
+msgstr "Ціна за одиницю"
+
+msgid "Taxes"
+msgstr "Податки"
+
+msgid "Subtotal"
+msgstr "Підсумок"
+
+msgid "Tax"
+msgstr "Податок"
+
+msgid "Advance Report"
+msgstr "Авансовий звіт"
+
+msgid "Employee"
+msgstr "Працівник"
+
+msgid "Purpose"
+msgstr "Призначення"
+
+msgid "Purpose of the advance (business trip, purchase, etc.)"
+msgstr "Призначення авансу (відрядження, закупівля тощо)"
+
+msgid "Advance Date"
+msgstr "Дата видачі авансу"
+
+msgid "Date when advance was given to employee"
+msgstr "Дата видачі авансу працівнику"
+
+msgid "Advance Received"
+msgstr "Отриманий аванс"
+
+msgid "Amount received by employee"
+msgstr "Сума, отримана працівником"
+
+msgid "Previous Balance"
+msgstr "Попередній залишок"
+
+msgid "Balance from previous advance report"
+msgstr "Залишок з попереднього авансового звіту"
+
+msgid "Expense Lines"
+msgstr "Рядки витрат"
+
+msgid "Total Expenses"
+msgstr "Загальні витрати"
+
+msgid "Balance"
+msgstr "Залишок"
+
+msgid "Positive = employee owes, Negative = company owes"
+msgstr "Додатний = борг працівника, Від'ємний = борг компанії"
+
+msgid "Submitted"
+msgstr "Подано"
+
+msgid "Approved"
+msgstr "Затверджено"
+
+msgid "Posted"
+msgstr "Проведено"
+
+msgid "Journal Entry"
+msgstr "Проводка"
+
+msgid "Approved By"
+msgstr "Затвердив"
+
+msgid "Approved Date"
+msgstr "Дата затвердження"
+
+msgid "Only draft reports can be submitted."
+msgstr "Тільки чернеткові звіти можна подати."
+
+msgid "Cannot submit a report without expense lines."
+msgstr "Неможливо подати звіт без рядків витрат."
+
+msgid "Only submitted reports can be approved."
+msgstr "Тільки подані звіти можна затвердити."
+
+msgid "Only approved reports can be posted."
+msgstr "Тільки затверджені звіти можна провести."
+
+msgid "Cannot reset a posted report to draft."
+msgstr "Неможливо повернути проведений звіт у чернетку."
+
+msgid "Cannot cancel a posted report."
+msgstr "Неможливо скасувати проведений звіт."
+
+msgid "Advance Report Line"
+msgstr "Рядок авансового звіту"
+
+msgid "Receipt/Check"
+msgstr "Чек/Квитанція"
+
+msgid "Ticket"
+msgstr "Квиток"
+
+msgid "Other"
+msgstr "Інше"
+
+msgid "Document Type"
+msgstr "Тип документа"
+
+msgid "Document Number"
+msgstr "Номер документа"
+
+msgid "Document Date"
+msgstr "Дата документа"
+
+msgid "Vendor"
+msgstr "Постачальник"
+
+msgid "Transport"
+msgstr "Транспорт"
+
+msgid "Accommodation"
+msgstr "Проживання"
+
+msgid "Meals"
+msgstr "Харчування"
+
+msgid "Fuel"
+msgstr "Пальне"
+
+msgid "Office Supplies"
+msgstr "Канцтовари"
+
+msgid "Expense Type"
+msgstr "Тип витрат"
+
+msgid "Amount"
+msgstr "Сума"
+
+msgid "Attachments"
+msgstr "Вкладення"
+
+msgid "Attach receipt/invoice scan"
+msgstr "Прикріпити скан чека/рахунку"
+
+msgid "Note"
+msgstr "Примітка"
+
+msgid "Cash Book Wizard"
+msgstr "Майстер касової книги"
+
+msgid "Cash Journal"
+msgstr "Касовий журнал"
+
+msgid "Date From"
+msgstr "Дата з"
+
+msgid "Date To"
+msgstr "Дата по"
+
+msgid "Date From must be before or equal to Date To."
+msgstr "Дата початку має бути раніше або дорівнювати даті закінчення."
+
+msgid "Cash journal must have a default account configured."
+msgstr "Касовий журнал повинен мати налаштований рахунок за замовчуванням."
+
+msgid "Reconciliation Act Wizard"
+msgstr "Майстер акту звірки"
+
+msgid "Partner"
+msgstr "Контрагент"
+
+msgid "Receivable (Customers)"
+msgstr "Дебіторська (Покупці)"
+
+msgid "Payable (Vendors)"
+msgstr "Кредиторська (Постачальники)"
+
+msgid "Both"
+msgstr "Обидва"
+
+msgid "Account Type"
+msgstr "Тип рахунку"
+
+msgid "Unreconciled Only"
+msgstr "Тільки незвірені"
+
+msgid "Show only unreconciled entries"
+msgstr "Показувати тільки незвірені записи"
+
+msgid "Balance Sheet Wizard (Form №1)"
+msgstr "Майстер балансу (Форма №1)"
+
+msgid "Period Start"
+msgstr "Початок періоду"
+
+msgid "Start of reporting period (for comparison)"
+msgstr "Початок звітного періоду (для порівняння)"
+
+msgid "Report Date"
+msgstr "Дата звіту"
+
+msgid "Balance sheet date (end of period)"
+msgstr "Дата балансу (кінець періоду)"
+
+msgid "Comparison Date"
+msgstr "Дата порівняння"
+
+msgid "Date for comparison column (typically end of previous year)"
+msgstr "Дата для порівняльної колонки (зазвичай кінець попереднього року)"
+
+msgid "Period Start must be before or equal to Report Date."
+msgstr "Початок періоду має бути раніше або дорівнювати даті звіту."
+
+msgid "XLSX export is not yet implemented."
+msgstr "Експорт XLSX ще не реалізовано."
+
+msgid "P&L Report Wizard (Form №2)"
+msgstr "Майстер звіту про фін. результати (Форма №2)"
+
+msgid "Comparison Period Start"
+msgstr "Початок порівняльного періоду"
+
+msgid "Start date for comparison period (typically same period of previous year)"
+msgstr "Дата початку порівняльного періоду (зазвичай той самий період минулого року)"
+
+msgid "Comparison Period End"
+msgstr "Кінець порівняльного періоду"
+
+msgid "End date for comparison period"
+msgstr "Дата кінця порівняльного періоду"
+
+msgid "Бухгалтерія UA"
+msgstr "Бухгалтерія UA"
+
+msgid "Документи"
+msgstr "Документи"
+
+msgid "Рахунки"
+msgstr "Рахунки"
+
+msgid "Акти наданих послуг"
+msgstr "Акти наданих послуг"
+
+msgid "Авансові звіти"
+msgstr "Авансові звіти"
+
+msgid "Каса та банк"
+msgstr "Каса та банк"
+
+msgid "ПКО (Прибуткові)"
+msgstr "ПКО (Прибуткові)"
+
+msgid "ВКО (Видаткові)"
+msgstr "ВКО (Видаткові)"
+
+msgid "Касова книга"
+msgstr "Касова книга"
+
+msgid "Акти звірки"
+msgstr "Акти звірки"
+
+msgid "Звітність"
+msgstr "Звітність"
+
+msgid "Оборотно-сальдова відомість"
+msgstr "Оборотно-сальдова відомість"
+
+msgid "Журнали-ордери"
+msgstr "Журнали-ордери"
+
+msgid "Головна книга"
+msgstr "Головна книга"
+
+msgid "Баланс (Форма №1)"
+msgstr "Баланс (Форма №1)"
+
+msgid "Звіт про фін. результати (Форма №2)"
+msgstr "Звіт про фін. результати (Форма №2)"
+
+msgid "Налаштування"
+msgstr "Налаштування"
+
+msgid "План рахунків"
+msgstr "План рахунків"
+
+msgid "Журнали"
+msgstr "Журнали"
+
+msgid "Довідники"
+msgstr "Довідники"
+
+msgid "Print ПКО"
+msgstr "Друк ПКО"
+
+msgid "Print ВКО"
+msgstr "Друк ВКО"
+
+msgid "ПКО (Прибуткові касові ордери)"
+msgstr "ПКО (Прибуткові касові ордери)"
+
+msgid "ВКО (Видаткові касові ордери)"
+msgstr "ВКО (Видаткові касові ордери)"
+
+msgid "Ukrainian Cash Orders"
+msgstr "Українські касові ордери"
+
+msgid "Create UA Sequences"
+msgstr "Створити UA послідовності"
+
+msgid "Акт наданих послуг"
+msgstr "Акт наданих послуг"
+
+msgid "Confirm"
+msgstr "Підтвердити"
+
+msgid "Create Invoice"
+msgstr "Створити рахунок"
+
+msgid "View Invoice"
+msgstr "Переглянути рахунок"
+
+msgid "Print"
+msgstr "Друк"
+
+msgid "Reset to Draft"
+msgstr "Повернути в чернетку"
+
+msgid "Cancel"
+msgstr "Скасувати"
+
+msgid "Service Period"
+msgstr "Період надання послуг"
+
+msgid "Additional notes..."
+msgstr "Додаткові примітки..."
+
+msgid "Service Acts"
+msgstr "Акти наданих послуг"
+
+msgid "Create your first Service Act"
+msgstr "Створіть свій перший Акт наданих послуг"
+
+msgid "Service acts confirm the provision of services to customers and serve as the basis for issuing invoices."
+msgstr "Акти наданих послуг підтверджують надання послуг замовникам та є підставою для виставлення рахунків."
+
+msgid "Service Act Sequence"
+msgstr "Послідовність актів наданих послуг"
+
+msgid "Авансовий звіт"
+msgstr "Авансовий звіт"
+
+msgid "Submit"
+msgstr "Подати"
+
+msgid "Approve"
+msgstr "Затвердити"
+
+msgid "Post"
+msgstr "Провести"
+
+msgid "Expenses"
+msgstr "Витрати"
+
+msgid "Approval"
+msgstr "Затвердження"
+
+msgid "Advance Reports"
+msgstr "Авансові звіти"
+
+msgid "To Approve"
+msgstr "На затвердження"
+
+msgid "Create your first Advance Report"
+msgstr "Створіть свій перший авансовий звіт"
+
+msgid "Advance reports are used to account for money given to employees for business expenses like travel, purchases, etc."
+msgstr "Авансові звіти використовуються для обліку коштів, виданих працівникам на відрядження, закупівлі тощо."
+
+msgid "Advance Report Sequence"
+msgstr "Послідовність авансових звітів"
+
+msgid "View Entries"
+msgstr "Переглянути записи"
+
+msgid "Export XLSX"
+msgstr "Експорт XLSX"
+
+msgid "Акт звірки взаєморозрахунків"
+msgstr "Акт звірки взаєморозрахунків"
+
+msgid "Акт звірки"
+msgstr "Акт звірки"
+
+msgid "Звіт про фінансові результати (Форма №2)"
+msgstr "Звіт про фінансові результати (Форма №2)"
+
+msgid "Звітний період"
+msgstr "Звітний період"
+
+msgid "Період для порівняння"
+msgstr "Період для порівняння"
+
+msgid "Ukrainian Report A4"
+msgstr "Український звіт A4"
+
+msgid "ПКО (Прибутковий касовий ордер)"
+msgstr "ПКО (Прибутковий касовий ордер)"
+
+msgid "ВКО (Видатковий касовий ордер)"
+msgstr "ВКО (Видатковий касовий ордер)"
+
+msgid "ПКО (Прибутковий)"
+msgstr "ПКО (Прибутковий)"
+
+msgid "ВКО (Видатковий)"
+msgstr "ВКО (Видатковий)"
+
+msgid "State"
+msgstr "Стан"
+
+msgid "Name"
+msgstr "Назва"
+
+msgid "Group By"
+msgstr "Групувати за"
+
+msgid "№ ПКО"
+msgstr "№ ПКО"
+
+msgid "Підстава"
+msgstr "Підстава"
+
+msgid "№ ВКО"
+msgstr "№ ВКО"
+
+msgid "Отримав"
+msgstr "Отримав"
+

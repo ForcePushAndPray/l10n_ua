@@ -72,7 +72,6 @@ class BalanceReportWizard(models.TransientModel):
             float: Sum of balances
         """
         domain = [
-            ('company_id', '=', self.company_id.id),
             ('date', '<=', date),
             ('parent_state', '=', 'posted'),
         ]

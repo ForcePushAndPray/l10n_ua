@@ -38,8 +38,8 @@
                                         <td class="text-center" style="width: 100px;">Дата<br/>складання</td>
                                     </tr>
                                     <tr>
-                                        <td class="text-center bold" t-field="o.ua_cash_order_number"/>
-                                        <td class="text-center" t-field="o.date" t-options='{"widget": "date"}'/>
+                                        <td class="text-center bold"><span t-field="o.ua_cash_order_number"/></td>
+                                        <td class="text-center"><span t-field="o.date" t-options='{"widget": "date"}'/></td>
                                     </tr>
                                 </table>
 

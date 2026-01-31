@@ -11,6 +11,7 @@
         <field name="print_report_name">'Акт_%s_%s' % (object.name, object.partner_id.name)</field>
         <field name="binding_model_id" ref="model_l10n_ua_service_act"/>
         <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="paperformat_ua_report"/>
     </record>
 
     <!-- Service Act Report Template -->
@@ -92,7 +93,7 @@
                                 <t t-foreach="act.line_ids" t-as="line">
                                     <tr>
                                         <td class="text-center" t-esc="line_index + 1"/>
-                                        <td t-field="line.name"/>
+                                        <td><span t-field="line.name"/></td>
                                         <td class="text-center" t-esc="line.uom_id.name if line.uom_id else '-'"/>
                                         <td class="text-center" t-esc="'%.2f' % line.quantity"/>
                                         <td class="text-right" t-esc="'%.2f' % line.price_unit"/>
