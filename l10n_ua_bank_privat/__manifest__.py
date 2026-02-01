@@ -26,7 +26,7 @@ Extends l10n_ua_bank_sync with PrivatBank-specific functionality.
         'views/l10n_ua_bank_privat_config_views.xml',
     ],
     'demo': [],
-    'images': ['static/description/icon.png'],
+    'images': ['static/description/banner.png'],
     'installable': True,
     'application': False,
     'auto_install': False,
