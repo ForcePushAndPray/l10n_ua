@@ -88,7 +88,7 @@ Dependencies:
         # invoice_report_inherit.xml moved to l10n_ua_doc_reports
     ],
     'demo': [],
-    'images': ['static/description/icon.png'],
+    'images': ['static/description/banner.png'],
     'installable': True,
     'application': True,
     'auto_install': False,
