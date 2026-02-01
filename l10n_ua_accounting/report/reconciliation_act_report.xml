@@ -9,7 +9,7 @@
         <field name="report_name">l10n_ua_accounting.report_reconciliation_act_document</field>
         <field name="report_file">l10n_ua_accounting.report_reconciliation_act_document</field>
         <field name="print_report_name">'Акт_звірки_%s_%s-%s' % (object.partner_id.name, object.date_from, object.date_to)</field>
-        <field name="paperformat_id" ref="l10n_ua_account_reports.paperformat_ua_report"/>
+        <field name="paperformat_id" ref="l10n_ua_doc_reports.paperformat_ua_report"/>
     </record>
 
     <!-- Reconciliation Act Report Template -->
@@ -17,7 +17,7 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="wizard">
                 <t t-call="web.external_layout">
-                    <t t-call="l10n_ua_account_reports.report_ua_styles"/>
+                    <t t-call="l10n_ua_doc_reports.report_ua_styles"/>
                     <div class="page ua-report">
                         <div class="ua-report-title">
                             АКТ ЗВІРКИ ВЗАЄМОРОЗРАХУНКІВ

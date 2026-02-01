@@ -6,19 +6,19 @@
         <field name="name">Акт виконаних робіт</field>
         <field name="model">account.move</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">l10n_ua_account_reports.report_act_document</field>
-        <field name="report_file">l10n_ua_account_reports.report_act_document</field>
+        <field name="report_name">l10n_ua_doc_reports.report_act_document</field>
+        <field name="report_file">l10n_ua_doc_reports.report_act_document</field>
         <field name="print_report_name">'Акт_%s' % (object.name)</field>
         <field name="binding_model_id" ref="account.model_account_move"/>
         <field name="binding_type">report</field>
-        <field name="paperformat_id" ref="l10n_ua_account_reports.paperformat_ua_report"/>
+        <field name="paperformat_id" ref="l10n_ua_doc_reports.paperformat_ua_report"/>
     </record>
 
     <template id="report_act_document">
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-call="web.external_layout">
-                    <t t-call="l10n_ua_account_reports.report_ua_styles"/>
+                    <t t-call="l10n_ua_doc_reports.report_ua_styles"/>
                     <div class="page ua-report">
                         <t t-set="company" t-value="o.company_id"/>
                         <t t-set="partner" t-value="o.partner_id"/>

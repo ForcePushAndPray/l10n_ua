@@ -6,12 +6,12 @@
         <field name="name">Рахунок-фактура</field>
         <field name="model">account.move</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">l10n_ua_account_reports.report_rahunok_document</field>
-        <field name="report_file">l10n_ua_account_reports.report_rahunok_document</field>
+        <field name="report_name">l10n_ua_doc_reports.report_rahunok_document</field>
+        <field name="report_file">l10n_ua_doc_reports.report_rahunok_document</field>
         <field name="print_report_name">'Рахунок-фактура_%s' % (object.name)</field>
         <field name="binding_model_id" ref="account.model_account_move"/>
         <field name="binding_type">report</field>
-        <field name="paperformat_id" ref="l10n_ua_account_reports.paperformat_ua_report"/>
+        <field name="paperformat_id" ref="l10n_ua_doc_reports.paperformat_ua_report"/>
     </record>
 
     <!-- Рахунок-фактура on sale.order -->
@@ -19,12 +19,12 @@
         <field name="name">Рахунок-фактура</field>
         <field name="model">sale.order</field>
         <field name="report_type">qweb-pdf</field>
-        <field name="report_name">l10n_ua_account_reports.report_rahunok_sale_document</field>
-        <field name="report_file">l10n_ua_account_reports.report_rahunok_sale_document</field>
+        <field name="report_name">l10n_ua_doc_reports.report_rahunok_sale_document</field>
+        <field name="report_file">l10n_ua_doc_reports.report_rahunok_sale_document</field>
         <field name="print_report_name">'Рахунок-фактура_%s' % (object.name)</field>
         <field name="binding_model_id" ref="sale.model_sale_order"/>
         <field name="binding_type">report</field>
-        <field name="paperformat_id" ref="l10n_ua_account_reports.paperformat_ua_report"/>
+        <field name="paperformat_id" ref="l10n_ua_doc_reports.paperformat_ua_report"/>
     </record>
 
     <!-- ==================== INVOICE VERSION ==================== -->
@@ -32,7 +32,7 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-call="web.external_layout">
-                    <t t-call="l10n_ua_account_reports.report_ua_styles"/>
+                    <t t-call="l10n_ua_doc_reports.report_ua_styles"/>
                     <div class="page ua-report">
                         <t t-set="company" t-value="o.company_id"/>
                         <t t-set="partner" t-value="o.partner_id"/>
@@ -199,7 +199,7 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="o">
                 <t t-call="web.external_layout">
-                    <t t-call="l10n_ua_account_reports.report_ua_styles"/>
+                    <t t-call="l10n_ua_doc_reports.report_ua_styles"/>
                     <div class="page ua-report">
                         <t t-set="company" t-value="o.company_id"/>
                         <t t-set="partner" t-value="o.partner_id"/>

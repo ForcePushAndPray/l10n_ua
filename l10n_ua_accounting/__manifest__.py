@@ -54,7 +54,7 @@ Dependencies:
         'product',
         'uom',
         'l10n_ua_account_base',
-        'l10n_ua_account_reports',
+        'l10n_ua_doc_reports',
         'l10n_ua_tax',
         'l10n_ua_tax_cabinet',
         'l10n_ua_bank_sync',
@@ -85,7 +85,7 @@ Dependencies:
         'report/pnl_report.xml',
         'report/service_act_report.xml',
         'report/advance_report_report.xml',
-        # invoice_report_inherit.xml moved to l10n_ua_account_reports
+        # invoice_report_inherit.xml moved to l10n_ua_doc_reports
     ],
     'demo': [],
     'images': ['static/description/icon.png'],
