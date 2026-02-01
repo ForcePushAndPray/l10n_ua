@@ -12,6 +12,12 @@
                 <field name="ua_doc_date"/>
                 <field name="ua_counterparty_doc"/>
             </field>
+            <xpath expr="//field[@name='amount_residual']" position="after">
+                <field name="l10n_ua_discount_total"
+                       invisible="l10n_ua_discount_total == 0"/>
+                <field name="l10n_ua_amount_words" colspan="2" nolabel="0"
+                       invisible="not l10n_ua_amount_words"/>
+            </xpath>
         </field>
     </record>
 

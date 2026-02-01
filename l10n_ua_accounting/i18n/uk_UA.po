@@ -1,6 +1,6 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-#	* l10n_ua_accounting
+# * l10n_ua_accounting
 #
 msgid ""
 msgstr ""
@@ -10,609 +10,819 @@ msgstr ""
 "PO-Revision-Date: 2026-01-31 21:08+0000\n"
 "Last-Translator: \n"
 "Language-Team: Ukrainian\n"
+"Language: uk_UA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: uk_UA\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
+#. module: l10n_ua_accounting
 msgid "Ukraine - Accounting Suite"
 msgstr "Україна - Бухгалтерський облік"
 
+#. module: l10n_ua_accounting
 msgid "Ukrainian accounting: PKO/VKO, Cash Book, Balance Sheet, P&L"
-msgstr "Бухгалтерія України: ПКО/ВКО, Касова книга, Баланс, Звіт про фін. результати"
+msgstr ""
+"Бухгалтерія України: ПКО/ВКО, Касова книга, Баланс, Звіт про фін. результати"
 
+#. module: l10n_ua_accounting
 msgid "PKO Sequence"
 msgstr "Послідовність ПКО"
 
+#. module: l10n_ua_accounting
 msgid "Sequence for Ukrainian Cash Receipt Orders (ПКО)"
 msgstr "Послідовність для прибуткових касових ордерів (ПКО)"
 
+#. module: l10n_ua_accounting
 msgid "VKO Sequence"
 msgstr "Послідовність ВКО"
 
+#. module: l10n_ua_accounting
 msgid "Sequence for Ukrainian Cash Disbursement Orders (ВКО)"
 msgstr "Послідовність для видаткових касових ордерів (ВКО)"
 
+#. module: l10n_ua_accounting
 msgid "Cash Order Number"
 msgstr "Номер касового ордера"
 
+#. module: l10n_ua_accounting
 msgid "Ukrainian cash order number (auto-generated for cash journals)"
 msgstr "Номер українського касового ордера (автоматично для касових журналів)"
 
+#. module: l10n_ua_accounting
 msgid "Payment Basis"
 msgstr "Підстава платежу"
 
+#. module: l10n_ua_accounting
 msgid "Basis/reason for this cash operation (підстава)"
 msgstr "Підстава/причина касової операції"
 
+#. module: l10n_ua_accounting
 msgid "Cash Person"
 msgstr "Особа"
 
+#. module: l10n_ua_accounting
 msgid "Person who received (for VKO) or paid (for PKO) cash"
 msgstr "Особа, яка отримала (для ВКО) або внесла (для ПКО) готівку"
 
+#. module: l10n_ua_accounting
 msgid "Person Document"
 msgstr "Документ особи"
 
+#. module: l10n_ua_accounting
 msgid "Document of the person (passport, ID card)"
 msgstr "Документ особи (паспорт, ID-картка)"
 
+#. module: l10n_ua_accounting
 msgid "Appendix"
 msgstr "Додатки"
 
+#. module: l10n_ua_accounting
 msgid "List of appendix documents (додатки)"
 msgstr "Перелік додаткових документів"
 
+#. module: l10n_ua_accounting
 msgid "Cash Order Type"
 msgstr "Тип касового ордера"
 
+#. module: l10n_ua_accounting
 msgid "Is Cash Order"
 msgstr "Є касовим ордером"
 
+#. module: l10n_ua_accounting
 msgid "Service Act"
 msgstr "Акт наданих послуг"
 
+#. module: l10n_ua_accounting
 msgid "Number"
 msgstr "Номер"
 
+#. module: l10n_ua_accounting
 msgid "Date"
 msgstr "Дата"
 
+#. module: l10n_ua_accounting
 msgid "Customer"
 msgstr "Замовник"
 
+#. module: l10n_ua_accounting
 msgid "Company"
 msgstr "Компанія"
 
+#. module: l10n_ua_accounting
 msgid "Currency"
 msgstr "Валюта"
 
+#. module: l10n_ua_accounting
 msgid "Contract Number"
 msgstr "Номер договору"
 
+#. module: l10n_ua_accounting
 msgid "Reference to the contract under which services are provided"
 msgstr "Посилання на договір, за яким надаються послуги"
 
+#. module: l10n_ua_accounting
 msgid "Contract Date"
 msgstr "Дата договору"
 
+#. module: l10n_ua_accounting
 msgid "Period From"
 msgstr "Період з"
 
+#. module: l10n_ua_accounting
 msgid "Start date of service period"
 msgstr "Дата початку періоду надання послуг"
 
+#. module: l10n_ua_accounting
 msgid "Period To"
 msgstr "Період по"
 
+#. module: l10n_ua_accounting
 msgid "End date of service period"
 msgstr "Дата закінчення періоду надання послуг"
 
+#. module: l10n_ua_accounting
 msgid "Lines"
 msgstr "Рядки"
 
+#. module: l10n_ua_accounting
 msgid "Untaxed Amount"
 msgstr "Сума без податків"
 
+#. module: l10n_ua_accounting
 msgid "Tax Amount"
 msgstr "Сума податків"
 
+#. module: l10n_ua_accounting
 msgid "Total"
 msgstr "Разом"
 
+#. module: l10n_ua_accounting
 msgid "Draft"
 msgstr "Чернетка"
 
+#. module: l10n_ua_accounting
 msgid "Confirmed"
 msgstr "Підтверджено"
 
+#. module: l10n_ua_accounting
 msgid "Invoiced"
 msgstr "Виставлено рахунок"
 
+#. module: l10n_ua_accounting
 msgid "Cancelled"
 msgstr "Скасовано"
 
+#. module: l10n_ua_accounting
 msgid "Status"
 msgstr "Статус"
 
+#. module: l10n_ua_accounting
 msgid "Invoice"
 msgstr "Рахунок"
 
+#. module: l10n_ua_accounting
 msgid "Notes"
 msgstr "Примітки"
 
+#. module: l10n_ua_accounting
 msgid "Only draft acts can be confirmed."
 msgstr "Тільки чернеткові акти можна підтвердити."
 
+#. module: l10n_ua_accounting
 msgid "Cannot confirm an act without lines."
 msgstr "Неможливо підтвердити акт без рядків."
 
+#. module: l10n_ua_accounting
 msgid "Cannot reset an invoiced act to draft."
 msgstr "Неможливо повернути в чернетку акт з виставленим рахунком."
 
+#. module: l10n_ua_accounting
 msgid "Cannot cancel an invoiced act."
 msgstr "Неможливо скасувати акт з виставленим рахунком."
 
+#. module: l10n_ua_accounting
 msgid "Only confirmed acts can be invoiced."
 msgstr "Тільки підтверджені акти можна виставити рахунком."
 
+#. module: l10n_ua_accounting
 msgid "Invoice already exists for this act."
 msgstr "Рахунок для цього акту вже існує."
 
+#. module: l10n_ua_accounting
 msgid "No invoice exists for this act."
 msgstr "Рахунок для цього акту не існує."
 
+#. module: l10n_ua_accounting
 msgid "Service Act Line"
 msgstr "Рядок акту наданих послуг"
 
+#. module: l10n_ua_accounting
 msgid "Sequence"
 msgstr "Послідовність"
 
+#. module: l10n_ua_accounting
 msgid "Service"
 msgstr "Послуга"
 
+#. module: l10n_ua_accounting
 msgid "Description"
 msgstr "Опис"
 
+#. module: l10n_ua_accounting
 msgid "Quantity"
 msgstr "Кількість"
 
+#. module: l10n_ua_accounting
 msgid "Unit of Measure"
 msgstr "Одиниця виміру"
 
+#. module: l10n_ua_accounting
 msgid "Unit Price"
 msgstr "Ціна за одиницю"
 
+#. module: l10n_ua_accounting
 msgid "Taxes"
 msgstr "Податки"
 
+#. module: l10n_ua_accounting
 msgid "Subtotal"
 msgstr "Підсумок"
 
+#. module: l10n_ua_accounting
 msgid "Tax"
 msgstr "Податок"
 
+#. module: l10n_ua_accounting
 msgid "Advance Report"
 msgstr "Авансовий звіт"
 
+#. module: l10n_ua_accounting
 msgid "Employee"
 msgstr "Працівник"
 
+#. module: l10n_ua_accounting
 msgid "Purpose"
 msgstr "Призначення"
 
+#. module: l10n_ua_accounting
 msgid "Purpose of the advance (business trip, purchase, etc.)"
 msgstr "Призначення авансу (відрядження, закупівля тощо)"
 
+#. module: l10n_ua_accounting
 msgid "Advance Date"
 msgstr "Дата видачі авансу"
 
+#. module: l10n_ua_accounting
 msgid "Date when advance was given to employee"
 msgstr "Дата видачі авансу працівнику"
 
+#. module: l10n_ua_accounting
 msgid "Advance Received"
 msgstr "Отриманий аванс"
 
+#. module: l10n_ua_accounting
 msgid "Amount received by employee"
 msgstr "Сума, отримана працівником"
 
+#. module: l10n_ua_accounting
 msgid "Previous Balance"
 msgstr "Попередній залишок"
 
+#. module: l10n_ua_accounting
 msgid "Balance from previous advance report"
 msgstr "Залишок з попереднього авансового звіту"
 
+#. module: l10n_ua_accounting
 msgid "Expense Lines"
 msgstr "Рядки витрат"
 
+#. module: l10n_ua_accounting
 msgid "Total Expenses"
 msgstr "Загальні витрати"
 
+#. module: l10n_ua_accounting
 msgid "Balance"
 msgstr "Залишок"
 
+#. module: l10n_ua_accounting
 msgid "Positive = employee owes, Negative = company owes"
 msgstr "Додатний = борг працівника, Від'ємний = борг компанії"
 
+#. module: l10n_ua_accounting
 msgid "Submitted"
 msgstr "Подано"
 
+#. module: l10n_ua_accounting
 msgid "Approved"
 msgstr "Затверджено"
 
+#. module: l10n_ua_accounting
 msgid "Posted"
 msgstr "Проведено"
 
+#. module: l10n_ua_accounting
 msgid "Journal Entry"
 msgstr "Проводка"
 
+#. module: l10n_ua_accounting
 msgid "Approved By"
 msgstr "Затвердив"
 
+#. module: l10n_ua_accounting
 msgid "Approved Date"
 msgstr "Дата затвердження"
 
+#. module: l10n_ua_accounting
 msgid "Only draft reports can be submitted."
 msgstr "Тільки чернеткові звіти можна подати."
 
+#. module: l10n_ua_accounting
 msgid "Cannot submit a report without expense lines."
 msgstr "Неможливо подати звіт без рядків витрат."
 
+#. module: l10n_ua_accounting
 msgid "Only submitted reports can be approved."
 msgstr "Тільки подані звіти можна затвердити."
 
+#. module: l10n_ua_accounting
 msgid "Only approved reports can be posted."
 msgstr "Тільки затверджені звіти можна провести."
 
+#. module: l10n_ua_accounting
 msgid "Cannot reset a posted report to draft."
 msgstr "Неможливо повернути проведений звіт у чернетку."
 
+#. module: l10n_ua_accounting
 msgid "Cannot cancel a posted report."
 msgstr "Неможливо скасувати проведений звіт."
 
+#. module: l10n_ua_accounting
 msgid "Advance Report Line"
 msgstr "Рядок авансового звіту"
 
+#. module: l10n_ua_accounting
 msgid "Receipt/Check"
 msgstr "Чек/Квитанція"
 
+#. module: l10n_ua_accounting
 msgid "Ticket"
 msgstr "Квиток"
 
+#. module: l10n_ua_accounting
 msgid "Other"
 msgstr "Інше"
 
+#. module: l10n_ua_accounting
 msgid "Document Type"
 msgstr "Тип документа"
 
+#. module: l10n_ua_accounting
 msgid "Document Number"
 msgstr "Номер документа"
 
+#. module: l10n_ua_accounting
 msgid "Document Date"
 msgstr "Дата документа"
 
+#. module: l10n_ua_accounting
 msgid "Vendor"
 msgstr "Постачальник"
 
+#. module: l10n_ua_accounting
 msgid "Transport"
 msgstr "Транспорт"
 
+#. module: l10n_ua_accounting
 msgid "Accommodation"
 msgstr "Проживання"
 
+#. module: l10n_ua_accounting
 msgid "Meals"
 msgstr "Харчування"
 
+#. module: l10n_ua_accounting
 msgid "Fuel"
 msgstr "Пальне"
 
+#. module: l10n_ua_accounting
 msgid "Office Supplies"
 msgstr "Канцтовари"
 
+#. module: l10n_ua_accounting
 msgid "Expense Type"
 msgstr "Тип витрат"
 
+#. module: l10n_ua_accounting
 msgid "Amount"
 msgstr "Сума"
 
+#. module: l10n_ua_accounting
 msgid "Attachments"
 msgstr "Вкладення"
 
+#. module: l10n_ua_accounting
 msgid "Attach receipt/invoice scan"
 msgstr "Прикріпити скан чека/рахунку"
 
+#. module: l10n_ua_accounting
 msgid "Note"
 msgstr "Примітка"
 
+#. module: l10n_ua_accounting
 msgid "Cash Book Wizard"
 msgstr "Майстер касової книги"
 
+#. module: l10n_ua_accounting
 msgid "Cash Journal"
 msgstr "Касовий журнал"
 
+#. module: l10n_ua_accounting
 msgid "Date From"
 msgstr "Дата з"
 
+#. module: l10n_ua_accounting
 msgid "Date To"
 msgstr "Дата по"
 
+#. module: l10n_ua_accounting
 msgid "Date From must be before or equal to Date To."
 msgstr "Дата початку має бути раніше або дорівнювати даті закінчення."
 
+#. module: l10n_ua_accounting
 msgid "Cash journal must have a default account configured."
 msgstr "Касовий журнал повинен мати налаштований рахунок за замовчуванням."
 
+#. module: l10n_ua_accounting
 msgid "Reconciliation Act Wizard"
 msgstr "Майстер акту звірки"
 
+#. module: l10n_ua_accounting
 msgid "Partner"
 msgstr "Контрагент"
 
+#. module: l10n_ua_accounting
 msgid "Receivable (Customers)"
 msgstr "Дебіторська (Покупці)"
 
+#. module: l10n_ua_accounting
 msgid "Payable (Vendors)"
 msgstr "Кредиторська (Постачальники)"
 
+#. module: l10n_ua_accounting
 msgid "Both"
 msgstr "Обидва"
 
+#. module: l10n_ua_accounting
 msgid "Account Type"
 msgstr "Тип рахунку"
 
+#. module: l10n_ua_accounting
 msgid "Unreconciled Only"
 msgstr "Тільки незвірені"
 
+#. module: l10n_ua_accounting
 msgid "Show only unreconciled entries"
 msgstr "Показувати тільки незвірені записи"
 
+#. module: l10n_ua_accounting
 msgid "Balance Sheet Wizard (Form №1)"
 msgstr "Майстер балансу (Форма №1)"
 
+#. module: l10n_ua_accounting
 msgid "Period Start"
 msgstr "Початок періоду"
 
+#. module: l10n_ua_accounting
 msgid "Start of reporting period (for comparison)"
 msgstr "Початок звітного періоду (для порівняння)"
 
+#. module: l10n_ua_accounting
 msgid "Report Date"
 msgstr "Дата звіту"
 
+#. module: l10n_ua_accounting
 msgid "Balance sheet date (end of period)"
 msgstr "Дата балансу (кінець періоду)"
 
+#. module: l10n_ua_accounting
 msgid "Comparison Date"
 msgstr "Дата порівняння"
 
+#. module: l10n_ua_accounting
 msgid "Date for comparison column (typically end of previous year)"
 msgstr "Дата для порівняльної колонки (зазвичай кінець попереднього року)"
 
+#. module: l10n_ua_accounting
 msgid "Period Start must be before or equal to Report Date."
 msgstr "Початок періоду має бути раніше або дорівнювати даті звіту."
 
+#. module: l10n_ua_accounting
 msgid "XLSX export is not yet implemented."
 msgstr "Експорт XLSX ще не реалізовано."
 
+#. module: l10n_ua_accounting
 msgid "P&L Report Wizard (Form №2)"
 msgstr "Майстер звіту про фін. результати (Форма №2)"
 
+#. module: l10n_ua_accounting
 msgid "Comparison Period Start"
 msgstr "Початок порівняльного періоду"
 
-msgid "Start date for comparison period (typically same period of previous year)"
-msgstr "Дата початку порівняльного періоду (зазвичай той самий період минулого року)"
+#. module: l10n_ua_accounting
+msgid ""
+"Start date for comparison period (typically same period of previous year)"
+msgstr ""
+"Дата початку порівняльного періоду (зазвичай той самий період минулого року)"
 
+#. module: l10n_ua_accounting
 msgid "Comparison Period End"
 msgstr "Кінець порівняльного періоду"
 
+#. module: l10n_ua_accounting
 msgid "End date for comparison period"
 msgstr "Дата кінця порівняльного періоду"
 
+#. module: l10n_ua_accounting
 msgid "Бухгалтерія UA"
 msgstr "Бухгалтерія UA"
 
+#. module: l10n_ua_accounting
 msgid "Документи"
 msgstr "Документи"
 
+#. module: l10n_ua_accounting
 msgid "Рахунки"
 msgstr "Рахунки"
 
+#. module: l10n_ua_accounting
 msgid "Акти наданих послуг"
 msgstr "Акти наданих послуг"
 
+#. module: l10n_ua_accounting
 msgid "Авансові звіти"
 msgstr "Авансові звіти"
 
+#. module: l10n_ua_accounting
 msgid "Каса та банк"
 msgstr "Каса та банк"
 
+#. module: l10n_ua_accounting
 msgid "ПКО (Прибуткові)"
 msgstr "ПКО (Прибуткові)"
 
+#. module: l10n_ua_accounting
 msgid "ВКО (Видаткові)"
 msgstr "ВКО (Видаткові)"
 
+#. module: l10n_ua_accounting
 msgid "Касова книга"
 msgstr "Касова книга"
 
+#. module: l10n_ua_accounting
 msgid "Акти звірки"
 msgstr "Акти звірки"
 
+#. module: l10n_ua_accounting
 msgid "Звітність"
 msgstr "Звітність"
 
+#. module: l10n_ua_accounting
 msgid "Оборотно-сальдова відомість"
 msgstr "Оборотно-сальдова відомість"
 
+#. module: l10n_ua_accounting
 msgid "Журнали-ордери"
 msgstr "Журнали-ордери"
 
+#. module: l10n_ua_accounting
 msgid "Головна книга"
 msgstr "Головна книга"
 
+#. module: l10n_ua_accounting
 msgid "Баланс (Форма №1)"
 msgstr "Баланс (Форма №1)"
 
+#. module: l10n_ua_accounting
 msgid "Звіт про фін. результати (Форма №2)"
 msgstr "Звіт про фін. результати (Форма №2)"
 
+#. module: l10n_ua_accounting
 msgid "Налаштування"
 msgstr "Налаштування"
 
+#. module: l10n_ua_accounting
 msgid "План рахунків"
 msgstr "План рахунків"
 
+#. module: l10n_ua_accounting
 msgid "Журнали"
 msgstr "Журнали"
 
+#. module: l10n_ua_accounting
 msgid "Довідники"
 msgstr "Довідники"
 
+#. module: l10n_ua_accounting
 msgid "Print ПКО"
 msgstr "Друк ПКО"
 
+#. module: l10n_ua_accounting
 msgid "Print ВКО"
 msgstr "Друк ВКО"
 
+#. module: l10n_ua_accounting
 msgid "ПКО (Прибуткові касові ордери)"
 msgstr "ПКО (Прибуткові касові ордери)"
 
+#. module: l10n_ua_accounting
 msgid "ВКО (Видаткові касові ордери)"
 msgstr "ВКО (Видаткові касові ордери)"
 
+#. module: l10n_ua_accounting
 msgid "Ukrainian Cash Orders"
 msgstr "Українські касові ордери"
 
+#. module: l10n_ua_accounting
 msgid "Create UA Sequences"
 msgstr "Створити UA послідовності"
 
+#. module: l10n_ua_accounting
 msgid "Акт наданих послуг"
 msgstr "Акт наданих послуг"
 
+#. module: l10n_ua_accounting
 msgid "Confirm"
 msgstr "Підтвердити"
 
+#. module: l10n_ua_accounting
 msgid "Create Invoice"
 msgstr "Створити рахунок"
 
+#. module: l10n_ua_accounting
 msgid "View Invoice"
 msgstr "Переглянути рахунок"
 
+#. module: l10n_ua_accounting
 msgid "Print"
 msgstr "Друк"
 
+#. module: l10n_ua_accounting
 msgid "Reset to Draft"
 msgstr "Повернути в чернетку"
 
+#. module: l10n_ua_accounting
 msgid "Cancel"
 msgstr "Скасувати"
 
+#. module: l10n_ua_accounting
 msgid "Service Period"
 msgstr "Період надання послуг"
 
+#. module: l10n_ua_accounting
 msgid "Additional notes..."
 msgstr "Додаткові примітки..."
 
+#. module: l10n_ua_accounting
 msgid "Service Acts"
 msgstr "Акти наданих послуг"
 
+#. module: l10n_ua_accounting
 msgid "Create your first Service Act"
 msgstr "Створіть свій перший Акт наданих послуг"
 
-msgid "Service acts confirm the provision of services to customers and serve as the basis for issuing invoices."
-msgstr "Акти наданих послуг підтверджують надання послуг замовникам та є підставою для виставлення рахунків."
+#. module: l10n_ua_accounting
+msgid ""
+"Service acts confirm the provision of services to customers and serve as the"
+" basis for issuing invoices."
+msgstr ""
+"Акти наданих послуг підтверджують надання послуг замовникам та є підставою "
+"для виставлення рахунків."
 
+#. module: l10n_ua_accounting
 msgid "Service Act Sequence"
 msgstr "Послідовність актів наданих послуг"
 
+#. module: l10n_ua_accounting
 msgid "Авансовий звіт"
 msgstr "Авансовий звіт"
 
+#. module: l10n_ua_accounting
 msgid "Submit"
 msgstr "Подати"
 
+#. module: l10n_ua_accounting
 msgid "Approve"
 msgstr "Затвердити"
 
+#. module: l10n_ua_accounting
 msgid "Post"
 msgstr "Провести"
 
+#. module: l10n_ua_accounting
 msgid "Expenses"
 msgstr "Витрати"
 
+#. module: l10n_ua_accounting
 msgid "Approval"
 msgstr "Затвердження"
 
+#. module: l10n_ua_accounting
 msgid "Advance Reports"
 msgstr "Авансові звіти"
 
+#. module: l10n_ua_accounting
 msgid "To Approve"
 msgstr "На затвердження"
 
+#. module: l10n_ua_accounting
 msgid "Create your first Advance Report"
 msgstr "Створіть свій перший авансовий звіт"
 
-msgid "Advance reports are used to account for money given to employees for business expenses like travel, purchases, etc."
-msgstr "Авансові звіти використовуються для обліку коштів, виданих працівникам на відрядження, закупівлі тощо."
+#. module: l10n_ua_accounting
+msgid ""
+"Advance reports are used to account for money given to employees for "
+"business expenses like travel, purchases, etc."
+msgstr ""
+"Авансові звіти використовуються для обліку коштів, виданих працівникам на "
+"відрядження, закупівлі тощо."
 
+#. module: l10n_ua_accounting
 msgid "Advance Report Sequence"
 msgstr "Послідовність авансових звітів"
 
+#. module: l10n_ua_accounting
 msgid "View Entries"
 msgstr "Переглянути записи"
 
+#. module: l10n_ua_accounting
 msgid "Export XLSX"
 msgstr "Експорт XLSX"
 
+#. module: l10n_ua_accounting
 msgid "Акт звірки взаєморозрахунків"
 msgstr "Акт звірки взаєморозрахунків"
 
+#. module: l10n_ua_accounting
 msgid "Акт звірки"
 msgstr "Акт звірки"
 
+#. module: l10n_ua_accounting
 msgid "Звіт про фінансові результати (Форма №2)"
 msgstr "Звіт про фінансові результати (Форма №2)"
 
+#. module: l10n_ua_accounting
 msgid "Звітний період"
 msgstr "Звітний період"
 
+#. module: l10n_ua_accounting
 msgid "Період для порівняння"
 msgstr "Період для порівняння"
 
+#. module: l10n_ua_accounting
 msgid "Ukrainian Report A4"
 msgstr "Український звіт A4"
 
+#. module: l10n_ua_accounting
 msgid "ПКО (Прибутковий касовий ордер)"
 msgstr "ПКО (Прибутковий касовий ордер)"
 
+#. module: l10n_ua_accounting
 msgid "ВКО (Видатковий касовий ордер)"
 msgstr "ВКО (Видатковий касовий ордер)"
 
+#. module: l10n_ua_accounting
 msgid "ПКО (Прибутковий)"
 msgstr "ПКО (Прибутковий)"
 
+#. module: l10n_ua_accounting
 msgid "ВКО (Видатковий)"
 msgstr "ВКО (Видатковий)"
 
+#. module: l10n_ua_accounting
 msgid "State"
 msgstr "Стан"
 
+#. module: l10n_ua_accounting
 msgid "Name"
 msgstr "Назва"
 
+#. module: l10n_ua_accounting
 msgid "Group By"
 msgstr "Групувати за"
 
+#. module: l10n_ua_accounting
 msgid "№ ПКО"
 msgstr "№ ПКО"
 
+#. module: l10n_ua_accounting
 msgid "Підстава"
 msgstr "Підстава"
 
+#. module: l10n_ua_accounting
 msgid "№ ВКО"
 msgstr "№ ВКО"
 
+#. module: l10n_ua_accounting
 msgid "Отримав"
 msgstr "Отримав"
-

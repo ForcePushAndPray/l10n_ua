@@ -1,6 +1,6 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-#	* l10n_ua_fop
+# * l10n_ua_fop
 #
 msgid ""
 msgstr ""
@@ -10,10 +10,10 @@ msgstr ""
 "PO-Revision-Date: 2026-01-31 21:06+0000\n"
 "Last-Translator: \n"
 "Language-Team: Ukrainian\n"
+"Language: uk_UA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: uk_UA\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #. module: l10n_ua_fop
@@ -31,39 +31,51 @@ msgstr "Єдиний податок для фізичних осіб-підпр�
 msgid "FOP Tax Group"
 msgstr "Група єдиного податку ФОП"
 
+#. module: l10n_ua_fop
 msgid "Group 1"
 msgstr "Група 1"
 
+#. module: l10n_ua_fop
 msgid "Group 2"
 msgstr "Група 2"
 
+#. module: l10n_ua_fop
 msgid "Group 3 (no VAT)"
 msgstr "Група 3 (без ПДВ)"
 
+#. module: l10n_ua_fop
 msgid "Group 3 (with VAT)"
 msgstr "Група 3 (з ПДВ)"
 
+#. module: l10n_ua_fop
 msgid "Group"
 msgstr "Група"
 
+#. module: l10n_ua_fop
 msgid "Name"
 msgstr "Назва"
 
+#. module: l10n_ua_fop
 msgid "Tax Rate (%)"
 msgstr "Ставка податку (%)"
 
+#. module: l10n_ua_fop
 msgid "Single tax rate as percentage of income"
 msgstr "Ставка єдиного податку у відсотках від доходу"
 
+#. module: l10n_ua_fop
 msgid "Annual Income Limit"
 msgstr "Річний ліміт доходу"
 
+#. module: l10n_ua_fop
 msgid "Can Hire Employees"
 msgstr "Може наймати працівників"
 
+#. module: l10n_ua_fop
 msgid "Max Employees"
 msgstr "Максимальна кількість працівників"
 
+#. module: l10n_ua_fop
 msgid "Description"
 msgstr "Опис"
 
@@ -77,72 +89,95 @@ msgstr "Книга обліку доходів ФОП"
 msgid "FOP Income Book Line"
 msgstr "Рядок книги обліку доходів ФОП"
 
+#. module: l10n_ua_fop
 msgid "Year"
 msgstr "Рік"
 
+#. module: l10n_ua_fop
 msgid "Q1"
 msgstr "I кв."
 
+#. module: l10n_ua_fop
 msgid "Q2"
 msgstr "II кв."
 
+#. module: l10n_ua_fop
 msgid "Q3"
 msgstr "III кв."
 
+#. module: l10n_ua_fop
 msgid "Q4"
 msgstr "IV кв."
 
+#. module: l10n_ua_fop
 msgid "Quarter"
 msgstr "Квартал"
 
+#. module: l10n_ua_fop
 msgid "FOP Group"
 msgstr "Група ФОП"
 
+#. module: l10n_ua_fop
 msgid "Company"
 msgstr "Компанія"
 
+#. module: l10n_ua_fop
 msgid "Lines"
 msgstr "Рядки"
 
+#. module: l10n_ua_fop
 msgid "Total Income"
 msgstr "Загальний дохід"
 
+#. module: l10n_ua_fop
 msgid "Draft"
 msgstr "Чернетка"
 
+#. module: l10n_ua_fop
 msgid "Confirmed"
 msgstr "Підтверджено"
 
+#. module: l10n_ua_fop
 msgid "State"
 msgstr "Стан"
 
+#. module: l10n_ua_fop
 msgid "Income Book"
 msgstr "Книга доходів"
 
+#. module: l10n_ua_fop
 msgid "Date"
 msgstr "Дата"
 
+#. module: l10n_ua_fop
 msgid "Document Number"
 msgstr "Номер документа"
 
+#. module: l10n_ua_fop
 msgid "Cash"
 msgstr "Готівка"
 
+#. module: l10n_ua_fop
 msgid "Bank Transfer"
 msgstr "Банківський переказ"
 
+#. module: l10n_ua_fop
 msgid "Card Payment"
 msgstr "Оплата карткою"
 
+#. module: l10n_ua_fop
 msgid "Income Type"
 msgstr "Тип доходу"
 
+#. module: l10n_ua_fop
 msgid "Amount"
 msgstr "Сума"
 
+#. module: l10n_ua_fop
 msgid "Partner"
 msgstr "Контрагент"
 
+#. module: l10n_ua_fop
 msgid "Bank Statement Line"
 msgstr "Рядок банківської виписки"
 
@@ -151,114 +186,162 @@ msgstr "Рядок банківської виписки"
 msgid "FOP Single Tax Declaration"
 msgstr "Декларація платника єдиного податку ФОП"
 
+#. module: l10n_ua_fop
 msgid "H1 (Half Year)"
 msgstr "Півріччя"
 
+#. module: l10n_ua_fop
 msgid "9 Months"
 msgstr "9 місяців"
 
+#. module: l10n_ua_fop
 msgid "Period"
 msgstr "Період"
 
+#. module: l10n_ua_fop
 msgid "Single Tax"
 msgstr "Єдиний податок"
 
+#. module: l10n_ua_fop
 msgid "ESV Base (Min Wage)"
 msgstr "База ЄСВ (мін. зарплата)"
 
+#. module: l10n_ua_fop
 msgid "ESV Rate (%)"
 msgstr "Ставка ЄСВ (%)"
 
+#. module: l10n_ua_fop
 msgid "ESV Amount"
 msgstr "Сума ЄСВ"
 
+#. module: l10n_ua_fop
 msgid "Total Payable"
 msgstr "Всього до сплати"
 
+#. module: l10n_ua_fop
 msgid "Calculated"
 msgstr "Розраховано"
 
+#. module: l10n_ua_fop
 msgid "Submitted"
 msgstr "Подано"
 
+#. module: l10n_ua_fop
 msgid "Accepted"
 msgstr "Прийнято"
 
+#. module: l10n_ua_fop
 msgid "Submission Date"
 msgstr "Дата подання"
 
+#. module: l10n_ua_fop
 msgid "XML File"
 msgstr "XML файл"
 
+#. module: l10n_ua_fop
 msgid "XML Filename"
 msgstr "Ім'я XML файлу"
 
+#. module: l10n_ua_fop
 msgid "Confirm"
 msgstr "Підтвердити"
 
+#. module: l10n_ua_fop
 msgid "Set to Draft"
 msgstr "Повернути в чернетку"
 
+#. module: l10n_ua_fop
 msgid "Calculate"
 msgstr "Розрахувати"
 
+#. module: l10n_ua_fop
 msgid "Generate XML"
 msgstr "Згенерувати XML"
 
+#. module: l10n_ua_fop
 msgid "Submit"
 msgstr "Подати"
 
+#. module: l10n_ua_fop
 msgid "Mark Accepted"
 msgstr "Позначити прийнятою"
 
+#. module: l10n_ua_fop
 msgid "Income Lines"
 msgstr "Рядки доходів"
 
+#. module: l10n_ua_fop
 msgid "Income Books"
 msgstr "Книги обліку доходів"
 
+#. module: l10n_ua_fop
 msgid "FOP Declaration"
 msgstr "Декларація ФОП"
 
+#. module: l10n_ua_fop
 msgid "FOP Declarations"
 msgstr "Декларації ФОП"
 
+#. module: l10n_ua_fop
 msgid "Income"
 msgstr "Дохід"
 
+#. module: l10n_ua_fop
 msgid "Taxes"
 msgstr "Податки"
 
+#. module: l10n_ua_fop
 msgid "ESV"
 msgstr "ЄСВ"
 
+#. module: l10n_ua_fop
 msgid "FOP (Single Tax)"
 msgstr "ФОП (Єдиний податок)"
 
+#. module: l10n_ua_fop
 msgid "Declarations"
 msgstr "Декларації"
 
+#. module: l10n_ua_fop
 msgid "Group 1 - Retail trade, services to population"
 msgstr "Група 1 - Роздрібна торгівля, послуги населенню"
 
-msgid "Fixed rate based on minimum wage. Retail trade at markets, household services to population."
-msgstr "Фіксована ставка від мінімальної зарплати. Торгівля на ринках, побутові послуги населенню."
+#. module: l10n_ua_fop
+msgid ""
+"Fixed rate based on minimum wage. Retail trade at markets, household "
+"services to population."
+msgstr ""
+"Фіксована ставка від мінімальної зарплати. Торгівля на ринках, побутові "
+"послуги населенню."
 
+#. module: l10n_ua_fop
 msgid "Group 2 - Services to FOP and legal entities"
 msgstr "Група 2 - Послуги ФОП та юридичним особам"
 
-msgid "Fixed rate based on minimum wage. Services to other FOP and legal entities, production."
-msgstr "Фіксована ставка від мінімальної зарплати. Послуги іншим ФОП та юрособам, виробництво."
+#. module: l10n_ua_fop
+msgid ""
+"Fixed rate based on minimum wage. Services to other FOP and legal entities, "
+"production."
+msgstr ""
+"Фіксована ставка від мінімальної зарплати. Послуги іншим ФОП та юрособам, "
+"виробництво."
 
+#. module: l10n_ua_fop
 msgid "Group 3 - Without VAT"
 msgstr "Група 3 - Без ПДВ"
 
+#. module: l10n_ua_fop
 msgid "5% of income. Any activity except prohibited. No employee limit."
-msgstr "5% від доходу. Будь-яка діяльність крім забороненої. Без обмеження працівників."
+msgstr ""
+"5% від доходу. Будь-яка діяльність крім забороненої. Без обмеження "
+"працівників."
 
+#. module: l10n_ua_fop
 msgid "Group 3 - With VAT"
 msgstr "Група 3 - З ПДВ"
 
+#. module: l10n_ua_fop
 msgid "3% of income + VAT. Any activity except prohibited. No employee limit."
-msgstr "3% від доходу + ПДВ. Будь-яка діяльність крім забороненої. Без обмеження працівників."
-
+msgstr ""
+"3% від доходу + ПДВ. Будь-яка діяльність крім забороненої. Без обмеження "
+"працівників."

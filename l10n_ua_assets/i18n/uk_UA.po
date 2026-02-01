@@ -1,6 +1,6 @@
 # Translation of Odoo Server.
 # This file contains the translation of the following modules:
-#	* l10n_ua_assets
+# * l10n_ua_assets
 #
 msgid ""
 msgstr ""
@@ -10,10 +10,10 @@ msgstr ""
 "PO-Revision-Date: 2026-01-31 21:06+0000\n"
 "Last-Translator: \n"
 "Language-Team: Ukrainian\n"
+"Language: uk_UA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: uk_UA\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #. module: l10n_ua_assets
@@ -31,21 +31,27 @@ msgstr "Основні засоби та малоцінні необоротні
 msgid "Fixed Asset Group (Tax Code)"
 msgstr "Група основних засобів (Податковий кодекс)"
 
+#. module: l10n_ua_assets
 msgid "Code"
 msgstr "Код"
 
+#. module: l10n_ua_assets
 msgid "Name"
 msgstr "Назва"
 
+#. module: l10n_ua_assets
 msgid "Min Useful Life (years)"
 msgstr "Мін. строк корисного використання (років)"
 
+#. module: l10n_ua_assets
 msgid "Minimum useful life according to Tax Code"
 msgstr "Мінімальний строк корисного використання згідно з Податковим кодексом"
 
+#. module: l10n_ua_assets
 msgid "Description"
 msgstr "Опис"
 
+#. module: l10n_ua_assets
 msgid "Asset group code must be unique!"
 msgstr "Код групи основних засобів має бути унікальним!"
 
@@ -54,171 +60,227 @@ msgstr "Код групи основних засобів має бути уні
 msgid "Low-Value Non-Current Tangible Assets (MNMA)"
 msgstr "Малоцінні необоротні матеріальні активи (МНМА)"
 
+#. module: l10n_ua_assets
 msgid "Inventory Number"
 msgstr "Інвентарний номер"
 
+#. module: l10n_ua_assets
 msgid "Acquisition Date"
 msgstr "Дата придбання"
 
+#. module: l10n_ua_assets
 msgid "Commissioning Date"
 msgstr "Дата введення в експлуатацію"
 
+#. module: l10n_ua_assets
 msgid "Original Value"
 msgstr "Первісна вартість"
 
+#. module: l10n_ua_assets
 msgid "50/50 (50% on commissioning, 50% on write-off)"
 msgstr "50/50 (50% при введенні, 50% при списанні)"
 
+#. module: l10n_ua_assets
 msgid "100% on commissioning"
 msgstr "100% при введенні в експлуатацію"
 
+#. module: l10n_ua_assets
 msgid "Write-off Method"
 msgstr "Метод списання"
 
+#. module: l10n_ua_assets
 msgid "Depreciation"
 msgstr "Знос"
 
+#. module: l10n_ua_assets
 msgid "Residual Value"
 msgstr "Залишкова вартість"
 
+#. module: l10n_ua_assets
 msgid "Draft"
 msgstr "Чернетка"
 
+#. module: l10n_ua_assets
 msgid "In Use"
 msgstr "В експлуатації"
 
+#. module: l10n_ua_assets
 msgid "Written Off"
 msgstr "Списано"
 
+#. module: l10n_ua_assets
 msgid "State"
 msgstr "Стан"
 
+#. module: l10n_ua_assets
 msgid "Responsible"
 msgstr "Відповідальна особа"
 
+#. module: l10n_ua_assets
 msgid "Department"
 msgstr "Підрозділ"
 
+#. module: l10n_ua_assets
 msgid "Location"
 msgstr "Місцезнаходження"
 
+#. module: l10n_ua_assets
 msgid "Company"
 msgstr "Компанія"
 
+#. module: l10n_ua_assets
 msgid "Notes"
 msgstr "Примітки"
 
+#. module: l10n_ua_assets
 msgid "UA Asset Group"
 msgstr "Група ОЗ (Україна)"
 
+#. module: l10n_ua_assets
 msgid "Asset group according to Ukrainian Tax Code (1-16)"
 msgstr "Група основних засобів згідно з Податковим кодексом України (1-16)"
 
+#. module: l10n_ua_assets
 msgid "Date when asset was put into operation"
 msgstr "Дата введення активу в експлуатацію"
 
+#. module: l10n_ua_assets
 msgid "Straight-line (Прямолінійний)"
 msgstr "Прямолінійний"
 
+#. module: l10n_ua_assets
 msgid "Declining Balance (Зменшення залишку)"
 msgstr "Зменшення залишку"
 
+#. module: l10n_ua_assets
 msgid "Production (Виробничий)"
 msgstr "Виробничий"
 
+#. module: l10n_ua_assets
 msgid "Cumulative (Кумулятивний)"
 msgstr "Кумулятивний"
 
+#. module: l10n_ua_assets
 msgid "UA Depreciation Method"
 msgstr "Метод амортизації (Україна)"
 
+#. module: l10n_ua_assets
 msgid "Useful Life (months)"
 msgstr "Строк корисного використання (місяців)"
 
+#. module: l10n_ua_assets
 msgid "Useful life in months"
 msgstr "Строк корисного використання у місяцях"
 
+#. module: l10n_ua_assets
 msgid "Liquidation Value"
 msgstr "Ліквідаційна вартість"
 
+#. module: l10n_ua_assets
 msgid "Expected value at the end of useful life"
 msgstr "Очікувана вартість наприкінці строку корисного використання"
 
+#. module: l10n_ua_assets
 msgid "Production Capacity"
 msgstr "Виробнича потужність"
 
+#. module: l10n_ua_assets
 msgid "Total expected production units (for production method)"
-msgstr "Загальна очікувана кількість одиниць продукції (для виробничого методу)"
+msgstr ""
+"Загальна очікувана кількість одиниць продукції (для виробничого методу)"
 
+#. module: l10n_ua_assets
 msgid "Produced Units"
 msgstr "Вироблено одиниць"
 
+#. module: l10n_ua_assets
 msgid "Units produced to date"
 msgstr "Одиниць вироблено на дату"
 
+#. module: l10n_ua_assets
 msgid "MNMA"
 msgstr "МНМА"
 
+#. module: l10n_ua_assets
 msgid "Commission"
 msgstr "Ввести в експлуатацію"
 
+#. module: l10n_ua_assets
 msgid "Write Off"
 msgstr "Списати"
 
+#. module: l10n_ua_assets
 msgid "Set to Draft"
 msgstr "Повернути в чернетку"
 
+#. module: l10n_ua_assets
 msgid "Total"
 msgstr "Разом"
 
+#. module: l10n_ua_assets
 msgid "Fixed Assets"
 msgstr "Основні засоби"
 
+#. module: l10n_ua_assets
 msgid "Land plots"
 msgstr "Земельні ділянки"
 
+#. module: l10n_ua_assets
 msgid "Land plots (not depreciated)"
 msgstr "Земельні ділянки (не амортизуються)"
 
+#. module: l10n_ua_assets
 msgid "Capital expenditures on land improvement"
 msgstr "Капітальні витрати на поліпшення земель"
 
+#. module: l10n_ua_assets
 msgid "Buildings, structures, transmission devices"
 msgstr "Будівлі, споруди, передавальні пристрої"
 
+#. module: l10n_ua_assets
 msgid "Machinery and equipment"
 msgstr "Машини та обладнання"
 
+#. module: l10n_ua_assets
 msgid "Vehicles"
 msgstr "Транспортні засоби"
 
+#. module: l10n_ua_assets
 msgid "Tools, devices, inventory"
 msgstr "Інструменти, прилади, інвентар"
 
+#. module: l10n_ua_assets
 msgid "Animals"
 msgstr "Тварини"
 
+#. module: l10n_ua_assets
 msgid "Perennial plantings"
 msgstr "Багаторічні насадження"
 
+#. module: l10n_ua_assets
 msgid "Other fixed assets"
 msgstr "Інші основні засоби"
 
+#. module: l10n_ua_assets
 msgid "Library funds"
 msgstr "Бібліотечні фонди"
 
+#. module: l10n_ua_assets
 msgid "Temporary structures"
 msgstr "Тимчасові (нетитульні) споруди"
 
+#. module: l10n_ua_assets
 msgid "Natural resources"
 msgstr "Природні ресурси"
 
+#. module: l10n_ua_assets
 msgid "Inventory packaging"
 msgstr "Інвентарна тара"
 
+#. module: l10n_ua_assets
 msgid "Items for rent"
 msgstr "Предмети прокату"
 
+#. module: l10n_ua_assets
 msgid "Long-term biological assets"
 msgstr "Довгострокові біологічні активи"
-
