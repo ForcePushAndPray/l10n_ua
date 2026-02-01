@@ -14,6 +14,18 @@
                 <field name="vat_certificate" invisible="not is_vat_payer"/>
             </field>
             <page name="internal_notes" position="before">
+                <page string="Реквізити" name="ua_requisites">
+                    <group>
+                        <group string="Керівництво">
+                            <field name="l10n_ua_chief_name"/>
+                            <field name="l10n_ua_chief_position"/>
+                            <field name="l10n_ua_accountant_name"/>
+                        </group>
+                        <group string="Адреси">
+                            <field name="l10n_ua_legal_address"/>
+                        </group>
+                    </group>
+                </page>
                 <page string="KVED" name="kved">
                     <group>
                         <field name="primary_kved_id"/>

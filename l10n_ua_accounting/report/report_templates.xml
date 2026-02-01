@@ -1,127 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Paper format for Ukrainian accounting reports - A4, minimal margins -->
-    <record id="paperformat_ua_report" model="report.paperformat">
-        <field name="name">Ukrainian Report A4</field>
-        <field name="default" eval="False"/>
-        <field name="format">A4</field>
-        <field name="orientation">Portrait</field>
-        <field name="margin_top">30</field>
-        <field name="margin_bottom">10</field>
-        <field name="margin_left">20</field>
-        <field name="margin_right">10</field>
-        <field name="header_line" eval="False"/>
-        <field name="header_spacing">25</field>
-        <field name="dpi">90</field>
-    </record>
-
-    <!-- Base styles for Ukrainian accounting reports -->
-    <template id="report_ua_styles">
-        <style>
-            /* Page setup for A4 portrait */
-            @page {
-                size: A4 portrait;
-                margin: 10mm 15mm 10mm 20mm;
-            }
-
-            /* Ukrainian accounting report styles */
-            .ua-report {
-                font-family: 'Times New Roman', Times, serif;
-                font-size: 10pt;
-                width: 100%;
-                max-width: 100%;
-                margin: 0;
-                padding: 0;
-            }
-            .ua-report table {
-                width: 100%;
-                border-collapse: collapse;
-            }
-            .ua-report th, .ua-report td {
-                border: 1px solid black;
-                padding: 3px 5px;
-                vertical-align: top;
-            }
-            .ua-report th {
-                background-color: #f0f0f0;
-                text-align: center;
-                font-weight: bold;
-            }
-            .ua-report .text-center { text-align: center; }
-            .ua-report .text-right { text-align: right; }
-            .ua-report .text-left { text-align: left; }
-            .ua-report .bold { font-weight: bold; }
-            .ua-report .italic { font-style: italic; }
-            .ua-report .underline { text-decoration: underline; }
-            .ua-report .no-border { border: none !important; }
-            .ua-report .border-bottom { border-bottom: 1px solid black; }
-            .ua-report .small { font-size: 8pt; }
-            .ua-report .large { font-size: 12pt; }
-
-            /* Header styles */
-            .ua-report-header {
-                margin-bottom: 15px;
-            }
-            .ua-report-title {
-                font-size: 14pt;
-                font-weight: bold;
-                text-align: center;
-                margin: 10px 0;
-            }
-            .ua-report-subtitle {
-                text-align: center;
-                font-size: 10pt;
-                margin: 5px 0;
-            }
-
-            /* Form number box */
-            .form-number-box {
-                float: right;
-                border: 1px solid black;
-                padding: 5px;
-                text-align: center;
-                font-size: 9pt;
-            }
-
-            /* Signature lines */
-            .signature-line {
-                display: inline-block;
-                border-bottom: 1px solid black;
-                min-width: 150px;
-                margin: 0 10px;
-            }
-            .signature-block {
-                margin-top: 20px;
-            }
-            .signature-row {
-                margin: 15px 0;
-            }
-
-            /* Amount in words */
-            .amount-words {
-                font-style: italic;
-                border-bottom: 1px solid black;
-            }
-
-            /* Monetary amounts */
-            .money {
-                text-align: right;
-                white-space: nowrap;
-            }
-
-            /* Company header */
-            .company-header {
-                margin-bottom: 10px;
-            }
-            .company-name {
-                font-weight: bold;
-            }
-            .company-code {
-                font-size: 9pt;
-            }
-        </style>
-    </template>
+    <!--
+        Paper format and shared styles moved to l10n_ua_account_reports module.
+        Use: ref="l10n_ua_account_reports.paperformat_ua_report"
+        Use: t-call="l10n_ua_account_reports.report_ua_styles"
+    -->
 
     <!-- Report action for PKO -->
     <record id="action_report_pko" model="ir.actions.report">
@@ -133,7 +17,7 @@
         <field name="print_report_name">'ПКО-%s' % (object.ua_cash_order_number or object.name)</field>
         <field name="binding_model_id" ref="account.model_account_payment"/>
         <field name="binding_type">report</field>
-        <field name="paperformat_id" ref="paperformat_ua_report"/>
+        <field name="paperformat_id" ref="l10n_ua_account_reports.paperformat_ua_report"/>
     </record>
 
     <!-- Report action for VKO -->
@@ -146,7 +30,7 @@
         <field name="print_report_name">'ВКО-%s' % (object.ua_cash_order_number or object.name)</field>
         <field name="binding_model_id" ref="account.model_account_payment"/>
         <field name="binding_type">report</field>
-        <field name="paperformat_id" ref="paperformat_ua_report"/>
+        <field name="paperformat_id" ref="l10n_ua_account_reports.paperformat_ua_report"/>
     </record>
 
 </odoo>

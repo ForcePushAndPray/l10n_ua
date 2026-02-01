@@ -11,7 +11,7 @@
         <field name="print_report_name">'АЗ_%s_%s' % (object.name, object.employee_id.name)</field>
         <field name="binding_model_id" ref="model_l10n_ua_advance_report"/>
         <field name="binding_type">report</field>
-        <field name="paperformat_id" ref="paperformat_ua_report"/>
+        <field name="paperformat_id" ref="l10n_ua_account_reports.paperformat_ua_report"/>
     </record>
 
     <!-- Advance Report Template -->
@@ -19,7 +19,7 @@
         <t t-call="web.html_container">
             <t t-foreach="docs" t-as="report">
                 <t t-call="web.external_layout">
-                    <t t-call="l10n_ua_accounting.report_ua_styles"/>
+                    <t t-call="l10n_ua_account_reports.report_ua_styles"/>
                     <div class="page ua-report">
                         <!-- Header -->
                         <div class="row mb-3">

@@ -52,6 +52,23 @@ class ResPartner(models.Model):
         string='KVED Codes',
         help='All economic activity codes',
     )
+    l10n_ua_chief_name = fields.Char(
+        string='Chief Name',
+        help='ПІБ керівника (director / responsible person)',
+    )
+    l10n_ua_chief_position = fields.Char(
+        string='Chief Position',
+        default='Директор',
+        help='Посада керівника',
+    )
+    l10n_ua_accountant_name = fields.Char(
+        string='Chief Accountant',
+        help='ПІБ головного бухгалтера',
+    )
+    l10n_ua_legal_address = fields.Char(
+        string='Legal Address',
+        help='Юридична адреса (якщо відрізняється від фактичної)',
+    )
 
     @api.constrains('edrpou')
     def _check_edrpou(self):
