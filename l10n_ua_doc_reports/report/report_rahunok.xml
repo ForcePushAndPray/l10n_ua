@@ -67,6 +67,9 @@
                                     <t t-if="comp_partner.ipn">
                                         , ІПН: <span t-field="comp_partner.ipn"/>
                                     </t>
+                                    <t t-if="comp_partner.is_vat_payer">
+                                        , платник ПДВ
+                                    </t>
                                 </td>
                             </tr>
                         </table>
@@ -233,6 +236,9 @@
                                     </t>
                                     <t t-if="comp_partner.ipn">
                                         , ІПН: <span t-field="comp_partner.ipn"/>
+                                    </t>
+                                    <t t-if="comp_partner.is_vat_payer">
+                                        , платник ПДВ
                                     </t>
                                 </td>
                             </tr>

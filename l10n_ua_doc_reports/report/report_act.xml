@@ -42,10 +42,13 @@
                                 <td style="width: 85%;">
                                     <strong t-field="company.name"/>
                                     <t t-if="comp_partner.edrpou">
-                                        , код ЄДРПОУ <span t-field="comp_partner.edrpou"/>
+                                        , ЄДРПОУ: <span t-field="comp_partner.edrpou"/>
                                     </t>
                                     <t t-if="comp_partner.ipn">
-                                        , ІПН <span t-field="comp_partner.ipn"/>
+                                        , ІПН: <span t-field="comp_partner.ipn"/>
+                                    </t>
+                                    <t t-if="comp_partner.is_vat_payer">
+                                        , платник ПДВ
                                     </t>
                                     <t t-if="comp_partner.l10n_ua_legal_address">
                                         <br/>Адреса: <span t-field="comp_partner.l10n_ua_legal_address"/>
@@ -63,10 +66,10 @@
                                 <td style="width: 85%;">
                                     <strong t-field="partner.name"/>
                                     <t t-if="partner.edrpou">
-                                        , код ЄДРПОУ <span t-field="partner.edrpou"/>
+                                        , ЄДРПОУ: <span t-field="partner.edrpou"/>
                                     </t>
                                     <t t-if="partner.ipn">
-                                        , ІПН <span t-field="partner.ipn"/>
+                                        , ІПН: <span t-field="partner.ipn"/>
                                     </t>
                                     <t t-if="partner.l10n_ua_legal_address">
                                         <br/>Адреса: <span t-field="partner.l10n_ua_legal_address"/>
@@ -121,6 +124,10 @@
                                     <td colspan="5" class="text-right bold" style="border: none !important;">ПДВ:</td>
                                     <td class="text-right bold" t-esc="'%.2f' % o.amount_tax"/>
                                 </tr>
+                                <tr t-if="not o.amount_tax">
+                                    <td colspan="5" class="text-right" style="border: none !important;">ПДВ не нараховується</td>
+                                    <td class="text-right">—</td>
+                                </tr>
                                 <tr>
                                     <td colspan="5" class="text-right bold" style="border: none !important;">Всього:</td>
                                     <td class="text-right bold" t-esc="'%.2f' % o.amount_total"/>
@@ -129,27 +136,14 @@
                         </table>
 
                         <!-- Summary -->
-                        <div style="margin-bottom: 5px;">
+                        <div style="margin-bottom: 10px;">
                             <p>
-                                Всього найменувань <strong t-esc="row_num"/>, на суму:
+                                Всього найменувань <strong t-esc="len(lines)"/>, на суму:
                                 <strong t-esc="'%.2f' % o.amount_total"/> грн.
                             </p>
                             <t t-if="o.l10n_ua_amount_words">
-                                <p>(<span t-esc="o.l10n_ua_amount_words"/>)</p>
+                                <p><strong t-esc="o.l10n_ua_amount_words.capitalize()"/></p>
                             </t>
-                        </div>
-
-                        <div t-if="o.amount_tax" style="margin-bottom: 5px;">
-                            <p>
-                                У т.ч. ПДВ: <span t-esc="'%.2f' % o.amount_tax"/> грн.
-                                <t t-set="tax_words" t-value="o._get_ua_tax_amount_words()"/>
-                                <t t-if="tax_words">
-                                    (<span t-esc="tax_words"/>)
-                                </t>
-                            </p>
-                        </div>
-                        <div t-if="not o.amount_tax" style="margin-bottom: 5px;">
-                            <p>ПДВ не нараховується</p>
                         </div>
 
                         <!-- Standard acceptance text -->

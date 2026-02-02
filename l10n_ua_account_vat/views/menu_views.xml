@@ -1,27 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Root: ПДВ section under Податки -->
     <menuitem id="menu_l10n_ua_vat"
-              name="VAT"
+              name="ПДВ"
               parent="l10n_ua_tax.menu_ua_tax_root"
               sequence="30"/>
 
+    <!-- Tax Invoices submenu -->
     <menuitem id="menu_l10n_ua_tax_invoices"
-              name="Tax Invoices"
+              name="Податкові накладні"
               parent="menu_l10n_ua_vat"
-              action="l10n_ua_tax_invoice_action"
               sequence="10"/>
 
-    <menuitem id="menu_l10n_ua_vat_registers"
-              name="VAT Registers"
-              parent="menu_l10n_ua_vat"
-              action="l10n_ua_vat_register_action"
+    <menuitem id="menu_l10n_ua_tax_invoices_issued"
+              name="Видані ПН"
+              parent="menu_l10n_ua_tax_invoices"
+              action="l10n_ua_tax_invoice_issued_action"
+              sequence="10"/>
+
+    <menuitem id="menu_l10n_ua_tax_invoices_received"
+              name="Отримані ПН"
+              parent="menu_l10n_ua_tax_invoices"
+              action="l10n_ua_tax_invoice_received_action"
               sequence="20"/>
 
+    <menuitem id="menu_l10n_ua_tax_invoices_all"
+              name="Усі ПН"
+              parent="menu_l10n_ua_tax_invoices"
+              action="l10n_ua_tax_invoice_action"
+              sequence="30"/>
+
+    <!-- VAT Registers submenu -->
+    <menuitem id="menu_l10n_ua_vat_registers"
+              name="Реєстри ПН"
+              parent="menu_l10n_ua_vat"
+              sequence="20"/>
+
+    <menuitem id="menu_l10n_ua_vat_registers_issued"
+              name="Реєстр виданих"
+              parent="menu_l10n_ua_vat_registers"
+              action="l10n_ua_vat_register_issued_action"
+              sequence="10"/>
+
+    <menuitem id="menu_l10n_ua_vat_registers_received"
+              name="Реєстр отриманих"
+              parent="menu_l10n_ua_vat_registers"
+              action="l10n_ua_vat_register_received_action"
+              sequence="20"/>
+
+    <!-- VAT Declaration -->
     <menuitem id="menu_l10n_ua_vat_declarations"
-              name="VAT Declarations"
+              name="Декларація з ПДВ"
               parent="menu_l10n_ua_vat"
               action="l10n_ua_vat_declaration_action"
               sequence="30"/>
+
+    <!-- ERPN Limit -->
+    <menuitem id="menu_l10n_ua_vat_erpn_limit"
+              name="Ліміт реєстрації"
+              parent="menu_l10n_ua_vat"
+              action="l10n_ua_vat_erpn_limit_action"
+              sequence="40"/>
+
+    <!-- Deadline Dashboard -->
+    <menuitem id="menu_l10n_ua_vat_deadlines"
+              name="Дедлайни реєстрації"
+              parent="menu_l10n_ua_vat"
+              action="l10n_ua_tax_invoice_deadline_action"
+              sequence="50"/>
 
 </odoo>

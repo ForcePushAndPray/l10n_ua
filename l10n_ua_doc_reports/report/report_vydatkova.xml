@@ -42,9 +42,9 @@
                                 <td style="width: 85%;">
                                     <strong t-field="company.name"/><br/>
                                     <t t-if="bank">
-                                        п/р <span t-field="bank.acc_number"/><br/>
+                                        IBAN: <span t-field="bank.acc_number"/><br/>
                                         <t t-if="bank.bank_id">
-                                            у банку <span t-field="bank.bank_id.name"/>
+                                            в банку <span t-field="bank.bank_id.name"/>
                                             <t t-if="bank.bank_id.bic">, МФО <span t-field="bank.bank_id.bic"/></t>
                                             <br/>
                                         </t>
@@ -59,21 +59,28 @@
                                         тел. <span t-field="comp_partner.phone"/><br/>
                                     </t>
                                     <t t-if="comp_partner.edrpou">
-                                        код за ЄДРПОУ <span t-field="comp_partner.edrpou"/>
+                                        ЄДРПОУ: <span t-field="comp_partner.edrpou"/>
                                     </t>
                                     <t t-if="comp_partner.ipn">
                                         , ІПН: <span t-field="comp_partner.ipn"/>
+                                    </t>
+                                    <t t-if="comp_partner.is_vat_payer">
+                                        , платник ПДВ
                                     </t>
                                 </td>
                             </tr>
                         </table>
 
                         <!-- Buyer block -->
+                        <t t-set="partner_bank" t-value="partner.bank_ids[:1]"/>
                         <table class="no-border-all" style="margin-bottom: 5px;">
                             <tr>
                                 <td style="width: 15%; vertical-align: top;"><u>Покупець:</u></td>
                                 <td style="width: 85%;">
                                     <strong t-field="partner.name"/><br/>
+                                    <t t-if="partner_bank">
+                                        IBAN: <span t-field="partner_bank.acc_number"/><br/>
+                                    </t>
                                     <t t-if="partner.l10n_ua_legal_address">
                                         Адреса: <span t-field="partner.l10n_ua_legal_address"/><br/>
                                     </t>
@@ -81,7 +88,7 @@
                                         тел. <span t-esc="partner.phone or partner.mobile"/><br/>
                                     </t>
                                     <t t-if="partner.edrpou">
-                                        код за ЄДРПОУ <span t-field="partner.edrpou"/>
+                                        ЄДРПОУ: <span t-field="partner.edrpou"/>
                                     </t>
                                     <t t-if="partner.ipn">
                                         , ІПН: <span t-field="partner.ipn"/>
@@ -135,39 +142,30 @@
                                     <td t-att-colspan="6 if has_discount else 5" class="text-right bold" style="border: none !important;">ПДВ:</td>
                                     <td class="text-right bold" t-esc="'%.2f' % o.amount_tax"/>
                                 </tr>
+                                <tr t-if="not o.amount_tax">
+                                    <td t-att-colspan="6 if has_discount else 5" class="text-right" style="border: none !important;">ПДВ не нараховується</td>
+                                    <td class="text-right">—</td>
+                                </tr>
                                 <tr>
-                                    <td t-att-colspan="6 if has_discount else 5" class="text-right bold" style="border: none !important;">Всього з ПДВ:</td>
+                                    <td t-att-colspan="6 if has_discount else 5" class="text-right bold" style="border: none !important;">Всього:</td>
                                     <td class="text-right bold" t-esc="'%.2f' % o.amount_total"/>
                                 </tr>
                             </tfoot>
                         </table>
 
                         <!-- Summary -->
-                        <div style="margin-bottom: 5px;">
+                        <div style="margin-bottom: 10px;">
                             <p>
-                                Всього найменувань <strong t-esc="row_num"/>, на суму:
+                                Всього найменувань <strong t-esc="len(lines)"/>, на суму:
                                 <strong t-esc="'%.2f' % o.amount_total"/> грн.
                             </p>
                             <t t-if="o.l10n_ua_amount_words">
-                                <p>(<span t-esc="o.l10n_ua_amount_words"/>)</p>
+                                <p><strong t-esc="o.l10n_ua_amount_words.capitalize()"/></p>
                             </t>
                         </div>
 
-                        <div t-if="o.amount_tax" style="margin-bottom: 5px;">
-                            <p>
-                                У т.ч. ПДВ: <span t-esc="'%.2f' % o.amount_tax"/> грн.
-                                <t t-set="tax_words" t-value="o._get_ua_tax_amount_words()"/>
-                                <t t-if="tax_words">
-                                    (<span t-esc="tax_words"/>)
-                                </t>
-                            </p>
-                        </div>
-                        <div t-if="not o.amount_tax" style="margin-bottom: 5px;">
-                            <p>ПДВ не нараховується</p>
-                        </div>
-
-                        <div t-if="o.l10n_ua_discount_total" style="margin-bottom: 5px;">
-                            <p>Сума знижки: <span t-esc="'%.2f' % o.l10n_ua_discount_total"/> грн.</p>
+                        <div t-if="o.l10n_ua_discount_total" style="margin-bottom: 10px;">
+                            <p>Сума знижки: <strong t-esc="'%.2f' % o.l10n_ua_discount_total"/> грн.</p>
                         </div>
 
                         <!-- Signatures -->
@@ -176,6 +174,9 @@
                                 <div class="bold" style="margin-bottom: 5px;">Від постачальника*</div>
                                 <div class="small italic">* Відповідальний за здійснення господарської<br/>операції та правильність її оформлення</div>
                                 <div style="margin-top: 20px;">
+                                    <t t-if="comp_partner.l10n_ua_chief_position">
+                                        <span t-field="comp_partner.l10n_ua_chief_position"/>
+                                    </t>
                                     <span class="signature-line"></span>
                                     <t t-if="comp_partner.l10n_ua_chief_name">
                                         / <span t-field="comp_partner.l10n_ua_chief_name"/>

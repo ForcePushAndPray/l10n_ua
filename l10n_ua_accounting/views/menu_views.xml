@@ -36,6 +36,21 @@
               action="action_service_act"
               sequence="20"/>
 
+    <!-- Vendor Bills -->
+    <record id="action_ua_vendor_bills" model="ir.actions.act_window">
+        <field name="name">Рахунки постачальників</field>
+        <field name="res_model">account.move</field>
+        <field name="view_mode">list,form</field>
+        <field name="domain">[('move_type', 'in', ('in_invoice', 'in_refund'))]</field>
+        <field name="context">{'default_move_type': 'in_invoice'}</field>
+    </record>
+
+    <menuitem id="menu_ua_docs_vendor_bills"
+              name="Рахунки постачальників"
+              parent="menu_ua_docs"
+              action="action_ua_vendor_bills"
+              sequence="15"/>
+
     <!-- Advance Reports -->
     <menuitem id="menu_ua_docs_advance_reports"
               name="Авансові звіти"
@@ -73,6 +88,12 @@
               action="action_reconciliation_act_wizard"
               sequence="40"/>
 
+    <menuitem id="menu_ua_payment_orders"
+              name="Платіжні доручення"
+              parent="menu_ua_cash_bank"
+              action="action_account_payment_pd"
+              sequence="25"/>
+
     <!-- Bank statements - link to bank sync module if installed -->
     <!-- <menuitem id="menu_ua_bank_statements"
               name="Банківські виписки"
@@ -80,9 +101,50 @@
               action="l10n_ua_bank_sync.action_bank_statement"
               sequence="50"/> -->
 
+    <!-- ==================== ПДВ ==================== -->
+    <menuitem id="menu_ua_vat"
+              name="ПДВ"
+              parent="menu_ua_accounting_root"
+              sequence="35"/>
+
+    <menuitem id="menu_ua_vat_issued"
+              name="Видані ПН"
+              parent="menu_ua_vat"
+              action="l10n_ua_account_vat.l10n_ua_tax_invoice_issued_action"
+              sequence="10"/>
+
+    <menuitem id="menu_ua_vat_received"
+              name="Отримані ПН"
+              parent="menu_ua_vat"
+              action="l10n_ua_account_vat.l10n_ua_tax_invoice_received_action"
+              sequence="20"/>
+
+    <menuitem id="menu_ua_vat_registers"
+              name="Реєстри ПН"
+              parent="menu_ua_vat"
+              action="l10n_ua_account_vat.l10n_ua_vat_register_action"
+              sequence="30"/>
+
+    <menuitem id="menu_ua_vat_declaration"
+              name="Декларація з ПДВ"
+              parent="menu_ua_vat"
+              action="l10n_ua_account_vat.l10n_ua_vat_declaration_action"
+              sequence="40"/>
+
+    <menuitem id="menu_ua_vat_erpn_limit"
+              name="Ліміт реєстрації"
+              parent="menu_ua_vat"
+              action="l10n_ua_account_vat.l10n_ua_vat_erpn_limit_action"
+              sequence="50"/>
+
+    <menuitem id="menu_ua_vat_deadlines"
+              name="Дедлайни реєстрації"
+              parent="menu_ua_vat"
+              action="l10n_ua_account_vat.l10n_ua_tax_invoice_deadline_action"
+              sequence="60"/>
+
     <!-- ==================== Основні засоби ==================== -->
-    <!-- Commented out - no active children, will be enabled when l10n_ua_assets module is ready -->
-    <!-- <menuitem id="menu_ua_assets"
+    <menuitem id="menu_ua_assets"
               name="Основні засоби"
               parent="menu_ua_accounting_root"
               sequence="30"/>
@@ -90,8 +152,14 @@
     <menuitem id="menu_ua_assets_cards"
               name="Картки ОЗ"
               parent="menu_ua_assets"
-              action="l10n_ua_assets.action_asset_cards"
-              sequence="10"/> -->
+              action="l10n_ua_assets.l10n_ua_asset_action"
+              sequence="10"/>
+
+    <menuitem id="menu_ua_assets_mnma"
+              name="МНМА"
+              parent="menu_ua_assets"
+              action="l10n_ua_assets.l10n_ua_mnma_action"
+              sequence="20"/>
 
     <!-- ==================== Звітність ==================== -->
     <menuitem id="menu_ua_reports"
@@ -118,19 +186,45 @@
               action="account.action_account_moves_all"
               sequence="25"/>
 
-    <!-- Balance Sheet (Форма №1) -->
+    <!-- AR/AP Aging -->
+    <menuitem id="menu_ua_reports_aging"
+              name="Заборгованість"
+              parent="menu_ua_reports"
+              action="l10n_ua_aging_report_action"
+              sequence="27"/>
+
+    <!-- Balance Sheet (Форма №1) - stored reports -->
     <menuitem id="menu_ua_reports_balance"
               name="Баланс (Форма №1)"
               parent="menu_ua_reports"
-              action="action_balance_report_wizard"
+              action="action_balance_report"
               sequence="30"/>
 
-    <!-- P&L (Форма №2) -->
+    <!-- P&L (Форма №2) - stored reports -->
     <menuitem id="menu_ua_reports_pnl"
               name="Звіт про фін. результати (Форма №2)"
               parent="menu_ua_reports"
-              action="action_pnl_report_wizard"
+              action="action_pnl_report"
               sequence="40"/>
+
+    <!-- ==================== Закриття періоду ==================== -->
+    <menuitem id="menu_ua_period_closing"
+              name="Закриття періоду"
+              parent="menu_ua_reports"
+              action="l10n_ua_period_closing_action"
+              sequence="50"/>
+
+    <!-- ==================== Склад ==================== -->
+    <menuitem id="menu_ua_stock"
+              name="Склад"
+              parent="menu_ua_accounting_root"
+              sequence="45"/>
+
+    <menuitem id="menu_ua_stock_inventory_act"
+              name="Інвентаризаційний опис"
+              parent="menu_ua_stock"
+              action="action_inventory_act_wizard"
+              sequence="10"/>
 
     <!-- ==================== Налаштування ==================== -->
     <menuitem id="menu_ua_config"

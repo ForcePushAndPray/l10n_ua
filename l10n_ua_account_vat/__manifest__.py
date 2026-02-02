@@ -1,19 +1,21 @@
 {
     'name': 'Ukraine - Account VAT',
-    'version': '19.0.1.0.0',
+    'version': '19.0.4.0.0',
     'category': 'Accounting/Localization',
-    'summary': 'Ukrainian VAT accounting',
+    'summary': 'Ukrainian VAT: tax invoices, registers, declaration',
     'description': """
 Ukraine VAT Module
 ==================
 
 Ukrainian VAT accounting providing:
 
-* VAT register (received and issued tax invoices)
-* Tax invoice (Податкова накладна)
+* Tax invoice (Податкова накладна) — issued and received
 * Adjustment calculation (Розрахунок коригування)
-* VAT declaration
+* VAT register — auto-populate from tax invoices
+* VAT declaration — auto-calculate from registers
 * XML export for ERPN registration
+* XLSX export for registers and declaration
+* Auto-create PN from account.move invoices
 
 Requires l10n_ua_tax module.
     """,
@@ -21,13 +23,19 @@ Requires l10n_ua_tax module.
     'website': 'https://ndev.online',
     'license': 'LGPL-3',
     'depends': [
+        'account',
         'l10n_ua_tax',
     ],
     'data': [
         'security/ir.model.access.csv',
-        'views/l10n_ua_vat_register_views.xml',
+        'data/ir_sequence_data.xml',
+        'report/tax_invoice_report.xml',
+        'views/res_company_views.xml',
         'views/l10n_ua_tax_invoice_views.xml',
+        'views/l10n_ua_vat_register_views.xml',
         'views/l10n_ua_vat_declaration_views.xml',
+        'views/l10n_ua_vat_erpn_limit_views.xml',
+        'views/account_move_views.xml',
         'views/menu_views.xml',
     ],
     'demo': [],

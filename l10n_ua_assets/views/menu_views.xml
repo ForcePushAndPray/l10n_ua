@@ -1,15 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
+    <!-- Asset Group Action (must be before menu that references it) -->
+    <record id="l10n_ua_asset_group_action" model="ir.actions.act_window">
+        <field name="name">Групи основних засобів</field>
+        <field name="res_model">l10n_ua.asset.group</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
     <menuitem id="menu_l10n_ua_assets"
-              name="Fixed Assets"
+              name="Основні засоби"
               parent="l10n_ua_account_base.menu_l10n_ua_root"
-              sequence="25"/>
+              sequence="25"
+              groups="account.group_account_user"/>
+
+    <menuitem id="menu_l10n_ua_assets_list"
+              name="Картки ОЗ"
+              parent="menu_l10n_ua_assets"
+              action="l10n_ua_asset_action"
+              sequence="5"/>
 
     <menuitem id="menu_l10n_ua_mnma"
-              name="MNMA"
+              name="МНМА"
               parent="menu_l10n_ua_assets"
               action="l10n_ua_mnma_action"
               sequence="10"/>
+
+    <menuitem id="menu_l10n_ua_asset_groups"
+              name="Групи ОЗ"
+              parent="menu_l10n_ua_assets"
+              action="l10n_ua_asset_group_action"
+              sequence="20"/>
 
 </odoo>

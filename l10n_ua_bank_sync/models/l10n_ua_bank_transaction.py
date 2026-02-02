@@ -123,6 +123,13 @@ class L10nUaBankTransaction(models.Model):
         string='Reconciled',
         default=False,
     )
+    matched_rule_id = fields.Many2one(
+        'l10n_ua.bank.match.rule',
+        string='Matched Rule',
+        ondelete='set null',
+        readonly=True,
+        help='Auto-matching rule that was applied when creating the journal entry.',
+    )
 
     _unique_external_journal = models.Constraint(
         'UNIQUE(external_id, journal_id)',
@@ -149,8 +156,27 @@ class L10nUaBankTransaction(models.Model):
             else:
                 rec.state = 'draft'
 
+    def _find_matching_rule(self):
+        """Find the first matching auto-matching rule for this transaction.
+
+        Returns:
+            l10n_ua.bank.match.rule record or empty recordset
+        """
+        self.ensure_one()
+        rules = self.env['l10n_ua.bank.match.rule'].search([
+            ('company_id', '=', self.company_id.id),
+        ], order='sequence, id')
+        for rule in rules:
+            if rule.check_match(self):
+                return rule
+        return self.env['l10n_ua.bank.match.rule']
+
     def action_create_move(self):
-        """Create journal entry for this transaction."""
+        """Create journal entry for this transaction.
+
+        If an auto-matching rule is found, uses the rule's counterpart account
+        instead of the suspense account. Also applies rule's partner/label overrides.
+        """
         self.ensure_one()
 
         if self.move_id:
@@ -163,13 +189,27 @@ class L10nUaBankTransaction(models.Model):
             )
 
         bank_account = journal.default_account_id
-        suspense_account = self.company_id.account_journal_suspense_account_id
 
-        if not suspense_account:
-            raise ValidationError(
-                _("Company has no suspense account configured. "
-                  "Go to Settings > Accounting > Default Accounts.")
-            )
+        # Try auto-matching rule first
+        rule = self._find_matching_rule()
+        if rule:
+            counterpart_account = rule.account_id
+            self.matched_rule_id = rule
+            if rule.set_partner_id:
+                self.partner_id = rule.set_partner_id
+        else:
+            counterpart_account = self.company_id.account_journal_suspense_account_id
+            if not counterpart_account:
+                raise ValidationError(
+                    _("Company has no suspense account configured. "
+                      "Go to Settings > Accounting > Default Accounts.")
+                )
+
+        # Determine line label
+        line_label = (rule.label if rule and rule.label
+                      else self.description or self.payment_ref or '/')
+
+        partner_id = self.partner_id.id if self.partner_id else False
 
         # Create journal entry
         move_vals = {
@@ -177,44 +217,44 @@ class L10nUaBankTransaction(models.Model):
             'date': self.date,
             'ref': self.payment_ref or self.external_id or '',
             'narration': self.description,
-            'partner_id': self.partner_id.id if self.partner_id else False,
+            'partner_id': partner_id,
             'move_type': 'entry',
             'line_ids': [],
         }
 
         if self.amount > 0:
-            # Incoming: Debit Bank, Credit Suspense
+            # Incoming: Debit Bank, Credit Counterpart
             move_vals['line_ids'] = [
                 (0, 0, {
                     'account_id': bank_account.id,
-                    'partner_id': self.partner_id.id if self.partner_id else False,
-                    'name': self.description or self.payment_ref or '/',
+                    'partner_id': partner_id,
+                    'name': line_label,
                     'debit': self.amount,
                     'credit': 0,
                 }),
                 (0, 0, {
-                    'account_id': suspense_account.id,
-                    'partner_id': self.partner_id.id if self.partner_id else False,
-                    'name': self.description or self.payment_ref or '/',
+                    'account_id': counterpart_account.id,
+                    'partner_id': partner_id,
+                    'name': line_label,
                     'debit': 0,
                     'credit': self.amount,
                 }),
             ]
         else:
-            # Outgoing: Debit Suspense, Credit Bank
+            # Outgoing: Debit Counterpart, Credit Bank
             amount = abs(self.amount)
             move_vals['line_ids'] = [
                 (0, 0, {
-                    'account_id': suspense_account.id,
-                    'partner_id': self.partner_id.id if self.partner_id else False,
-                    'name': self.description or self.payment_ref or '/',
+                    'account_id': counterpart_account.id,
+                    'partner_id': partner_id,
+                    'name': line_label,
                     'debit': amount,
                     'credit': 0,
                 }),
                 (0, 0, {
                     'account_id': bank_account.id,
-                    'partner_id': self.partner_id.id if self.partner_id else False,
-                    'name': self.description or self.payment_ref or '/',
+                    'partner_id': partner_id,
+                    'name': line_label,
                     'debit': 0,
                     'credit': amount,
                 }),
@@ -222,6 +262,11 @@ class L10nUaBankTransaction(models.Model):
 
         move = self.env['account.move'].create(move_vals)
         self.move_id = move
+
+        # Auto-post if rule says so
+        if rule and rule.auto_post and move.state == 'draft':
+            move.action_post()
+
         return move
 
     def action_view_move(self):

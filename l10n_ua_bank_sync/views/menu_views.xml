@@ -65,4 +65,10 @@
               action="l10n_ua_bank_sync_config_action"
               sequence="10"/>
 
+    <menuitem id="menu_ua_bank_match_rules"
+              name="Matching Rules"
+              parent="menu_ua_bank_config"
+              action="l10n_ua_bank_match_rule_action"
+              sequence="20"/>
+
 </odoo>

@@ -9,3 +9,5 @@ access_l10n_ua_tax_invoice_line_user,l10n_ua.tax.invoice.line.user,model_l10n_ua
 access_l10n_ua_tax_invoice_line_manager,l10n_ua.tax.invoice.line.manager,model_l10n_ua_tax_invoice_line,account.group_account_manager,1,1,1,1
 access_l10n_ua_vat_declaration_user,l10n_ua.vat.declaration.user,model_l10n_ua_vat_declaration,account.group_account_user,1,1,1,0
 access_l10n_ua_vat_declaration_manager,l10n_ua.vat.declaration.manager,model_l10n_ua_vat_declaration,account.group_account_manager,1,1,1,1
+access_l10n_ua_vat_erpn_limit_user,l10n_ua.vat.erpn.limit.user,model_l10n_ua_vat_erpn_limit,account.group_account_user,1,1,1,0
+access_l10n_ua_vat_erpn_limit_manager,l10n_ua.vat.erpn.limit.manager,model_l10n_ua_vat_erpn_limit,account.group_account_manager,1,1,1,1

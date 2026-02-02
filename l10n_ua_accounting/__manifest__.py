@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Accounting Suite',
-    'version': '19.0.3.0.0',
+    'version': '19.0.7.0.0',
     'category': 'Accounting/Localization',
     'summary': 'Ukrainian accounting: PKO/VKO, Cash Book, Balance Sheet, P&L',
     'description': """
@@ -53,26 +53,37 @@ Dependencies:
         'hr',
         'product',
         'uom',
+        'stock',
         'l10n_ua_account_base',
         'l10n_ua_doc_reports',
         'l10n_ua_tax',
         'l10n_ua_tax_cabinet',
         'l10n_ua_bank_sync',
+        'l10n_ua_assets',
         'l10n_ua_bank_currency_sync',
+        'l10n_ua_account_vat',
     ],
     'data': [
         # Security
         'security/ir.model.access.csv',
+        # Data
+        'data/period_closing_data.xml',
+        'data/cash_limit_cron.xml',
         # Views
+        'views/res_company_views.xml',
         'views/account_payment_views.xml',
         'views/account_journal_views.xml',
         'views/service_act_views.xml',
         'views/advance_report_views.xml',
+        'views/l10n_ua_balance_report_views.xml',
+        'views/l10n_ua_pnl_report_views.xml',
+        'views/l10n_ua_period_closing_views.xml',
+        'views/l10n_ua_aging_report_views.xml',
         # Wizards
         'wizard/cash_book_wizard_views.xml',
         'wizard/reconciliation_act_wizard_views.xml',
-        'wizard/balance_report_wizard_views.xml',
-        'wizard/pnl_report_wizard_views.xml',
+        'wizard/payment_order_wizard_views.xml',
+        'wizard/inventory_act_wizard_views.xml',
         # Menu
         'views/menu_views.xml',
         # Reports
@@ -85,6 +96,8 @@ Dependencies:
         'report/pnl_report.xml',
         'report/service_act_report.xml',
         'report/advance_report_report.xml',
+        'report/payment_order_report.xml',
+        'report/inventory_act_report.xml',
         # invoice_report_inherit.xml moved to l10n_ua_doc_reports
     ],
     'demo': [],

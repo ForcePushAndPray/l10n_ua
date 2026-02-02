@@ -1,27 +1,32 @@
 {
     'name': 'Ukraine - FOP (Single Tax)',
-    'version': '19.0.1.0.0',
+    'version': '19.0.2.0.0',
     'category': 'Accounting/Localization',
-    'summary': 'Ukrainian single tax for individual entrepreneurs (FOP)',
+    'summary': 'Єдиний податок для ФОП: книга доходів, декларація, ЄСВ',
     'description': """
-Ukraine FOP Module
-==================
+Ukraine FOP Module (Єдиний податок ФОП)
+========================================
 
-Ukrainian single tax accounting for individual entrepreneurs (FOP) providing:
+Модуль обліку єдиного податку для фізичних осіб-підприємців (ФОП):
 
-* Income book (Книга обліку доходів)
-* Single tax declaration (groups 1, 2, 3)
-* ESV calculation for FOP
-* Tax rates by groups
-* Income limits by groups
+* Книга обліку доходів (поквартально)
+* Декларація платника єдиного податку (групи 1, 2, 3)
+* Автоматичний розрахунок ЄП та ЄСВ
+* Контроль ліміту доходу
+* Друковані форми
 
-Requires l10n_ua_tax module.
+Групи єдиного податку:
+* Група 1 — фіксована ставка (до 10% прожиткового мінімуму)
+* Група 2 — фіксована ставка (до 20% мінімальної зарплати)
+* Група 3 без ПДВ — 5% від доходу
+* Група 3 з ПДВ — 3% від доходу + ПДВ
     """,
     'author': 'Svyatoslav Nadozirny',
     'website': 'https://ndev.online',
     'license': 'LGPL-3',
     'depends': [
         'l10n_ua_tax',
+        'l10n_ua_doc_reports',
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -29,6 +34,8 @@ Requires l10n_ua_tax module.
         'views/l10n_ua_fop_income_book_views.xml',
         'views/l10n_ua_fop_declaration_views.xml',
         'views/menu_views.xml',
+        'report/income_book_report.xml',
+        'report/declaration_report.xml',
     ],
     'demo': [],
     'images': ['static/description/icon.png'],

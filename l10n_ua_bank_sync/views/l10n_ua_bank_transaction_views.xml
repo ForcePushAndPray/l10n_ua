@@ -75,6 +75,21 @@ if records:
         </field>
     </record>
 
+    <record id="action_transaction_mass_apply_rules" model="ir.actions.server">
+        <field name="name">Apply Matching Rules &amp; Create Entries</field>
+        <field name="model_id" ref="model_l10n_ua_bank_transaction"/>
+        <field name="binding_model_id" ref="model_l10n_ua_bank_transaction"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">
+if records:
+    for rec in records.filtered(lambda r: not r.move_id):
+        rule = rec._find_matching_rule()
+        if rule:
+            rec.action_create_move()
+        </field>
+    </record>
+
     <!-- Transaction Form View -->
     <record id="l10n_ua_bank_transaction_view_form" model="ir.ui.view">
         <field name="name">l10n_ua.bank.transaction.form</field>
@@ -128,6 +143,7 @@ if records:
                         </group>
                         <group string="Accounting">
                             <field name="move_id"/>
+                            <field name="matched_rule_id"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                     </group>
@@ -160,6 +176,7 @@ if records:
                        decoration-warning="state == 'draft'"
                        decoration-success="state == 'posted'"/>
                 <field name="is_reconciled" optional="hide"/>
+                <field name="matched_rule_id" optional="hide"/>
                 <field name="move_id" optional="hide"/>
                 <field name="sync_job_id" optional="hide"/>
             </list>

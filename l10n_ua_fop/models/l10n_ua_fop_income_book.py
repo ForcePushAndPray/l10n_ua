@@ -3,38 +3,38 @@ from odoo import api, fields, models
 
 class L10nUaFopIncomeBook(models.Model):
     _name = 'l10n_ua.fop.income.book'
-    _description = 'FOP Income Book (Книга обліку доходів)'
+    _description = 'Книга обліку доходів ФОП'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'year desc, quarter desc'
 
     name = fields.Char(
-        string='Name',
+        string='Назва',
         compute='_compute_name',
         store=True,
     )
     year = fields.Integer(
-        string='Year',
+        string='Рік',
         required=True,
         default=lambda self: fields.Date.context_today(self).year,
     )
     quarter = fields.Selection(
         selection=[
-            ('1', 'Q1'),
-            ('2', 'Q2'),
-            ('3', 'Q3'),
-            ('4', 'Q4'),
+            ('1', 'I квартал'),
+            ('2', 'II квартал'),
+            ('3', 'III квартал'),
+            ('4', 'IV квартал'),
         ],
-        string='Quarter',
+        string='Квартал',
         required=True,
     )
     fop_group_id = fields.Many2one(
         'l10n_ua.fop.group',
-        string='FOP Group',
+        string='Група ЄП',
         required=True,
     )
     company_id = fields.Many2one(
         'res.company',
-        string='Company',
+        string='Компанія',
         required=True,
         default=lambda self: self.env.company,
     )
@@ -45,33 +45,48 @@ class L10nUaFopIncomeBook(models.Model):
     line_ids = fields.One2many(
         'l10n_ua.fop.income.book.line',
         'book_id',
-        string='Lines',
+        string='Записи',
     )
     total_income = fields.Monetary(
-        string='Total Income',
+        string='Загальний дохід',
         compute='_compute_totals',
         store=True,
         currency_field='currency_id',
     )
+    line_count = fields.Integer(
+        string='Кількість записів',
+        compute='_compute_totals',
+        store=True,
+    )
     state = fields.Selection(
         selection=[
-            ('draft', 'Draft'),
-            ('confirmed', 'Confirmed'),
+            ('draft', 'Чернетка'),
+            ('confirmed', 'Підтверджено'),
         ],
-        string='State',
+        string='Статус',
         default='draft',
         tracking=True,
     )
 
+    _unique_book = models.Constraint(
+        'unique(year, quarter, fop_group_id, company_id)',
+        'Книга обліку за цей квартал та групу вже існує!',
+    )
+
     @api.depends('year', 'quarter')
     def _compute_name(self):
-        for record in self:
-            record.name = f'Income Book Q{record.quarter}/{record.year}'
+        quarter_names = {
+            '1': 'I кв.', '2': 'II кв.', '3': 'III кв.', '4': 'IV кв.',
+        }
+        for rec in self:
+            qname = quarter_names.get(rec.quarter, '')
+            rec.name = f'Книга доходів {qname} {rec.year}'
 
     @api.depends('line_ids.amount')
     def _compute_totals(self):
-        for record in self:
-            record.total_income = sum(record.line_ids.mapped('amount'))
+        for rec in self:
+            rec.total_income = sum(rec.line_ids.mapped('amount'))
+            rec.line_count = len(rec.line_ids)
 
     def action_confirm(self):
         self.write({'state': 'confirmed'})
@@ -79,39 +94,46 @@ class L10nUaFopIncomeBook(models.Model):
     def action_draft(self):
         self.write({'state': 'draft'})
 
+    def action_print_income_book(self):
+        """Друк книги обліку доходів."""
+        self.ensure_one()
+        return self.env.ref(
+            'l10n_ua_fop.action_report_income_book'
+        ).report_action(self)
+
 
 class L10nUaFopIncomeBookLine(models.Model):
     _name = 'l10n_ua.fop.income.book.line'
-    _description = 'FOP Income Book Line'
+    _description = 'Запис книги обліку доходів'
     _order = 'date, id'
 
     book_id = fields.Many2one(
         'l10n_ua.fop.income.book',
-        string='Income Book',
+        string='Книга доходів',
         required=True,
         ondelete='cascade',
     )
     date = fields.Date(
-        string='Date',
+        string='Дата',
         required=True,
     )
     document_number = fields.Char(
-        string='Document Number',
+        string='№ документа',
     )
     description = fields.Char(
-        string='Description',
+        string='Опис операції',
     )
     income_type = fields.Selection(
         selection=[
-            ('cash', 'Cash'),
-            ('bank', 'Bank Transfer'),
-            ('card', 'Card Payment'),
+            ('cash', 'Готівка'),
+            ('bank', 'Безготівковий'),
+            ('card', 'Картка'),
         ],
-        string='Income Type',
+        string='Вид доходу',
         default='bank',
     )
     amount = fields.Monetary(
-        string='Amount',
+        string='Сума, грн',
         currency_field='currency_id',
     )
     currency_id = fields.Many2one(
@@ -120,9 +142,9 @@ class L10nUaFopIncomeBookLine(models.Model):
     )
     partner_id = fields.Many2one(
         'res.partner',
-        string='Partner',
+        string='Контрагент',
     )
     bank_statement_line_id = fields.Many2one(
         'account.bank.statement.line',
-        string='Bank Statement Line',
+        string='Рядок банківської виписки',
     )

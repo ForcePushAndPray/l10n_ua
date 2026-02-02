@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo noupdate="1">
+
+    <!-- Sequence: Asset Commissioning Act -->
+    <record id="seq_asset_commission_act" model="ir.sequence">
+        <field name="name">Акт введення ОЗ в експлуатацію</field>
+        <field name="code">l10n_ua.asset.commission.act</field>
+        <field name="prefix">АВ-</field>
+        <field name="padding">4</field>
+    </record>
+
+    <!-- Sequence: Asset Write-off Act -->
+    <record id="seq_asset_writeoff_act" model="ir.sequence">
+        <field name="name">Акт списання ОЗ</field>
+        <field name="code">l10n_ua.asset.writeoff.act</field>
+        <field name="prefix">АС-</field>
+        <field name="padding">4</field>
+    </record>
+
+    <!-- Sequence: MNMA Commissioning Act -->
+    <record id="seq_mnma_commission_act" model="ir.sequence">
+        <field name="name">Акт введення МНМА в експлуатацію</field>
+        <field name="code">l10n_ua.mnma.commission.act</field>
+        <field name="prefix">МВ-</field>
+        <field name="padding">4</field>
+    </record>
+
+    <!-- Sequence: MNMA Write-off Act -->
+    <record id="seq_mnma_writeoff_act" model="ir.sequence">
+        <field name="name">Акт списання МНМА</field>
+        <field name="code">l10n_ua.mnma.writeoff.act</field>
+        <field name="prefix">МС-</field>
+        <field name="padding">4</field>
+    </record>
+
+</odoo>

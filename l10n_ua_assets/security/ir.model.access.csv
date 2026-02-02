@@ -1,5 +1,9 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 access_l10n_ua_asset_group_user,l10n_ua.asset.group.user,model_l10n_ua_asset_group,account.group_account_user,1,0,0,0
 access_l10n_ua_asset_group_manager,l10n_ua.asset.group.manager,model_l10n_ua_asset_group,account.group_account_manager,1,1,1,1
+access_l10n_ua_asset_user,l10n_ua.asset.user,model_l10n_ua_asset,account.group_account_user,1,1,1,0
+access_l10n_ua_asset_manager,l10n_ua.asset.manager,model_l10n_ua_asset,account.group_account_manager,1,1,1,1
+access_l10n_ua_asset_depreciation_user,l10n_ua.asset.depreciation.user,model_l10n_ua_asset_depreciation,account.group_account_user,1,1,1,0
+access_l10n_ua_asset_depreciation_manager,l10n_ua.asset.depreciation.manager,model_l10n_ua_asset_depreciation,account.group_account_manager,1,1,1,1
 access_l10n_ua_mnma_user,l10n_ua.mnma.user,model_l10n_ua_mnma,account.group_account_user,1,1,1,0
 access_l10n_ua_mnma_manager,l10n_ua.mnma.manager,model_l10n_ua_mnma,account.group_account_manager,1,1,1,1

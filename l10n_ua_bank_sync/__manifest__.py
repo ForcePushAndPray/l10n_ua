@@ -36,6 +36,7 @@ from this module and implement bank-specific API calls.
         'wizard/l10n_ua_bank_statement_wizard_views.xml',
         'views/res_bank_views.xml',
         'views/res_partner_bank_views.xml',
+        'views/l10n_ua_bank_match_rule_views.xml',
         'views/l10n_ua_bank_sync_config_views.xml',
         'views/l10n_ua_bank_sync_job_views.xml',
         'views/l10n_ua_bank_statement_views.xml',

@@ -1,8 +1,8 @@
 {
     'name': 'Ukraine - Fixed Assets',
-    'version': '19.0.1.0.0',
+    'version': '19.0.2.0.0',
     'category': 'Accounting/Localization',
-    'summary': 'Ukrainian fixed assets and low-value assets (MNMA)',
+    'summary': 'Ukrainian fixed assets: depreciation, OZ-6, commissioning/write-off acts, MNMA',
     'description': """
 Ukraine Fixed Assets Module
 ===========================
@@ -11,26 +11,40 @@ Ukrainian fixed assets localization providing:
 
 * Fixed asset groups (1-16 according to Tax Code)
 * Depreciation methods (straight-line, declining balance, production, cumulative)
-* Inventory card OZ-6
+* Ukrainian depreciation computation with liquidation value
+* Inventory card OZ-6 (PDF print)
+* Commissioning act (Акт введення в експлуатацію)
+* Write-off act (Акт на списання ОЗ)
 * MNMA (low-value non-current tangible assets) with 50/50 or 100% write-off
-* Commissioning act
-* Write-off act
+* MNMA commissioning and write-off acts
 
-Requires l10n_ua_account_base module.
+Requires l10n_ua_account_base and l10n_ua_doc_reports modules.
     """,
     'author': 'Svyatoslav Nadozirny',
     'website': 'https://ndev.online',
     'license': 'LGPL-3',
     'depends': [
-        'account_asset',
+        'account',
+        'hr',
         'l10n_ua_account_base',
+        'l10n_ua_doc_reports',
     ],
     'data': [
+        # Security
         'security/ir.model.access.csv',
+        # Data
         'data/l10n_ua_asset_group_data.xml',
+        'data/ir_sequence_data.xml',
+        # Views
         'views/account_asset_views.xml',
         'views/l10n_ua_mnma_views.xml',
         'views/menu_views.xml',
+        # Reports
+        'report/asset_oz6_report.xml',
+        'report/asset_commission_report.xml',
+        'report/asset_writeoff_report.xml',
+        'report/mnma_commission_report.xml',
+        'report/mnma_writeoff_report.xml',
     ],
     'demo': [],
     'images': ['static/description/icon.png'],

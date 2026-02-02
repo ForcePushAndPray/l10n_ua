@@ -1,84 +1,101 @@
-from odoo import api, fields, models
+"""Low-value non-current tangible assets (МНМА) management."""
+
+from odoo import api, fields, models, _
 
 
 class L10nUaMnma(models.Model):
     _name = 'l10n_ua.mnma'
-    _description = 'Low-Value Non-Current Tangible Assets (MNMA)'
+    _description = 'МНМА (малоцінні необоротні матеріальні активи)'
     _inherit = ['mail.thread', 'mail.activity.mixin']
     _order = 'date desc, id desc'
 
     name = fields.Char(
-        string='Name',
+        string='Найменування',
         required=True,
         tracking=True,
     )
     inventory_number = fields.Char(
-        string='Inventory Number',
+        string='Інвентарний номер',
         tracking=True,
     )
     date = fields.Date(
-        string='Acquisition Date',
+        string='Дата придбання',
         required=True,
         default=fields.Date.context_today,
         tracking=True,
     )
     commission_date = fields.Date(
-        string='Commissioning Date',
+        string='Дата введення',
         tracking=True,
     )
+    commission_act_number = fields.Char(
+        string='№ акту введення',
+        copy=False,
+    )
+    writeoff_date = fields.Date(
+        string='Дата списання',
+        tracking=True,
+    )
+    writeoff_act_number = fields.Char(
+        string='№ акту списання',
+        copy=False,
+    )
+    writeoff_reason = fields.Text(
+        string='Причина списання',
+    )
     original_value = fields.Monetary(
-        string='Original Value',
+        string='Первісна вартість',
         required=True,
         currency_field='currency_id',
         tracking=True,
     )
     write_off_method = fields.Selection(
         selection=[
-            ('50_50', '50/50 (50% on commissioning, 50% on write-off)'),
-            ('100', '100% on commissioning'),
+            ('50_50', '50/50 (50% при введенні, 50% при списанні)'),
+            ('100', '100% при введенні в експлуатацію'),
         ],
-        string='Write-off Method',
+        string='Метод списання',
         default='50_50',
         required=True,
         tracking=True,
     )
     depreciation_value = fields.Monetary(
-        string='Depreciation',
+        string='Знос',
         compute='_compute_depreciation',
         store=True,
         currency_field='currency_id',
     )
     residual_value = fields.Monetary(
-        string='Residual Value',
+        string='Залишкова вартість',
         compute='_compute_depreciation',
         store=True,
         currency_field='currency_id',
     )
     state = fields.Selection(
         selection=[
-            ('draft', 'Draft'),
-            ('in_use', 'In Use'),
-            ('written_off', 'Written Off'),
+            ('draft', 'Чернетка'),
+            ('in_use', 'В експлуатації'),
+            ('written_off', 'Списано'),
         ],
-        string='State',
+        string='Стан',
         default='draft',
         tracking=True,
     )
     responsible_id = fields.Many2one(
         'res.users',
-        string='Responsible',
+        string='Відповідальний',
         default=lambda self: self.env.user,
     )
     department_id = fields.Many2one(
         'hr.department',
-        string='Department',
+        string='Підрозділ',
     )
     location = fields.Char(
-        string='Location',
+        string='Місцезнаходження',
     )
     company_id = fields.Many2one(
         'res.company',
-        string='Company',
+        string='Компанія',
         required=True,
         default=lambda self: self.env.company,
     )
@@ -87,7 +104,7 @@ class L10nUaMnma(models.Model):
         related='company_id.currency_id',
     )
     notes = fields.Text(
-        string='Notes',
+        string='Примітки',
     )
 
     @api.depends('original_value', 'write_off_method', 'state')
@@ -108,16 +125,53 @@ class L10nUaMnma(models.Model):
                 record.residual_value = 0
 
     def action_commission(self):
-        self.write({
-            'state': 'in_use',
-            'commission_date': fields.Date.context_today(self),
-        })
+        """Put MNMA into operation."""
+        for rec in self:
+            vals = {
+                'state': 'in_use',
+                'commission_date': fields.Date.context_today(self),
+            }
+            if not rec.commission_act_number:
+                vals['commission_act_number'] = self.env['ir.sequence'].next_by_code(
+                    'l10n_ua.mnma.commission.act'
+                ) or _('New')
+            rec.write(vals)
 
     def action_write_off(self):
-        self.write({'state': 'written_off'})
+        """Write off MNMA."""
+        for rec in self:
+            vals = {
+                'state': 'written_off',
+                'writeoff_date': fields.Date.context_today(self),
+            }
+            if not rec.writeoff_act_number:
+                vals['writeoff_act_number'] = self.env['ir.sequence'].next_by_code(
+                    'l10n_ua.mnma.writeoff.act'
+                ) or _('New')
+            rec.write(vals)
 
     def action_draft(self):
         self.write({
             'state': 'draft',
             'commission_date': False,
+            'commission_act_number': False,
+            'writeoff_date': False,
+            'writeoff_act_number': False,
+            'writeoff_reason': False,
         })
+
+    # --- Print actions ---
+
+    def action_print_commission_act(self):
+        """Print MNMA Commissioning Act."""
+        self.ensure_one()
+        return self.env.ref(
+            'l10n_ua_assets.action_report_mnma_commission'
+        ).report_action(self)
+
+    def action_print_writeoff_act(self):
+        """Print MNMA Write-off Act."""
+        self.ensure_one()
+        return self.env.ref(
+            'l10n_ua_assets.action_report_mnma_writeoff'
+        ).report_action(self)

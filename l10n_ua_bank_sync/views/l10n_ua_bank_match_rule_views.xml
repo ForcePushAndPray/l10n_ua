@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Match Rule Form View -->
+    <record id="l10n_ua_bank_match_rule_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.match.rule.form</field>
+        <field name="model">l10n_ua.bank.match.rule</field>
+        <field name="arch" type="xml">
+            <form string="Matching Rule">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_matched_transactions" type="object"
+                                class="oe_stat_button" icon="fa-exchange"
+                                invisible="match_count == 0">
+                            <field name="match_count" widget="statinfo" string="Matches"/>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1>
+                            <field name="name" placeholder="Rule name, e.g. Оренда офісу"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group string="Match Conditions">
+                            <field name="match_direction"/>
+                            <field name="journal_id"/>
+                            <field name="match_partner_id"/>
+                            <field name="match_partner_edrpou"/>
+                            <field name="match_text" placeholder="e.g. оренда, ЄСВ, комісія"/>
+                            <field name="match_text_field" invisible="not match_text"/>
+                            <field name="match_amount_min"/>
+                            <field name="match_amount_max"/>
+                        </group>
+                        <group string="Actions">
+                            <field name="account_id"/>
+                            <field name="set_partner_id"/>
+                            <field name="label" placeholder="Override entry label"/>
+                            <field name="auto_post"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Settings">
+                            <field name="sequence"/>
+                            <field name="active"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <!-- Match Rule List View -->
+    <record id="l10n_ua_bank_match_rule_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.match.rule.list</field>
+        <field name="model">l10n_ua.bank.match.rule</field>
+        <field name="arch" type="xml">
+            <list string="Matching Rules">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="match_direction"/>
+                <field name="match_text"/>
+                <field name="match_partner_id"/>
+                <field name="match_partner_edrpou"/>
+                <field name="account_id"/>
+                <field name="auto_post"/>
+                <field name="match_count" string="Matches"/>
+            </list>
+        </field>
+    </record>
+
+    <!-- Match Rule Search View -->
+    <record id="l10n_ua_bank_match_rule_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.match.rule.search</field>
+        <field name="model">l10n_ua.bank.match.rule</field>
+        <field name="arch" type="xml">
+            <search string="Matching Rules">
+                <field name="name"/>
+                <field name="match_text"/>
+                <field name="account_id"/>
+                <separator/>
+                <filter string="Active" name="filter_active" domain="[('active', '=', True)]"/>
+                <filter string="Archived" name="filter_archived" domain="[('active', '=', False)]"/>
+                <separator/>
+                <filter string="Incoming" name="filter_incoming" domain="[('match_direction', '=', 'incoming')]"/>
+                <filter string="Outgoing" name="filter_outgoing" domain="[('match_direction', '=', 'outgoing')]"/>
+                <separator/>
+                <filter string="Auto-Post" name="filter_auto_post" domain="[('auto_post', '=', True)]"/>
+                <group>
+                    <filter string="Account" name="groupby_account" domain="[]" context="{'group_by': 'account_id'}"/>
+                    <filter string="Direction" name="groupby_direction" domain="[]" context="{'group_by': 'match_direction'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <!-- Match Rule Action -->
+    <record id="l10n_ua_bank_match_rule_action" model="ir.actions.act_window">
+        <field name="name">Matching Rules</field>
+        <field name="res_model">l10n_ua.bank.match.rule</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Create your first matching rule
+            </p>
+            <p>
+                Matching rules automatically determine the counterpart account
+                when creating journal entries from bank transactions.
+            </p>
+        </field>
+    </record>
+
+</odoo>

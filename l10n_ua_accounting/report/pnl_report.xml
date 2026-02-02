@@ -4,7 +4,7 @@
     <!-- P&L Report Action -->
     <record id="action_report_pnl" model="ir.actions.report">
         <field name="name">Звіт про фінансові результати (Форма №2)</field>
-        <field name="model">l10n_ua.pnl.report.wizard</field>
+        <field name="model">l10n_ua.pnl.report</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">l10n_ua_accounting.report_pnl_document</field>
         <field name="report_file">l10n_ua_accounting.report_pnl_document</field>
@@ -15,10 +15,9 @@
     <!-- P&L Report Template -->
     <template id="report_pnl_document">
         <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="wizard">
+            <t t-foreach="docs" t-as="report">
                 <t t-call="web.external_layout">
                     <t t-call="l10n_ua_doc_reports.report_ua_styles"/>
-                    <t t-set="data" t-value="wizard._get_report_data()"/>
                     <div class="page ua-report">
                         <!-- Header -->
                         <div class="text-center mb-2">
@@ -31,11 +30,11 @@
                                 <table class="table-borderless" style="width: 100%;">
                                     <tr>
                                         <td style="width: 120px;">Підприємство</td>
-                                        <td class="border-bottom"><span t-field="wizard.company_id.name"/></td>
+                                        <td class="border-bottom"><span t-field="report.company_id.name"/></td>
                                     </tr>
-                                    <tr t-if="wizard.company_id.company_registry">
+                                    <tr t-if="report.company_id.company_registry">
                                         <td>за ЄДРПОУ</td>
-                                        <td class="border-bottom"><span t-field="wizard.company_id.company_registry"/></td>
+                                        <td class="border-bottom"><span t-field="report.company_id.company_registry"/></td>
                                     </tr>
                                 </table>
                             </div>
@@ -44,7 +43,7 @@
                                 <table class="small" style="float: right;">
                                     <tr>
                                         <td class="border">Дата (рік, місяць, число)</td>
-                                        <td class="border text-center" t-esc="wizard.date_to.strftime('%Y.%m.%d')"/>
+                                        <td class="border text-center" t-esc="report.date_to.strftime('%Y.%m.%d')"/>
                                     </tr>
                                 </table>
                             </div>
@@ -55,13 +54,13 @@
                             (Звіт про сукупний дохід)
                         </div>
                         <div class="ua-report-subtitle mb-3">
-                            за <span t-field="wizard.date_from" t-options='{"widget": "date"}'/> -
-                            <span t-field="wizard.date_to" t-options='{"widget": "date"}'/> р.
+                            за <span t-field="report.date_from" t-options='{"widget": "date"}'/> -
+                            <span t-field="report.date_to" t-options='{"widget": "date"}'/> р.
                         </div>
 
                         <div class="small text-center mb-2">Форма № 2</div>
 
-                        <!-- P&L Table -->
+                        <!-- P&L Table from stored lines -->
                         <table>
                             <thead>
                                 <tr>
@@ -72,125 +71,36 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <!-- Revenue -->
-                                <tr>
-                                    <td t-esc="data['lines']['net_revenue']['name']"/>
-                                    <td class="text-center" t-esc="data['lines']['net_revenue']['code']"/>
-                                    <td class="text-right" t-esc="'%.0f' % data['lines']['net_revenue']['current']"/>
-                                    <td class="text-right" t-esc="'%.0f' % data['lines']['net_revenue']['previous']"/>
-                                </tr>
-
-                                <!-- Cost of sales -->
-                                <tr>
-                                    <td t-esc="data['lines']['cost_of_sales']['name']"/>
-                                    <td class="text-center" t-esc="data['lines']['cost_of_sales']['code']"/>
-                                    <td class="text-right" t-esc="'(%.0f)' % data['lines']['cost_of_sales']['current']"/>
-                                    <td class="text-right" t-esc="'(%.0f)' % data['lines']['cost_of_sales']['previous']"/>
-                                </tr>
-
-                                <!-- Gross profit -->
-                                <tr class="bold">
-                                    <td t-esc="data['lines']['gross_profit']['name']"/>
-                                    <td class="text-center" t-esc="data['lines']['gross_profit']['code']"/>
-                                    <td class="text-right" t-esc="'%.0f' % data['lines']['gross_profit']['current']"/>
-                                    <td class="text-right" t-esc="'%.0f' % data['lines']['gross_profit']['previous']"/>
-                                </tr>
-
-                                <!-- Other operating income -->
-                                <tr>
-                                    <td t-esc="data['lines']['other_operating_income']['name']"/>
-                                    <td class="text-center" t-esc="data['lines']['other_operating_income']['code']"/>
-                                    <td class="text-right" t-esc="'%.0f' % data['lines']['other_operating_income']['current']"/>
-                                    <td class="text-right" t-esc="'%.0f' % data['lines']['other_operating_income']['previous']"/>
-                                </tr>
-
-                                <!-- Administrative expenses -->
-                                <tr>
-                                    <td t-esc="data['lines']['administrative_expenses']['name']"/>
-                                    <td class="text-center" t-esc="data['lines']['administrative_expenses']['code']"/>
-                                    <td class="text-right" t-esc="'(%.0f)' % data['lines']['administrative_expenses']['current']"/>
-                                    <td class="text-right" t-esc="'(%.0f)' % data['lines']['administrative_expenses']['previous']"/>
-                                </tr>
-
-                                <!-- Selling expenses -->
-                                <tr>
-                                    <td t-esc="data['lines']['selling_expenses']['name']"/>
-                                    <td class="text-center" t-esc="data['lines']['selling_expenses']['code']"/>
-                                    <td class="text-right" t-esc="'(%.0f)' % data['lines']['selling_expenses']['current']"/>
-                                    <td class="text-right" t-esc="'(%.0f)' % data['lines']['selling_expenses']['previous']"/>
-                                </tr>
-
-                                <!-- Other operating expenses -->
-                                <tr>
-                                    <td t-esc="data['lines']['other_operating_expenses']['name']"/>
-                                    <td class="text-center" t-esc="data['lines']['other_operating_expenses']['code']"/>
-                                    <td class="text-right" t-esc="'(%.0f)' % data['lines']['other_operating_expenses']['current']"/>
-                                    <td class="text-right" t-esc="'(%.0f)' % data['lines']['other_operating_expenses']['previous']"/>
-                                </tr>
-
-                                <!-- Operating profit -->
-                                <tr class="bold">
-                                    <td t-esc="data['lines']['operating_profit']['name']"/>
-                                    <td class="text-center" t-esc="data['lines']['operating_profit']['code']"/>
-                                    <td class="text-right" t-esc="'%.0f' % data['lines']['operating_profit']['current']"/>
-                                    <td class="text-right" t-esc="'%.0f' % data['lines']['operating_profit']['previous']"/>
-                                </tr>
-
-                                <!-- Financial income -->
-                                <tr>
-                                    <td t-esc="data['lines']['financial_income']['name']"/>
-                                    <td class="text-center" t-esc="data['lines']['financial_income']['code']"/>
-                                    <td class="text-right" t-esc="'%.0f' % data['lines']['financial_income']['current']"/>
-                                    <td class="text-right" t-esc="'%.0f' % data['lines']['financial_income']['previous']"/>
-                                </tr>
-
-                                <!-- Financial expenses -->
-                                <tr>
-                                    <td t-esc="data['lines']['financial_expenses']['name']"/>
-                                    <td class="text-center" t-esc="data['lines']['financial_expenses']['code']"/>
-                                    <td class="text-right" t-esc="'(%.0f)' % data['lines']['financial_expenses']['current']"/>
-                                    <td class="text-right" t-esc="'(%.0f)' % data['lines']['financial_expenses']['previous']"/>
-                                </tr>
-
-                                <!-- Other income -->
-                                <tr>
-                                    <td t-esc="data['lines']['other_income']['name']"/>
-                                    <td class="text-center" t-esc="data['lines']['other_income']['code']"/>
-                                    <td class="text-right" t-esc="'%.0f' % data['lines']['other_income']['current']"/>
-                                    <td class="text-right" t-esc="'%.0f' % data['lines']['other_income']['previous']"/>
-                                </tr>
-
-                                <!-- Other expenses -->
-                                <tr>
-                                    <td t-esc="data['lines']['other_expenses']['name']"/>
-                                    <td class="text-center" t-esc="data['lines']['other_expenses']['code']"/>
-                                    <td class="text-right" t-esc="'(%.0f)' % data['lines']['other_expenses']['current']"/>
-                                    <td class="text-right" t-esc="'(%.0f)' % data['lines']['other_expenses']['previous']"/>
-                                </tr>
-
-                                <!-- Profit before tax -->
-                                <tr class="bold">
-                                    <td t-esc="data['lines']['profit_before_tax']['name']"/>
-                                    <td class="text-center" t-esc="data['lines']['profit_before_tax']['code']"/>
-                                    <td class="text-right" t-esc="'%.0f' % data['lines']['profit_before_tax']['current']"/>
-                                    <td class="text-right" t-esc="'%.0f' % data['lines']['profit_before_tax']['previous']"/>
-                                </tr>
-
-                                <!-- Income tax -->
-                                <tr>
-                                    <td t-esc="data['lines']['income_tax_expense']['name']"/>
-                                    <td class="text-center" t-esc="data['lines']['income_tax_expense']['code']"/>
-                                    <td class="text-right" t-esc="'(%.0f)' % data['lines']['income_tax_expense']['current']"/>
-                                    <td class="text-right" t-esc="'(%.0f)' % data['lines']['income_tax_expense']['previous']"/>
-                                </tr>
-
-                                <!-- Net profit -->
-                                <tr class="bold" style="border-top: 2px solid black;">
-                                    <td t-esc="data['lines']['net_profit']['name']"/>
-                                    <td class="text-center" t-esc="data['lines']['net_profit']['code']"/>
-                                    <td class="text-right" t-esc="'%.0f' % data['lines']['net_profit']['current']"/>
-                                    <td class="text-right" t-esc="'%.0f' % data['lines']['net_profit']['previous']"/>
-                                </tr>
+                                <t t-foreach="report.line_ids.sorted('sequence')" t-as="line">
+                                    <!-- Detail: expenses in parentheses -->
+                                    <tr t-if="line.line_type == 'detail' and line.turnover_type == 'debit'">
+                                        <td t-esc="line.name"/>
+                                        <td class="text-center" t-esc="line.code"/>
+                                        <td class="text-right" t-esc="'(%.0f)' % line.current_amount"/>
+                                        <td class="text-right" t-esc="'(%.0f)' % line.previous_amount"/>
+                                    </tr>
+                                    <!-- Detail: income -->
+                                    <tr t-if="line.line_type == 'detail' and line.turnover_type != 'debit'">
+                                        <td t-esc="line.name"/>
+                                        <td class="text-center" t-esc="line.code"/>
+                                        <td class="text-right" t-esc="'%.0f' % line.current_amount"/>
+                                        <td class="text-right" t-esc="'%.0f' % line.previous_amount"/>
+                                    </tr>
+                                    <!-- Subtotal -->
+                                    <tr t-if="line.line_type == 'subtotal'" class="bold">
+                                        <td t-esc="line.name"/>
+                                        <td class="text-center" t-esc="line.code"/>
+                                        <td class="text-right" t-esc="'%.0f' % line.current_amount"/>
+                                        <td class="text-right" t-esc="'%.0f' % line.previous_amount"/>
+                                    </tr>
+                                    <!-- Total (net profit) -->
+                                    <tr t-if="line.line_type == 'total'" class="bold" style="border-top: 2px solid black;">
+                                        <td t-esc="line.name"/>
+                                        <td class="text-center" t-esc="line.code"/>
+                                        <td class="text-right" t-esc="'%.0f' % line.current_amount"/>
+                                        <td class="text-right" t-esc="'%.0f' % line.previous_amount"/>
+                                    </tr>
+                                </t>
                             </tbody>
                         </table>
 
