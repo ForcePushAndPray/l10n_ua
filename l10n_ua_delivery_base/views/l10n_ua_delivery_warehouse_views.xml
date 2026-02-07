@@ -52,7 +52,7 @@
             </list>
         </field>
     </record>
-
+<!--
     <record id="l10n_ua_delivery_warehouse_view_search" model="ir.ui.view">
         <field name="name">l10n_ua.delivery.warehouse.search</field>
         <field name="model">l10n_ua.delivery.warehouse</field>
@@ -75,7 +75,7 @@
             </search>
         </field>
     </record>
-
+-->
     <record id="l10n_ua_delivery_warehouse_action" model="ir.actions.act_window">
         <field name="name">Delivery Warehouses</field>
         <field name="res_model">l10n_ua.delivery.warehouse</field>
