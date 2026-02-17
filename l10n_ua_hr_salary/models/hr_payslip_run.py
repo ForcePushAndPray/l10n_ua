@@ -112,9 +112,10 @@ class HrPayslipRun(models.Model):
         """Generate payslips for all employees with active contracts"""
         self.ensure_one()
         
+        # Find employees with active versions (contract_date_start set, no end date)
         employees = self.env['hr.employee'].search([
             ('company_id', '=', self.company_id.id),
-            ('contract_ua_ids.state', '=', 'open'),
+            ('version_ids.contract_date_start', '!=', False),
         ])
         
         for employee in employees:

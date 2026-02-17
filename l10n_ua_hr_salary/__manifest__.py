@@ -32,6 +32,7 @@ to avoid naming conflicts with existing modules on Odoo Apps.
     'license': 'LGPL-3',
     'depends': [
         'l10n_ua_hr_base',
+        'l10n_ua_hr_contract',
     ],
     'data': [
         'security/ir.model.access.csv',

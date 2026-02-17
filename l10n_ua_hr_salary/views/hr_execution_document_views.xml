@@ -91,6 +91,28 @@
         </field>
     </record>
 
+    <record id="hr_execution_document_view_search" model="ir.ui.view">
+        <field name="name">hr.execution.document.search</field>
+        <field name="model">hr.execution.document</field>
+        <field name="arch" type="xml">
+            <search string="Execution Documents">
+                <field name="name"/>
+                <field name="employee_id"/>
+                <field name="recipient_name"/>
+                <separator/>
+                <filter string="Active" name="filter_active" domain="[('state', '=', 'active')]"/>
+                <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Closed" name="filter_closed" domain="[('state', '=', 'closed')]"/>
+                <separator/>
+                <group>
+                    <filter string="Employee" name="groupby_employee" domain="[]" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Type" name="groupby_type" domain="[]" context="{'group_by': 'document_type'}"/>
+                    <filter string="Status" name="groupby_state" domain="[]" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
 <record id="action_hr_execution_document" model="ir.actions.act_window">
         <field name="name">Execution Documents</field>
         <field name="res_model">hr.execution.document</field>
