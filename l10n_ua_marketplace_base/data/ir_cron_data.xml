@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Import Orders Cron Job -->
+        <record id="ir_cron_marketplace_import_orders" model="ir.cron">
+            <field name="name">Marketplace: Import Orders</field>
+            <field name="model_id" ref="model_marketplace_backend"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_import_orders_all()</field>
+            <field name="interval_number">15</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="priority">5</field>
+        </record>
+
+        <!-- Sync Stock Cron Job -->
+        <record id="ir_cron_marketplace_sync_stock" model="ir.cron">
+            <field name="name">Marketplace: Sync Stock</field>
+            <field name="model_id" ref="model_marketplace_backend"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_sync_stock_all()</field>
+            <field name="interval_number">30</field>
+            <field name="interval_type">minutes</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="priority">10</field>
+        </record>
+
+        <!-- Sync Prices Cron Job -->
+        <record id="ir_cron_marketplace_sync_prices" model="ir.cron">
+            <field name="name">Marketplace: Sync Prices</field>
+            <field name="model_id" ref="model_marketplace_backend"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_sync_prices_all()</field>
+            <field name="interval_number">1</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="priority">10</field>
+        </record>
+
+        <!-- Refresh API Tokens Cron Job -->
+        <record id="ir_cron_marketplace_refresh_tokens" model="ir.cron">
+            <field name="name">Marketplace: Refresh API Tokens</field>
+            <field name="model_id" ref="model_marketplace_backend"/>
+            <field name="state">code</field>
+            <field name="code">model._cron_refresh_tokens()</field>
+            <field name="interval_number">12</field>
+            <field name="interval_type">hours</field>
+            <field name="numbercall">-1</field>
+            <field name="active">True</field>
+            <field name="priority">1</field>
+        </record>
+
+    </data>
+</odoo>

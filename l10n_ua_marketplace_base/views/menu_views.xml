@@ -1,27 +1,53 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <menuitem id="menu_l10n_ua_marketplace"
+    <!-- Root Menu -->
+    <menuitem id="menu_marketplace_root"
               name="Marketplaces"
-              parent="l10n_ua_account_base.menu_l10n_ua_root"
-              sequence="70"/>
+              web_icon="l10n_ua_marketplace_base,static/description/icon.png"
+              sequence="45"/>
 
-    <menuitem id="menu_l10n_ua_marketplace_config"
-              name="Configurations"
-              parent="menu_l10n_ua_marketplace"
-              action="l10n_ua_marketplace_config_action"
+    <!-- Orders Menu -->
+    <menuitem id="menu_marketplace_orders"
+              name="Orders"
+              parent="menu_marketplace_root"
+              action="marketplace_order_action"
               sequence="10"/>
 
-    <menuitem id="menu_l10n_ua_marketplace_orders"
-              name="Orders"
-              parent="menu_l10n_ua_marketplace"
-              action="l10n_ua_marketplace_order_action"
+    <!-- Catalog Menu -->
+    <menuitem id="menu_marketplace_catalog"
+              name="Catalog"
+              parent="menu_marketplace_root"
               sequence="20"/>
 
-    <menuitem id="menu_l10n_ua_marketplace_categories"
-              name="Category Mapping"
-              parent="menu_l10n_ua_marketplace"
-              action="l10n_ua_marketplace_category_action"
+    <menuitem id="menu_marketplace_pricelists"
+              name="Pricelists"
+              parent="menu_marketplace_catalog"
+              action="marketplace_pricelist_action"
+              sequence="10"/>
+
+    <menuitem id="menu_marketplace_pricelist_items"
+              name="Products"
+              parent="menu_marketplace_catalog"
+              action="marketplace_pricelist_item_action"
+              sequence="20"/>
+
+    <menuitem id="menu_marketplace_categories"
+              name="Categories"
+              parent="menu_marketplace_catalog"
+              action="marketplace_category_action"
               sequence="30"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="menu_marketplace_config"
+              name="Configuration"
+              parent="menu_marketplace_root"
+              sequence="90"/>
+
+    <menuitem id="menu_marketplace_backends"
+              name="Backends"
+              parent="menu_marketplace_config"
+              action="marketplace_backend_action"
+              sequence="10"/>
 
 </odoo>

@@ -9,13 +9,20 @@ Ukraine Marketplace Base Module
 
 Base module for Ukrainian marketplace integrations providing:
 
-* Product extensions for marketplace publishing
-* Abstract mixin for marketplace providers
-* Feed generation (YML/XML)
-* Order import base
-* Category mapping
+* Marketplace backend configuration
+* Product pricelist management
+* YML/XML feed generation
+* Order import with partner matching
+* Webhook and API endpoints
+* Cron jobs for automated synchronization
 
-Requires l10n_ua_account_base module.
+Supported marketplaces (via specific modules):
+* Rozetka
+* Prom.ua
+* Epicentr
+* Allo
+* Hotline (price feed only)
+* Price.ua (price feed only)
     """,
     'author': 'Svyatoslav Nadozirny',
     'website': 'https://ndev.online',
@@ -23,19 +30,27 @@ Requires l10n_ua_account_base module.
     'depends': [
         'sale',
         'stock',
-        'l10n_ua_account_base',
+        'delivery',
     ],
     'data': [
+        # Security
+        'security/l10n_ua_marketplace_security.xml',
         'security/ir.model.access.csv',
+        # Data
+        'data/ir_sequence_data.xml',
+        'data/ir_cron_data.xml',
+        # Views
+        'views/marketplace_backend_views.xml',
+        'views/marketplace_order_views.xml',
+        'views/marketplace_pricelist_views.xml',
+        'views/marketplace_category_views.xml',
         'views/product_template_views.xml',
-        'views/l10n_ua_marketplace_category_views.xml',
-        'views/l10n_ua_marketplace_order_views.xml',
         'views/menu_views.xml',
     ],
     'demo': [],
     'images': ['static/description/icon.png'],
     'installable': True,
-    'application': False,
+    'application': True,
     'auto_install': False,
     'price': 0,
     'currency': 'EUR',
