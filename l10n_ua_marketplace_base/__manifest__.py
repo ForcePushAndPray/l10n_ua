@@ -47,7 +47,9 @@ Supported marketplaces (via specific modules):
         'views/product_template_views.xml',
         'views/menu_views.xml',
     ],
-    'demo': [],
+    'demo': [
+        'demo/marketplace_demo.xml',
+    ],
     'images': ['static/description/icon.png'],
     'installable': True,
     'application': True,

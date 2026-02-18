@@ -248,9 +248,10 @@ class MarketplaceBackend(models.Model):
         compute='_compute_pricelist_item_count',
     )
 
-    _sql_constraints = [
-        ('code_uniq', 'UNIQUE(code)', 'Backend code must be unique!'),
-    ]
+    _code_uniq = models.Constraint(
+        'UNIQUE(code)',
+        'Backend code must be unique!',
+    )
 
     @api.model
     def _selection_marketplace_type(self):
@@ -379,7 +380,7 @@ class MarketplaceBackend(models.Model):
             'name': _('Marketplace Orders'),
             'type': 'ir.actions.act_window',
             'res_model': 'marketplace.order',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('backend_id', '=', self.id)],
             'context': {'default_backend_id': self.id},
         }
@@ -391,7 +392,7 @@ class MarketplaceBackend(models.Model):
             'name': _('Marketplace Products'),
             'type': 'ir.actions.act_window',
             'res_model': 'marketplace.pricelist.item',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('backend_id', '=', self.id)],
             'context': {'default_backend_id': self.id},
         }

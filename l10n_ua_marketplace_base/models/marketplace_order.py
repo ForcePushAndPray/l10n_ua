@@ -19,13 +19,14 @@ class MarketplaceOrder(models.Model):
     )
     backend_id = fields.Many2one(
         'marketplace.backend',
-        string='Marketplace',
+        string='Backend',
         required=True,
         ondelete='restrict',
         tracking=True,
     )
     marketplace_type = fields.Selection(
         related='backend_id.marketplace_type',
+        string='Marketplace Type',
         store=True,
     )
     external_id = fields.Char(
@@ -198,11 +199,10 @@ class MarketplaceOrder(models.Model):
         help='Original JSON data from marketplace',
     )
 
-    _sql_constraints = [
-        ('external_backend_uniq',
-         'UNIQUE(external_id, backend_id)',
-         'External order ID must be unique per backend!'),
-    ]
+    _external_backend_uniq = models.Constraint(
+        'UNIQUE(external_id, backend_id)',
+        'External order ID must be unique per backend!',
+    )
 
     @api.depends('line_ids.price_total', 'amount_delivery')
     def _compute_amounts(self):
@@ -472,7 +472,7 @@ class MarketplaceOrder(models.Model):
             'name': _('Deliveries'),
             'type': 'ir.actions.act_window',
             'res_model': 'stock.picking',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('id', 'in', self.picking_ids.ids)],
         }
 
@@ -483,7 +483,7 @@ class MarketplaceOrder(models.Model):
             'name': _('Invoices'),
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('id', 'in', self.invoice_ids.ids)],
         }
 

@@ -32,7 +32,6 @@ class MarketplaceCategory(models.Model):
     )
     parent_path = fields.Char(
         index=True,
-        unaccent=False,
     )
     child_ids = fields.One2many(
         'marketplace.category',
@@ -51,6 +50,7 @@ class MarketplaceCategory(models.Model):
         string='Full Path',
         compute='_compute_full_path',
         store=True,
+        recursive=True,
     )
     active = fields.Boolean(
         default=True,
@@ -60,11 +60,10 @@ class MarketplaceCategory(models.Model):
         compute='_compute_product_count',
     )
 
-    _sql_constraints = [
-        ('external_marketplace_uniq',
-         'UNIQUE(external_id, marketplace_type)',
-         'External ID must be unique per marketplace!'),
-    ]
+    _external_marketplace_uniq = models.Constraint(
+        'UNIQUE(external_id, marketplace_type)',
+        'External ID must be unique per marketplace!',
+    )
 
     @api.model
     def _selection_marketplace_type(self):

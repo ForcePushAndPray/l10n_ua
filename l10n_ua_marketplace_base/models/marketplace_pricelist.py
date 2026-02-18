@@ -185,7 +185,7 @@ class MarketplacePricelist(models.Model):
             'name': _('Pricelist Items'),
             'type': 'ir.actions.act_window',
             'res_model': 'marketplace.pricelist.item',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('pricelist_id', '=', self.id)],
             'context': {'default_pricelist_id': self.id},
         }
@@ -434,14 +434,14 @@ class MarketplacePricelistItem(models.Model):
         string='Sync Error',
     )
 
-    _sql_constraints = [
-        ('product_pricelist_uniq',
-         'UNIQUE(pricelist_id, product_tmpl_id)',
-         'Product already exists in this pricelist!'),
-        ('external_backend_uniq',
-         'UNIQUE(external_id, backend_id)',
-         'External ID must be unique per backend!'),
-    ]
+    _product_pricelist_uniq = models.Constraint(
+        'UNIQUE(pricelist_id, product_tmpl_id)',
+        'Product already exists in this pricelist!',
+    )
+    _external_backend_uniq = models.Constraint(
+        'UNIQUE(external_id, backend_id)',
+        'External ID must be unique per backend!',
+    )
 
     @api.depends('product_tmpl_id', 'product_id')
     def _compute_sku(self):

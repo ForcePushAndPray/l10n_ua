@@ -75,7 +75,7 @@ class MarketplaceFeedController(http.Controller):
 class MarketplaceWebhookController(http.Controller):
     """Controller for marketplace webhooks."""
 
-    @http.route('/marketplace/webhook/<int:backend_id>', type='json', auth='public',
+    @http.route('/marketplace/webhook/<int:backend_id>', type='jsonrpc', auth='public',
                 methods=['POST'], csrf=False)
     def webhook(self, backend_id, **kwargs):
         """Handle webhook from marketplace."""

@@ -15,7 +15,7 @@ class ProductTemplate(models.Model):
         string='Marketplace Items',
     )
     marketplace_item_count = fields.Integer(
-        string='Marketplace Items',
+        string='Marketplace Item Count',
         compute='_compute_marketplace_item_count',
     )
     marketplace_category_ids = fields.Many2many(
@@ -42,7 +42,7 @@ class ProductTemplate(models.Model):
             'name': _('Marketplace Items'),
             'type': 'ir.actions.act_window',
             'res_model': 'marketplace.pricelist.item',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('product_tmpl_id', '=', self.id)],
             'context': {'default_product_tmpl_id': self.id},
         }

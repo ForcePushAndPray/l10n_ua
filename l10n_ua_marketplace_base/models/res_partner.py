@@ -28,7 +28,7 @@ class ResPartner(models.Model):
         string='Marketplace Orders',
     )
     marketplace_order_count = fields.Integer(
-        string='Marketplace Orders',
+        string='Marketplace Order Count',
         compute='_compute_marketplace_order_count',
     )
 
@@ -43,7 +43,7 @@ class ResPartner(models.Model):
             'name': _('Marketplace Orders'),
             'type': 'ir.actions.act_window',
             'res_model': 'marketplace.order',
-            'view_mode': 'tree,form',
+            'view_mode': 'list,form',
             'domain': [('partner_id', '=', self.id)],
             'context': {'default_partner_id': self.id},
         }
