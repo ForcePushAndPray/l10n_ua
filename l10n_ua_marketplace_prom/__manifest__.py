@@ -34,7 +34,7 @@ Requires l10n_ua_marketplace_base module.
         'python': ['requests'],
     },
     'demo': [],
-    'images': ['static/description/icon.png'],
+    'images': ['static/description/banner.png'],
     'installable': True,
     'application': False,
     'auto_install': False,
