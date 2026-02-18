@@ -1,1 +1,1 @@
-from . import l10n_ua_marketplace_prom
+from . import prom_backend

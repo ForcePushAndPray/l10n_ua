@@ -9,12 +9,15 @@ Ukraine Rozetka Marketplace
 
 Rozetka marketplace integration providing:
 
-* YML feed generation
-* Stock synchronization
-* Price synchronization
-* Order import
-* Order status updates
+* API authentication with Bearer token
+* Order import from Rozetka Seller API
+* Order status synchronization
+* Stock synchronization via API
+* Price synchronization via API
+* Webhook support for real-time order notifications
 * Category mapping
+
+API Documentation: https://api-seller.rozetka.com.ua/apidoc/
 
 Requires l10n_ua_marketplace_base module.
     """,
@@ -24,7 +27,12 @@ Requires l10n_ua_marketplace_base module.
     'depends': [
         'l10n_ua_marketplace_base',
     ],
-    'data': [],
+    'data': [
+        'views/rozetka_backend_views.xml',
+    ],
+    'external_dependencies': {
+        'python': ['requests'],
+    },
     'demo': [],
     'images': ['static/description/icon.png'],
     'installable': True,

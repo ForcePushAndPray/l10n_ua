@@ -9,11 +9,15 @@ Ukraine Prom.ua Marketplace
 
 Prom.ua marketplace integration providing:
 
-* Feed generation (YML or Prom XML)
-* Product sync via API
-* Order import
-* Order status updates
-* Stock management
+* API authentication with Bearer token
+* Order import from Prom.ua API
+* Order status synchronization
+* Product import from Prom.ua catalog
+* Stock synchronization via API
+* Price synchronization via API
+* Webhook support for real-time notifications
+
+API Documentation: https://public-api.docs.prom.ua/
 
 Requires l10n_ua_marketplace_base module.
     """,
@@ -23,7 +27,12 @@ Requires l10n_ua_marketplace_base module.
     'depends': [
         'l10n_ua_marketplace_base',
     ],
-    'data': [],
+    'data': [
+        'views/prom_backend_views.xml',
+    ],
+    'external_dependencies': {
+        'python': ['requests'],
+    },
     'demo': [],
     'images': ['static/description/icon.png'],
     'installable': True,

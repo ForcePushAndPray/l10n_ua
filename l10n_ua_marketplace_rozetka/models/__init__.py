@@ -1,1 +1,1 @@
-from . import l10n_ua_marketplace_rozetka
+from . import rozetka_backend
