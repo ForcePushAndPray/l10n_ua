@@ -193,7 +193,7 @@
                 <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="Error" name="filter_error" domain="[('state', '=', 'error')]"/>
                 <separator/>
-                <filter string="In Stock" name="filter_in_stock" domain="[('qty_available', '>', 0)]"/>
+                <filter string="Has Stock to Publish" name="filter_in_stock" domain="[('qty_to_publish', '>', 0)]"/>
                 <separator/>
                 <group>
                     <filter string="State" name="groupby_state" domain="[]"

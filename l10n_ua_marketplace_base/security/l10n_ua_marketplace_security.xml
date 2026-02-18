@@ -1,33 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+<data>
 
-    <!-- Marketplace Module Category -->
-    <record id="module_category_marketplace" model="ir.module.category">
+    <!-- Marketplace Privilege (replaces module category in Odoo 19) -->
+    <record model="res.groups.privilege" id="res_groups_privilege_marketplace">
         <field name="name">Marketplaces</field>
-        <field name="description">Ukrainian Marketplace Integrations</field>
         <field name="sequence">50</field>
     </record>
 
     <!-- User Group - can view orders, products -->
     <record id="group_marketplace_user" model="res.groups">
         <field name="name">User</field>
-        <field name="category_id" ref="module_category_marketplace"/>
+        <field name="sequence">10</field>
         <field name="implied_ids" eval="[(4, ref('base.group_user'))]"/>
+        <field name="privilege_id" ref="res_groups_privilege_marketplace"/>
     </record>
 
     <!-- Manager Group - can configure backends, manage pricelists -->
     <record id="group_marketplace_manager" model="res.groups">
         <field name="name">Manager</field>
-        <field name="category_id" ref="module_category_marketplace"/>
+        <field name="sequence">20</field>
+        <field name="privilege_id" ref="res_groups_privilege_marketplace"/>
         <field name="implied_ids" eval="[(4, ref('group_marketplace_user'))]"/>
     </record>
 
     <!-- Admin Group - full access including API keys -->
     <record id="group_marketplace_admin" model="res.groups">
         <field name="name">Administrator</field>
-        <field name="category_id" ref="module_category_marketplace"/>
+        <field name="sequence">30</field>
+        <field name="privilege_id" ref="res_groups_privilege_marketplace"/>
         <field name="implied_ids" eval="[(4, ref('group_marketplace_manager'))]"/>
+        <field name="user_ids" eval="[(4, ref('base.user_root')), (4, ref('base.user_admin'))]"/>
     </record>
+
+</data>
+<data noupdate="1">
 
     <!-- Record Rules -->
 
@@ -66,4 +73,5 @@
         <field name="groups" eval="[(4, ref('group_marketplace_user'))]"/>
     </record>
 
+</data>
 </odoo>

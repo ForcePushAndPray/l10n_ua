@@ -51,7 +51,7 @@
                     <notebook>
                         <page string="API Configuration" name="api">
                             <group>
-                                <group string="API Settings">
+                                <group string="API Settings" name="api_settings">
                                     <field name="api_url"/>
                                     <field name="api_key" password="True"/>
                                     <field name="api_secret" password="True"/>

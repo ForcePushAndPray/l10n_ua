@@ -7,8 +7,8 @@
         <field name="model">marketplace.backend</field>
         <field name="inherit_id" ref="l10n_ua_marketplace_base.marketplace_backend_view_form"/>
         <field name="arch" type="xml">
-            <!-- Add Rozetka-specific fields to API Configuration page -->
-            <xpath expr="//page[@name='api']//group[@string='API Settings']" position="inside">
+            <!-- Add Rozetka-specific fields after api_token_expiry -->
+            <xpath expr="//field[@name='api_token_expiry']" position="after">
                 <field name="rozetka_seller_id" invisible="marketplace_type != 'rozetka'"/>
                 <field name="rozetka_client_id" invisible="marketplace_type != 'rozetka'"
                        groups="base.group_system"/>
