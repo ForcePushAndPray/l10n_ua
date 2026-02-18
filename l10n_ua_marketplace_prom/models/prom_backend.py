@@ -12,6 +12,17 @@ _logger = logging.getLogger(__name__)
 
 PROM_API_URL = 'https://my.prom.ua/api/v1'
 
+# Prom.ua specific cancel reasons
+PROM_CANCEL_REASONS = [
+    ('not_available', 'Product not available'),
+    ('price_changed', 'Price changed'),
+    ('out_of_stock', 'Out of stock'),
+    ('buyer_refused', 'Buyer refused'),
+    ('incorrect_data', 'Incorrect order data'),
+    ('duplicate', 'Duplicate order'),
+    ('other', 'Other'),
+]
+
 
 class MarketplaceBackendProm(models.Model):
     _inherit = 'marketplace.backend'
@@ -379,6 +390,225 @@ class MarketplaceBackendProm(models.Model):
 
         self.sync_prices_last = fields.Datetime.now()
 
+    # === Batch Stock Sync ===
+    def _api_sync_stock_batch(self, items):
+        """Batch stock update via Prom.ua API."""
+        self.ensure_one()
+        if self.marketplace_type != 'prom':
+            return super()._api_sync_stock_batch(items)
+
+        if not items:
+            return
+
+        # Build batch payload
+        products_data = []
+        for item in items:
+            products_data.append({
+                'id': int(item.external_id),
+                'presence': 'available' if item.qty_to_publish > 0 else 'not_available',
+                'quantity_in_stock': int(item.qty_to_publish),
+            })
+
+        try:
+            # Single API call for batch update
+            self._prom_api_request(
+                'POST',
+                '/products/edit',
+                data=products_data,
+            )
+
+            # Update sync timestamps
+            items.write({
+                'last_sync': fields.Datetime.now(),
+                'sync_error': False,
+            })
+            _logger.info(f"Batch stock sync: updated {len(items)} items on Prom.ua")
+
+        except Exception as e:
+            error_msg = str(e)
+            _logger.error(f"Batch stock sync failed: {error_msg}")
+
+            # Handle based on error handling strategy
+            if self.sync_error_handling == 'continue':
+                items.write({'sync_error': error_msg})
+            elif self.sync_error_handling == 'retry':
+                # Fallback to individual sync
+                for item in items:
+                    try:
+                        self._prom_api_request(
+                            'POST',
+                            f'/products/{item.external_id}/edit',
+                            data={
+                                'quantity_in_stock': int(item.qty_to_publish),
+                                'presence': 'available' if item.qty_to_publish > 0 else 'not_available',
+                            },
+                        )
+                        item.write({'last_sync': fields.Datetime.now(), 'sync_error': False})
+                    except Exception as item_error:
+                        item.write({'sync_error': str(item_error)})
+            else:  # stop
+                items.write({'sync_error': error_msg})
+                raise
+
+    # === Batch Price Sync ===
+    def _api_sync_prices_batch(self, items):
+        """Batch price update via Prom.ua API."""
+        self.ensure_one()
+        if self.marketplace_type != 'prom':
+            return super()._api_sync_prices_batch(items)
+
+        if not items:
+            return
+
+        # Build batch payload
+        products_data = []
+        for item in items:
+            product_data = {
+                'id': int(item.external_id),
+                'price': item.price,
+            }
+            # Add discount if original price is higher
+            if item.price_original and item.price_original > item.price:
+                product_data['discount'] = {
+                    'type': 'amount',
+                    'value': item.price_original - item.price,
+                }
+            products_data.append(product_data)
+
+        try:
+            self._prom_api_request(
+                'POST',
+                '/products/edit',
+                data=products_data,
+            )
+
+            items.write({
+                'last_sync': fields.Datetime.now(),
+                'sync_error': False,
+            })
+            _logger.info(f"Batch price sync: updated {len(items)} items on Prom.ua")
+
+        except Exception as e:
+            error_msg = str(e)
+            _logger.error(f"Batch price sync failed: {error_msg}")
+
+            if self.sync_error_handling == 'continue':
+                items.write({'sync_error': error_msg})
+            elif self.sync_error_handling == 'retry':
+                for item in items:
+                    try:
+                        data = {'price': item.price}
+                        if item.price_original and item.price_original > item.price:
+                            data['discount'] = {
+                                'type': 'amount',
+                                'value': item.price_original - item.price,
+                            }
+                        self._prom_api_request(
+                            'POST',
+                            f'/products/{item.external_id}/edit',
+                            data=data,
+                        )
+                        item.write({'last_sync': fields.Datetime.now(), 'sync_error': False})
+                    except Exception as item_error:
+                        item.write({'sync_error': str(item_error)})
+            else:  # stop
+                items.write({'sync_error': error_msg})
+                raise
+
+    # === Status Mapping Sync ===
+    def action_sync_statuses(self):
+        """Sync order statuses from Prom.ua API."""
+        self.ensure_one()
+        if self.marketplace_type != 'prom':
+            return super().action_sync_statuses()
+
+        # Prom.ua order status options
+        prom_statuses = [
+            ('pending', 'Новый', 'new'),
+            ('received', 'Принят', 'confirmed'),
+            ('delivered', 'Доставлен', 'delivered'),
+            ('canceled', 'Отменен', 'cancelled'),
+            ('paid', 'Оплачен', 'processing'),
+        ]
+
+        StatusMapping = self.env['marketplace.status.mapping']
+        count = 0
+
+        for external_code, external_name, internal_state in prom_statuses:
+            existing = StatusMapping.search([
+                ('backend_id', '=', self.id),
+                ('external_code', '=', external_code),
+            ], limit=1)
+
+            if not existing:
+                StatusMapping.create({
+                    'backend_id': self.id,
+                    'external_code': external_code,
+                    'external_name': external_name,
+                    'internal_state': internal_state,
+                    'sync_to_marketplace': True,
+                    'sync_from_marketplace': True,
+                })
+                count += 1
+            else:
+                existing.write({
+                    'external_name': external_name,
+                    'internal_state': internal_state,
+                })
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Status Mapping'),
+                'message': _('%d status mappings created/updated for Prom.ua.') % count,
+                'type': 'success',
+                'sticky': False,
+            }
+        }
+
+    # === Order Cancellation ===
+    def _api_cancel_order(self, order, reason=None, comment=None):
+        """Cancel order on Prom.ua."""
+        self.ensure_one()
+        if self.marketplace_type != 'prom':
+            return super()._api_cancel_order(order, reason, comment)
+
+        # Map cancel reasons
+        prom_reason_map = {
+            'customer_request': 'buyer_refused',
+            'out_of_stock': 'out_of_stock',
+            'pricing_error': 'price_changed',
+            'duplicate_order': 'duplicate',
+            'fraud_suspicion': 'other',
+            'delivery_issue': 'other',
+            'other': 'other',
+        }
+
+        data = {
+            'status': 'canceled',
+        }
+
+        # Add cancellation reason if supported
+        cancellation_reason = prom_reason_map.get(reason, 'other')
+        if cancellation_reason:
+            data['cancellation_reason'] = cancellation_reason
+
+        if comment:
+            data['cancellation_text'] = comment
+
+        try:
+            self._prom_api_request(
+                'POST',
+                f'/orders/{order.external_id}/set_status',
+                data=data,
+            )
+            _logger.info(f"Order {order.name} cancelled on Prom.ua")
+            return True
+        except Exception as e:
+            _logger.error(f"Failed to cancel order {order.name} on Prom.ua: {e}")
+            raise UserError(_('Failed to cancel order on Prom.ua: %s') % str(e))
+
     # === Product Import from Prom ===
     def action_import_products(self):
         """Import products from Prom.ua to pricelist items."""
@@ -552,3 +782,25 @@ class MarketplaceOrderProm(models.Model):
                 'discount': float(item.get('discount', 0) or 0),
                 'price_total': float(item.get('total_price', 0) or (item.get('price', 0) * item.get('quantity', 1))),
             })
+
+
+class MarketplaceOrderCancelWizardProm(models.TransientModel):
+    """Extend cancel wizard with Prom-specific cancel reasons."""
+    _inherit = 'marketplace.order.cancel.wizard'
+
+    @api.model
+    def _get_cancel_reasons(self):
+        """Override to add Prom-specific cancel reasons when applicable."""
+        reasons = super()._get_cancel_reasons()
+
+        # Check if any order is from Prom.ua
+        order_ids = self.env.context.get('default_order_ids')
+        if order_ids:
+            orders = self.env['marketplace.order'].browse(
+                order_ids[0][2] if isinstance(order_ids[0], (list, tuple)) else order_ids
+            )
+            if any(o.marketplace_type == 'prom' for o in orders):
+                # Return Prom-specific reasons
+                return PROM_CANCEL_REASONS
+
+        return reasons

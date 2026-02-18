@@ -141,6 +141,38 @@ class MarketplaceOrder(models.Model):
         string='Paid',
         default=False,
     )
+    payment_status_id = fields.Many2one(
+        'marketplace.payment.status',
+        string='Payment Status',
+    )
+    payment_date = fields.Datetime(
+        string='Payment Date',
+    )
+    payment_amount = fields.Monetary(
+        string='Payment Amount',
+        currency_field='currency_id',
+    )
+    payment_id = fields.Many2one(
+        'account.payment',
+        string='Registered Payment',
+    )
+
+    # === Cancellation ===
+    cancel_reason = fields.Selection(
+        selection=[
+            ('customer_request', 'Customer Request'),
+            ('out_of_stock', 'Out of Stock'),
+            ('pricing_error', 'Pricing Error'),
+            ('duplicate_order', 'Duplicate Order'),
+            ('fraud_suspicion', 'Fraud Suspicion'),
+            ('delivery_issue', 'Delivery Issue'),
+            ('other', 'Other'),
+        ],
+        string='Cancel Reason',
+    )
+    cancel_comment = fields.Text(
+        string='Cancel Comment',
+    )
 
     # === Customer Info ===
     customer_name = fields.Char(
@@ -430,13 +462,162 @@ class MarketplaceOrder(models.Model):
             pass
 
     def action_cancel(self):
-        """Cancel order."""
+        """Open cancel wizard instead of direct cancel."""
+        return {
+            'name': _('Cancel Marketplace Order'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'marketplace.order.cancel.wizard',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {
+                'default_order_ids': [(6, 0, self.ids)],
+            },
+        }
+
+    def action_cancel_direct(self, reason=None, comment=None, sync_to_marketplace=True):
+        """Direct cancel without wizard (for programmatic use)."""
+        for order in self:
+            vals = {'state': 'cancelled'}
+            if reason:
+                vals['cancel_reason'] = reason
+            if comment:
+                vals['cancel_comment'] = comment
+            order.write(vals)
+
+            # Sync to marketplace if requested
+            if sync_to_marketplace:
+                try:
+                    order.backend_id._api_cancel_order(order, reason=reason, comment=comment)
+                except Exception as e:
+                    _logger.warning("Failed to sync cancel to marketplace for order %s: %s", order.name, e)
+
+            # Cancel linked sale order if exists and not already done/cancelled
+            if order.sale_order_id and order.sale_order_id.state not in ('done', 'cancel'):
+                order.sale_order_id._action_cancel()
+
+            # Post to chatter
+            order.message_post(
+                body=_("Order cancelled. Reason: %s. %s") % (
+                    dict(order._fields['cancel_reason'].selection).get(reason, reason or 'Not specified'),
+                    comment or ''
+                )
+            )
+
+    def _register_payment(self, amount=None, payment_date=None):
+        """Register payment for this order.
+
+        This method:
+        1. Confirms the sale order if draft
+        2. Creates invoice if needed
+        3. Posts draft invoices
+        4. Registers payment via account.payment.register wizard
+
+        Args:
+            amount: Payment amount. If not specified, uses order total.
+            payment_date: Payment date. If not specified, uses today.
+
+        Returns:
+            account.payment record or False if failed
+        """
         self.ensure_one()
-        self.state = 'cancelled'
+
+        if not self.sale_order_id:
+            _logger.warning("Cannot register payment for order %s: no linked sale order", self.name)
+            return False
+
+        if not self.backend_id.payment_journal_id:
+            _logger.warning("Cannot register payment for order %s: no payment journal configured", self.name)
+            return False
+
+        sale_order = self.sale_order_id
+
+        # 1. Confirm SO if draft
+        if sale_order.state == 'draft':
+            sale_order.action_confirm()
+
+        # 2. Create invoice if needed
+        if not sale_order.invoice_ids:
+            try:
+                sale_order._create_invoices()
+            except Exception as e:
+                _logger.error("Failed to create invoice for order %s: %s", self.name, e)
+                return False
+
+        # 3. Post draft invoices
+        for invoice in sale_order.invoice_ids.filtered(lambda i: i.state == 'draft'):
+            try:
+                invoice.action_post()
+            except Exception as e:
+                _logger.error("Failed to post invoice %s: %s", invoice.name, e)
+                return False
+
+        # 4. Register payment for open invoices
+        open_invoices = sale_order.invoice_ids.filtered(
+            lambda i: i.state == 'posted' and i.payment_state not in ('paid', 'in_payment')
+        )
+
+        if not open_invoices:
+            _logger.info("No open invoices to pay for order %s", self.name)
+            return False
+
+        payment_amount = amount or self.amount_total
+        pay_date = payment_date or fields.Date.today()
+
         try:
-            self.backend_id._api_update_order_status(self, 'cancelled')
-        except NotImplementedError:
-            pass
+            ctx = {
+                'active_model': 'account.move',
+                'active_ids': open_invoices.ids,
+            }
+            wizard = self.env['account.payment.register'].with_context(**ctx).create({
+                'amount': payment_amount,
+                'payment_date': pay_date,
+                'journal_id': self.backend_id.payment_journal_id.id,
+            })
+            payment = wizard._create_payments()
+
+            # Update marketplace order with payment info
+            self.write({
+                'payment_id': payment.id if len(payment) == 1 else payment[0].id,
+                'payment_date': fields.Datetime.now(),
+                'payment_amount': payment_amount,
+                'is_paid': True,
+            })
+
+            self.message_post(
+                body=_("Payment of %s %s registered automatically from marketplace.") % (
+                    payment_amount, self.currency_id.symbol or ''
+                )
+            )
+
+            return payment
+
+        except Exception as e:
+            _logger.error("Failed to register payment for order %s: %s", self.name, e)
+            return False
+
+    def action_register_payment(self):
+        """Manually register payment for this order."""
+        self.ensure_one()
+
+        if self.is_paid:
+            raise UserError(_('This order is already marked as paid.'))
+
+        if not self.sale_order_id:
+            raise UserError(_('Cannot register payment: no sale order linked. Create a sale order first.'))
+
+        if not self.backend_id.payment_journal_id:
+            raise UserError(_('Cannot register payment: no payment journal configured on backend.'))
+
+        payment = self._register_payment()
+        if payment:
+            return {
+                'type': 'ir.actions.act_window',
+                'res_model': 'account.payment',
+                'res_id': payment.id if hasattr(payment, 'id') else payment[0].id,
+                'view_mode': 'form',
+            }
+        else:
+            raise UserError(_('Failed to register payment. Check the logs for details.'))
 
     def action_sync_status(self):
         """Sync status from marketplace."""

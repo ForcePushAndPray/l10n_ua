@@ -31,6 +31,7 @@ Supported marketplaces (via specific modules):
         'sale',
         'stock',
         'delivery',
+        'account',
     ],
     'data': [
         # Security
@@ -44,8 +45,11 @@ Supported marketplaces (via specific modules):
         'views/marketplace_order_views.xml',
         'views/marketplace_pricelist_views.xml',
         'views/marketplace_category_views.xml',
+        'views/marketplace_status_mapping_views.xml',
         'views/product_template_views.xml',
         'views/menu_views.xml',
+        # Wizards
+        'wizard/marketplace_order_cancel_wizard.xml',
     ],
     'demo': [
         'demo/marketplace_demo.xml',

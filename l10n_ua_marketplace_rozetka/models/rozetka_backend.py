@@ -12,6 +12,17 @@ _logger = logging.getLogger(__name__)
 
 ROZETKA_API_URL = 'https://api-seller.rozetka.com.ua'
 
+# Rozetka specific cancel reasons
+ROZETKA_CANCEL_REASONS = [
+    ('out_of_stock', 'Out of Stock'),
+    ('price_error', 'Price Error'),
+    ('customer_request', 'Customer Request'),
+    ('duplicate', 'Duplicate Order'),
+    ('cannot_deliver', 'Cannot Deliver'),
+    ('defective_product', 'Defective Product'),
+    ('other', 'Other'),
+]
+
 
 class MarketplaceBackendRozetka(models.Model):
     _inherit = 'marketplace.backend'
@@ -410,6 +421,213 @@ class MarketplaceBackendRozetka(models.Model):
 
         self.sync_prices_last = fields.Datetime.now()
 
+    # === Batch Stock Sync ===
+    def _api_sync_stock_batch(self, items):
+        """Batch stock update via Rozetka API."""
+        self.ensure_one()
+        if self.marketplace_type != 'rozetka':
+            return super()._api_sync_stock_batch(items)
+
+        if not items:
+            return
+
+        # Build batch payload
+        stock_data = []
+        for item in items:
+            if item.external_id:
+                stock_data.append({
+                    'id': item.external_id,
+                    'stock': int(item.qty_to_publish),
+                })
+
+        if not stock_data:
+            return
+
+        try:
+            self._rozetka_api_request(
+                'PUT',
+                '/items/stock',
+                data={'items': stock_data},
+            )
+
+            items.write({
+                'last_sync': fields.Datetime.now(),
+                'sync_error': False,
+            })
+            _logger.info(f"Batch stock sync: updated {len(items)} items on Rozetka")
+
+        except Exception as e:
+            error_msg = str(e)
+            _logger.error(f"Batch stock sync failed: {error_msg}")
+
+            if self.sync_error_handling == 'continue':
+                items.write({'sync_error': error_msg})
+            elif self.sync_error_handling == 'retry':
+                # Fallback to individual updates
+                for item in items:
+                    try:
+                        self._rozetka_api_request(
+                            'PUT',
+                            '/items/stock',
+                            data={'items': [{'id': item.external_id, 'stock': int(item.qty_to_publish)}]},
+                        )
+                        item.write({'last_sync': fields.Datetime.now(), 'sync_error': False})
+                    except Exception as item_error:
+                        item.write({'sync_error': str(item_error)})
+            else:  # stop
+                items.write({'sync_error': error_msg})
+                raise
+
+    # === Batch Price Sync ===
+    def _api_sync_prices_batch(self, items):
+        """Batch price update via Rozetka API."""
+        self.ensure_one()
+        if self.marketplace_type != 'rozetka':
+            return super()._api_sync_prices_batch(items)
+
+        if not items:
+            return
+
+        # Build batch payload
+        price_data = []
+        for item in items:
+            if item.external_id:
+                item_data = {
+                    'id': item.external_id,
+                    'price': item.price,
+                }
+                if item.price_original and item.price_original > item.price:
+                    item_data['old_price'] = item.price_original
+                price_data.append(item_data)
+
+        if not price_data:
+            return
+
+        try:
+            self._rozetka_api_request(
+                'PUT',
+                '/items/prices',
+                data={'items': price_data},
+            )
+
+            items.write({
+                'last_sync': fields.Datetime.now(),
+                'sync_error': False,
+            })
+            _logger.info(f"Batch price sync: updated {len(items)} items on Rozetka")
+
+        except Exception as e:
+            error_msg = str(e)
+            _logger.error(f"Batch price sync failed: {error_msg}")
+
+            if self.sync_error_handling == 'continue':
+                items.write({'sync_error': error_msg})
+            elif self.sync_error_handling == 'retry':
+                for item in items:
+                    try:
+                        data = {'id': item.external_id, 'price': item.price}
+                        if item.price_original and item.price_original > item.price:
+                            data['old_price'] = item.price_original
+                        self._rozetka_api_request(
+                            'PUT',
+                            '/items/prices',
+                            data={'items': [data]},
+                        )
+                        item.write({'last_sync': fields.Datetime.now(), 'sync_error': False})
+                    except Exception as item_error:
+                        item.write({'sync_error': str(item_error)})
+            else:  # stop
+                items.write({'sync_error': error_msg})
+                raise
+
+    # === Status Mapping Sync ===
+    def action_sync_statuses(self):
+        """Sync order statuses from Rozetka API."""
+        self.ensure_one()
+        if self.marketplace_type != 'rozetka':
+            return super().action_sync_statuses()
+
+        # Rozetka order statuses (numeric codes)
+        rozetka_statuses = [
+            ('1', 'Новый', 'new'),
+            ('2', 'Принят', 'confirmed'),
+            ('3', 'Комплектуется', 'processing'),
+            ('4', 'Отправлен', 'shipped'),
+            ('5', 'Доставлен', 'delivered'),
+            ('6', 'Отменен', 'cancelled'),
+            ('7', 'Возврат', 'returned'),
+        ]
+
+        StatusMapping = self.env['marketplace.status.mapping']
+        count = 0
+
+        for external_code, external_name, internal_state in rozetka_statuses:
+            existing = StatusMapping.search([
+                ('backend_id', '=', self.id),
+                ('external_code', '=', external_code),
+            ], limit=1)
+
+            if not existing:
+                StatusMapping.create({
+                    'backend_id': self.id,
+                    'external_code': external_code,
+                    'external_name': external_name,
+                    'internal_state': internal_state,
+                    'sync_to_marketplace': True,
+                    'sync_from_marketplace': True,
+                })
+                count += 1
+            else:
+                existing.write({
+                    'external_name': external_name,
+                    'internal_state': internal_state,
+                })
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Status Mapping'),
+                'message': _('%d status mappings created/updated for Rozetka.') % count,
+                'type': 'success',
+                'sticky': False,
+            }
+        }
+
+    # === Order Cancellation ===
+    def _api_cancel_order(self, order, reason=None, comment=None):
+        """Cancel order on Rozetka."""
+        self.ensure_one()
+        if self.marketplace_type != 'rozetka':
+            return super()._api_cancel_order(order, reason, comment)
+
+        # Rozetka status 6 = Cancelled
+        data = {
+            'status': 6,
+        }
+
+        # Add cancellation reason if available
+        if reason:
+            data['cancel_reason'] = reason
+        if comment:
+            data['cancel_comment'] = comment
+
+        try:
+            result = self._rozetka_api_request(
+                'PUT',
+                f'/orders/{order.external_id}',
+                data=data,
+            )
+            if result.get('success'):
+                _logger.info(f"Order {order.name} cancelled on Rozetka")
+                return True
+            else:
+                error = result.get('errors', {}).get('message', 'Unknown error')
+                raise UserError(_('Failed to cancel order on Rozetka: %s') % error)
+        except Exception as e:
+            _logger.error(f"Failed to cancel order {order.name} on Rozetka: {e}")
+            raise UserError(_('Failed to cancel order on Rozetka: %s') % str(e))
+
     # === Webhook Handling ===
     def _verify_rozetka_webhook(self, data, signature):
         """Verify Rozetka webhook signature."""
@@ -538,3 +756,25 @@ class MarketplaceOrderRozetka(models.Model):
                 'price_unit': float(item.get('price', 0)),
                 'price_total': float(item.get('total', 0)),
             })
+
+
+class MarketplaceOrderCancelWizardRozetka(models.TransientModel):
+    """Extend cancel wizard with Rozetka-specific cancel reasons."""
+    _inherit = 'marketplace.order.cancel.wizard'
+
+    @api.model
+    def _get_cancel_reasons(self):
+        """Override to add Rozetka-specific cancel reasons when applicable."""
+        reasons = super()._get_cancel_reasons()
+
+        # Check if any order is from Rozetka
+        order_ids = self.env.context.get('default_order_ids')
+        if order_ids:
+            orders = self.env['marketplace.order'].browse(
+                order_ids[0][2] if isinstance(order_ids[0], (list, tuple)) else order_ids
+            )
+            if any(o.marketplace_type == 'rozetka' for o in orders):
+                # Return Rozetka-specific reasons
+                return ROZETKA_CANCEL_REASONS
+
+        return reasons

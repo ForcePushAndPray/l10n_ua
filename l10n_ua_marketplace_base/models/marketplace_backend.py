@@ -218,6 +218,47 @@ class MarketplaceBackend(models.Model):
         string='Sales Team',
     )
 
+    # === Payment Settings ===
+    payment_journal_id = fields.Many2one(
+        'account.journal',
+        string='Payment Journal',
+        domain="[('type', 'in', ['bank', 'cash'])]",
+        help='Journal for auto-registering marketplace payments',
+    )
+    auto_register_payment = fields.Boolean(
+        string='Auto-Register Payments',
+        default=False,
+        help='Automatically register payments when marketplace marks order as paid',
+    )
+
+    # === Batch Sync Settings ===
+    sync_batch_size = fields.Integer(
+        string='Batch Size',
+        default=100,
+        help='Number of products to sync in a single API call',
+    )
+    sync_error_handling = fields.Selection(
+        selection=[
+            ('continue', 'Continue with others'),
+            ('retry', 'Retry failed items'),
+            ('stop', 'Stop on first error'),
+        ],
+        string='Error Handling',
+        default='continue',
+        help='How to handle errors during batch sync',
+    )
+
+    # === Status Mappings ===
+    status_mapping_ids = fields.One2many(
+        'marketplace.status.mapping',
+        'backend_id',
+        string='Status Mappings',
+    )
+    status_mapping_count = fields.Integer(
+        string='Status Mappings',
+        compute='_compute_status_mapping_count',
+    )
+
     # === Status ===
     state = fields.Selection(
         selection=[
@@ -297,6 +338,12 @@ class MarketplaceBackend(models.Model):
     def _compute_pricelist_item_count(self):
         for backend in self:
             backend.pricelist_item_count = self.env['marketplace.pricelist.item'].search_count([
+                ('backend_id', '=', backend.id)
+            ])
+
+    def _compute_status_mapping_count(self):
+        for backend in self:
+            backend.status_mapping_count = self.env['marketplace.status.mapping'].search_count([
                 ('backend_id', '=', backend.id)
             ])
 
@@ -397,17 +444,153 @@ class MarketplaceBackend(models.Model):
             'context': {'default_backend_id': self.id},
         }
 
-    # === Sync Methods (to override) ===
-    def _sync_stock(self):
-        """Sync stock levels to marketplace. Override in child modules."""
+    # === Status Mapping Methods ===
+    def _get_odoo_state(self, marketplace_code):
+        """Map marketplace status code to Odoo state.
+
+        Args:
+            marketplace_code: Status code from marketplace API
+
+        Returns:
+            str: Odoo internal state ('new', 'confirmed', etc.) or 'new' if not found
+        """
         self.ensure_one()
-        _logger.info(f"Stock sync for {self.name} - not implemented")
+        mapping = self.env['marketplace.status.mapping'].search([
+            ('backend_id', '=', self.id),
+            ('external_code', '=', str(marketplace_code)),
+            ('sync_from_marketplace', '=', True),
+            ('active', '=', True),
+        ], limit=1)
+        return mapping.internal_state if mapping else 'new'
+
+    def _get_marketplace_code(self, odoo_state):
+        """Map Odoo state to marketplace status code.
+
+        Args:
+            odoo_state: Odoo internal state ('new', 'confirmed', etc.)
+
+        Returns:
+            str: Marketplace status code or None if not found
+        """
+        self.ensure_one()
+        mapping = self.env['marketplace.status.mapping'].search([
+            ('backend_id', '=', self.id),
+            ('internal_state', '=', odoo_state),
+            ('sync_to_marketplace', '=', True),
+            ('active', '=', True),
+        ], limit=1)
+        return mapping.external_code if mapping else None
+
+    def action_sync_statuses(self):
+        """Sync available statuses from marketplace API. Override in child modules."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Status Sync'),
+                'message': _('Status sync not implemented for this marketplace type.'),
+                'type': 'warning',
+                'sticky': False,
+            }
+        }
+
+    def action_view_status_mappings(self):
+        """View status mappings for this backend."""
+        self.ensure_one()
+        return {
+            'name': _('Status Mappings'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'marketplace.status.mapping',
+            'view_mode': 'list,form',
+            'domain': [('backend_id', '=', self.id)],
+            'context': {'default_backend_id': self.id},
+        }
+
+    # === Sync Methods (with batch support) ===
+    def _sync_stock(self):
+        """Sync stock levels to marketplace using batch processing."""
+        self.ensure_one()
+
+        items = self.env['marketplace.pricelist.item'].search([
+            ('backend_id', '=', self.id),
+            ('state', 'in', ['published', 'pending']),
+            ('active', '=', True),
+            ('external_id', '!=', False),
+        ])
+
+        if not items:
+            _logger.info(f"Stock sync for {self.name} - no items to sync")
+            self.sync_stock_last = fields.Datetime.now()
+            return
+
+        # Process in batches
+        batch_size = self.sync_batch_size or 100
+        failed_items = self.env['marketplace.pricelist.item']
+
+        for i in range(0, len(items), batch_size):
+            batch = items[i:i + batch_size]
+            try:
+                self._api_sync_stock_batch(batch)
+            except Exception as e:
+                _logger.error(f"Batch stock sync error for {self.name}: {e}")
+                if self.sync_error_handling == 'stop':
+                    raise
+                elif self.sync_error_handling == 'retry':
+                    failed_items |= batch
+                # 'continue' - just log and continue
+
+        # Retry failed items individually
+        if failed_items and self.sync_error_handling == 'retry':
+            for item in failed_items:
+                try:
+                    self._api_sync_stock_batch(item)
+                except Exception as e:
+                    _logger.error(f"Retry stock sync failed for item {item.id}: {e}")
+                    item.write({'sync_error': str(e)})
+
         self.sync_stock_last = fields.Datetime.now()
 
     def _sync_prices(self):
-        """Sync prices to marketplace. Override in child modules."""
+        """Sync prices to marketplace using batch processing."""
         self.ensure_one()
-        _logger.info(f"Price sync for {self.name} - not implemented")
+
+        items = self.env['marketplace.pricelist.item'].search([
+            ('backend_id', '=', self.id),
+            ('state', 'in', ['published', 'pending']),
+            ('active', '=', True),
+            ('external_id', '!=', False),
+        ])
+
+        if not items:
+            _logger.info(f"Price sync for {self.name} - no items to sync")
+            self.sync_prices_last = fields.Datetime.now()
+            return
+
+        # Process in batches
+        batch_size = self.sync_batch_size or 100
+        failed_items = self.env['marketplace.pricelist.item']
+
+        for i in range(0, len(items), batch_size):
+            batch = items[i:i + batch_size]
+            try:
+                self._api_sync_prices_batch(batch)
+            except Exception as e:
+                _logger.error(f"Batch price sync error for {self.name}: {e}")
+                if self.sync_error_handling == 'stop':
+                    raise
+                elif self.sync_error_handling == 'retry':
+                    failed_items |= batch
+
+        # Retry failed items individually
+        if failed_items and self.sync_error_handling == 'retry':
+            for item in failed_items:
+                try:
+                    self._api_sync_prices_batch(item)
+                except Exception as e:
+                    _logger.error(f"Retry price sync failed for item {item.id}: {e}")
+                    item.write({'sync_error': str(e)})
+
         self.sync_prices_last = fields.Datetime.now()
 
     def _import_orders(self):
@@ -437,13 +620,59 @@ class MarketplaceBackend(models.Model):
         """Update order status via API. Override in child modules."""
         raise NotImplementedError()
 
+    def _api_cancel_order(self, order, reason=None, comment=None):
+        """Cancel order on marketplace. Override in child modules.
+
+        Args:
+            order: marketplace.order record
+            reason: Cancel reason code
+            comment: Optional comment text
+        """
+        _logger.info(f"Cancel order {order.name} on {self.name} - not implemented")
+
     def _api_sync_stock(self, items):
-        """Sync stock via API. Override in child modules."""
+        """Sync stock via API (single item). Override in child modules."""
         raise NotImplementedError()
 
     def _api_sync_prices(self, items):
-        """Sync prices via API. Override in child modules."""
+        """Sync prices via API (single item). Override in child modules."""
         raise NotImplementedError()
+
+    def _api_sync_stock_batch(self, items):
+        """Sync stock via API (batch). Override in child modules for batch support.
+
+        Default implementation: calls individual sync for each item.
+        """
+        for item in items:
+            try:
+                self._api_sync_stock(item)
+                item.write({
+                    'last_sync': fields.Datetime.now(),
+                    'sync_error': False,
+                })
+            except Exception as e:
+                _logger.error(f"Stock sync error for item {item.id}: {e}")
+                item.write({'sync_error': str(e)})
+                if self.sync_error_handling == 'stop':
+                    raise
+
+    def _api_sync_prices_batch(self, items):
+        """Sync prices via API (batch). Override in child modules for batch support.
+
+        Default implementation: calls individual sync for each item.
+        """
+        for item in items:
+            try:
+                self._api_sync_prices(item)
+                item.write({
+                    'last_sync': fields.Datetime.now(),
+                    'sync_error': False,
+                })
+            except Exception as e:
+                _logger.error(f"Price sync error for item {item.id}: {e}")
+                item.write({'sync_error': str(e)})
+                if self.sync_error_handling == 'stop':
+                    raise
 
     # === Cron Methods ===
     @api.model

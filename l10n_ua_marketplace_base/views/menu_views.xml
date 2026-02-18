@@ -50,4 +50,16 @@
               action="marketplace_backend_action"
               sequence="10"/>
 
+    <menuitem id="menu_marketplace_status_mappings"
+              name="Status Mappings"
+              parent="menu_marketplace_config"
+              action="marketplace_status_mapping_action"
+              sequence="20"/>
+
+    <menuitem id="menu_marketplace_payment_statuses"
+              name="Payment Statuses"
+              parent="menu_marketplace_config"
+              action="marketplace_payment_status_action"
+              sequence="30"/>
+
 </odoo>

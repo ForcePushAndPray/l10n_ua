@@ -18,6 +18,8 @@
                             class="btn-secondary" invisible="state != 'shipped'"/>
                     <button name="action_cancel" type="object" string="Cancel"
                             class="btn-secondary" invisible="state in ('cancelled', 'delivered', 'returned')"/>
+                    <button name="action_register_payment" type="object" string="Register Payment"
+                            class="btn-secondary" invisible="is_paid or not sale_order_id"/>
                     <button name="action_sync_status" type="object" string="Sync Status"
                             class="btn-secondary"/>
                     <field name="state" widget="statusbar"
@@ -61,6 +63,18 @@
                             <field name="currency_id" invisible="1"/>
                             <field name="payment_method" readonly="1"/>
                             <field name="is_paid"/>
+                            <field name="payment_status_id" readonly="1"/>
+                            <field name="payment_date" readonly="1" invisible="not payment_date"/>
+                            <field name="payment_amount" readonly="1" invisible="not payment_amount"/>
+                            <field name="payment_id" readonly="1" invisible="not payment_id"/>
+                        </group>
+                    </group>
+
+                    <!-- Cancellation Info (visible only when cancelled) -->
+                    <group invisible="state != 'cancelled'">
+                        <group string="Cancellation Info">
+                            <field name="cancel_reason" readonly="1"/>
+                            <field name="cancel_comment" readonly="1"/>
                         </group>
                     </group>
 
@@ -137,6 +151,7 @@
                 <field name="customer_name"/>
                 <field name="customer_phone"/>
                 <field name="amount_total"/>
+                <field name="is_paid" optional="show"/>
                 <field name="tracking_number"/>
                 <field name="sale_order_id" optional="show"/>
                 <field name="state" widget="badge"
@@ -170,6 +185,8 @@
                 <separator/>
                 <filter string="Without Sale Order" name="filter_no_so"
                         domain="[('sale_order_id', '=', False)]"/>
+                <filter string="Paid" name="filter_paid" domain="[('is_paid', '=', True)]"/>
+                <filter string="Not Paid" name="filter_not_paid" domain="[('is_paid', '=', False)]"/>
                 <filter string="Today" name="filter_today"
                         domain="[('order_date', '>=', context_today().strftime('%Y-%m-%d'))]"/>
                 <separator/>
