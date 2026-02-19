@@ -19,7 +19,7 @@ Features:
 * Rate history tracking
 """,
     'author': 'Svyatoslav Nadozirny',
-    'website': 'https://ndev.online',
+    'website': 'https://many2one.online',
     'license': 'LGPL-3',
     'depends': [
         'base',

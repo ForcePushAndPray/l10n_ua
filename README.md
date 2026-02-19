@@ -552,7 +552,7 @@ Timesheet
 ## Контакти
 
 **Автори:** Святослав Надозірний, Ярослав Кравець
-**Website:** https://ndev.online
+**Website:** https://many2one.online
 
 ---
 

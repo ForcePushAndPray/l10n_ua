@@ -22,7 +22,7 @@ Provider modules (l10n_ua_bank_privat, l10n_ua_bank_mono) inherit
 from this module and implement bank-specific API calls.
     """,
     'author': 'Svyatoslav Nadozirny',
-    'website': 'https://ndev.online',
+    'website': 'https://many2one.online',
     'license': 'LGPL-3',
     'depends': [
         'l10n_ua_account_base',

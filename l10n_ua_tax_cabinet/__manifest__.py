@@ -22,7 +22,7 @@ Features:
 Extends l10n_ua.tax.document with cabinet-specific fields and actions.
     """,
     'author': 'Svyatoslav Nadozirny',
-    'website': 'https://ndev.online',
+    'website': 'https://many2one.online',
     'license': 'LGPL-3',
     'external_dependencies': {
         'python': ['httpx', 'h2'],  # HTTP/2 support for Tax Cabinet API

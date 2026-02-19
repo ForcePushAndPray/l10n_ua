@@ -25,7 +25,7 @@ Supported marketplaces (via specific modules):
 * Price.ua (price feed only)
     """,
     'author': 'Svyatoslav Nadozirny',
-    'website': 'https://ndev.online',
+    'website': 'https://many2one.online',
     'license': 'LGPL-3',
     'depends': [
         'sale',

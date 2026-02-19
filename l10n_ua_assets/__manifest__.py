@@ -21,7 +21,7 @@ Ukrainian fixed assets localization providing:
 Requires l10n_ua_account_base and l10n_ua_doc_reports modules.
     """,
     'author': 'Svyatoslav Nadozirny',
-    'website': 'https://ndev.online',
+    'website': 'https://many2one.online',
     'license': 'LGPL-3',
     'depends': [
         'account',

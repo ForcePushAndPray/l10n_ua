@@ -26,7 +26,7 @@ Uses native Odoo 19 hr.version model instead of separate hr.contract.
 Requires l10n_ua_hr_base module.
     """,
     'author': 'Svyatoslav Nadozirny',
-    'website': 'https://ndev.online',
+    'website': 'https://many2one.online',
     'license': 'LGPL-3',
     'depends': [
         'l10n_ua_hr_base',
