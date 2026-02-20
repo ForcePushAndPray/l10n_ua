@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
 
-    <!-- Root Menu: Бухгалтерія UA -->
+    <!-- Root Menu: Accounting UA -->
     <menuitem id="menu_ua_accounting_root"
-              name="Бухгалтерія UA"
+              name="Accounting"
               sequence="51"
               groups="account.group_account_user"
               web_icon="l10n_ua_accounting,static/description/icon.png"/>
 
-    <!-- ==================== Документи ==================== -->
+    <!-- ==================== Documents ==================== -->
     <menuitem id="menu_ua_docs"
-              name="Документи"
+              name="Documents"
               parent="menu_ua_accounting_root"
               sequence="10"/>
 
     <!-- Invoices filter: Customer Invoices -->
     <record id="action_ua_invoices" model="ir.actions.act_window">
-        <field name="name">Рахунки</field>
+        <field name="name">Invoices</field>
         <field name="res_model">account.move</field>
         <field name="view_mode">list,form</field>
         <field name="domain">[('move_type', 'in', ('out_invoice', 'out_refund'))]</field>
@@ -24,21 +24,21 @@
     </record>
 
     <menuitem id="menu_ua_docs_invoices"
-              name="Рахунки"
+              name="Invoices"
               parent="menu_ua_docs"
               action="action_ua_invoices"
               sequence="10"/>
 
     <!-- Service Acts -->
     <menuitem id="menu_ua_docs_service_acts"
-              name="Акти наданих послуг"
+              name="Service Acts"
               parent="menu_ua_docs"
               action="action_service_act"
               sequence="20"/>
 
     <!-- Vendor Bills -->
     <record id="action_ua_vendor_bills" model="ir.actions.act_window">
-        <field name="name">Рахунки постачальників</field>
+        <field name="name">Vendor Bills</field>
         <field name="res_model">account.move</field>
         <field name="view_mode">list,form</field>
         <field name="domain">[('move_type', 'in', ('in_invoice', 'in_refund'))]</field>
@@ -46,207 +46,207 @@
     </record>
 
     <menuitem id="menu_ua_docs_vendor_bills"
-              name="Рахунки постачальників"
+              name="Vendor Bills"
               parent="menu_ua_docs"
               action="action_ua_vendor_bills"
               sequence="15"/>
 
     <!-- Advance Reports -->
     <menuitem id="menu_ua_docs_advance_reports"
-              name="Авансові звіти"
+              name="Advance Reports"
               parent="menu_ua_docs"
               action="action_advance_report"
               sequence="40"/>
 
-    <!-- ==================== Каса та банк ==================== -->
+    <!-- ==================== Cash & Bank ==================== -->
     <menuitem id="menu_ua_cash_bank"
-              name="Каса та банк"
+              name="Cash and Bank"
               parent="menu_ua_accounting_root"
               sequence="20"/>
 
     <menuitem id="menu_ua_cash_pko"
-              name="ПКО (Прибуткові)"
+              name="Income Cash Orders (PKO)"
               parent="menu_ua_cash_bank"
               action="action_account_payment_pko"
               sequence="10"/>
 
     <menuitem id="menu_ua_cash_vko"
-              name="ВКО (Видаткові)"
+              name="Expense Cash Orders (VKO)"
               parent="menu_ua_cash_bank"
               action="action_account_payment_vko"
               sequence="20"/>
 
     <menuitem id="menu_ua_cash_book"
-              name="Касова книга"
+              name="Cash Book"
               parent="menu_ua_cash_bank"
               action="action_cash_book_wizard"
               sequence="30"/>
 
     <menuitem id="menu_ua_reconciliation"
-              name="Акти звірки"
+              name="Reconciliation Acts"
               parent="menu_ua_cash_bank"
               action="action_reconciliation_act_wizard"
               sequence="40"/>
 
     <menuitem id="menu_ua_payment_orders"
-              name="Платіжні доручення"
+              name="Payment Orders"
               parent="menu_ua_cash_bank"
               action="action_account_payment_pd"
               sequence="25"/>
 
     <!-- Bank statements - link to bank sync module if installed -->
     <!-- <menuitem id="menu_ua_bank_statements"
-              name="Банківські виписки"
+              name="Bank Statements"
               parent="menu_ua_cash_bank"
               action="l10n_ua_bank_sync.action_bank_statement"
               sequence="50"/> -->
 
-    <!-- ==================== ПДВ ==================== -->
+    <!-- ==================== VAT ==================== -->
     <menuitem id="menu_ua_vat"
-              name="ПДВ"
+              name="VAT"
               parent="menu_ua_accounting_root"
               sequence="35"/>
 
     <menuitem id="menu_ua_vat_issued"
-              name="Видані ПН"
+              name="Issued Tax Invoices"
               parent="menu_ua_vat"
               action="l10n_ua_account_vat.l10n_ua_tax_invoice_issued_action"
               sequence="10"/>
 
     <menuitem id="menu_ua_vat_received"
-              name="Отримані ПН"
+              name="Received Tax Invoices"
               parent="menu_ua_vat"
               action="l10n_ua_account_vat.l10n_ua_tax_invoice_received_action"
               sequence="20"/>
 
     <menuitem id="menu_ua_vat_registers"
-              name="Реєстри ПН"
+              name="Tax Invoice Registers"
               parent="menu_ua_vat"
               action="l10n_ua_account_vat.l10n_ua_vat_register_action"
               sequence="30"/>
 
     <menuitem id="menu_ua_vat_declaration"
-              name="Декларація з ПДВ"
+              name="VAT Declaration"
               parent="menu_ua_vat"
               action="l10n_ua_account_vat.l10n_ua_vat_declaration_action"
               sequence="40"/>
 
     <menuitem id="menu_ua_vat_erpn_limit"
-              name="Ліміт реєстрації"
+              name="Registration Limit"
               parent="menu_ua_vat"
               action="l10n_ua_account_vat.l10n_ua_vat_erpn_limit_action"
               sequence="50"/>
 
     <menuitem id="menu_ua_vat_deadlines"
-              name="Дедлайни реєстрації"
+              name="Registration Deadlines"
               parent="menu_ua_vat"
               action="l10n_ua_account_vat.l10n_ua_tax_invoice_deadline_action"
               sequence="60"/>
 
-    <!-- ==================== Основні засоби ==================== -->
+    <!-- ==================== Fixed Assets ==================== -->
     <menuitem id="menu_ua_assets"
-              name="Основні засоби"
+              name="Fixed Assets"
               parent="menu_ua_accounting_root"
               sequence="30"/>
 
     <menuitem id="menu_ua_assets_cards"
-              name="Картки ОЗ"
+              name="Asset Cards"
               parent="menu_ua_assets"
               action="l10n_ua_assets.l10n_ua_asset_action"
               sequence="10"/>
 
     <menuitem id="menu_ua_assets_mnma"
-              name="МНМА"
+              name="Low Value Assets (MNMA)"
               parent="menu_ua_assets"
               action="l10n_ua_assets.l10n_ua_mnma_action"
               sequence="20"/>
 
-    <!-- ==================== Звітність ==================== -->
+    <!-- ==================== Reports ==================== -->
     <menuitem id="menu_ua_reports"
-              name="Звітність"
+              name="Reports"
               parent="menu_ua_accounting_root"
               sequence="40"/>
 
     <menuitem id="menu_ua_reports_osv"
-              name="Оборотно-сальдова відомість"
+              name="Trial Balance"
               parent="menu_ua_reports"
               action="l10n_ua_account_base.l10n_ua_osv_action"
               sequence="10"/>
 
     <menuitem id="menu_ua_reports_journal_orders"
-              name="Журнали-ордери"
+              name="Journal Orders"
               parent="menu_ua_reports"
               action="l10n_ua_account_base.l10n_ua_journal_order_action"
               sequence="20"/>
 
     <!-- General Ledger / Journal Items - standard Odoo -->
     <menuitem id="menu_ua_reports_general_ledger"
-              name="Головна книга"
+              name="General Ledger"
               parent="menu_ua_reports"
               action="account.action_account_moves_all"
               sequence="25"/>
 
     <!-- AR/AP Aging -->
     <menuitem id="menu_ua_reports_aging"
-              name="Заборгованість"
+              name="Aging Reports"
               parent="menu_ua_reports"
               action="l10n_ua_aging_report_action"
               sequence="27"/>
 
-    <!-- Balance Sheet (Форма №1) - stored reports -->
+    <!-- Balance Sheet (Form No.1) - stored reports -->
     <menuitem id="menu_ua_reports_balance"
-              name="Баланс (Форма №1)"
+              name="Balance Sheet (Form No.1)"
               parent="menu_ua_reports"
               action="action_balance_report"
               sequence="30"/>
 
-    <!-- P&L (Форма №2) - stored reports -->
+    <!-- P&L (Form No.2) - stored reports -->
     <menuitem id="menu_ua_reports_pnl"
-              name="Звіт про фін. результати (Форма №2)"
+              name="P&amp;L Statement (Form No.2)"
               parent="menu_ua_reports"
               action="action_pnl_report"
               sequence="40"/>
 
-    <!-- ==================== Закриття періоду ==================== -->
+    <!-- ==================== Period Closing ==================== -->
     <menuitem id="menu_ua_period_closing"
-              name="Закриття періоду"
+              name="Period Closing"
               parent="menu_ua_reports"
               action="l10n_ua_period_closing_action"
               sequence="50"/>
 
-    <!-- ==================== Склад ==================== -->
+    <!-- ==================== Inventory ==================== -->
     <menuitem id="menu_ua_stock"
-              name="Склад"
+              name="Inventory"
               parent="menu_ua_accounting_root"
               sequence="45"/>
 
     <menuitem id="menu_ua_stock_inventory_act"
-              name="Інвентаризаційний опис"
+              name="Inventory Act"
               parent="menu_ua_stock"
               action="action_inventory_act_wizard"
               sequence="10"/>
 
-    <!-- ==================== Налаштування ==================== -->
+    <!-- ==================== Configuration ==================== -->
     <menuitem id="menu_ua_config"
-              name="Налаштування"
+              name="Configuration"
               parent="menu_ua_accounting_root"
               sequence="90"/>
 
     <menuitem id="menu_ua_config_chart"
-              name="План рахунків"
+              name="Chart of Accounts"
               parent="menu_ua_config"
               action="account.action_account_form"
               sequence="10"/>
 
     <menuitem id="menu_ua_config_journals"
-              name="Журнали"
+              name="Journals"
               parent="menu_ua_config"
               action="account.action_account_journal_form"
               sequence="20"/>
 
     <!-- Link to Ukraine directories from l10n_ua_account_base -->
     <menuitem id="menu_ua_config_directories"
-              name="Довідники"
+              name="Directories"
               parent="menu_ua_config"
               action="l10n_ua_account_base.l10n_ua_koatuu_action"
               sequence="30"/>

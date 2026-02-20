@@ -3,31 +3,31 @@
 
     <!-- Asset Group Action (must be before menu that references it) -->
     <record id="l10n_ua_asset_group_action" model="ir.actions.act_window">
-        <field name="name">Групи основних засобів</field>
+        <field name="name">Fixed Asset Groups</field>
         <field name="res_model">l10n_ua.asset.group</field>
         <field name="view_mode">list,form</field>
     </record>
 
     <menuitem id="menu_l10n_ua_assets"
-              name="Основні засоби"
+              name="Fixed Assets"
               parent="l10n_ua_account_base.menu_l10n_ua_root"
               sequence="25"
               groups="account.group_account_user"/>
 
     <menuitem id="menu_l10n_ua_assets_list"
-              name="Картки ОЗ"
+              name="Asset Cards"
               parent="menu_l10n_ua_assets"
               action="l10n_ua_asset_action"
               sequence="5"/>
 
     <menuitem id="menu_l10n_ua_mnma"
-              name="МНМА"
+              name="Low Value Assets (MNMA)"
               parent="menu_l10n_ua_assets"
               action="l10n_ua_mnma_action"
               sequence="10"/>
 
     <menuitem id="menu_l10n_ua_asset_groups"
-              name="Групи ОЗ"
+              name="Asset Groups"
               parent="menu_l10n_ua_assets"
               action="l10n_ua_asset_group_action"
               sequence="20"/>

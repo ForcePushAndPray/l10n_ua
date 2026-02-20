@@ -28,7 +28,7 @@
 
     <!-- UA Accounting -->
     <menuitem id="menu_l10n_ua_accounting"
-              name="UA Accounting"
+              name="Accounting"
               parent="menu_l10n_ua_root"
               sequence="20"/>
 

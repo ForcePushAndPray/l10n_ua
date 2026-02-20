@@ -133,15 +133,38 @@ class HrReport1DF(models.Model):
         # Create lines
         for emp_id, data in employee_data.items():
             employee = self.env['hr.employee'].browse(emp_id)
+
+            # Get hire and termination dates from employee version (contract)
+            date_hire = False
+            date_termination = False
+
+            version = employee.current_version_id
+            if version:
+                contract_start = version.contract_date_start
+                contract_end = getattr(version, 'contract_date_end', None)
+
+                # Include hire date if employee was hired during this quarter
+                if contract_start and date_from <= contract_start <= date_to:
+                    date_hire = contract_start
+
+                # Include termination date if employee was terminated during this quarter
+                if contract_end and date_from <= contract_end <= date_to:
+                    date_termination = contract_end
+
+            # In 1DF report, accrued and paid amounts are the same (as per Ukrainian law)
+            accrued = data['accrued']
+
             self.env['hr.report.1df.line'].create({
                 'report_id': self.id,
                 'employee_id': emp_id,
                 'rnokpp': employee.rnokpp or '',
                 'income_type': '101',
-                'accrued_amount': data['accrued'],
-                'paid_amount': data['paid'],
+                'accrued_amount': accrued,
+                'paid_amount': accrued,  # Paid = Accrued in 1DF
                 'pdfo_amount': data['pdfo'],
                 'military_amount': data['military'],
+                'date_hire': date_hire,
+                'date_termination': date_termination,
             })
         
         self.write({'state': 'generated'})

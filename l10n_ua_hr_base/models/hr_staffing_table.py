@@ -69,12 +69,20 @@ class HrStaffingTable(models.Model):
     def _compute_filled_units(self):
         for record in self:
             if record.state == 'approved' and record.department_id and record.job_id:
-                employees = self.env['hr.employee'].search_count([
+                employees = self.env['hr.employee'].search([
                     ('department_id', '=', record.department_id.id),
                     ('job_id', '=', record.job_id.id),
                     ('active', '=', True),
                 ])
-                record.filled_units = float(employees)
+                # Sum work_rate for all employees (0.5 for part-time, 1.0 for full-time)
+                total_rate = 0.0
+                for emp in employees:
+                    version = emp.current_version_id
+                    if version and hasattr(version, 'work_rate') and version.work_rate:
+                        total_rate += version.work_rate
+                    else:
+                        total_rate += 1.0  # Default full-time
+                record.filled_units = total_rate
             else:
                 record.filled_units = 0.0
 

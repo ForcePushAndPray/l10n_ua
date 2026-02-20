@@ -98,8 +98,24 @@ class HrReportD5(models.Model):
         
         for slip in payslips:
             employee = slip.employee_id
-            contract = slip.contract_id
-            
+            version = slip.version_id
+
+            # Determine category based on contract type and benefits
+            category = '1'  # Default: Employee
+            if version:
+                if version.contract_type_ua == 'civil':
+                    category = '2'  # Civil Contract
+                elif version.contract_type_ua == 'gig':
+                    category = '2'  # Gig contract treated as civil
+
+            # Check for disability benefits
+            if hasattr(employee, 'benefit_ids') and employee.benefit_ids:
+                disability_benefits = employee.benefit_ids.filtered(
+                    lambda b: 'disability' in b.code.lower() or 'інвалід' in b.name.lower()
+                )
+                if disability_benefits:
+                    category = '3'  # Disabled
+
             self.env['hr.report.d5.line'].create({
                 'report_id': self.id,
                 'employee_id': employee.id,
@@ -107,7 +123,9 @@ class HrReportD5(models.Model):
                 'last_name': employee.name.split()[0] if employee.name else '',
                 'first_name': employee.name.split()[1] if employee.name and len(employee.name.split()) > 1 else '',
                 'middle_name': employee.name.split()[2] if employee.name and len(employee.name.split()) > 2 else '',
-                'category': '1',
+                'category': category,
+                'start_date': version.contract_date_start if version else None,
+                'end_date': version.contract_date_end if version else None,
                 'esv_base': slip.esv_base,
                 'esv_amount': slip.esv_amount,
                 'worked_days': slip.worked_days,

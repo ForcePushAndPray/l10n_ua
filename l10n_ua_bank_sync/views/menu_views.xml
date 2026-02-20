@@ -6,7 +6,7 @@
     <!-- ============================================== -->
 
     <menuitem id="menu_ua_bank_root"
-              name="Bank UA"
+              name="Bank"
               sequence="53"
               web_icon="l10n_ua_bank_sync,static/description/icon.png"/>
 

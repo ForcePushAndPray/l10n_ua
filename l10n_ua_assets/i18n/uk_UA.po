@@ -222,6 +222,21 @@ msgid "Fixed Assets"
 msgstr "Основні засоби"
 
 #. module: l10n_ua_assets
+#: model:ir.ui.menu,name:l10n_ua_assets.menu_l10n_ua_assets_list
+msgid "Asset Cards"
+msgstr "Картки ОЗ"
+
+#. module: l10n_ua_assets
+#: model:ir.ui.menu,name:l10n_ua_assets.menu_l10n_ua_mnma
+msgid "Low Value Assets (MNMA)"
+msgstr "Малоцінні активи (МНМА)"
+
+#. module: l10n_ua_assets
+#: model:ir.ui.menu,name:l10n_ua_assets.menu_l10n_ua_asset_groups
+msgid "Asset Groups"
+msgstr "Групи ОЗ"
+
+#. module: l10n_ua_assets
 msgid "Land plots"
 msgstr "Земельні ділянки"
 

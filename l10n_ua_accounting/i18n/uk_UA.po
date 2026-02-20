@@ -826,3 +826,180 @@ msgstr "№ ВКО"
 #. module: l10n_ua_accounting
 msgid "Отримав"
 msgstr "Отримав"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_accounting_root
+msgid "Accounting"
+msgstr "Бухгалтерія"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_docs
+msgid "Documents"
+msgstr "Документи"
+
+#. module: l10n_ua_accounting
+#: model:ir.actions.act_window,name:l10n_ua_accounting.action_ua_invoices
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_docs_invoices
+msgid "Invoices"
+msgstr "Рахунки"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_docs_service_acts
+msgid "Service Acts"
+msgstr "Акти наданих послуг"
+
+#. module: l10n_ua_accounting
+#: model:ir.actions.act_window,name:l10n_ua_accounting.action_ua_vendor_bills
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_docs_vendor_bills
+msgid "Vendor Bills"
+msgstr "Рахунки постачальників"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_cash_bank
+msgid "Cash and Bank"
+msgstr "Каса та банк"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_cash_pko
+msgid "Income Cash Orders (PKO)"
+msgstr "ПКО (Прибуткові)"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_cash_vko
+msgid "Expense Cash Orders (VKO)"
+msgstr "ВКО (Видаткові)"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_cash_book
+msgid "Cash Book"
+msgstr "Касова книга"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_reconciliation
+msgid "Reconciliation Acts"
+msgstr "Акти звірки"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_payment_orders
+msgid "Payment Orders"
+msgstr "Платіжні доручення"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_vat
+msgid "VAT"
+msgstr "ПДВ"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_vat_issued
+msgid "Issued Tax Invoices"
+msgstr "Видані ПН"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_vat_received
+msgid "Received Tax Invoices"
+msgstr "Отримані ПН"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_vat_registers
+msgid "Tax Invoice Registers"
+msgstr "Реєстри ПН"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_vat_declaration
+msgid "VAT Declaration"
+msgstr "Декларація з ПДВ"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_vat_erpn_limit
+msgid "Registration Limit"
+msgstr "Ліміт реєстрації"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_vat_deadlines
+msgid "Registration Deadlines"
+msgstr "Дедлайни реєстрації"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_assets
+msgid "Fixed Assets"
+msgstr "Основні засоби"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_assets_cards
+msgid "Asset Cards"
+msgstr "Картки ОЗ"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_assets_mnma
+msgid "Low Value Assets (MNMA)"
+msgstr "МНМА"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_reports
+msgid "Reports"
+msgstr "Звітність"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_reports_osv
+msgid "Trial Balance"
+msgstr "Оборотно-сальдова відомість"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_reports_journal_orders
+msgid "Journal Orders"
+msgstr "Журнали-ордери"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_reports_general_ledger
+msgid "General Ledger"
+msgstr "Головна книга"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_reports_aging
+msgid "Aging Reports"
+msgstr "Заборгованість"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_reports_balance
+msgid "Balance Sheet (Form No.1)"
+msgstr "Баланс (Форма №1)"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_reports_pnl
+msgid "P&L Statement (Form No.2)"
+msgstr "Звіт про фін. результати (Форма №2)"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_period_closing
+msgid "Period Closing"
+msgstr "Закриття періоду"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_stock
+msgid "Inventory"
+msgstr "Склад"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_stock_inventory_act
+msgid "Inventory Act"
+msgstr "Інвентаризаційний опис"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_config
+msgid "Configuration"
+msgstr "Налаштування"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_config_chart
+msgid "Chart of Accounts"
+msgstr "План рахунків"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_config_journals
+msgid "Journals"
+msgstr "Журнали"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_config_directories
+msgid "Directories"
+msgstr "Довідники"

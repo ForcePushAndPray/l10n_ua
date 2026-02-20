@@ -79,10 +79,10 @@ class HrSalaryAccountConfig(models.Model):
         help='Автоматично проводити (підтверджувати) створені проводки',
     )
 
-    _sql_constraints = [
-        ('company_uniq', 'unique(company_id)',
-         'Для кожної компанії може бути лише одна конфігурація рахунків зарплати!'),
-    ]
+    _company_uniq = models.Constraint(
+        'unique(company_id)',
+        'Для кожної компанії може бути лише одна конфігурація рахунків зарплати!',
+    )
 
     @api.model
     def get_config(self, company=None):

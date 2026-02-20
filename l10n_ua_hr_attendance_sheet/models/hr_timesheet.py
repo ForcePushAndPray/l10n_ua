@@ -223,87 +223,114 @@ class HrTimesheetLine(models.Model):
         """Generate day entries for the month"""
         self.ensure_one()
         self.day_ids.unlink()
-        
+
         year = self.timesheet_id.year
         month = int(self.timesheet_id.month)
-        
+
         _, last_day = calendar.monthrange(year, month)
-        
+
         # Get codes
         work_code = self.env['hr.timesheet.code'].search([('code', '=', 'Я')], limit=1)
         weekend_code = self.env['hr.timesheet.code'].search([('code', '=', 'В')], limit=1)
         holiday_code = self.env['hr.timesheet.code'].search([('code', '=', 'СВ')], limit=1)
         vacation_code = self.env['hr.timesheet.code'].search([('code', '=', 'ВД')], limit=1)
         sick_code = self.env['hr.timesheet.code'].search([('code', '=', 'ТН')], limit=1)
-        
+        # Code for days before contract start or after contract end
+        not_employed_code = self.env['hr.timesheet.code'].search([('code', '=', 'НР')], limit=1)
+        if not not_employed_code:
+            not_employed_code = self.env['hr.timesheet.code'].search([('code', '=', 'ІН')], limit=1)
+
+        # Get employee version (contract) info
+        version = self.employee_id.current_version_id
+        contract_start = version.contract_date_start if version else None
+        contract_end = getattr(version, 'contract_date_end', None) if version else None
+        work_rate = version.work_rate if version and hasattr(version, 'work_rate') else 1.0
+
+        # Calculate standard hours based on work_rate
+        standard_hours = 8.0 * work_rate
+
         # Get production calendar
         prod_calendar = self.env['hr.production.calendar'].search([
             ('year', '=', year),
             ('company_id', '=', self.timesheet_id.company_id.id),
         ], limit=1)
-        
+
         # Get employee leaves for the month
         date_from = fields.Date.from_string(f'{year}-{month:02d}-01')
         date_to = fields.Date.from_string(f'{year}-{month:02d}-{last_day}')
-        
+
         leaves = self.env['hr.leave'].search([
             ('employee_id', '=', self.employee_id.id),
             ('state', '=', 'validate'),
             ('date_from', '<=', date_to),
             ('date_to', '>=', date_from),
         ])
-        
+
         sick_leaves = self.env['hr.sick.leave'].search([
             ('employee_id', '=', self.employee_id.id),
             ('state', 'in', ['confirmed', 'paid']),
             ('date_from', '<=', date_to),
             ('date_to', '>=', date_from),
         ])
-        
+
         days = []
         for day in range(1, last_day + 1):
             date = fields.Date.from_string(f'{year}-{month:02d}-{day:02d}')
-            
+
             # Check production calendar
             cal_line = prod_calendar.line_ids.filtered(lambda l: l.date == date) if prod_calendar else False
-            
+
             # Determine code and hours
             code = work_code
-            hours = 8.0
+            hours = standard_hours
             is_scheduled = True
-            
-            # Check if it's a leave day
-            leave_day = leaves.filtered(
-                lambda l: l.date_from.date() <= date <= l.date_to.date()
-            )
-            sick_day = sick_leaves.filtered(
-                lambda s: s.date_from <= date <= s.date_to
-            )
-            
-            if sick_day:
-                code = sick_code
+
+            # Check if employee was employed on this date
+            is_employed = True
+            if contract_start and date < contract_start:
+                is_employed = False
+            if contract_end and date > contract_end:
+                is_employed = False
+
+            if not is_employed:
+                # Employee not yet hired or already terminated
+                code = not_employed_code or weekend_code
                 hours = 0
                 is_scheduled = False
-            elif leave_day:
-                code = vacation_code
-                hours = 0
-                is_scheduled = False
-            elif cal_line:
-                if cal_line.day_type == 'holiday':
-                    code = holiday_code
+            else:
+                # Check if it's a leave day
+                leave_day = leaves.filtered(
+                    lambda l: l.date_from.date() <= date <= l.date_to.date()
+                )
+                sick_day = sick_leaves.filtered(
+                    lambda s: s.date_from <= date <= s.date_to
+                )
+
+                if sick_day:
+                    code = sick_code
                     hours = 0
                     is_scheduled = False
-                elif cal_line.day_type == 'weekend':
+                elif leave_day:
+                    code = vacation_code
+                    hours = 0
+                    is_scheduled = False
+                elif cal_line:
+                    if cal_line.day_type == 'holiday':
+                        code = holiday_code
+                        hours = 0
+                        is_scheduled = False
+                    elif cal_line.day_type == 'weekend':
+                        code = weekend_code
+                        hours = 0
+                        is_scheduled = False
+                    else:
+                        # Apply work_rate to calendar hours
+                        hours = cal_line.working_hours * work_rate
+                elif date.weekday() >= 5:
                     code = weekend_code
                     hours = 0
                     is_scheduled = False
-                else:
-                    hours = cal_line.working_hours
-            elif date.weekday() >= 5:
-                code = weekend_code
-                hours = 0
-                is_scheduled = False
-            
+
             days.append({
                 'line_id': self.id,
                 'date': date,
@@ -312,7 +339,7 @@ class HrTimesheetLine(models.Model):
                 'hours': hours,
                 'is_scheduled': is_scheduled,
             })
-        
+
         self.env['hr.timesheet.day'].create(days)
         return True
 

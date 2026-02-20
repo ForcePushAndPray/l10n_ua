@@ -299,6 +299,20 @@ msgid "FOP (Single Tax)"
 msgstr "ФОП (Єдиний податок)"
 
 #. module: l10n_ua_fop
+msgid "FOP (Simplified Tax)"
+msgstr "ФОП (Єдиний податок)"
+
+#. module: l10n_ua_fop
+#: model:ir.ui.menu,name:l10n_ua_fop.menu_l10n_ua_fop_declarations
+msgid "Simplified Tax Declarations"
+msgstr "Декларації єдиного податку"
+
+#. module: l10n_ua_fop
+#: model:ir.ui.menu,name:l10n_ua_fop.menu_l10n_ua_fop_groups
+msgid "Tax Groups"
+msgstr "Групи оподаткування"
+
+#. module: l10n_ua_fop
 msgid "Declarations"
 msgstr "Декларації"
 

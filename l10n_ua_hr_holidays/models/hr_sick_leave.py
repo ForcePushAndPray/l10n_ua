@@ -229,11 +229,11 @@ class HrSickLeave(models.Model):
         ])
 
         if not payslips:
-            # Fallback to contract wage
-            contract = self.employee_id.contract_id
-            if contract and contract.wage:
+            # Fallback to contract wage (version in Odoo 19)
+            version = self.employee_id.current_version_id
+            if version and version.wage:
                 # Average days in month for fallback calculation
-                return round(contract.wage / 30.44, 2)
+                return round(version.wage / 30.44, 2)
             return 0.0
 
         # Calculate total earnings from payslip lines

@@ -51,7 +51,7 @@ class HrLeave(models.Model):
     @api.constrains('employee_id', 'holiday_status_id', 'date_from')
     def _check_minimum_experience(self):
         """Check minimum work experience for first annual leave.
-        
+
         Per Ukrainian law, employee must work 6 months before first annual leave.
         Exception: pregnant women, minors, part-time workers, etc.
         """
@@ -60,20 +60,16 @@ class HrLeave(models.Model):
                 continue
             if not leave.employee_id or not leave.date_from:
                 continue
-            
+
             min_months = leave.holiday_status_id.min_experience_months or 6
-            
-            # Check for contract - prefer l10n_ua_hr_contract, fallback to standard hr_contract
-            contract = None
-            if 'contract_ua_id' in self.env['hr.employee']._fields:
-                contract = leave.employee_id.contract_ua_id
-            elif 'contract_id' in self.env['hr.employee']._fields:
-                contract = leave.employee_id.contract_id
-            
-            if not contract or not contract.date_start:
+
+            # Get contract start date from version (Odoo 19)
+            version = leave.employee_id.current_version_id
+            if not version or not version.contract_date_start:
                 continue
-            
-            experience_date = contract.date_start + relativedelta(months=min_months)
+
+            contract_start = version.contract_date_start
+            experience_date = contract_start + relativedelta(months=min_months)
             if leave.date_from.date() < experience_date:
                 existing_leaves = self.env['hr.leave'].search_count([
                     ('employee_id', '=', leave.employee_id.id),
@@ -87,8 +83,15 @@ class HrLeave(models.Model):
                         'Current experience: %(current)s months.',
                         employee=leave.employee_id.name,
                         months=min_months,
-                        current=(leave.date_from.date() - contract.date_start).days // 30,
+                        current=(leave.date_from.date() - contract_start).days // 30,
                     ))
+
+    @api.onchange('employee_id', 'date_from', 'holiday_status_id')
+    def _onchange_calculate_vacation_pay(self):
+        """Auto-calculate average salary when creating vacation"""
+        if self.employee_id and self.date_from and self.holiday_status_id:
+            if self.holiday_status_id.is_paid:
+                self.average_daily_salary = self._calculate_average_salary()
 
     @api.depends('date_from', 'date_to')
     def _compute_calendar_days(self):
@@ -234,15 +237,10 @@ class HrLeave(models.Model):
         ])
 
         if not payslips:
-            # Fallback to contract wage - prefer l10n_ua_hr_contract, fallback to standard hr_contract
-            contract = None
-            if 'contract_ua_id' in self.env['hr.employee']._fields:
-                contract = self.employee_id.contract_ua_id
-            elif 'contract_id' in self.env['hr.employee']._fields:
-                contract = self.employee_id.contract_id
-            
-            if contract and contract.wage:
-                return round(contract.wage / 29.3, 2)
+            # Fallback to version wage (Odoo 19 uses version_ids instead of contract_id)
+            version = self.employee_id.current_version_id
+            if version and version.wage:
+                return round(version.wage / 29.3, 2)
             return 0.0
 
         # Calculate total earnings from payslip lines

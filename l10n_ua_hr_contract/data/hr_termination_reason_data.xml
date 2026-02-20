@@ -93,6 +93,35 @@
             <field name="notice_days">60</field>
             <field name="sequence">60</field>
         </record>
+
+        <!-- Скорочення штату (alias for reorganization) -->
+        <record id="termination_reason_reduction" model="hr.termination.reason">
+            <field name="name">Скорочення чисельності або штату працівників</field>
+            <field name="code">REDUCTION</field>
+            <field name="article">40</field>
+            <field name="paragraph">п. 1</field>
+            <field name="category">employer_initiative</field>
+            <field name="full_text">у зв'язку зі скороченням чисельності або штату працівників, п. 1 ст. 40 КЗпП України</field>
+            <field name="requires_compensation">True</field>
+            <field name="compensation_amount">one_month</field>
+            <field name="notice_days">60</field>
+            <field name="sequence">61</field>
+            <field name="description">Скорочення штату відповідно до п. 1 ст. 40 КЗпП</field>
+        </record>
+
+        <!-- Ліквідація підприємства -->
+        <record id="termination_reason_liquidation" model="hr.termination.reason">
+            <field name="name">Ліквідація підприємства</field>
+            <field name="code">LIQUID</field>
+            <field name="article">40</field>
+            <field name="paragraph">п. 1</field>
+            <field name="category">employer_initiative</field>
+            <field name="full_text">у зв'язку з ліквідацією підприємства, установи, організації, п. 1 ст. 40 КЗпП України</field>
+            <field name="requires_compensation">True</field>
+            <field name="compensation_amount">one_month</field>
+            <field name="notice_days">60</field>
+            <field name="sequence">62</field>
+        </record>
         
         <!-- Невідповідність займаній посаді -->
         <record id="termination_reason_incompetence" model="hr.termination.reason">

@@ -3,7 +3,7 @@
 
     <!-- HR Orders Menu -->
     <menuitem id="menu_hr_order"
-              name="Кадрові накази"
+              name="HR Orders"
               action="action_hr_order"
               parent="l10n_ua_hr_base.menu_hr_documents_root"
               sequence="20"/>

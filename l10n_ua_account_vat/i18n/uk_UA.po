@@ -564,6 +564,21 @@ msgid "Tax Invoices"
 msgstr "Податкові накладні"
 
 #. module: l10n_ua_account_vat
+#: model:ir.ui.menu,name:l10n_ua_account_vat.menu_l10n_ua_tax_invoices_issued
+msgid "Issued Tax Invoices"
+msgstr "Видані податкові накладні"
+
+#. module: l10n_ua_account_vat
+#: model:ir.ui.menu,name:l10n_ua_account_vat.menu_l10n_ua_tax_invoices_received
+msgid "Received Tax Invoices"
+msgstr "Отримані податкові накладні"
+
+#. module: l10n_ua_account_vat
+#: model:ir.ui.menu,name:l10n_ua_account_vat.menu_l10n_ua_vat_erpn_limit
+msgid "Registration Limit"
+msgstr "Ліміт реєстрації"
+
+#. module: l10n_ua_account_vat
 #: model_terms:ir.ui.view,arch_db:l10n_ua_account_vat.l10n_ua_vat_declaration_view_form
 msgid "Tax Liabilities"
 msgstr "Податкові зобов'язання"

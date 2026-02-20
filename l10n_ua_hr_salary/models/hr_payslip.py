@@ -115,7 +115,22 @@ class HrPayslip(models.Model):
         ('standard', 'Standard (50%)'),
         ('150', '150%'),
         ('200', '200%'),
-    ], string='PSP Type', default='none')
+    ], string='PSP Type', default='none',
+       compute='_compute_psp_type', store=True, readonly=False)
+
+    # Flags for special tax regimes
+    is_disability = fields.Boolean(
+        string='Disability',
+        compute='_compute_employee_benefits',
+        store=True,
+        help='Employee has disability benefit (reduced ESV rate 8.41%)'
+    )
+    is_diia_city = fields.Boolean(
+        string='Diia.City Employee',
+        compute='_compute_employee_benefits',
+        store=True,
+        help='Diia.City gig employee (5% PDFO, no ESV)'
+    )
     psp_amount = fields.Monetary(
         string='PSP Amount',
         compute='_compute_psp',
@@ -212,6 +227,51 @@ class HrPayslip(models.Model):
     
     notes = fields.Text(string='Notes')
 
+    @api.depends('employee_id')
+    def _compute_employee_benefits(self):
+        """Compute employee benefit flags for special tax regimes"""
+        for payslip in self:
+            is_disability = False
+            is_diia_city = False
+
+            if payslip.employee_id:
+                # Check for disability benefits
+                if hasattr(payslip.employee_id, 'benefit_ids') and payslip.employee_id.benefit_ids:
+                    for benefit in payslip.employee_id.benefit_ids:
+                        code_lower = (benefit.code or '').lower()
+                        name_lower = (benefit.name or '').lower()
+                        if 'disability' in code_lower or 'інвалід' in name_lower:
+                            is_disability = True
+                            break
+
+                # Check for Diia.City status from contract version
+                version = payslip.version_id or payslip.employee_id.current_version_id
+                if version and hasattr(version, 'diia_city_employee'):
+                    is_diia_city = version.diia_city_employee or False
+                if version and hasattr(version, 'contract_type_ua'):
+                    if version.contract_type_ua == 'gig':
+                        is_diia_city = True
+
+            payslip.is_disability = is_disability
+            payslip.is_diia_city = is_diia_city
+
+    @api.depends('employee_id')
+    def _compute_psp_type(self):
+        """Automatically determine PSP type based on employee benefits"""
+        for payslip in self:
+            psp_type = 'none'
+
+            if payslip.employee_id and hasattr(payslip.employee_id, 'benefit_ids'):
+                benefits = payslip.employee_id.benefit_ids
+                if benefits:
+                    # Find benefit with highest PSP type
+                    psp_priority = {'none': 0, 'standard': 1, '150': 2, '200': 3}
+                    for benefit in benefits:
+                        if benefit.psp_type and psp_priority.get(benefit.psp_type, 0) > psp_priority.get(psp_type, 0):
+                            psp_type = benefit.psp_type
+
+            payslip.psp_type = psp_type
+
     @api.depends('employee_id', 'date_from')
     def _compute_version_id(self):
         for payslip in self:
@@ -254,41 +314,64 @@ class HrPayslip(models.Model):
         'psp_amount',
         'pdfo_rate',
         'military_tax_rate',
-        'esv_rate'
+        'esv_rate',
+        'is_diia_city',
+        'is_disability'
     )
     def _compute_amounts(self):
         for payslip in self:
             # Gross salary
             gross = sum(a.amount for a in payslip.accrual_ids)
             payslip.gross_salary = gross
-            
+
+            # Determine effective tax rates based on employee status
+            pdfo_rate = payslip.pdfo_rate
+            esv_rate = payslip.esv_rate
+            military_rate = payslip.military_tax_rate
+
+            # Diia.City: 5% PDFO, no ESV, no military tax
+            if payslip.is_diia_city:
+                pdfo_rate = 5.0
+                esv_rate = 0.0
+                military_rate = 0.0
+
+            # Disability: 8.41% ESV rate
+            if payslip.is_disability and not payslip.is_diia_city:
+                esv_rate = 8.41
+
             # PDFO base and amount
             pdfo_taxable = sum(
-                a.amount for a in payslip.accrual_ids 
+                a.amount for a in payslip.accrual_ids
                 if a.is_taxable_pdfo
             )
             payslip.pdfo_base = max(0, pdfo_taxable - payslip.psp_amount)
-            payslip.pdfo_amount = round(payslip.pdfo_base * payslip.pdfo_rate / 100, 2)
-            
+            payslip.pdfo_amount = round(payslip.pdfo_base * pdfo_rate / 100, 2)
+
             # Military tax
             military_taxable = sum(
-                a.amount for a in payslip.accrual_ids 
+                a.amount for a in payslip.accrual_ids
                 if a.is_military_tax
             )
             payslip.military_tax_base = military_taxable
-            payslip.military_tax_amount = round(military_taxable * payslip.military_tax_rate / 100, 2)
-            
+            payslip.military_tax_amount = round(military_taxable * military_rate / 100, 2)
+
             # ESV (employer contribution)
             params = self.env['hr.psp.parameters'].get_parameters(payslip.date_to)
             esv_taxable = sum(
-                a.amount for a in payslip.accrual_ids 
+                a.amount for a in payslip.accrual_ids
                 if a.is_esv_base
             )
-            min_esv_base = params.min_wage if params else 8000
-            max_esv_base = params.max_esv_base if params else 120000
-            
-            payslip.esv_base = min(max(esv_taxable, min_esv_base), max_esv_base)
-            payslip.esv_amount = round(payslip.esv_base * payslip.esv_rate / 100, 2)
+
+            if payslip.is_diia_city:
+                # No ESV for Diia.City
+                payslip.esv_base = 0.0
+                payslip.esv_amount = 0.0
+            else:
+                min_esv_base = params.min_wage if params else 8000
+                max_esv_base = params.max_esv_base if params else 120000
+
+                payslip.esv_base = min(max(esv_taxable, min_esv_base), max_esv_base)
+                payslip.esv_amount = round(payslip.esv_base * esv_rate / 100, 2)
             
             # Other deductions (excluding taxes)
             other_ded = sum(
