@@ -620,3 +620,153 @@ msgstr "Журнали-ордери"
 #: model:ir.ui.menu,name:l10n_ua_account_base.menu_l10n_ua_osv
 msgid "Trial Balance (OSV)"
 msgstr "Оборотно-сальдова відомість (ОСВ)"
+
+#. module: l10n_ua_account_base
+#: model:ir.model,name:l10n_ua_account_base.model_l10n_ua_subconto_type
+msgid "Subconto Type (Вид субконто)"
+msgstr "Вид субконто"
+
+#. module: l10n_ua_account_base
+#: model:ir.model,name:l10n_ua_account_base.model_l10n_ua_account_subconto
+msgid "Account Subconto Configuration"
+msgstr "Налаштування субконто рахунку"
+
+#. module: l10n_ua_account_base
+#: model:ir.model,name:l10n_ua_account_base.model_l10n_ua_move_line_subconto
+msgid "Move Line Subconto Value"
+msgstr "Значення субконто проводки"
+
+#. module: l10n_ua_account_base
+#: model:ir.ui.menu,name:l10n_ua_account_base.menu_l10n_ua_subconto_types
+msgid "Subconto Types"
+msgstr "Види субконто"
+
+#. module: l10n_ua_account_base
+#: model:ir.actions.act_window,name:l10n_ua_account_base.l10n_ua_subconto_type_action
+msgid "Subconto Types"
+msgstr "Види субконто"
+
+#. module: l10n_ua_account_base
+#: model:ir.model.fields,field_description:l10n_ua_account_base.field_l10n_ua_subconto_type__name
+msgid "Name"
+msgstr "Назва"
+
+#. module: l10n_ua_account_base
+#: model:ir.model.fields,field_description:l10n_ua_account_base.field_l10n_ua_subconto_type__code
+msgid "Code"
+msgstr "Код"
+
+#. module: l10n_ua_account_base
+#: model:ir.model.fields,field_description:l10n_ua_account_base.field_l10n_ua_subconto_type__model_id
+msgid "Reference Model"
+msgstr "Модель-довідник"
+
+#. module: l10n_ua_account_base
+#: model:ir.model.fields,field_description:l10n_ua_account_base.field_l10n_ua_subconto_type__field_name
+msgid "Display Field"
+msgstr "Поле для відображення"
+
+#. module: l10n_ua_account_base
+#: model:ir.model.fields,field_description:l10n_ua_account_base.field_l10n_ua_account_subconto__required
+msgid "Required"
+msgstr "Обов'язкове"
+
+#. module: l10n_ua_account_base
+#: model:ir.model.fields,field_description:l10n_ua_account_base.field_account_account__subconto_ids
+msgid "Subconto Configuration"
+msgstr "Налаштування субконто"
+
+#. module: l10n_ua_account_base
+#: model:ir.model.fields,field_description:l10n_ua_account_base.field_account_account__subconto_count
+msgid "Subconto Count"
+msgstr "Кількість субконто"
+
+#. module: l10n_ua_account_base
+#: model:ir.model.fields,field_description:l10n_ua_account_base.field_account_move_line__subconto_ids
+msgid "Subconto Values"
+msgstr "Значення субконто"
+
+#. module: l10n_ua_account_base
+#: model:ir.model.fields,field_description:l10n_ua_account_base.field_account_move_line__subconto_partner_id
+msgid "Partner (Subconto)"
+msgstr "Контрагент (субконто)"
+
+#. module: l10n_ua_account_base
+#: model:ir.model.fields,field_description:l10n_ua_account_base.field_account_move_line__subconto_product_id
+msgid "Product (Subconto)"
+msgstr "Номенклатура (субконто)"
+
+#. module: l10n_ua_account_base
+#: model:ir.model.fields,field_description:l10n_ua_account_base.field_account_move_line__subconto_department_id
+msgid "Department (Subconto)"
+msgstr "Підрозділ (субконто)"
+
+#. module: l10n_ua_account_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_account_base.view_account_form_subconto
+msgid "Subconto"
+msgstr "Субконто"
+
+#. module: l10n_ua_account_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_account_base.view_account_form_subconto
+msgid "Define analytical dimensions (subconto) for this account. Required subconto must be filled for all journal entries."
+msgstr "Визначте аналітичні виміри (субконто) для цього рахунку. Обов'язкові субконто мають бути заповнені для всіх проводок."
+
+#. module: l10n_ua_account_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_account_base.l10n_ua_subconto_type_action
+msgid "Create a Subconto Type"
+msgstr "Створити вид субконто"
+
+#. module: l10n_ua_account_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_account_base.l10n_ua_subconto_type_action
+msgid "Subconto types define analytical dimensions for accounts. Each type references an Odoo model (e.g., res.partner, product.product)."
+msgstr "Види субконто визначають аналітичні виміри для рахунків. Кожен вид посилається на модель Odoo (напр., res.partner, product.product)."
+
+#. module: l10n_ua_account_base
+#: model:l10n_ua.subconto.type,name:l10n_ua_account_base.subconto_type_partner
+msgid "Partners"
+msgstr "Контрагенти"
+
+#. module: l10n_ua_account_base
+#: model:l10n_ua.subconto.type,description:l10n_ua_account_base.subconto_type_partner
+msgid "Counterparties, customers, suppliers (Контрагенти)"
+msgstr "Контрагенти, покупці, постачальники"
+
+#. module: l10n_ua_account_base
+#: model:l10n_ua.subconto.type,name:l10n_ua_account_base.subconto_type_bank
+msgid "Bank Accounts"
+msgstr "Банківські рахунки"
+
+#. module: l10n_ua_account_base
+#: model:l10n_ua.subconto.type,description:l10n_ua_account_base.subconto_type_bank
+msgid "Bank accounts (Банківські рахунки)"
+msgstr "Банківські рахунки"
+
+#. module: l10n_ua_account_base
+#: model:l10n_ua.subconto.type,name:l10n_ua_account_base.subconto_type_account
+msgid "Accounts"
+msgstr "Рахунки"
+
+#. module: l10n_ua_account_base
+#: model:l10n_ua.subconto.type,description:l10n_ua_account_base.subconto_type_account
+msgid "GL Accounts for cross-references (Рахунки)"
+msgstr "Рахунки обліку для перехресних посилань"
+
+#. module: l10n_ua_account_base
+#: model:l10n_ua.subconto.type,name:l10n_ua_account_base.subconto_type_journal
+msgid "Journals"
+msgstr "Журнали"
+
+#. module: l10n_ua_account_base
+#: model:l10n_ua.subconto.type,description:l10n_ua_account_base.subconto_type_journal
+msgid "Accounting journals (Журнали)"
+msgstr "Бухгалтерські журнали"
+
+#. module: l10n_ua_account_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_account_base.view_move_line_form_subconto
+msgid "Quick Fields"
+msgstr "Швидкі поля"
+
+#. module: l10n_ua_account_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_account_base.view_move_line_form_subconto
+msgid "All Subconto Values"
+msgstr "Усі значення субконто"

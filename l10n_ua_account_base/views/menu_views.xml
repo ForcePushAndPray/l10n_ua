@@ -44,4 +44,11 @@
               action="l10n_ua_osv_action"
               sequence="20"/>
 
+    <!-- Subconto Configuration -->
+    <menuitem id="menu_l10n_ua_subconto_types"
+              name="Subconto Types"
+              parent="menu_l10n_ua_directories"
+              action="l10n_ua_subconto_type_action"
+              sequence="50"/>
+
 </odoo>

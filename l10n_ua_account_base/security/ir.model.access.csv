@@ -15,3 +15,9 @@ access_l10n_ua_osv_user,l10n_ua.osv.user,model_l10n_ua_osv,l10n_ua_account_base.
 access_l10n_ua_osv_manager,l10n_ua.osv.manager,model_l10n_ua_osv,l10n_ua_account_base.group_ua_manager,1,1,1,1
 access_l10n_ua_osv_line_user,l10n_ua.osv.line.user,model_l10n_ua_osv_line,l10n_ua_account_base.group_ua_accountant,1,1,1,0
 access_l10n_ua_osv_line_manager,l10n_ua.osv.line.manager,model_l10n_ua_osv_line,l10n_ua_account_base.group_ua_manager,1,1,1,1
+access_l10n_ua_subconto_type_user,l10n_ua.subconto.type.user,model_l10n_ua_subconto_type,l10n_ua_account_base.group_ua_user,1,0,0,0
+access_l10n_ua_subconto_type_manager,l10n_ua.subconto.type.manager,model_l10n_ua_subconto_type,l10n_ua_account_base.group_ua_manager,1,1,1,1
+access_l10n_ua_account_subconto_user,l10n_ua.account.subconto.user,model_l10n_ua_account_subconto,l10n_ua_account_base.group_ua_accountant,1,1,1,0
+access_l10n_ua_account_subconto_manager,l10n_ua.account.subconto.manager,model_l10n_ua_account_subconto,l10n_ua_account_base.group_ua_manager,1,1,1,1
+access_l10n_ua_move_line_subconto_user,l10n_ua.move.line.subconto.user,model_l10n_ua_move_line_subconto,l10n_ua_account_base.group_ua_accountant,1,1,1,0
+access_l10n_ua_move_line_subconto_manager,l10n_ua.move.line.subconto.manager,model_l10n_ua_move_line_subconto,l10n_ua_account_base.group_ua_manager,1,1,1,1
