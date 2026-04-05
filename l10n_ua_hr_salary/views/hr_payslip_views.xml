@@ -147,6 +147,7 @@
                 <field name="department_id" optional="show"/>
                 <field name="date_from"/>
                 <field name="date_to"/>
+                <field name="currency_id" column_invisible="1"/>
                 <field name="gross_salary" sum="Total Gross"/>
                 <field name="pdfo_amount" sum="Total PDFO" optional="hide"/>
                 <field name="military_tax_amount" sum="Total Military" optional="hide"/>
