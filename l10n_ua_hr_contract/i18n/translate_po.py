@@ -343,6 +343,21 @@ TRANSLATIONS = {
     "Contract Salary Change": "Зміна окладу за договором",
     "Currency": "Валюта",
     "Hazard classification class according to DSTU": "Клас шкідливості згідно з ДСТУ",
+
+    # Version-based fields (Odoo 19)
+    "Contract Type (UA)": "Тип договору (UA)",
+    "UA Contract Type": "Тип договору UA",
+    "Employee Contract": "Договір працівника",
+    "Employee Version": "Версія договору працівника",
+    "Version Allowance": "Надбавка версії договору",
+    "Version Allowances": "Надбавки версії договору",
+    "Version Amendment": "Додаткова угода до версії",
+    "Version Salary Change": "Зміна окладу версії договору",
+    "Termination Reason (UA)": "Причина звільнення (UA)",
+    "Work Schedule (UA)": "Графік роботи (UA)",
+    "Job Combining Count": "Кількість суміщень",
+    "Track employees who perform duties of combined positions with surcharges.": "Відстеження працівників, які виконують обов'язки суміщуваних посад з доплатами.",
+    "Status based on activities\\nOverdue: Due date is already passed\\nToday: Activity date is today\\nPlanned: Future activities.": "Статус на основі активностей\\nПрострочено: Термін вже минув\\nСьогодні: Активність на сьогодні\\nЗаплановано: Майбутні активності.",
 }
 
 
