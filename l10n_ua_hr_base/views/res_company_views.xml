@@ -30,6 +30,11 @@
                             <field name="legal_address"/>
                         </group>
                     </group>
+                    <group>
+                        <group string="HR Settings">
+                            <field name="wage_from_staffing"/>
+                        </group>
+                    </group>
                 </page>
             </xpath>
         </field>

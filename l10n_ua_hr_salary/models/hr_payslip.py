@@ -431,6 +431,25 @@ class HrPayslip(models.Model):
             self.worked_days = scheduled
             self.worked_hours = scheduled * 8.0
 
+    def _get_effective_wage(self, version):
+        """Get effective wage considering staffing table fallback"""
+        wage = version.wage or 0.0
+
+        if wage > 0:
+            return wage
+
+        # Check company setting for staffing table fallback
+        setting = self.company_id.wage_from_staffing if hasattr(self.company_id, 'wage_from_staffing') else 'both'
+
+        if setting in ('fallback', 'both'):
+            # Try to get wage from staffing table
+            if hasattr(version, 'staffing_line_id') and version.staffing_line_id:
+                staffing = version.staffing_line_id
+                if staffing.salary:
+                    return staffing.salary
+
+        return wage
+
     def _generate_accruals(self):
         """Generate accrual lines based on employee version"""
         self.ensure_one()
@@ -441,20 +460,23 @@ class HrPayslip(models.Model):
 
         version = self.version_id
 
+        # Get effective wage (from version or staffing table)
+        effective_wage = self._get_effective_wage(version)
+
         # Base salary
         salary_type = self.env['hr.accrual.type'].search([('code', '=', 'SALARY')], limit=1)
-        if salary_type and version.wage:
+        if salary_type and effective_wage:
             # Prorate salary based on worked days
             if self.scheduled_days > 0:
-                amount = version.wage * self.worked_days / self.scheduled_days
+                amount = effective_wage * self.worked_days / self.scheduled_days
             else:
-                amount = version.wage
+                amount = effective_wage
 
             self.env['hr.payslip.accrual'].create({
                 'payslip_id': self.id,
                 'accrual_type_id': salary_type.id,
                 'quantity': self.worked_days,
-                'rate': version.wage / self.scheduled_days if self.scheduled_days else 0,
+                'rate': effective_wage / self.scheduled_days if self.scheduled_days else 0,
                 'amount': round(amount, 2),
             })
 

@@ -225,6 +225,20 @@ class HrVersion(models.Model):
                 days = 7
             version.additional_vacation_days = days
 
+    @api.onchange('staffing_line_id')
+    def _onchange_staffing_line_id(self):
+        """Suggest wage from staffing table based on company setting"""
+        if not self.staffing_line_id:
+            return
+
+        company = self.env.company
+        setting = company.wage_from_staffing if hasattr(company, 'wage_from_staffing') else 'both'
+
+        if setting in ('suggest', 'both'):
+            staffing = self.staffing_line_id
+            if staffing.salary and (not self.wage or self.wage == 0):
+                self.wage = staffing.salary
+
     @api.constrains('work_rate')
     def _check_work_rate(self):
         for version in self:

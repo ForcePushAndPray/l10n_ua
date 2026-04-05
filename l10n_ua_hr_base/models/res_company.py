@@ -36,3 +36,17 @@ class ResCompany(models.Model):
         ('collective', 'Collective'),
         ('mixed', 'Mixed'),
     ], string='Ownership Form')
+
+    # Staffing table settings
+    wage_from_staffing = fields.Selection([
+        ('none', 'Do not use'),
+        ('suggest', 'Suggest (fill on selection)'),
+        ('fallback', 'Fallback (use if wage is 0)'),
+        ('both', 'Both (suggest + fallback)'),
+    ], string='Wage from Staffing Table',
+       default='both',
+       help='How to use salary from staffing table:\n'
+            '- Do not use: ignore staffing table salary\n'
+            '- Suggest: auto-fill wage when selecting staffing position\n'
+            '- Fallback: use staffing salary in payslip if contract wage is 0\n'
+            '- Both: suggest on selection + fallback in payslip')
