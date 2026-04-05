@@ -5,7 +5,7 @@
     <menuitem id="menu_ua_accounting_root"
               name="Accounting"
               sequence="51"
-              groups="account.group_account_user"
+              groups="l10n_ua_account_base.group_ua_accountant"
               web_icon="l10n_ua_accounting,static/description/icon.png"/>
 
     <!-- ==================== Documents ==================== -->
