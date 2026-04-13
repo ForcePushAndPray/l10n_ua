@@ -13,6 +13,18 @@
               action="action_hr_report_d5"
               sequence="20"/>
 
+    <menuitem id="menu_hr_report_headcount"
+              name="Average Headcount"
+              parent="hr.hr_menu_hr_reports"
+              action="action_hr_report_headcount"
+              sequence="30"/>
+
+    <menuitem id="menu_hr_report_wage_fund"
+              name="Wage Fund Reports"
+              parent="hr.hr_menu_hr_reports"
+              action="action_hr_report_wage_fund"
+              sequence="40"/>
+
     <menuitem id="menu_hr_report_wizard"
               name="Generate Report"
               parent="hr.hr_menu_hr_reports"

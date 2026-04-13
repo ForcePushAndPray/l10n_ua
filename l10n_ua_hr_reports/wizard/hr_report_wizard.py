@@ -111,9 +111,59 @@ class HrReportWizard(models.TransientModel):
         }
 
     def _generate_headcount(self):
-        # TODO: Implement average headcount report
-        return {'type': 'ir.actions.act_window_close'}
+        if not self.month:
+            return {'type': 'ir.actions.act_window_close'}
+
+        existing = self.env['hr.report.headcount'].search([
+            ('year', '=', self.year),
+            ('month', '=', self.month),
+            ('company_id', '=', self.company_id.id),
+        ], limit=1)
+
+        if existing:
+            report = existing
+        else:
+            report = self.env['hr.report.headcount'].create({
+                'year': self.year,
+                'month': self.month,
+                'company_id': self.company_id.id,
+            })
+
+        report.action_generate()
+
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.report.headcount',
+            'res_id': report.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
 
     def _generate_wage_fund(self):
-        # TODO: Implement wage fund report
-        return {'type': 'ir.actions.act_window_close'}
+        if not self.month:
+            return {'type': 'ir.actions.act_window_close'}
+
+        existing = self.env['hr.report.wage_fund'].search([
+            ('year', '=', self.year),
+            ('month', '=', self.month),
+            ('company_id', '=', self.company_id.id),
+        ], limit=1)
+
+        if existing:
+            report = existing
+        else:
+            report = self.env['hr.report.wage_fund'].create({
+                'year': self.year,
+                'month': self.month,
+                'company_id': self.company_id.id,
+            })
+
+        report.action_generate()
+
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.report.wage_fund',
+            'res_id': report.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
