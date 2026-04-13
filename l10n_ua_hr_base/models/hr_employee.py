@@ -211,6 +211,6 @@ class HrEmployee(models.Model):
                     raise ValidationError('ID card number must be 9 digits!')
 
     _rnokpp_uniq = models.Constraint(
-        'unique(rnokpp)',
+	'unique(rnokpp, company_id)',
         'RNOKPP (IPN) must be unique!',
     )
