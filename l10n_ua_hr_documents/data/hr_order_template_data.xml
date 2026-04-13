@@ -167,7 +167,8 @@
             </tr>
         </table>
 
-        <p style="margin: 10px 0;"><strong>Причина звільнення:</strong> за власним бажанням, ст. 38 КЗпП України</p>
+        <p style="margin: 10px 0;"><strong>Дата звільнення:</strong> <t t-esc="format_date_ua(order.date_dismissal) if order.date_dismissal else format_date_ua(order.date)"/></p>
+        <p style="margin: 10px 0;"><strong>Причина звільнення:</strong> <t t-esc="order.dismissal_reason or 'за власним бажанням, ст. 38 КЗпП України'"/></p>
         <p style="margin: 10px 0;"><strong>Підстава:</strong> заява працівника</p>
     </div>
 

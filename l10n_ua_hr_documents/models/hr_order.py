@@ -25,6 +25,17 @@ class HrOrder(models.Model):
     department_id = fields.Many2one('hr.department', string='Department', tracking=True)
     job_id = fields.Many2one('hr.job', string='Job Position', tracking=True)
 
+    # Dismissal-specific fields
+    date_dismissal = fields.Date(
+        string='Dismissal Date',
+        tracking=True,
+        help='Effective date of employment termination'
+    )
+    dismissal_reason = fields.Text(
+        string='Dismissal Reason',
+        help='Legal basis for dismissal (e.g., "за власним бажанням, ст. 38 КЗпП України")'
+    )
+
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
         """Auto-fill department and job position from employee."""

@@ -40,7 +40,8 @@
                             <field name="employee_id"/>
                             <field name="department_id"/>
                             <field name="job_id"/>
-                        </group>
+                            <field name="date_dismissal" invisible="order_type != 'dismissal'"/>
+                            <field name="dismissal_reason" invisible="order_type != 'dismissal'"/></group>
                     </group>
                     <notebook>
                         <page string="Content">
