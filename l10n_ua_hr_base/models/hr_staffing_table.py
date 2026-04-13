@@ -65,7 +65,15 @@ class HrStaffingTable(models.Model):
         for record in self:
             record.total_salary_fund = record.units * record.salary
 
-    @api.depends('department_id', 'job_id', 'state')
+    @api.depends(
+        'department_id', 
+        'job_id', 
+        'state',
+        'job_id.employee_ids',
+        'job_id.employee_ids.department_id',
+        'job_id.employee_ids.active',
+        'job_id.employee_ids.current_version_id'
+    )
     def _compute_filled_units(self):
         for record in self:
             if record.state == 'approved' and record.department_id and record.job_id:
