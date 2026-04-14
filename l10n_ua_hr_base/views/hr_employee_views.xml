@@ -6,6 +6,15 @@
         <field name="model">hr.employee</field>
         <field name="inherit_id" ref="hr.view_employee_form"/>
         <field name="arch" type="xml">
+
+	    <xpath expr="//field[@name='job_id']" position="before">
+                <field name="allowed_job_ids" invisible="1"/>
+            </xpath>
+
+            <xpath expr="//field[@name='job_id']" position="attributes">
+                <attribute name="domain">[('id', 'in', allowed_job_ids)]</attribute>
+	    </xpath>
+
             <!-- Hide duplicate citizenship fields from core Personal page -->
             <!-- We use Documents tab instead with more Ukrainian-specific fields -->
             <xpath expr="//group[@name='citizenship']" position="attributes">
