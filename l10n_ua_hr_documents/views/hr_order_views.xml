@@ -40,6 +40,11 @@
                             <field name="employee_id"/>
                             <field name="department_id"/>
                             <field name="job_id"/>
+                            <field name="date_start" invisible="order_type != 'hiring'"/>
+                            <field name="is_fixed_term" invisible="order_type != 'hiring'"/>
+                            <field name="date_end" invisible="order_type != 'hiring' or not is_fixed_term"/>
+                            <field name="date_dismissal" invisible="order_type != 'dismissal'"/>
+                            <field name="dismissal_reason" invisible="order_type != 'dismissal'"/>
                         </group>
                     </group>
                     <notebook>

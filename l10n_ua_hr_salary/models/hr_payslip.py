@@ -451,9 +451,14 @@ class HrPayslip(models.Model):
         return wage
 
     def _generate_accruals(self):
-        """Generate accrual lines based on employee version"""
+        """Generate accrual lines based on employee version.
+
+        Only auto-generated accruals are deleted and recreated.
+        Manual accruals (bonuses, premiums added by user) are preserved.
+        """
         self.ensure_one()
-        self.accrual_ids.unlink()
+        # Delete only auto-generated accruals, preserve manual ones (bonuses, premiums)
+        self.accrual_ids.filtered('is_auto_generated').unlink()
 
         if not self.version_id:
             return
@@ -478,6 +483,7 @@ class HrPayslip(models.Model):
                 'quantity': self.worked_days,
                 'rate': effective_wage / self.scheduled_days if self.scheduled_days else 0,
                 'amount': round(amount, 2),
+                'is_auto_generated': True,
             })
 
         # Version allowances
@@ -490,12 +496,18 @@ class HrPayslip(models.Model):
                     'quantity': 1,
                     'amount': allowance.calculated_amount,
                     'notes': allowance.allowance_type_id.name,
+                    'is_auto_generated': True,
                 })
 
     def _generate_deductions(self):
-        """Generate deduction lines"""
+        """Generate deduction lines.
+
+        Only auto-generated deductions are deleted and recreated.
+        Manual deductions added by user are preserved.
+        """
         self.ensure_one()
-        self.deduction_ids.unlink()
+        # Delete only auto-generated deductions, preserve manual ones
+        self.deduction_ids.filtered('is_auto_generated').unlink()
         
         # Execution documents
         exec_docs = self.env['hr.execution.document'].search([
@@ -524,6 +536,7 @@ class HrPayslip(models.Model):
                 'rate': doc.percent_value if doc.calculation_method == 'percent' else 0,
                 'amount': round(amount, 2),
                 'execution_doc_id': doc.id,
+                'is_auto_generated': True,
             })
 
     def action_payslip_verify(self):

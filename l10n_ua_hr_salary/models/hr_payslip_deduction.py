@@ -49,3 +49,10 @@ class HrPayslipDeduction(models.Model):
     )
     
     notes = fields.Char(string='Notes')
+
+    is_auto_generated = fields.Boolean(
+        string='Auto-generated',
+        default=False,
+        help='Indicates if this deduction was automatically generated during payslip computation. '
+             'Auto-generated deductions are recreated on recomputation, manual ones are preserved.'
+    )

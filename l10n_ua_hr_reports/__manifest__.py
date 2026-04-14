@@ -29,6 +29,8 @@ Requires l10n_ua_hr_salary module.
         'security/ir.model.access.csv',
         'views/hr_report_1df_views.xml',
         'views/hr_report_d5_views.xml',
+        'views/hr_report_headcount_views.xml',
+        'views/hr_report_wage_fund_views.xml',
         'wizard/hr_report_wizard_views.xml',
         'views/menu_views.xml',
     ],
