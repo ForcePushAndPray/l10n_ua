@@ -1375,3 +1375,8 @@ msgstr "Робочі дні в періоді згідно з календаре
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_psp_parameters__year
 msgid "Year"
 msgstr "Рік"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_psp_parameters__min_hourly_wage
+msgid "Minimum Hourly Wage"
+msgstr "Мінімальна погодинна ставка"

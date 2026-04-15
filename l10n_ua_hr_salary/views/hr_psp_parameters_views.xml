@@ -18,6 +18,7 @@
                         <group string="Base Values">
                             <field name="subsistence_minimum"/>
                             <field name="min_wage"/>
+			    <field name="min_hourly_wage"/>
                             <field name="max_esv_base"/>
                         </group>
                     </group>
@@ -49,6 +50,7 @@
                 <field name="date_to"/>
                 <field name="subsistence_minimum"/>
                 <field name="min_wage"/>
+		<field name="min_hourly_wage"/>
                 <field name="psp_standard"/>
                 <field name="income_limit"/>
                 <field name="active"/>
