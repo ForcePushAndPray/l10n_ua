@@ -214,3 +214,30 @@ class HrEmployee(models.Model):
 	'unique(rnokpp, company_id)',
         'RNOKPP (IPN) must be unique!',
     )
+
+    # === Staffing Table / Job filtering ===
+    allowed_job_ids = fields.Many2many(
+        'hr.job', 
+        compute='_compute_allowed_job_ids',
+        string='Allowed Jobs (by Staffing Table)'
+    )
+
+    @api.depends('department_id')
+    def _compute_allowed_job_ids(self):
+        for employee in self:
+            if employee.department_id:
+                # Find approved staffing records for the selected department
+                staffing_records = self.env['hr.staffing.table'].search([
+                    ('department_id', '=', employee.department_id.id),
+                    ('state', '=', 'approved') 
+                ])
+                employee.allowed_job_ids = staffing_records.mapped('job_id')
+            else:
+                # If no department is selected, allow all jobs
+                employee.allowed_job_ids = self.env['hr.job'].search([])
+
+    @api.onchange('department_id')
+    def _onchange_department_clear_job(self):
+        """Clears the job position field if it does not belong to the newly selected department"""
+        if self.job_id and self.job_id not in self.allowed_job_ids:
+            self.job_id = False
