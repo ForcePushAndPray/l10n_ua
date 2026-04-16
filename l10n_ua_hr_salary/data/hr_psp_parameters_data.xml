@@ -8,7 +8,7 @@
             <field name="date_to">2024-03-31</field>
             <field name="subsistence_minimum">2920</field>
             <field name="min_wage">7100</field>
-            <field name="min_hourly_wage">41</field>
+            <field name="min_hourly_wage">42.60</field>
             <field name="pdfo_rate">18</field>
             <field name="military_tax_rate">5</field>
             <field name="esv_rate">22</field>
@@ -20,7 +20,7 @@
             <field name="date_to">2024-12-31</field>
             <field name="subsistence_minimum">3028</field>
             <field name="min_wage">8000</field>
-            <field name="min_hourly_wage">42</field>
+            <field name="min_hourly_wage">48.00</field>
             <field name="pdfo_rate">18</field>
             <field name="military_tax_rate">5</field>
             <field name="esv_rate">22</field>
@@ -32,7 +32,7 @@
             <field name="date_to">2025-03-31</field>
             <field name="subsistence_minimum">3028</field>
             <field name="min_wage">8000</field>
-            <field name="min_hourly_wage">43</field>
+            <field name="min_hourly_wage">48.00</field>
             <field name="pdfo_rate">18</field>
             <field name="military_tax_rate">5</field>
             <field name="esv_rate">22</field>
@@ -44,7 +44,7 @@
             <field name="date_to">2025-12-31</field>
             <field name="subsistence_minimum">3178</field>
             <field name="min_wage">8500</field>
-            <field name="min_hourly_wage">44</field>
+            <field name="min_hourly_wage">48.00</field>
             <field name="pdfo_rate">18</field>
             <field name="military_tax_rate">5</field>
             <field name="esv_rate">22</field>
@@ -55,7 +55,7 @@
             <field name="date_from">2026-01-01</field>
             <field name="subsistence_minimum">3300</field>
             <field name="min_wage">9000</field>
-            <field name="min_hourly_wage">45</field>
+            <field name="min_hourly_wage">52.00</field>
             <field name="pdfo_rate">18</field>
             <field name="military_tax_rate">5</field>
             <field name="esv_rate">22</field>
