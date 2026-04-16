@@ -1027,3 +1027,8 @@ msgstr "Трудова історія"
 #: model:ir.model,name:l10n_ua_hr_documents.model_hr_personal_file_work_history
 msgid "Work History Entry"
 msgstr "Запис трудової історії"
+
+#. module: l10n_ua_hr_documents
+#: model:ir.ui.menu,name:l10n_ua_hr_documents.menu_hr_order
+msgid "HR Orders"
+msgstr "Накази по персоналу"
