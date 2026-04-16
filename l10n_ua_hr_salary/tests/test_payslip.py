@@ -112,5 +112,6 @@ class TestPayslip(SalaryTestCase):
     def test_generate_accruals(self):
         """_generate_accruals should create accrual from version wage."""
         payslip = self._create_payslip()
+        payslip._compute_working_days()
         payslip._generate_accruals()
         self.assertTrue(payslip.accrual_ids)

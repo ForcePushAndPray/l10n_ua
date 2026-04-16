@@ -9,7 +9,8 @@ class HrTariffGrade(models.Model):
     name = fields.Char(string='Name', required=True)
     grade = fields.Integer(string='Grade', required=True)
     coefficient = fields.Float(string='Coefficient', digits=(16, 4), default=1.0)
-    min_salary = fields.Monetary(string='Minimum Salary', currency_field='currency_id')
+    min_salary = fields.Monetary( string='Monthly Salary', help='Місячний оклад для службовців (НЕ погодинна ставка)', currency_field='currency_id',)
+    hourly_rate = fields.Monetary( string='Hourly Rate', help='Базова погодинна ставка для робочих спеціальностей (грн/год)', currency_field='currency_id',)
     currency_id = fields.Many2one('res.currency', string='Currency',
                                    default=lambda self: self.env.company.currency_id)
     active = fields.Boolean(string='Active', default=True)

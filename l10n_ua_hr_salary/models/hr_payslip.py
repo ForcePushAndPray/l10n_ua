@@ -416,20 +416,47 @@ class HrPayslip(models.Model):
             return
         
         # Simple calculation - count weekdays
-        current = self.date_from
-        scheduled = 0
-        while current <= self.date_to:
-            if current.weekday() < 5:  # Monday to Friday
-                scheduled += 1
-            current += relativedelta(days=1)
+        month_start = self.date_to.replace(day=1)
+        month_end = month_start + relativedelta(months=1, days=-1)
         
-        self.scheduled_days = scheduled
-        self.scheduled_hours = scheduled * 8.0
+        total_scheduled = 0
+        curr = month_start
+        while curr <= month_end:
+            if curr.weekday() < 5:  # Monday to Friday
+                total_scheduled += 1
+            curr += relativedelta(days=1)
         
-        # Default: all scheduled days worked
-        if not self.worked_days:
-            self.worked_days = scheduled
-            self.worked_hours = scheduled * 8.0
+        self.scheduled_days = total_scheduled
+        self.scheduled_hours = total_scheduled * 8.0
+        
+        # get amount of working days from timesheet
+        if 'hr.timesheet.line' in self.env:
+            ts_line = self.env['hr.timesheet.line'].search([
+                ('employee_id', '=', self.employee_id.id),
+                ('timesheet_id.month', '=', str(self.date_to.month)),
+                ('timesheet_id.year', '=', self.date_to.year),
+                ('timesheet_id.state', 'in', ['confirmed', 'approved'])
+            ], limit=1, order='timesheet_id desc')
+            
+            if ts_line:
+                self.worked_days = ts_line.worked_days
+                self.worked_hours = ts_line.worked_hours
+                # in case if there is multiplier in timesheets 
+                if ts_line.scheduled_days:
+                    self.scheduled_days = ts_line.scheduled_days
+                    self.scheduled_hours = ts_line.scheduled_days * 8.0
+                return
+
+        # default if there is no timesheets
+        worked = 0
+        curr = self.date_from
+        while curr <= self.date_to:
+            if curr.weekday() < 5:
+                worked += 1
+            curr += relativedelta(days=1)
+        self.worked_days = worked
+        self.worked_hours = worked * 8.0
+
 
     def _get_effective_wage(self, version):
         """Get effective wage considering staffing table fallback"""
@@ -465,26 +492,62 @@ class HrPayslip(models.Model):
 
         version = self.version_id
 
-        # Get effective wage (from version or staffing table)
-        effective_wage = self._get_effective_wage(version)
-
-        # Base salary
         salary_type = self.env['hr.accrual.type'].search([('code', '=', 'SALARY')], limit=1)
-        if salary_type and effective_wage:
-            # Prorate salary based on worked days
-            if self.scheduled_days > 0:
-                amount = effective_wage * self.worked_days / self.scheduled_days
-            else:
-                amount = effective_wage
+        params = self.env['hr.psp.parameters'].get_parameters(self.date_to)
+        
+        if salary_type:
+            # tariff grade calculations
+            if hasattr(version, 'tariff_grade_id') and version.tariff_grade_id:
 
-            self.env['hr.payslip.accrual'].create({
-                'payslip_id': self.id,
-                'accrual_type_id': salary_type.id,
-                'quantity': self.worked_days,
-                'rate': effective_wage / self.scheduled_days if self.scheduled_days else 0,
-                'amount': round(amount, 2),
-                'is_auto_generated': True,
-            })
+                if self.worked_hours > 0:                                   # Guard clause
+                    min_hourly_wage = params.min_hourly_wage if params else 52.0
+                    tariff = version.tariff_grade_id
+                    coef = tariff.coefficient or 1.0
+
+                    # Priority: hourly rate -> monthly rate -> 0
+                    if tariff.hourly_rate:
+                        hourly_rate = tariff.hourly_rate * coef
+                    elif tariff.min_salary and self.scheduled_hours > 0:
+                        hourly_rate = (tariff.min_salary * coef) / self.scheduled_hours
+                    else:
+                        hourly_rate = 0.0
+
+
+                    # Floor — never below statutory minimum hourly wage
+                    hourly_rate = max(hourly_rate, min_hourly_wage)
+
+                    if hourly_rate > 0 and self.worked_hours > 0:
+                        amount = round(hourly_rate * self.worked_hours, 2)
+                        self.env['hr.payslip.accrual'].create({
+                            'payslip_id': self.id,
+                            'accrual_type_id': salary_type.id,
+                            'quantity': self.worked_hours,
+                            'rate': hourly_rate,
+                            'amount': amount,
+                            'is_auto_generated': True,
+                            'notes': f'Тариф: {tariff.name} (коеф. {coef})',
+                       })
+            
+            # monthly wage calculation
+            else:
+                effective_wage = self._get_effective_wage(version)
+                if effective_wage and self.scheduled_days > 0:
+                    # scheduled_days - number of expected working days in the months
+                    daily_rate = effective_wage / self.scheduled_days
+                    
+                    if self.worked_days >= self.scheduled_days:
+                        amount = effective_wage # full amount if worked all days 
+                    else:
+                        amount = daily_rate * self.worked_days
+
+                    self.env['hr.payslip.accrual'].create({
+                        'payslip_id': self.id,
+                        'accrual_type_id': salary_type.id,
+                        'quantity': self.worked_days,
+                        'rate': daily_rate,
+                        'amount': round(amount, 2),
+                        'is_auto_generated': True,
+                    })
 
         # Version allowances
         allowance_type = self.env['hr.accrual.type'].search([('code', '=', 'ALLOWANCE')], limit=1)
