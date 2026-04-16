@@ -21,7 +21,12 @@ class HrPspParameters(models.Model):
         required=True,
         help='Мінімальна заробітна плата'
     )
-    
+    min_hourly_wage = fields.Float(
+        string='Minimum Hourly Wage',
+        required=True,
+        default=0.0,
+        help='Мінімальна погодинна заробітна плата'
+    )
     psp_standard = fields.Float(
         string='PSP Standard (50%)',
         compute='_compute_psp_amounts',
