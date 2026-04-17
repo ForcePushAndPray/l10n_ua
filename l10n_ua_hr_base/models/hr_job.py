@@ -6,9 +6,11 @@ class HrJob(models.Model):
 
     kp_code = fields.Char(
         string='KP Code', size=10,
+        compute='_compute_kp_fields', store=True,
         help='Code from Classifier of Professions (KP 2010)')
     kp_name = fields.Char(
         string='KP Name',
+        compute='_compute_kp_fields', store=True,
         help='Name according to Classifier of Professions')
     kp_id = fields.Many2one(
         'hr.kp2010', string='Profession (KP)',
@@ -41,6 +43,12 @@ class HrJob(models.Model):
     probation_days = fields.Integer(
         string='Probation Period (days)',
         help='Default probation period in days')
+
+    @api.depends('kp_id')
+    def _compute_kp_fields(self):
+        for job in self:
+            job.kp_code = job.kp_id.code if job.kp_id else False
+            job.kp_name = job.kp_id.name if job.kp_id else False
 
     @api.onchange('kp_id')
     def _onchange_kp_id(self):
