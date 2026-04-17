@@ -135,10 +135,10 @@ class HrEmployee(models.Model):
 
     # === Related fields from hr.job (readonly) ===
     job_kp_code = fields.Char(
-        string='KP Code', compute='_compute_job_kp_fields', readonly=True, store=True,
+        string='KP Code', related='job_id.kp_code', readonly=True, store=True,
         help='Код професії за Класифікатором професій ДК 003:2010')
     job_kp_name = fields.Char(
-        string='KP Name', compute='_compute_job_kp_fields', readonly=True, store=True,
+        string='KP Name', related='job_id.kp_name', readonly=True, store=True,
         help='Назва професії за Класифікатором професій')
     job_work_conditions = fields.Selection(
         related='job_id.work_conditions', readonly=True, store=False,
@@ -155,12 +155,6 @@ class HrEmployee(models.Model):
     job_max_salary = fields.Monetary(
         related='job_id.max_salary', readonly=True, store=False,
         currency_field='job_currency_id', string='Max Salary')
-
-    @api.depends('job_id', 'job_id.kp_code', 'job_id.kp_name')
-    def _compute_job_kp_fields(self):
-            for employee in self:
-                employee.job_kp_code = employee.job_id.kp_code if employee.job_id else False
-                employee.job_kp_name = employee.job_id.kp_name if employee.job_id else False
 
     @api.depends('children_ids')
     def _compute_children_count(self):

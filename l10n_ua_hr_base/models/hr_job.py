@@ -52,8 +52,5 @@ class HrJob(models.Model):
 
     @api.onchange('kp_id')
     def _onchange_kp_id(self):
-        if self.kp_id:
-            self.kp_code = self.kp_id.code
-            self.kp_name = self.kp_id.name
-            if self.kp_id.work_conditions:
-                self.work_conditions = self.kp_id.work_conditions
+        if self.kp_id and self.kp_id.work_conditions:
+            self.work_conditions = self.kp_id.work_conditions
