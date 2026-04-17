@@ -18,6 +18,13 @@ class L10nUaSupplierPriceMapping(models.Model):
              'XML: //product, /catalog/items/item\n'
              'CSV/XLSX: залишити порожнім (рядки = записи)',
     )
+    parser_config = fields.Text(
+        string='Parser Config',
+        help='JSON з parser-specific налаштуваннями. Формат залежить від parser_type.\n'
+             'CSV: {"delimiter": ";", "encoding": "windows-1251", "has_header": true, "skip_rows": 0}\n'
+             'XLSX: {"sheet_name": "Sheet1", "header_row": 1}\n'
+             'XML: {"namespaces": {"ns": "http://..."}}',
+    )
     field_ids = fields.One2many(
         'l10n_ua.supplier.price.mapping.field',
         'mapping_id',

@@ -205,6 +205,18 @@ class L10nUaSupplierPriceImport(models.Model):
             self.source_id.parser_type,
         ))
 
+    def _get_parser_config(self):
+        """Розпарсити parser_config JSON. Повертає {} якщо порожнє/невалідне."""
+        self.ensure_one()
+        raw = self.source_id.mapping_id.parser_config
+        if not raw:
+            return {}
+        try:
+            return json.loads(raw)
+        except (ValueError, TypeError):
+            raise UserError(_("Invalid parser_config JSON on mapping '%s'") %
+                            self.source_id.mapping_id.name)
+
     def _parse_json(self):
         """Парсер JSON: завантажує raw_file, розгортає mapping, створює line_ids."""
         self.ensure_one()

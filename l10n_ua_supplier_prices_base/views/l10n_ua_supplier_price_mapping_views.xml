@@ -34,6 +34,14 @@
                     </group>
                     <field name="description" placeholder="Опис призначення цього mapping..."/>
                     <notebook>
+                        <page string="Parser Config">
+                            <field name="parser_config" widget="text"
+                                   placeholder='{"delimiter": ";", "encoding": "utf-8", "has_header": true}'/>
+                            <p class="text-muted">
+                                JSON з налаштуваннями парсера. Структура залежить від
+                                <em>parser_type</em> у source.
+                            </p>
+                        </page>
                         <page string="Fields">
                             <field name="field_ids">
                                 <list editable="bottom">
