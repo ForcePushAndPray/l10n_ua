@@ -1,21 +1,26 @@
+import base64
+import json
 import logging
 from datetime import datetime, timedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 
+from ..tools.json_path import resolve, resolve_first
+from ..tools.transforms import apply_transform, TransformError
+
 _logger = logging.getLogger(__name__)
 
 
 STATE_TRANSITIONS = {
-    'draft': ('fetching',),
+    'draft': ('fetching', 'error'),
     'fetching': ('fetched', 'error'),
-    'fetched': ('parsing',),
+    'fetched': ('parsing', 'error'),
     'parsing': ('parsed', 'error'),
-    'parsed': ('applying',),
+    'parsed': ('applying', 'parsing', 'error'),  # reparse allowed
     'applying': ('done', 'error'),
     'error': ('draft',),
-    'done': (),
+    'done': ('parsing',),  # allow re-parse after done (не re-fetch)
 }
 
 
@@ -114,47 +119,52 @@ class L10nUaSupplierPriceImport(models.Model):
     # === Action buttons (manual control) ===
 
     def action_fetch(self):
-        """draft → fetching → fetched. Дочірні модулі реалізують fetch для свого fetcher_type."""
+        """draft → fetching → fetched. Якщо fetch впав — state=error, error_log заповнено."""
         for imp in self:
             imp._set_state('fetching')
             try:
                 imp._do_fetch()
-                imp._set_state('fetched')
             except Exception as e:
                 _logger.exception("Fetch failed for import %s", imp.name)
                 imp._set_state('error', error_message=f'Fetch error: {e}')
-                raise UserError(_("Fetch failed: %s", e))
+                imp.message_post(body=_("Fetch failed: %s") % e)
+                continue
+            imp._set_state('fetched')
         return True
 
     def action_parse(self):
-        """fetched → parsing → parsed."""
+        """fetched/parsed → parsing → parsed. Reparse дозволено з parsed (скидає line_ids)."""
         for imp in self:
             if not imp.raw_file:
-                raise UserError(_("No raw file to parse. Run Fetch first."))
+                imp._set_state('error', error_message='No raw file to parse. Run Fetch first.')
+                continue
             imp._set_state('parsing')
             try:
                 imp.line_ids.unlink()
                 imp._do_parse()
-                imp._set_state('parsed')
             except Exception as e:
                 _logger.exception("Parse failed for import %s", imp.name)
                 imp._set_state('error', error_message=f'Parse error: {e}')
-                raise UserError(_("Parse failed: %s", e))
+                imp.message_post(body=_("Parse failed: %s") % e)
+                continue
+            imp._set_state('parsed')
         return True
 
     def action_apply(self):
         """parsed → applying → done. Створює/оновлює product.supplierinfo."""
         for imp in self:
             if not imp.line_ids:
-                raise UserError(_("No lines to apply. Run Parse first."))
+                imp._set_state('error', error_message='No lines to apply. Run Parse first.')
+                continue
             imp._set_state('applying')
             try:
                 imp._do_apply()
-                imp._set_state('done')
             except Exception as e:
                 _logger.exception("Apply failed for import %s", imp.name)
                 imp._set_state('error', error_message=f'Apply error: {e}')
-                raise UserError(_("Apply failed: %s", e))
+                imp.message_post(body=_("Apply failed: %s") % e)
+                continue
+            imp._set_state('done')
         return True
 
     def action_restart(self):
@@ -184,13 +194,106 @@ class L10nUaSupplierPriceImport(models.Model):
         ))
 
     def _do_parse(self):
-        """Override per parser_type. Must create supplier.price.import.line records."""
+        """Dispatch на парсер конкретного типу. Розширення override через if-chain
+        додаючи свої гілки перед super()."""
         self.ensure_one()
+        if self.source_id.parser_type == 'json':
+            return self._parse_json()
         raise UserError(_(
             "No parser implementation for type '%s'. "
             "Install the corresponding module (e.g. l10n_ua_supplier_prices_xml).",
             self.source_id.parser_type,
         ))
+
+    def _parse_json(self):
+        """Парсер JSON: завантажує raw_file, розгортає mapping, створює line_ids."""
+        self.ensure_one()
+        try:
+            raw_bytes = base64.b64decode(self.raw_file)
+            data = json.loads(raw_bytes.decode('utf-8'))
+        except (ValueError, UnicodeDecodeError) as e:
+            raise UserError(_("Invalid JSON file: %s") % e)
+
+        mapping = self.source_id.mapping_id
+        if not mapping:
+            raise UserError(_("Source has no mapping configured."))
+
+        if mapping.record_path:
+            records = resolve(data, mapping.record_path)
+            # Shorthand: якщо path вказує на список (без [*]) — розгортаємо
+            if len(records) == 1 and isinstance(records[0], list):
+                records = records[0]
+        else:
+            records = data if isinstance(data, list) else [data]
+        if not records:
+            raise UserError(_(
+                "No records found at record_path '%s'. Check mapping configuration.",
+                mapping.record_path or '(root)',
+            ))
+
+        deadline = datetime.now() + timedelta(seconds=self.source_id.parse_timeout)
+        Line = self.env['l10n_ua.supplier.price.import.line']
+        Currency = self.env['res.currency']
+        currency_cache = {}
+
+        for sequence, record in enumerate(records, start=10):
+            if datetime.now() > deadline:
+                raise UserError(_(
+                    "Parse timeout (%(t)ss) exceeded after %(n)s records.",
+                    t=self.source_id.parse_timeout, n=sequence - 10,
+                ))
+            vals = {'import_id': self.id, 'sequence': sequence}
+            for field in mapping.field_ids:
+                raw_value = resolve_first(record, field.source_path)
+                if raw_value is None or raw_value == '':
+                    if field.required and not field.default_value:
+                        raise UserError(_(
+                            "Required field '%(t)s' missing at record %(n)s (path: %(p)s)",
+                            t=field.target, n=sequence - 10, p=field.source_path,
+                        ))
+                    raw_value = field.default_value
+                if raw_value is None or raw_value == '':
+                    continue
+                try:
+                    value = apply_transform(raw_value, field.transform, field.transform_param)
+                except TransformError as e:
+                    raise UserError(_(
+                        "Transform error on field '%(t)s' (record %(n)s): %(e)s",
+                        t=field.target, n=sequence - 10, e=str(e),
+                    ))
+                self._assign_field_value(vals, field.target, value, currency_cache, Currency)
+
+            if not vals.get('supplier_sku'):
+                continue
+            Line.create(vals)
+
+    def _assign_field_value(self, vals, target, value, currency_cache, Currency):
+        """Розкладає значення з mapping field у відповідне поле import.line."""
+        if target == 'sku':
+            vals['supplier_sku'] = str(value)
+        elif target == 'name':
+            vals['supplier_name'] = str(value)
+        elif target == 'barcode':
+            vals['barcode'] = str(value)
+        elif target == 'description':
+            vals['description'] = str(value)
+        elif target == 'price':
+            vals['price'] = float(value)
+        elif target == 'qty_min':
+            vals['qty_min'] = float(value)
+        elif target == 'uom':
+            vals['uom_text'] = str(value)
+        elif target == 'date_valid':
+            vals['date_valid'] = value
+        elif target == 'currency':
+            code = str(value).upper().strip()
+            if code not in currency_cache:
+                currency_cache[code] = Currency.with_context(
+                    active_test=False
+                ).search([('name', '=', code)], limit=1)
+            currency = currency_cache[code]
+            if currency:
+                vals['currency_id'] = currency.id
 
     def _do_apply(self):
         """Default apply — створює/оновлює product.supplierinfo для кожної matched line."""

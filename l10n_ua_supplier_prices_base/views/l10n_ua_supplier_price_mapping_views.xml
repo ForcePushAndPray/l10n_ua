@@ -27,6 +27,7 @@
                     </div>
                     <group>
                         <group>
+                            <field name="record_path" placeholder="items, products.list, //product"/>
                             <field name="source_count"/>
                             <field name="active"/>
                         </group>

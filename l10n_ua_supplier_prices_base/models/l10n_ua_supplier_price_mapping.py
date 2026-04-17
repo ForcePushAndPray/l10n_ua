@@ -10,6 +10,14 @@ class L10nUaSupplierPriceMapping(models.Model):
     name = fields.Char(string='Name', required=True)
     description = fields.Text(string='Description')
     active = fields.Boolean(default=True)
+    record_path = fields.Char(
+        string='Record Path',
+        help='Шлях до масиву записів у файлі. '
+             'Поля у field_ids — відносно цього шляху.\n'
+             'JSON: items, products, data.list\n'
+             'XML: //product, /catalog/items/item\n'
+             'CSV/XLSX: залишити порожнім (рядки = записи)',
+    )
     field_ids = fields.One2many(
         'l10n_ua.supplier.price.mapping.field',
         'mapping_id',
