@@ -51,6 +51,7 @@
                                     <field name="currency_id" column_invisible="1"/>
                                     <field name="gross_salary" sum="Total Gross"/>
                                     <field name="net_salary" sum="Total Net"/>
+				    <field name="advance_amount" sum="Total Advance"/>
                                     <field name="state" widget="badge"/>
                                 </list>
                             </field>
