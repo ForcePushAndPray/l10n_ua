@@ -17,7 +17,6 @@ msgstr ""
 
 #. module: l10n_ua_hr_reports
 #: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5_line__category__1
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__employee_id
 msgid "1 - Employee"
 msgstr "1 - Працівник"
 
@@ -304,6 +303,7 @@ msgstr "База ЄСВ"
 #. module: l10n_ua_hr_reports
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__employee_id
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__employee_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__employee_id
 msgid "Employee"
 msgstr "Працівник"
 
