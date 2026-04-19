@@ -630,7 +630,9 @@ class HrPayslip(models.Model):
             ('state', '=', 'confirmed'),
             ('date', '>=', self.date_from),
             ('date', '<=', self.date_to),
+            '|',
             ('payslip_id', '=', False),
+            ('payslip_id', '=', self.id),
         ])
 
         if not advances:

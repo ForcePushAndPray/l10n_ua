@@ -53,6 +53,16 @@ class HrSalaryAdvanceRun(models.Model):
         })
         return res
 
+    def write(self, vals):
+        result = super().write(vals)
+        if 'wage_percent' in vals:
+            for run in self:
+                draft_advances = run.advance_ids.filtered(lambda a: a.state == 'draft')
+                if draft_advances:
+                    draft_advances.write({'wage_percent': vals['wage_percent']})
+        return result
+
+
     def _get_employee_wage(self, employee):
         version = employee.current_version_id
         if not version:
@@ -65,6 +75,8 @@ class HrSalaryAdvanceRun(models.Model):
     def action_generate_advances(self):
         """Generate wage advances for all active employees."""
         self.ensure_one()
+        # Delete draft advances to allow regeneration with updated percentage
+        self.advance_ids.filtered(lambda a: a.state == 'draft').unlink()
         employees = self.env['hr.employee'].search([
             ('company_id', '=', self.company_id.id),
             ('version_ids.contract_date_start', '!=', False),
