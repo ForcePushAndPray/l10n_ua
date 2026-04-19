@@ -28,10 +28,12 @@ class HrSalaryAdvance(models.Model):
         default=fields.Date.context_today,
         tracking=True,
     )
-    amount = fields.Monetary(
+    amount = fields.Monetary( 
         string='Amount',
-        required=True,
+        compute='_compute_amount',
+        store=True,
         tracking=True,
+        currency_field='currency_id',
     )
     currency_id = fields.Many2one(
         'res.currency',
@@ -78,6 +80,23 @@ class HrSalaryAdvance(models.Model):
         store=True,
         readonly=True,
     )
+    wage_percent = fields.Float(
+        string='PErcentage from wage',
+        default=50.0,
+        tracking=True,
+    )
+
+    @api.depends('employee_id', 'wage_percent')
+    def _compute_amount(self):
+        for advance in self:
+            wage = 0.0
+            if advance.employee_id:
+                version = advance.employee_id.current_version_id
+                if version:
+                    wage = version.wage or 0.0
+                    if not wage and hasattr(version, 'staffing_line_id') and version.staffing_line_id:
+                        wage = version.staffing_line_id.salary or 0.0
+            advance.amount = round(wage * advance.wage_percent / 100, 2)
 
     @api.model_create_multi
     def create(self, vals_list):

@@ -34,6 +34,7 @@
                     <group>
                         <group>
                             <field name="date"/>
+			    <field name="wage_percent" readonly="state != 'draft'"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                         <group>
@@ -93,7 +94,7 @@
             <p class="o_view_nocontent_smiling_face">
                 Create an advance batch to process multiple advances at once
             </p>
-            <p>Advances are calculated as 50% of the employee wage.</p>
+            <p>Advances are calculated as percentage of the employee wage.</p>
         </field>
     </record>
 

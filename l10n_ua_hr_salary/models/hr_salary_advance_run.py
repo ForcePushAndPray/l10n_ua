@@ -27,6 +27,11 @@ class HrSalaryAdvanceRun(models.Model):
     currency_id = fields.Many2one(
         'res.currency', related='company_id.currency_id')
     notes = fields.Text(string='Notes')
+    wage_percent = fields.Float(
+        string='Відсоток від окладу',
+        default=50.0,
+        tracking=True,
+    )
 
     @api.depends('advance_ids')
     def _compute_advance_count(self):
@@ -58,7 +63,7 @@ class HrSalaryAdvanceRun(models.Model):
         return wage
 
     def action_generate_advances(self):
-        """Generate 50% wage advances for all active employees."""
+        """Generate wage advances for all active employees."""
         self.ensure_one()
         employees = self.env['hr.employee'].search([
             ('company_id', '=', self.company_id.id),
@@ -73,9 +78,10 @@ class HrSalaryAdvanceRun(models.Model):
             self.env['hr.salary.advance'].create({
                 'employee_id': employee.id,
                 'date': self.date,
-                'amount': round(wage * 0.5, 2),
+                'amount': round(wage * self.wage_percent / 100, 2),
                 'advance_run_id': self.id,
                 'company_id': self.company_id.id,
+                'wage_percent': self.wage_percent,
             })
         return True
 

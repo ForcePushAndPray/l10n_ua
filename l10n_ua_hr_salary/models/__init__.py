@@ -7,3 +7,4 @@ from . import hr_payslip_deduction
 from . import hr_payslip
 from . import hr_payslip_run
 from . import hr_salary_advance
+from . import hr_salary_advance_run

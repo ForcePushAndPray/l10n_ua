@@ -25,8 +25,9 @@
                             <field name="department_id"/>
                         </group>
                         <group>
-                            <field name="date" readonly="state != 'draft'"/>
-                            <field name="amount" readonly="state != 'draft'"/>
+			    <field name="date" readonly="state != 'draft'"/>
+			    <field name="wage_percent" readonly="state != 'draft'"/>
+			    <field name="amount" readonly="1"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
