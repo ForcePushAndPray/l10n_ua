@@ -397,7 +397,6 @@ class HrPayslip(models.Model):
             # Net salary
             payslip.net_salary = gross - payslip.total_deductions
 
-    @api.model_create_multi
     @api.depends('deduction_ids.amount', 'deduction_ids.deduction_type_id')
     def _compute_advance_amount(self):
         for payslip in self:
