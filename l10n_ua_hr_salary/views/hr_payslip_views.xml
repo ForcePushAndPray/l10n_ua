@@ -119,7 +119,6 @@
                                 </group>
                                 <group>
                                     <field name="net_salary" class="oe_subtotal_footer_separator"/>
-				    <field name="advance_amount" sum="Total Advance" optional="show"/>
                                     <field name="currency_id" invisible="1"/>
                                 </group>
                             </group>
@@ -153,6 +152,7 @@
                 <field name="pdfo_amount" sum="Total PDFO" optional="hide"/>
                 <field name="military_tax_amount" sum="Total Military" optional="hide"/>
                 <field name="net_salary" sum="Total Net"/>
+	        <field name="advance_amount" sum="Total Advance" optional="show"/> 
                 <field name="state" widget="badge"
                        decoration-success="state == 'done'"
                        decoration-info="state == 'draft'"

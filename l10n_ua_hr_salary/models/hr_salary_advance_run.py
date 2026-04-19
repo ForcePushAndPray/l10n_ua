@@ -28,7 +28,7 @@ class HrSalaryAdvanceRun(models.Model):
         'res.currency', related='company_id.currency_id')
     notes = fields.Text(string='Notes')
     wage_percent = fields.Float(
-        string='Відсоток від окладу',
+        string='Percentage from wage',
         default=50.0,
         tracking=True,
     )
