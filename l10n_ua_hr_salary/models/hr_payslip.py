@@ -602,14 +602,62 @@ class HrPayslip(models.Model):
                 'is_auto_generated': True,
             })
 
+        # Salary advances                                      
+        self._generate_advance_deductions()                   
+
+
+    def _generate_advance_deductions(self):             
+        """Generate deduction lines for confirmed salary advances."""
+        self.ensure_one()
+
+        advances = self.env['hr.salary.advance'].search([
+            ('employee_id', '=', self.employee_id.id),
+            ('state', '=', 'confirmed'),
+            ('date', '>=', self.date_from),
+            ('date', '<=', self.date_to),
+            ('payslip_id', '=', False),
+        ])
+
+        if not advances:
+            return
+
+        deduction_type = self.env['hr.deduction.type'].search([
+            ('code', '=', 'ADVANCE')
+        ], limit=1)
+
+        if not deduction_type:
+            return
+
+        for advance in advances:
+            self.env['hr.payslip.deduction'].create({
+                'payslip_id': self.id,
+                'deduction_type_id': deduction_type.id,
+                'amount': advance.amount,
+                'notes': advance.name,
+                'is_auto_generated': True,
+            })
+            advance.payslip_id = self.id        
+
+
     def action_payslip_verify(self):
         self.write({'state': 'verify'})
 
     def action_payslip_done(self):
         self.write({'state': 'done'})
+        advances = self.env['hr.salary.advance'].search([  
+            ('payslip_id', 'in', self.ids),                
+            ('state', '=', 'confirmed'),                    
+        ])                                                  
+        if advances:                                      
+            advances.write({'state': 'paid'})       
 
     def action_payslip_cancel(self):
+        advances = self.env['hr.salary.advance'].search([  
+            ('payslip_id', 'in', self.ids),               
+        ])                                                 
         self.write({'state': 'cancel'})
+        if advances:                                       
+            advances.write({'state': 'confirmed', 'payslip_id': False})  
 
     def action_payslip_draft(self):
         self.write({'state': 'draft'})

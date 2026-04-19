@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - HR Salary',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Localization',
     'summary': 'Ukrainian salary calculation',
     'description': """
@@ -17,6 +17,7 @@ Payroll calculation for Ukrainian localization:
 * Allowances and bonuses
 * Deductions (alimony, union fees, etc.)
 * Execution documents support
+* Salary advance (аванс) management
 * Minimum wage validation
 * Maximum ESV base (15 minimum wages)
 * Payslip generation and printing
@@ -46,6 +47,8 @@ to avoid naming conflicts with existing modules on Odoo Apps.
         'views/hr_deduction_type_views.xml',
         'views/hr_psp_parameters_views.xml',
         'views/hr_execution_document_views.xml',
+        'views/hr_salary_advance_views.xml',
+        'views/hr_salary_advance_run_views.xml',
         'views/menu_views.xml',
         'report/hr_payslip_report.xml',
     ],
