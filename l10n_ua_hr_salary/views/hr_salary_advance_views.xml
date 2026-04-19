@@ -23,13 +23,18 @@
                         <group>
                             <field name="employee_id" readonly="state != 'draft'"/>
                             <field name="department_id"/>
-                        </group>
-                        <group>
-			    <field name="date" readonly="state != 'draft'"/>
-			    <field name="wage_percent" readonly="state != 'draft'"/>
-			    <field name="amount" readonly="1"/>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="wage_percent" readonly="state != 'draft'"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Нарахування та податки">
+                            <field name="gross_amount" readonly="1"/>
+                            <field name="pdfo_rate" readonly="state != 'draft'"/>
+                            <field name="pdfo_amount" readonly="1"/>
+                            <field name="military_rate" readonly="state != 'draft'"/>
+                            <field name="military_amount" readonly="1"/>
+                            <field name="amount" readonly="1"/>
                         </group>
                     </group>
                     <group string="Batch &amp; Payroll Integration"

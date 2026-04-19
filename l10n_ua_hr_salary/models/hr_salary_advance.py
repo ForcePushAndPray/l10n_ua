@@ -9,85 +9,73 @@ class HrSalaryAdvance(models.Model):
     _order = 'date desc, id desc'
 
     name = fields.Char(
-        string='Reference',
-        required=True,
-        copy=False,
-        readonly=True,
-        default=lambda self: _('New'),
+        string='Reference', required=True, copy=False,
+        readonly=True, default=lambda self: _('New'),
     )
     employee_id = fields.Many2one(
-        'hr.employee',
-        string='Employee',
-        required=True,
-        tracking=True,
-        index=True,
+        'hr.employee', string='Employee', required=True,
+        tracking=True, index=True,
     )
     date = fields.Date(
-        string='Payment Date',
-        required=True,
-        default=fields.Date.context_today,
-        tracking=True,
+        string='Payment Date', required=True,
+        default=fields.Date.context_today, tracking=True,
     )
-    amount = fields.Monetary( 
-        string='Amount',
-        compute='_compute_amount',
-        store=True,
-        tracking=True,
+    wage_percent = fields.Float(
+        string='Відсоток від окладу', default=50.0, tracking=True,
+    )
+    gross_amount = fields.Monetary(
+        string='Нараховано',
+        compute='_compute_gross_amount', store=True,
+        currency_field='currency_id',
+    )
+    pdfo_rate = fields.Float(string='ПДФО (%)', default=18.0)
+    pdfo_amount = fields.Monetary(
+        string='ПДФО',
+        compute='_compute_taxes', store=True,
+        currency_field='currency_id',
+    )
+    military_rate = fields.Float(string='Військовий збір (%)', default=5.0)
+    military_amount = fields.Monetary(
+        string='Військовий збір',
+        compute='_compute_taxes', store=True,
+        currency_field='currency_id',
+    )
+    amount = fields.Monetary(
+        string='До виплати',
+        compute='_compute_taxes', store=True, tracking=True,
         currency_field='currency_id',
     )
     currency_id = fields.Many2one(
-        'res.currency',
-        string='Currency',
-        related='company_id.currency_id',
-        store=True,
-        readonly=True,
+        'res.currency', related='company_id.currency_id',
+        store=True, readonly=True,
     )
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
         ('paid', 'Paid'),
-    ], string='Status',
-        default='draft',
-        required=True,
-        tracking=True,
-        index=True,
+    ], string='Status', default='draft', required=True,
+        tracking=True, index=True,
     )
     notes = fields.Text(string='Notes')
     advance_run_id = fields.Many2one(
-        'hr.salary.advance.run',
-        string='Advance Batch',
-        readonly=True,
-        copy=False,
-        ondelete='set null',
+        'hr.salary.advance.run', string='Advance Batch',
+        readonly=True, copy=False, ondelete='set null',
     )
     payslip_id = fields.Many2one(
-        'hr.payslip',
-        string='Payslip',
-        readonly=True,
-        copy=False,
+        'hr.payslip', string='Payslip', readonly=True, copy=False,
         help='Payslip from which this advance was deducted',
     )
     company_id = fields.Many2one(
-        'res.company',
-        string='Company',
-        required=True,
+        'res.company', string='Company', required=True,
         default=lambda self: self.env.company,
     )
     department_id = fields.Many2one(
-        'hr.department',
-        string='Department',
-        related='employee_id.department_id',
-        store=True,
-        readonly=True,
-    )
-    wage_percent = fields.Float(
-        string='Percentage from wage',
-        default=50.0,
-        tracking=True,
+        'hr.department', related='employee_id.department_id',
+        store=True, readonly=True,
     )
 
     @api.depends('employee_id', 'wage_percent')
-    def _compute_amount(self):
+    def _compute_gross_amount(self):
         for advance in self:
             wage = 0.0
             if advance.employee_id:
@@ -96,7 +84,30 @@ class HrSalaryAdvance(models.Model):
                     wage = version.wage or 0.0
                     if not wage and hasattr(version, 'staffing_line_id') and version.staffing_line_id:
                         wage = version.staffing_line_id.salary or 0.0
-            advance.amount = round(wage * advance.wage_percent / 100, 2)
+            advance.gross_amount = round(wage * advance.wage_percent / 100, 2)
+
+    @api.depends('gross_amount', 'pdfo_rate', 'military_rate', 'employee_id')
+    def _compute_taxes(self):
+        for advance in self:
+            pdfo_rate = advance.pdfo_rate
+            military_rate = advance.military_rate
+
+            if advance.employee_id:
+                version = advance.employee_id.current_version_id
+                if version:
+                    is_gig = (
+                        (hasattr(version, 'contract_type_ua') and version.contract_type_ua == 'gig')
+                        or (hasattr(version, 'diia_city_employee') and version.diia_city_employee)
+                    )
+                    if is_gig:
+                        pdfo_rate = 5.0
+                        military_rate = 0.0
+
+            pdfo = round(advance.gross_amount * pdfo_rate / 100, 2)
+            military = round(advance.gross_amount * military_rate / 100, 2)
+            advance.pdfo_amount = pdfo
+            advance.military_amount = military
+            advance.amount = advance.gross_amount - pdfo - military
 
     @api.model_create_multi
     def create(self, vals_list):
