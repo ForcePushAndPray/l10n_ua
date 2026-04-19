@@ -217,6 +217,13 @@ class HrPayslip(models.Model):
         store=True,
         currency_field='currency_id'
     )
+
+    advance_amount = fields.Monetary(
+        string='Advance',
+        compute='_compute_advance_amount',
+        store=True,
+        currency_field='currency_id'
+    )
     
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -391,6 +398,14 @@ class HrPayslip(models.Model):
             payslip.net_salary = gross - payslip.total_deductions
 
     @api.model_create_multi
+    @api.depends('deduction_ids.amount', 'deduction_ids.deduction_type_id')
+    def _compute_advance_amount(self):
+        for payslip in self:
+            advance_ded = payslip.deduction_ids.filtered(
+                lambda d: d.deduction_type_id.code == 'ADVANCE'
+            )
+            payslip.advance_amount = sum(advance_ded.mapped('amount'))
+
     def create(self, vals_list):
         for vals in vals_list:
             if vals.get('name', 'New') == 'New':

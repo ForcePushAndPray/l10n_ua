@@ -78,7 +78,6 @@ class HrSalaryAdvanceRun(models.Model):
             self.env['hr.salary.advance'].create({
                 'employee_id': employee.id,
                 'date': self.date,
-                'amount': round(wage * self.wage_percent / 100, 2),
                 'advance_run_id': self.id,
                 'company_id': self.company_id.id,
                 'wage_percent': self.wage_percent,

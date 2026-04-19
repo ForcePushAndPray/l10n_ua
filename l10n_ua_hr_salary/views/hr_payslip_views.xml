@@ -119,6 +119,7 @@
                                 </group>
                                 <group>
                                     <field name="net_salary" class="oe_subtotal_footer_separator"/>
+				    <field name="advance_amount" sum="Total Advance" optional="show"/>
                                     <field name="currency_id" invisible="1"/>
                                 </group>
                             </group>

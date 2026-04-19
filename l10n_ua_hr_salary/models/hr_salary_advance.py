@@ -81,7 +81,7 @@ class HrSalaryAdvance(models.Model):
         readonly=True,
     )
     wage_percent = fields.Float(
-        string='PErcentage from wage',
+        string='Percentage from wage',
         default=50.0,
         tracking=True,
     )
