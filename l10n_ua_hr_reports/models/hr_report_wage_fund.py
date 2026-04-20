@@ -143,18 +143,15 @@ class HrReportWageFund(models.Model):
 
         # Calculate last day of month
         if month_int == 12:
-            date_to = fields.Date.from_string(f'{self.year}-12-31')
+            date_to = fields.Date.from_string(f'{self.year + 1}-01-01')
         else:
-            next_month = fields.Date.from_string(f'{self.year}-{month_int + 1:02d}-01')
-            date_to = next_month - fields.Date.from_string('1970-01-02') + fields.Date.from_string('1970-01-01')
-            # Simpler: just use day 28 as safe last day check
-            date_to = fields.Date.from_string(f'{self.year}-{month_int:02d}-28')
+            date_to = fields.Date.from_string(f'{self.year}-{month_int + 1:02d}-01')
 
         # Get payslips for the month
         payslips = self.env['hr.payslip'].search([
             ('company_id', '=', self.company_id.id),
             ('date_from', '>=', date_from),
-            ('date_to', '<=', f'{self.year}-{month_int:02d}-31'),
+            ('date_to', '<', date_to),
             ('state', '=', 'done'),
         ])
 
