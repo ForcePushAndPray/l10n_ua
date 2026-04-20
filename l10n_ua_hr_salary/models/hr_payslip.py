@@ -285,6 +285,13 @@ class HrPayslip(models.Model):
             else:
                 payslip.version_id = False
 
+    @api.onchange('company_id')
+    def _onchange_company_id(self):
+        """Clear employee if from a different company (preserve shared employees)."""
+        if self.employee_id and self.employee_id.company_id \
+                and self.employee_id.company_id != self.company_id:
+            self.employee_id = False
+
     @api.depends('gross_salary', 'psp_type')
     def _compute_psp(self):
         for payslip in self:

@@ -87,6 +87,12 @@ class HrBonus(models.Model):
                 vals['name'] = self.env['ir.sequence'].next_by_code('hr.bonus') or _('New')
         return super().create(vals_list)
 
+    @api.onchange('company_id')
+    def _onchange_company_id(self):
+        if self.employee_id and self.employee_id.company_id \
+                and self.employee_id.company_id != self.company_id:
+            self.employee_id = False
+
     def action_confirm(self):
         """Confirm the bonus - makes it ready for payroll inclusion."""
         for bonus in self:

@@ -82,6 +82,12 @@ class HrExecutionDocument(models.Model):
         default=lambda self: self.env.company
     )
 
+    @api.onchange('company_id')
+    def _onchange_company_id(self):
+        if self.employee_id and self.employee_id.company_id \
+                and self.employee_id.company_id != self.company_id:
+            self.employee_id = False
+
     @api.depends('total_amount')
     def _compute_collected_amount(self):
         for doc in self:
