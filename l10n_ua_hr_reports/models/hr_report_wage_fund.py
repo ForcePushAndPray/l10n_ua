@@ -42,7 +42,7 @@ class HrReportWageFund(models.Model):
 
     # Summary totals
     total_employees = fields.Integer(
-        string='Employees',
+        string='Total Employees',
         help='Number of employees with payslips'
     )
     total_gross = fields.Monetary(
