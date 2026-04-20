@@ -30,7 +30,7 @@ class HrSalaryAdvance(models.Model):
         compute='_compute_gross_amount', store=True,
         currency_field='currency_id',
     )
-    pdfo_rate = fields.Float(string='PDFO  (%)', default=18.0)
+    pdfo_rate = fields.Float(string='PDFO (%)', default=18.0)
     pdfo_amount = fields.Monetary(
         string='PDFO',
         compute='_compute_taxes', store=True,
