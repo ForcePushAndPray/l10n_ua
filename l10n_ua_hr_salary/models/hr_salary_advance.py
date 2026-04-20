@@ -21,27 +21,29 @@ class HrSalaryAdvance(models.Model):
         default=fields.Date.context_today, tracking=True,
     )
     wage_percent = fields.Float(
-        string='Відсоток від окладу', default=50.0, tracking=True,
+        string='Wage Percentage', 
+        default=50.0, 
+        tracking=True,
     )
     gross_amount = fields.Monetary(
-        string='Нараховано',
+        string='Gross',
         compute='_compute_gross_amount', store=True,
         currency_field='currency_id',
     )
-    pdfo_rate = fields.Float(string='ПДФО (%)', default=18.0)
+    pdfo_rate = fields.Float(string='PDFO  (%)', default=18.0)
     pdfo_amount = fields.Monetary(
-        string='ПДФО',
+        string='PDFO',
         compute='_compute_taxes', store=True,
         currency_field='currency_id',
     )
-    military_rate = fields.Float(string='Військовий збір (%)', default=5.0)
+    military_rate = fields.Float(string='Military Tax (%)', default=5.0)
     military_amount = fields.Monetary(
-        string='Військовий збір',
+        string='Military Tax',
         compute='_compute_taxes', store=True,
         currency_field='currency_id',
     )
     amount = fields.Monetary(
-        string='До виплати',
+        string='Net Advance',
         compute='_compute_taxes', store=True, tracking=True,
         currency_field='currency_id',
     )
@@ -74,7 +76,11 @@ class HrSalaryAdvance(models.Model):
         store=True, readonly=True,
     )
 
-    @api.depends('employee_id', 'wage_percent')
+    @api.depends(
+        'employee_id', 'wage_percent',
+        'employee_id.current_version_id.wage',
+        'employee_id.current_version_id.staffing_line_id.salary',
+    )
     def _compute_gross_amount(self):
         for advance in self:
             wage = 0.0
@@ -86,7 +92,11 @@ class HrSalaryAdvance(models.Model):
                         wage = version.staffing_line_id.salary or 0.0
             advance.gross_amount = round(wage * advance.wage_percent / 100, 2)
 
-    @api.depends('gross_amount', 'pdfo_rate', 'military_rate', 'employee_id')
+    @api.depends(
+        'gross_amount', 'pdfo_rate', 'military_rate',
+        'employee_id.current_version_id.contract_type_ua',
+        'employee_id.current_version_id.diia_city_employee',
+    )
     def _compute_taxes(self):
         for advance in self:
             pdfo_rate = advance.pdfo_rate

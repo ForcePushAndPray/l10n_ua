@@ -633,7 +633,7 @@ class HrPayslip(models.Model):
             '|',
             ('payslip_id', '=', False),
             ('payslip_id', '=', self.id),
-        ])
+        ], order='date asc, id asc')
 
         if not advances:
             return
@@ -674,6 +674,7 @@ class HrPayslip(models.Model):
         ])                                                 
         self.write({'state': 'cancel'})
         if advances:                                       
+            # Revert to confirmed so advances can be picked up by a reissued payslip.
             advances.write({'state': 'confirmed', 'payslip_id': False})  
 
     def action_payslip_draft(self):

@@ -1,5 +1,7 @@
 from odoo import models, fields, api, _
 from dateutil.relativedelta import relativedelta
+from l10n_ua_account_base.tools.formatters import MONTHS_UA
+
 
 
 class HrSalaryAdvanceRun(models.Model):
@@ -28,7 +30,7 @@ class HrSalaryAdvanceRun(models.Model):
         'res.currency', related='company_id.currency_id')
     notes = fields.Text(string='Notes')
     wage_percent = fields.Float(
-        string='Percentage from wage',
+        string='Wage Percentage',
         default=50.0,
         tracking=True,
     )
@@ -49,7 +51,7 @@ class HrSalaryAdvanceRun(models.Model):
         today = fields.Date.today()
         res.update({
             'date': today.replace(day=15),
-            'name': _('Advance for %s') % today.strftime('%B %Y'),
+            'name': 'Advance for %s %s' % (MONTHS_UA[today.month], today.year),
         })
         return res
 
@@ -77,12 +79,14 @@ class HrSalaryAdvanceRun(models.Model):
         self.ensure_one()
         # Delete draft advances to allow regeneration with updated percentage
         self.advance_ids.filtered(lambda a: a.state == 'draft').unlink()
+        # Build lookup of employees with confirmed/paid advances to skip
+        existing_employee_ids = set(self.advance_ids.mapped('employee_id').ids)
         employees = self.env['hr.employee'].search([
             ('company_id', '=', self.company_id.id),
             ('version_ids.contract_date_start', '!=', False),
         ])
         for employee in employees:
-            if self.advance_ids.filtered(lambda a: a.employee_id == employee):
+            if employee.id in existing_employee_ids:
                 continue
             wage = self._get_employee_wage(employee)
             if not wage:
