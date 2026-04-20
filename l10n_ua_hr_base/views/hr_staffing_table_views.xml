@@ -40,8 +40,10 @@
                     <group>
                         <group string="Position">
                             <field name="company_id" groups="base.group_multi_company"/>
-                            <field name="department_id"/>
-                            <field name="job_id"/>
+                            <field name="department_id"
+                                   domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]"/>
+                            <field name="job_id"
+                                   domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]"/>
                         </group>
                         <group string="Staff Units">
                             <field name="units"/>

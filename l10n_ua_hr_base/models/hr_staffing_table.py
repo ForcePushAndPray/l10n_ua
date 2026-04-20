@@ -53,6 +53,15 @@ class HrStaffingTable(models.Model):
     order_date = fields.Date(string='Order Date')
     name = fields.Char(string='Name', compute='_compute_name', store=True)
 
+    @api.onchange('company_id')
+    def _onchange_company_id(self):
+        if self.department_id and self.department_id.company_id \
+                and self.department_id.company_id != self.company_id:
+            self.department_id = False
+        if self.job_id and self.job_id.company_id \
+                and self.job_id.company_id != self.company_id:
+            self.job_id = False
+
     @api.depends('department_id', 'job_id')
     def _compute_name(self):
         for record in self:

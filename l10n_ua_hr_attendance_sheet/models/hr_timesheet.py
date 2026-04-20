@@ -76,6 +76,12 @@ class HrTimesheet(models.Model):
     
     notes = fields.Text(string='Notes')
 
+    @api.onchange('company_id')
+    def _onchange_company_id(self):
+        if self.department_id and self.department_id.company_id \
+                and self.department_id.company_id != self.company_id:
+            self.department_id = False
+
     @api.depends('year', 'month', 'department_id')
     def _compute_name(self):
         month_names = dict(self._fields['month'].selection)

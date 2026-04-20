@@ -27,7 +27,8 @@
                         <group>
                             <field name="year"/>
                             <field name="month"/>
-                            <field name="department_id"/>
+                            <field name="department_id"
+                                   domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]"/>
                         </group>
                         <group>
                             <field name="responsible_id"/>
