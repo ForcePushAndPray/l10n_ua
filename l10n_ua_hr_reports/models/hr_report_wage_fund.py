@@ -151,7 +151,7 @@ class HrReportWageFund(models.Model):
         payslips = self.env['hr.payslip'].search([
             ('company_id', '=', self.company_id.id),
             ('date_from', '>=', date_from),
-            ('date_to', '<=',date_to),
+            ('date_to', '<', date_to),
             ('state', '=', 'done'),
         ])
 
