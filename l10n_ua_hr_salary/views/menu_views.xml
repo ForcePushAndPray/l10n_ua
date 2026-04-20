@@ -24,6 +24,23 @@
               action="action_hr_execution_document"
               sequence="30"/>
 
+    <menuitem id="menu_hr_salary_advance_root"
+              name="Advances"
+              parent="menu_hr_payroll_root"
+              sequence="40"/>
+
+    <menuitem id="menu_hr_salary_advance"
+              name="Advance List"
+              parent="menu_hr_salary_advance_root"
+              action="action_hr_salary_advance"
+              sequence="10"/>
+
+    <menuitem id="menu_hr_salary_advance_run"
+              name="Advance Batches"
+              parent="menu_hr_salary_advance_root"
+              action="action_hr_salary_advance_run"
+              sequence="20"/>
+
     <menuitem id="menu_hr_payroll_config"
               name="Configuration"
               parent="menu_hr_payroll_root"

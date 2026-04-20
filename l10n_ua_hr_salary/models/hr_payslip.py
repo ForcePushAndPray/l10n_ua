@@ -217,6 +217,13 @@ class HrPayslip(models.Model):
         store=True,
         currency_field='currency_id'
     )
+
+    advance_amount = fields.Monetary(
+        string='Advance',
+        compute='_compute_advance_amount',
+        store=True,
+        currency_field='currency_id'
+    )
     
     state = fields.Selection([
         ('draft', 'Draft'),
@@ -389,6 +396,14 @@ class HrPayslip(models.Model):
             
             # Net salary
             payslip.net_salary = gross - payslip.total_deductions
+
+    @api.depends('deduction_ids.amount', 'deduction_ids.deduction_type_id')
+    def _compute_advance_amount(self):
+        for payslip in self:
+            advance_ded = payslip.deduction_ids.filtered(
+                lambda d: d.deduction_type_id.code == 'ADVANCE'
+            )
+            payslip.advance_amount = sum(advance_ded.mapped('amount'))
 
     @api.model_create_multi
     def create(self, vals_list):
@@ -602,14 +617,65 @@ class HrPayslip(models.Model):
                 'is_auto_generated': True,
             })
 
+        # Salary advances                                      
+        self._generate_advance_deductions()                   
+
+
+    def _generate_advance_deductions(self):             
+        """Generate deduction lines for confirmed salary advances."""
+        self.ensure_one()
+
+        advances = self.env['hr.salary.advance'].search([
+            ('employee_id', '=', self.employee_id.id),
+            ('state', '=', 'confirmed'),
+            ('date', '>=', self.date_from),
+            ('date', '<=', self.date_to),
+            '|',
+            ('payslip_id', '=', False),
+            ('payslip_id', '=', self.id),
+        ], order='date asc, id asc')
+
+        if not advances:
+            return
+
+        deduction_type = self.env['hr.deduction.type'].search([
+            ('code', '=', 'ADVANCE')
+        ], limit=1)
+
+        if not deduction_type:
+            return
+
+        for advance in advances:
+            self.env['hr.payslip.deduction'].create({
+                'payslip_id': self.id,
+                'deduction_type_id': deduction_type.id,
+                'amount': advance.amount,
+                'notes': advance.name,
+                'is_auto_generated': True,
+            })
+            advance.payslip_id = self.id        
+
+
     def action_payslip_verify(self):
         self.write({'state': 'verify'})
 
     def action_payslip_done(self):
         self.write({'state': 'done'})
+        advances = self.env['hr.salary.advance'].search([  
+            ('payslip_id', 'in', self.ids),                
+            ('state', '=', 'confirmed'),                    
+        ])                                                  
+        if advances:                                      
+            advances.write({'state': 'paid'})       
 
     def action_payslip_cancel(self):
+        advances = self.env['hr.salary.advance'].search([  
+            ('payslip_id', 'in', self.ids),               
+        ])                                                 
         self.write({'state': 'cancel'})
+        if advances:                                       
+            # Revert to confirmed so advances can be picked up by a reissued payslip.
+            advances.write({'state': 'confirmed', 'payslip_id': False})  
 
     def action_payslip_draft(self):
         self.write({'state': 'draft'})
