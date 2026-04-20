@@ -149,6 +149,20 @@ class HrJobCombining(models.Model):
             if version and version.contract_date_start:
                 self.version_id = version.id
 
+    @api.onchange('version_id')
+    def _onchange_version_id_reset_combined(self):
+        """Reset combined_job/department if they belong to a different company
+        than the version (company_id is related to version_id.company_id)."""
+        if not self.version_id:
+            return
+        version_company = self.version_id.company_id
+        if self.combined_job_id and self.combined_job_id.company_id \
+                and self.combined_job_id.company_id != version_company:
+            self.combined_job_id = False
+        if self.combined_department_id and self.combined_department_id.company_id \
+                and self.combined_department_id.company_id != version_company:
+            self.combined_department_id = False
+
     def action_activate(self):
         """Activate job combining and create allowance"""
         for record in self:
