@@ -37,9 +37,13 @@
                             <field name="subject"/>
                         </group>
                         <group>
-                            <field name="employee_id"/>
-                            <field name="department_id"/>
-                            <field name="job_id"/>
+                            <field name="company_id" invisible="1"/>
+                            <field name="employee_id"
+                                   domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]"/>
+                            <field name="department_id"
+                                   domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]"/>
+                            <field name="job_id"
+                                   domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]"/>
                             <field name="date_start" invisible="order_type != 'hiring'"/>
                             <field name="is_fixed_term" invisible="order_type != 'hiring'"/>
                             <field name="date_end" invisible="order_type != 'hiring' or not is_fixed_term"/>

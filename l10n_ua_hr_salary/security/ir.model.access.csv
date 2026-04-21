@@ -20,3 +20,11 @@ access_hr_psp_parameters_manager,hr.psp.parameters.manager,model_hr_psp_paramete
 access_hr_execution_document_user,hr.execution.document.user,model_hr_execution_document,hr.group_hr_user,1,0,0,0
 access_hr_execution_document_officer,hr.execution.document.officer,model_hr_execution_document,l10n_ua_hr_base.group_hr_ua_officer,1,1,1,0
 access_hr_execution_document_manager,hr.execution.document.manager,model_hr_execution_document,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
+access_hr_salary_advance_user,hr.salary.advance.user,model_hr_salary_advance,hr.group_hr_user,1,0,0,0
+access_hr_salary_advance_officer,hr.salary.advance.officer,model_hr_salary_advance,l10n_ua_hr_base.group_hr_ua_officer,1,1,1,0
+access_hr_salary_advance_manager,hr.salary.advance.manager,model_hr_salary_advance,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
+access_hr_salary_advance_run_user,hr.salary.advance.run.user,model_hr_salary_advance_run,hr.group_hr_user,1,0,0,0
+access_hr_salary_advance_run_officer,hr.salary.advance.run.officer,model_hr_salary_advance_run,l10n_ua_hr_base.group_hr_ua_officer,1,1,1,0
+access_hr_salary_advance_run_manager,hr.salary.advance.run.manager,model_hr_salary_advance_run,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
+
+

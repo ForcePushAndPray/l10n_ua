@@ -59,6 +59,19 @@ class HrOrder(models.Model):
             self.department_id = self.employee_id.department_id
             self.job_id = self.employee_id.job_id
 
+    @api.onchange('company_id')
+    def _onchange_company_id(self):
+        """Reset cross-company employee/department/job when company changes."""
+        if self.employee_id and self.employee_id.company_id \
+                and self.employee_id.company_id != self.company_id:
+            self.employee_id = False
+        if self.department_id and self.department_id.company_id \
+                and self.department_id.company_id != self.company_id:
+            self.department_id = False
+        if self.job_id and self.job_id.company_id \
+                and self.job_id.company_id != self.company_id:
+            self.job_id = False
+
     subject = fields.Char(string='Subject', required=True, tracking=True, compute='_compute_subject', store=True, readonly=False)
 
     ORDER_TYPE_SUBJECTS = {
