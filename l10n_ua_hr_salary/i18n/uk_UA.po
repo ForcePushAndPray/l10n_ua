@@ -1616,3 +1616,13 @@ msgstr "Аванси розраховуються як відсоток від �
 msgid "Create an advance batch to process multiple advances at once"
 msgstr "Створіть пакет авансів для одночасної обробки кількох авансів"
 
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_form
+msgid "Additional notes..."
+msgstr "Додаткові нотатки..."
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_form
+msgid "Reset to Draft"
+msgstr "Повернути в чернетку"
+
