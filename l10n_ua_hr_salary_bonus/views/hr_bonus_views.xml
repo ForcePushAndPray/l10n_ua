@@ -22,7 +22,8 @@
                     </div>
                     <group>
                         <group>
-                            <field name="employee_id" readonly="state != 'draft'"/>
+                            <field name="employee_id" readonly="state != 'draft'"
+                                   domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]"/>
                             <field name="department_id"/>
                             <field name="bonus_type_id" readonly="state != 'draft'"/>
                         </group>

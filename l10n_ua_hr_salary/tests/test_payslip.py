@@ -115,3 +115,38 @@ class TestPayslip(SalaryTestCase):
         payslip._compute_working_days()
         payslip._generate_accruals()
         self.assertTrue(payslip.accrual_ids)
+
+
+@tagged('post_install', '-at_install')
+class TestPayslipMultiCompany(SalaryTestCase):
+    """Multi-company isolation для hr.payslip."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.company_b = cls.env['res.company'].create({'name': 'Company B'})
+        cls.employee_b = cls.env['hr.employee'].create({
+            'name': 'Emp B', 'company_id': cls.company_b.id,
+        })
+
+    def test_onchange_company_resets_cross_company_employee(self):
+        payslip = self.env['hr.payslip'].new({
+            'company_id': self.company.id,
+            'employee_id': self.employee.id,
+            'date_from': date(2026, 4, 1),
+            'date_to': date(2026, 4, 30),
+        })
+        payslip.company_id = self.company_b
+        payslip._onchange_company_id()
+        self.assertFalse(payslip.employee_id)
+
+    def test_onchange_company_keeps_same_company_employee(self):
+        payslip = self.env['hr.payslip'].new({
+            'company_id': self.company.id,
+            'employee_id': self.employee.id,
+            'date_from': date(2026, 4, 1),
+            'date_to': date(2026, 4, 30),
+        })
+        # та сама компанія — нічого не скидається
+        payslip._onchange_company_id()
+        self.assertEqual(payslip.employee_id, self.employee)
