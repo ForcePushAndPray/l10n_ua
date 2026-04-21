@@ -88,3 +88,55 @@ class TestJobCombining(ContractTestCase):
         """Display name should contain employee and job info."""
         jc = self._create_combining()
         self.assertTrue(jc.display_name)
+
+
+@tagged('post_install', '-at_install')
+class TestJobCombiningMultiCompany(ContractTestCase):
+    """Multi-company isolation для hr.job.combining."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.company_b = cls.env['res.company'].create({'name': 'Company B'})
+        cls.dept_b = cls.env['hr.department'].create({
+            'name': 'Dept B', 'company_id': cls.company_b.id,
+        })
+        cls.job_b = cls.env['hr.job'].create({
+            'name': 'Job B', 'department_id': cls.dept_b.id,
+            'company_id': cls.company_b.id,
+        })
+
+    def test_onchange_version_resets_cross_company_combined(self):
+        """Зміна version_id скидає combined_*_id якщо з іншої компанії."""
+        employee = self._create_employee()
+        version = self._create_version(employee=employee, wage=10000)
+        # company_id is related from version.company_id → company_a (env.company)
+
+        combining = self.env['hr.job.combining'].new({
+            'employee_id': employee.id,
+            'version_id': version.id,
+            'combined_job_id': self.job_b.id,  # from company B
+            'combined_department_id': self.dept_b.id,  # from company B
+            'date_from': date(2026, 4, 1),
+            'surcharge_type': 'percent',
+            'surcharge_percent': 25.0,
+        })
+        combining._onchange_version_id_reset_combined()
+        self.assertFalse(combining.combined_job_id)
+        self.assertFalse(combining.combined_department_id)
+
+    def test_onchange_version_keeps_same_company_combined(self):
+        employee = self._create_employee()
+        version = self._create_version(employee=employee, wage=10000)
+        combining = self.env['hr.job.combining'].new({
+            'employee_id': employee.id,
+            'version_id': version.id,
+            'combined_job_id': self.job_2.id,
+            'combined_department_id': self.department.id,
+            'date_from': date(2026, 4, 1),
+            'surcharge_type': 'percent',
+            'surcharge_percent': 25.0,
+        })
+        combining._onchange_version_id_reset_combined()
+        self.assertEqual(combining.combined_job_id, self.job_2)
+        self.assertEqual(combining.combined_department_id, self.department)

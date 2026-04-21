@@ -39,8 +39,10 @@
                             <field name="company_id" invisible="1"/>
                         </group>
                         <group string="Combined Position">
-                            <field name="combined_job_id"/>
-                            <field name="combined_department_id"/>
+                            <field name="combined_job_id"
+                                   domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]"/>
+                            <field name="combined_department_id"
+                                   domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]"/>
                         </group>
                     </group>
                     <group>

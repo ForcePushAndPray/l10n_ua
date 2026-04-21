@@ -124,3 +124,56 @@ class TestHrOrder(TransactionCase):
         order._onchange_employee_id()
         self.assertEqual(order.department_id, self.department)
         self.assertEqual(order.job_id, self.job)
+
+
+@tagged('post_install', '-at_install')
+class TestHrOrderMultiCompany(TransactionCase):
+    """Multi-company isolation для hr.order."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.company_a = cls.env.company
+        cls.company_b = cls.env['res.company'].create({'name': 'Company B'})
+        cls.dept_a = cls.env['hr.department'].create({
+            'name': 'Dept A', 'company_id': cls.company_a.id,
+        })
+        cls.dept_b = cls.env['hr.department'].create({
+            'name': 'Dept B', 'company_id': cls.company_b.id,
+        })
+        cls.job_a = cls.env['hr.job'].create({
+            'name': 'Job A', 'company_id': cls.company_a.id,
+            'department_id': cls.dept_a.id,
+        })
+        cls.employee_a = cls.env['hr.employee'].create({
+            'name': 'Emp A', 'company_id': cls.company_a.id,
+        })
+
+    def test_onchange_company_resets_cross_company_fields(self):
+        order = self.env['hr.order'].new({
+            'company_id': self.company_a.id,
+            'employee_id': self.employee_a.id,
+            'department_id': self.dept_a.id,
+            'job_id': self.job_a.id,
+            'order_type': 'hiring',
+            'date': date(2026, 4, 20),
+        })
+        order.company_id = self.company_b
+        order._onchange_company_id()
+        self.assertFalse(order.employee_id)
+        self.assertFalse(order.department_id)
+        self.assertFalse(order.job_id)
+
+    def test_onchange_company_keeps_shared_records(self):
+        shared_dept = self.env['hr.department'].create({
+            'name': 'Shared', 'company_id': False,
+        })
+        order = self.env['hr.order'].new({
+            'company_id': self.company_a.id,
+            'department_id': shared_dept.id,
+            'order_type': 'hiring',
+            'date': date(2026, 4, 20),
+        })
+        order.company_id = self.company_b
+        order._onchange_company_id()
+        self.assertEqual(order.department_id, shared_dept)
