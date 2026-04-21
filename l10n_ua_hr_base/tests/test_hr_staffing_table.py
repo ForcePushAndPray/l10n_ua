@@ -282,3 +282,53 @@ class TestHrStaffingTableIntegration(TestHrUaBase):
         employee.active = False
         record._compute_filled_units()
         self.assertEqual(record.filled_units, 0.0)
+
+
+@tagged('post_install', '-at_install')
+class TestStaffingTableMultiCompany(TestHrUaBase):
+    """Multi-company isolation для hr.staffing.table."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.company_b = cls.env['res.company'].create({
+            'name': 'Company B',
+        })
+        cls.dept_b = cls.env['hr.department'].create({
+            'name': 'Dept B',
+            'company_id': cls.company_b.id,
+        })
+        cls.job_b = cls.env['hr.job'].create({
+            'name': 'Job B',
+            'company_id': cls.company_b.id,
+            'department_id': cls.dept_b.id,
+        })
+
+    def test_onchange_company_resets_cross_company_dept(self):
+        """Зміна company_id скидає department_id якщо він з іншої компанії."""
+        record = self.env['hr.staffing.table'].new({
+            'company_id': self.company.id,
+            'department_id': self.department.id,
+            'job_id': self.job.id,
+        })
+        record.company_id = self.company_b
+        record._onchange_company_id()
+        self.assertFalse(record.department_id,
+            'Department from other company must be cleared')
+        self.assertFalse(record.job_id,
+            'Job from other company must be cleared')
+
+    def test_onchange_company_keeps_shared_records(self):
+        """Shared records (company_id=False) не скидаються."""
+        shared_dept = self.env['hr.department'].create({
+            'name': 'Shared Dept',
+            'company_id': False,
+        })
+        record = self.env['hr.staffing.table'].new({
+            'company_id': self.company.id,
+            'department_id': shared_dept.id,
+        })
+        record.company_id = self.company_b
+        record._onchange_company_id()
+        self.assertEqual(record.department_id, shared_dept,
+            'Shared department must remain after company switch')

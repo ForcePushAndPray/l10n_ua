@@ -124,3 +124,40 @@ class TestTimesheet(TransactionCase):
         self.assertEqual(ts.total_employees, 0)
         self.assertEqual(ts.total_worked_days, 0)
         self.assertEqual(ts.total_worked_hours, 0)
+
+
+@tagged('post_install', '-at_install')
+class TestTimesheetMultiCompany(TransactionCase):
+    """Multi-company isolation для hr.timesheet."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.company_a = cls.env.company
+        cls.company_b = cls.env['res.company'].create({'name': 'Company B'})
+        cls.dept_a = cls.env['hr.department'].create({
+            'name': 'Dept A', 'company_id': cls.company_a.id,
+        })
+        cls.dept_b = cls.env['hr.department'].create({
+            'name': 'Dept B', 'company_id': cls.company_b.id,
+        })
+
+    def test_onchange_company_resets_foreign_department(self):
+        ts = self.env['hr.timesheet'].new({
+            'year': 2026, 'month': '4',
+            'company_id': self.company_a.id,
+            'department_id': self.dept_a.id,
+        })
+        ts.company_id = self.company_b
+        ts._onchange_company_id()
+        self.assertFalse(ts.department_id)
+
+    def test_onchange_company_keeps_same_company_department(self):
+        ts = self.env['hr.timesheet'].new({
+            'year': 2026, 'month': '4',
+            'company_id': self.company_a.id,
+            'department_id': self.dept_a.id,
+        })
+        # та сама компанія — нічого не скидається
+        ts._onchange_company_id()
+        self.assertEqual(ts.department_id, self.dept_a)

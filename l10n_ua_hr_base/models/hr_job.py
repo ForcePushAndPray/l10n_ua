@@ -54,3 +54,9 @@ class HrJob(models.Model):
     def _onchange_kp_id(self):
         if self.kp_id and self.kp_id.work_conditions:
             self.work_conditions = self.kp_id.work_conditions
+
+    @api.onchange('company_id')
+    def _onchange_company_id_ua(self):
+        if self.department_id and self.department_id.company_id \
+                and self.department_id.company_id != self.company_id:
+            self.department_id = False
