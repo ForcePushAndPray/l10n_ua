@@ -447,9 +447,23 @@ class TelegramBot(models.Model):
             'show_in_menu': True,
             'sequence': 10,
         })
+
+        # Add company logo if available
+        company = self.company_id or self.env.company
+        if company.logo:
+            Response.create({
+                'command_id': start_cmd.id,
+                'sequence': 1,
+                'response_type': 'image',
+                'image': company.logo,
+            })
+            text_sequence = 2
+        else:
+            text_sequence = 1
+
         start_resp = Response.create({
             'command_id': start_cmd.id,
-            'sequence': 1,
+            'sequence': text_sequence,
             'response_type': 'text',
             'text': "Hello, {first_name}! 👋\n\nHow can I help you?",
             'parse_mode': 'HTML',
