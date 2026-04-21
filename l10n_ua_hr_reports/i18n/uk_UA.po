@@ -1086,7 +1086,7 @@ msgstr "ЄСВ"
 #. module: l10n_ua_hr_reports
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__fte_count
 msgid "FTE"
-msgstr "ФТЕ"
+msgstr "ЕПЗ"
 
 #. module: l10n_ua_hr_reports
 #: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount_line__fte_count
