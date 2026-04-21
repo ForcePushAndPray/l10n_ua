@@ -57,6 +57,12 @@
 
                     <notebook>
                         <page string="Commands" name="commands">
+                            <div class="alert alert-info" role="alert" invisible="command_count">
+                                <p><strong>No commands configured.</strong></p>
+                                <p>Click the button below to create default commands (start, price, services, contact, help).</p>
+                                <button name="action_create_default_commands" string="Create Default Commands"
+                                        type="object" class="btn-primary"/>
+                            </div>
                             <field name="command_ids">
                                 <list editable="bottom">
                                     <field name="sequence" widget="handle"/>

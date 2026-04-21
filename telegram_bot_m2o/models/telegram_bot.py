@@ -430,3 +430,120 @@ class TelegramBot(models.Model):
             'view_mode': 'list,kanban,form',
             'domain': [('telegram_chat_id.bot_id', '=', self.id)],
         }
+
+    def action_create_default_commands(self):
+        """Create default bot commands"""
+        self.ensure_one()
+        Command = self.env['telegram.bot.command']
+        Response = self.env['telegram.bot.response']
+        Button = self.env['telegram.bot.button']
+
+        # /start command
+        start_cmd = Command.create({
+            'bot_id': self.id,
+            'name': 'start',
+            'description': 'Start conversation',
+            'trigger_type': 'command',
+            'show_in_menu': True,
+            'sequence': 10,
+        })
+        start_resp = Response.create({
+            'command_id': start_cmd.id,
+            'sequence': 1,
+            'response_type': 'text',
+            'text': "Hello, {first_name}! 👋\n\nHow can I help you?",
+            'parse_mode': 'HTML',
+            'buttons_per_row': 2,
+        })
+        Button.create([
+            {'response_id': start_resp.id, 'label': '💰 Prices', 'button_type': 'callback', 'callback_data': 'cmd:price', 'sequence': 1},
+            {'response_id': start_resp.id, 'label': '📋 Services', 'button_type': 'callback', 'callback_data': 'cmd:services', 'sequence': 2},
+            {'response_id': start_resp.id, 'label': '📞 Contact', 'button_type': 'callback', 'callback_data': 'cmd:contact', 'sequence': 3},
+            {'response_id': start_resp.id, 'label': '❓ Help', 'button_type': 'callback', 'callback_data': 'cmd:help', 'sequence': 4},
+        ])
+
+        # /price command
+        price_cmd = Command.create({
+            'bot_id': self.id,
+            'name': 'price',
+            'description': 'Pricing information',
+            'trigger_type': 'command',
+            'show_in_menu': True,
+            'sequence': 20,
+        })
+        Response.create({
+            'command_id': price_cmd.id,
+            'sequence': 1,
+            'response_type': 'text',
+            'text': "💰 <b>Our Prices</b>\n\nContact us for pricing details.",
+            'parse_mode': 'HTML',
+        })
+
+        # /services command
+        services_cmd = Command.create({
+            'bot_id': self.id,
+            'name': 'services',
+            'description': 'Our services',
+            'trigger_type': 'command',
+            'show_in_menu': True,
+            'sequence': 30,
+        })
+        Response.create({
+            'command_id': services_cmd.id,
+            'sequence': 1,
+            'response_type': 'text',
+            'text': "📋 <b>Our Services</b>\n\n• Service 1\n• Service 2\n• Service 3",
+            'parse_mode': 'HTML',
+        })
+
+        # /contact command
+        contact_cmd = Command.create({
+            'bot_id': self.id,
+            'name': 'contact',
+            'description': 'Contact information',
+            'trigger_type': 'command',
+            'show_in_menu': True,
+            'create_lead': True,
+            'sequence': 40,
+        })
+        contact_resp = Response.create({
+            'command_id': contact_cmd.id,
+            'sequence': 1,
+            'response_type': 'text',
+            'text': "📞 <b>Contact Us</b>\n\nShare your phone number and we'll get back to you!",
+            'parse_mode': 'HTML',
+            'buttons_per_row': 1,
+        })
+        Button.create({
+            'response_id': contact_resp.id,
+            'label': '📱 Share Phone',
+            'button_type': 'contact',
+            'sequence': 1,
+        })
+
+        # /help command
+        help_cmd = Command.create({
+            'bot_id': self.id,
+            'name': 'help',
+            'description': 'Help',
+            'trigger_type': 'command',
+            'show_in_menu': True,
+            'sequence': 50,
+        })
+        Response.create({
+            'command_id': help_cmd.id,
+            'sequence': 1,
+            'response_type': 'text',
+            'text': "❓ <b>Available Commands</b>\n\n/start - Start conversation\n/price - Pricing info\n/services - Our services\n/contact - Contact us\n/help - This help",
+            'parse_mode': 'HTML',
+        })
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Success'),
+                'message': _('5 default commands created!'),
+                'type': 'success',
+            }
+        }
