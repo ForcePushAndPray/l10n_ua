@@ -39,15 +39,63 @@
     </div>
 </section>
 
+<!-- Screenshots Section -->
 <section class="oe_container oe_dark">
     <div class="oe_row oe_spaced">
+        <div class="oe_span12">
+            <h3 class="oe_slogan">Screenshots</h3>
+        </div>
+    </div>
+    <div class="oe_row oe_spaced">
         <div class="oe_span6">
-            <h4><i class="fa fa-keyboard"></i> Inline Keyboards</h4>
-            <p>Create interactive inline buttons with URL links, callback actions, or navigation to other commands. Build complex conversation flows.</p>
+            <div class="oe_demo oe_picture oe_screenshot">
+                <img src="bot without commands.png" alt="Bot Configuration - Empty" style="max-width: 100%; border: 1px solid #ddd; border-radius: 4px;"/>
+                <p class="text-center"><em>New bot - Create default commands with one click</em></p>
+            </div>
         </div>
         <div class="oe_span6">
-            <h4><i class="fa fa-history"></i> Message History</h4>
-            <p>Full logging of all incoming and outgoing messages. Track conversation history, user interactions, and bot performance.</p>
+            <div class="oe_demo oe_picture oe_screenshot">
+                <img src="bot with commands.png" alt="Bot Configuration - With Commands" style="max-width: 100%; border: 1px solid #ddd; border-radius: 4px;"/>
+                <p class="text-center"><em>Bot with configured commands</em></p>
+            </div>
+        </div>
+    </div>
+    <div class="oe_row oe_spaced">
+        <div class="oe_span6">
+            <div class="oe_demo oe_picture oe_screenshot">
+                <img src="commands list.png" alt="Commands List" style="max-width: 100%; border: 1px solid #ddd; border-radius: 4px;"/>
+                <p class="text-center"><em>List of bot commands</em></p>
+            </div>
+        </div>
+        <div class="oe_span6">
+            <div class="oe_demo oe_picture oe_screenshot">
+                <img src="start_command.png" alt="Start Command in Telegram" style="max-width: 100%; border: 1px solid #ddd; border-radius: 4px;"/>
+                <p class="text-center"><em>/start command response in Telegram</em></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Architecture Diagram -->
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <div class="oe_span12">
+            <h3 class="oe_slogan">Architecture</h3>
+            <div class="text-center">
+                <img src="architecture.png" alt="Module Architecture" style="max-width: 100%;"/>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Flow Diagram -->
+<section class="oe_container oe_dark">
+    <div class="oe_row oe_spaced">
+        <div class="oe_span12">
+            <h3 class="oe_slogan">Message Processing Flow</h3>
+            <div class="text-center">
+                <img src="flow.png" alt="Message Flow" style="max-width: 100%;"/>
+            </div>
         </div>
     </div>
 </section>
@@ -85,6 +133,19 @@
 
 <section class="oe_container oe_dark">
     <div class="oe_row oe_spaced">
+        <div class="oe_span6">
+            <h4><i class="fa fa-keyboard"></i> Inline Keyboards</h4>
+            <p>Create interactive inline buttons with URL links, callback actions, or navigation to other commands. Build complex conversation flows.</p>
+        </div>
+        <div class="oe_span6">
+            <h4><i class="fa fa-history"></i> Message History</h4>
+            <p>Full logging of all incoming and outgoing messages. Track conversation history, user interactions, and bot performance.</p>
+        </div>
+    </div>
+</section>
+
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
         <div class="oe_span12">
             <h3 class="oe_slogan">Automatic Contact & Lead Creation</h3>
             <p class="oe_mt32 text-center">
@@ -96,7 +157,7 @@
     </div>
 </section>
 
-<section class="oe_container">
+<section class="oe_container oe_dark">
     <div class="oe_row oe_spaced">
         <div class="oe_span12">
             <h3 class="oe_slogan">Response Types</h3>
@@ -126,23 +187,23 @@
     </div>
 </section>
 
-<section class="oe_container oe_dark">
+<section class="oe_container">
     <div class="oe_row oe_spaced">
         <div class="oe_span12">
             <h3 class="oe_slogan">Variables in Responses</h3>
             <p class="text-center">Use placeholders in your response text:</p>
-            <ul class="text-center" style="list-style: none;">
-                <li><code>{first_name}</code> - User's first name</li>
-                <li><code>{last_name}</code> - User's last name</li>
-                <li><code>{user_name}</code> - Telegram username</li>
-                <li><code>{full_name}</code> - First + Last name</li>
-                <li><code>{chat_id}</code> - Telegram chat ID</li>
-            </ul>
+            <div class="text-center">
+                <code>{first_name}</code> - User's first name<br/>
+                <code>{last_name}</code> - User's last name<br/>
+                <code>{user_name}</code> - Telegram username<br/>
+                <code>{full_name}</code> - First + Last name<br/>
+                <code>{chat_id}</code> - Telegram chat ID
+            </div>
         </div>
     </div>
 </section>
 
-<section class="oe_container">
+<section class="oe_container oe_dark">
     <div class="oe_row oe_spaced">
         <div class="oe_span12">
             <h3 class="oe_slogan">Requirements</h3>

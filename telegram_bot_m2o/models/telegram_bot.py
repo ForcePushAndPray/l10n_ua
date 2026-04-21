@@ -553,11 +553,9 @@ class TelegramBot(models.Model):
         })
 
         return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': _('Success'),
-                'message': _('5 default commands created!'),
-                'type': 'success',
-            }
+            'type': 'ir.actions.act_window',
+            'res_model': 'telegram.bot',
+            'res_id': self.id,
+            'view_mode': 'form',
+            'target': 'current',
         }
