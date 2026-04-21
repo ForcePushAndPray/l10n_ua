@@ -1427,12 +1427,18 @@ msgid "Advance Batch"
 msgstr "Пакет авансів"
 
 #. module: l10n_ua_hr_salary
+#: model:ir.ui.menu,name:l10n_ua_hr_salary.menu_hr_salary_advance
+msgid "Advance List"
+msgstr "Перелік авансів"
+
+#. module: l10n_ua_hr_salary
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance_run__advance_count
 msgid "Advance Count"
 msgstr "Кількість авансів"
 
 #. module: l10n_ua_hr_salary
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance_run__advance_ids
+#: model:ir.ui.menu,name:l10n_ua_hr_salary.menu_hr_salary_advance_root
 msgid "Advances"
 msgstr "Аванси"
 
@@ -1514,6 +1520,8 @@ msgstr "Пакет авансів"
 
 #. module: l10n_ua_hr_salary
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_run_view_list
+#: model:ir.actions.act_window,name:l10n_ua_hr_salary.action_hr_salary_advance_run
+#: model:ir.ui.menu,name:l10n_ua_hr_salary.menu_hr_salary_advance_run
 msgid "Advance Batches"
 msgstr "Пакети авансів"
 
