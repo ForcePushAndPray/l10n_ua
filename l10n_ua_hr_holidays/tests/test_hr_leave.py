@@ -196,22 +196,35 @@ class TestHrLeave(TransactionCase):
         holiday.unlink()
 
     def test_remaining_before_fallback_no_balance_record(self):
-        """Без hr.vacation.balance: remaining_before = annual_days - used already."""
-        validated_leave = self.env['hr.leave'].create({
+        """_compute_remaining_before fallback: without hr.vacation.balance
+        remaining_before = annual_days − already validated days in the year.
+        """
+        # Ensure no balance record exists for 2036
+        self.env['hr.vacation.balance'].search([
+            ('employee_id', '=', self.employee.id),
+            ('leave_type_id', '=', self.leave_type_calendar.id),
+            ('year', '=', 2036),
+        ]).unlink()
+
+        # Validated leave: Mon Feb 2 – Fri Feb 6, 2036 (5 days, no public holidays)
+        used_leave = self.env['hr.leave'].create({
             'name': 'Used Leave',
             'employee_id': self.employee.id,
             'holiday_status_id': self.leave_type_calendar.id,
             'date_from': datetime(2036, 2, 2, 8, 0, 0),
-            'date_to': datetime(2036, 2, 6, 17, 0, 0),  # 5 days
+            'date_to': datetime(2036, 2, 6, 17, 0, 0),
         })
-        validated_leave.sudo()._write({'state': 'validate'})
+        # Bypass workflow — set state directly
+        used_leave.sudo()._write({'state': 'validate'})
 
+        # In-memory record for 2036 — check remaining balance
         new_leave = self.env['hr.leave'].new({
             'employee_id': self.employee.id,
             'holiday_status_id': self.leave_type_calendar.id,
-            'request_date_from': date(2036, 3, 1),
-            'request_date_to': date(2036, 3, 7),
+            'vacation_year': 2036,
         })
         new_leave._compute_remaining_before()
-        # annual_days=24, used 5 → left 19
+
+        # annual_days=24, 5 days used → 19 remaining
         self.assertEqual(new_leave.remaining_days_before, 19)
+
