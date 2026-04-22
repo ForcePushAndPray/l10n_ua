@@ -170,6 +170,8 @@ class HrLeave(models.Model):
 
     @api.depends('employee_id', 'holiday_status_id', 'vacation_year', 'date_from')
     def _compute_remaining_before(self):
+        """Initialize to avoid errors in future"""
+        balance = 0
         """Compute vacation balance before this leave from hr.vacation.balance"""
         for leave in self:
             if not leave.employee_id or not leave.holiday_status_id:
