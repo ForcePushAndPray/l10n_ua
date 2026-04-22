@@ -20,6 +20,10 @@
                        invisible="not is_ua_cash_order"/>
                 <field name="is_ua_cash_order" invisible="1"/>
                 <field name="ua_cash_order_type" invisible="1"/>
+                <field name="analytic_distribution"
+                       widget="analytic_distribution"
+                       invisible="not is_ua_cash_order"
+                       groups="analytic.group_analytic_accounting"/>
             </field>
         </field>
     </record>
