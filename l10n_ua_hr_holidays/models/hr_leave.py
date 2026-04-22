@@ -187,10 +187,25 @@ class HrLeave(models.Model):
                 ('year', '=', year),
             ], limit=1)
             
-            if balance:
-                leave.remaining_days_before = balance.total_available - balance.used_days
-            else:
-                leave.remaining_days_before = 0
+        if balance:
+            leave.remaining_days_before = balance.total_available - balance.used_days
+        elif leave.holiday_status_id.annual_days:
+            # No balance record yet — use annual_days as entitlement baseline
+            # and subtract already validated leaves for this year
+            year_start = f'{year}-01-01'
+            year_end = f'{year}-12-31'
+            validated = self.env['hr.leave'].search([
+                ('employee_id', '=', leave.employee_id.id),
+                ('holiday_status_id', '=', leave.holiday_status_id.id),
+                ('state', '=', 'validate'),
+                ('date_from', '>=', year_start),
+                ('date_to', '<=', year_end),
+                ('id', '!=', leave._origin.id),
+            ])
+            used = sum(validated.mapped('calendar_days'))
+            leave.remaining_days_before = leave.holiday_status_id.annual_days - used
+        else:
+            leave.remaining_days_before = 0
 
     @api.depends('remaining_days_before', 'number_of_days')
     def _compute_remaining_after(self):
