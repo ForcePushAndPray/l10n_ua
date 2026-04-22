@@ -1,6 +1,8 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
+from odoo.addons.hr_holidays.models.hr_leave import HOURS_PER_DAY
+from datetime import datetime, time as dt_time
 
 
 class HrLeave(models.Model):
@@ -119,7 +121,8 @@ class HrLeave(models.Model):
                 public_holidays = leave._get_public_holidays_count()
                 days = max(total_days - public_holidays, 0)
                 leave.number_of_days = days
-                leave.number_of_hours = days * 8
+                hours_per_day = leave.resource_calendar_id.hours_per_day or HOURS_PER_DAY
+                leave.number_of_hours = days * hours_per_day
             else:
                 leave.number_of_days = 0
                 leave.number_of_hours = 0
@@ -131,7 +134,6 @@ class HrLeave(models.Model):
         self.ensure_one()
         if not self.request_date_from or not self.request_date_to:
             return 0
-        from datetime import datetime, time as dt_time
         leave_from = self.request_date_from
         leave_to = self.request_date_to
         dt_from = datetime.combine(leave_from, dt_time.min)
@@ -151,7 +153,6 @@ class HrLeave(models.Model):
 
     @api.depends('request_date_from', 'request_date_to')
     def _compute_working_days(self):
-        from datetime import datetime, time as dt_time
         for leave in self:
             if leave.request_date_from and leave.request_date_to:
                 leave_from = leave.request_date_from
@@ -218,7 +219,7 @@ class HrLeave(models.Model):
                     ('state', '=', 'validate'),
                     ('date_from', '>=', year_start),
                     ('date_to', '<=', year_end),
-                    ('id', '!=', leave._origin.id),
+                    ('id', '!=', leave._origin.id or 0),
                 ])
                 used = sum(validated.mapped('calendar_days'))
                 leave.remaining_days_before = leave.holiday_status_id.annual_days - used
