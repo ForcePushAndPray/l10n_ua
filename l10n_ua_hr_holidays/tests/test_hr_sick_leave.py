@@ -1,7 +1,8 @@
 from datetime import date
 from odoo.tests.common import TransactionCase
+from odoo.tests import tagged
 
-
+@tagged('post_install', '-at_install')
 class TestHrSickLeave(TransactionCase):
     """Tests for hr.sick.leave model"""
 
