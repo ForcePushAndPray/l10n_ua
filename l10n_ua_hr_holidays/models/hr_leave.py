@@ -189,7 +189,7 @@ class HrLeave(models.Model):
             else:
                 leave.vacation_pay_amount = 0.0
 
-    @api.depends('employee_id', 'holiday_status_id', 'vacation_year', 'date_from')
+    @api.depends('employee_id', 'holiday_status_id', 'vacation_year', 'request_date_from')
     def _compute_remaining_before(self):
         """Compute vacation balance before this leave from hr.vacation.balance"""
         for leave in self:
@@ -217,8 +217,8 @@ class HrLeave(models.Model):
                     ('employee_id', '=', leave.employee_id.id),
                     ('holiday_status_id', '=', leave.holiday_status_id.id),
                     ('state', '=', 'validate'),
-                    ('date_from', '>=', year_start),
-                    ('date_to', '<=', year_end),
+                    ('date_from', '<=', year_end),
+                    ('date_to', '>=', year_start),
                     ('id', '!=', leave._origin.id or 0),
                 ])
                 used = sum(validated.mapped('calendar_days'))
