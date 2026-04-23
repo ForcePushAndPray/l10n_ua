@@ -96,6 +96,7 @@
             'default_payment_type': 'inbound',
             'default_partner_type': 'customer',
             'search_default_journal_id': False,
+            'l10n_ua_default_cash_journal': True,
         }</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'list', 'view_id': ref('view_account_payment_pko_list')}),
@@ -112,6 +113,7 @@
             'default_payment_type': 'outbound',
             'default_partner_type': 'supplier',
             'search_default_journal_id': False,
+            'l10n_ua_default_cash_journal': True,
         }</field>
         <field name="view_ids" eval="[(5, 0, 0),
             (0, 0, {'view_mode': 'list', 'view_id': ref('view_account_payment_vko_list')}),
