@@ -1,5 +1,4 @@
 from odoo import models, fields, api, _
-from odoo.exceptions import UserError
 
 class HrOrder(models.Model):
     _name = 'hr.order'
@@ -166,7 +165,11 @@ class HrOrder(models.Model):
         result = super().write(vals)
         if not self.env.context.get('_sync_order_leave'):
             if {'vacation_date_from', 'vacation_date_to'} & vals.keys():
-                for order in self.filtered(lambda o: o.order_type == 'vacation' and o.leave_id):
+                for order in self.filtered(
+                    lambda o: o.order_type == 'vacation' 
+                    and o.leave_id
+                    and o.leave_id.state not in ('validate', 'validate1')
+                ):
                     order.leave_id.with_context(_sync_order_leave=True).write({
                         'date_from': order.vacation_date_from,
                         'date_to': order.vacation_date_to,
