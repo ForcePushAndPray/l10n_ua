@@ -1,6 +1,5 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import UserError
-
 
 class HrOrder(models.Model):
     _name = 'hr.order'
@@ -183,7 +182,7 @@ class HrOrder(models.Model):
             order.leave_id.message_post(
                 body=_('Linked vacation order %s was cancelled. Leave state is unchanged.', order.name)
             )
-        return res
+        return True
 
     def unlink(self):
         leaves = self.mapped('leave_id')

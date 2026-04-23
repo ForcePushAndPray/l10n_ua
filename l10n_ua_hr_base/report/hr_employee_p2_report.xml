@@ -352,14 +352,6 @@
         		    <td style="border: 1px solid #000; padding: 3px;"></td>
     		    	</tr>
 		    </t>
-
-                    <tr>
-                        <td style="border: 1px solid #000; padding: 3px; height: 20px;"></td>
-                        <td style="border: 1px solid #000; padding: 3px;"></td>
-                        <td style="border: 1px solid #000; padding: 3px;"></td>
-                        <td style="border: 1px solid #000; padding: 3px;"></td>
-                        <td style="border: 1px solid #000; padding: 3px;"></td>
-                    </tr>
                 </table>
                 
                 <t t-if="employee.disability_group and employee.disability_group != 'none'">
