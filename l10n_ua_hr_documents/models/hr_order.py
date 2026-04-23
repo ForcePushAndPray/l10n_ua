@@ -173,9 +173,10 @@ class HrOrder(models.Model):
                     and o.leave_id.state not in ('validate', 'validate1')
                 ):
                     order.leave_id.with_context(_sync_order_leave=True).write({
-                        'date_from': order.vacation_date_from,
-                        'date_to': order.vacation_date_to,
+                        'date_from': fields.Datetime.from_string(str(order.vacation_date_from)) if order.vacation_date_from else False,
+                        'date_to': fields.Datetime.from_string(str(order.vacation_date_to)) if order.vacation_date_to else False,
                     })
+
         return result
 
     def action_confirm(self):
