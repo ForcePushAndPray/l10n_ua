@@ -100,6 +100,14 @@ class AccountPayment(models.Model):
         store=True,
     )
 
+    # --- Analytic distribution (стаття руху грошових коштів) ---
+    analytic_distribution = fields.Json(
+        string='Аналітичний розподіл',
+        help='Стаття руху грошових коштів та інша аналітика. '
+             'Передається на counterpart та write-off рядки журнальних проводок '
+             'при підтвердженні платежу. Не передається на ліквідну (cash) сторону.',
+    )
+
     # --- Cash order computes ---
 
     @api.depends('journal_id', 'journal_id.type')
@@ -135,6 +143,25 @@ class AccountPayment(models.Model):
                 payment.ua_payment_order_type = 'pd'
             else:
                 payment.ua_payment_order_type = 'other'
+
+    # --- Analytic distribution propagation ---
+
+    def _prepare_move_lines_per_type(self, write_off_line_vals=None, force_balance=None):
+        """Inject analytic_distribution into counterpart and write-off lines.
+
+        Cash (liquidity) side does not get analytics — стаття руху грошових коштів
+        applies to the expense/income side of the cash transaction.
+        """
+        result = super()._prepare_move_lines_per_type(
+            write_off_line_vals=write_off_line_vals, force_balance=force_balance,
+        )
+        if not self.analytic_distribution:
+            return result
+        for line_vals in result.get('counterpart_lines', []):
+            line_vals['analytic_distribution'] = dict(self.analytic_distribution)
+        for line_vals in result.get('write_off_lines', []):
+            line_vals.setdefault('analytic_distribution', dict(self.analytic_distribution))
+        return result
 
     # --- Create with auto-sequencing ---
 
@@ -233,6 +260,7 @@ class AccountPayment(models.Model):
     def action_post(self):
         """Override to block posting if approval required but not given,
         and warn if cash limit would be exceeded."""
+        analytic_required = self.env.user.has_group('analytic.group_analytic_accounting')
         for payment in self:
             if payment.ua_approval_required and not payment.ua_approved:
                 payment._schedule_approval_activity()
@@ -242,6 +270,13 @@ class AccountPayment(models.Model):
                     amount=payment.amount,
                     currency=payment.currency_id.name,
                     threshold=payment.company_id.l10n_ua_payment_approval_threshold,
+                ))
+            if (analytic_required
+                    and payment.is_ua_cash_order
+                    and not payment.analytic_distribution):
+                raise UserError(_(
+                    "Для касового ордеру вкажіть аналітичний розподіл "
+                    "(статтю руху грошових коштів)."
                 ))
         result = super().action_post()
         # Check cash limit after posting

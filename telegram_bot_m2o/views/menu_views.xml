@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Root Menu -->
+    <menuitem id="menu_telegram_bot_root"
+              name="Telegram"
+              sequence="65"
+              web_icon="telegram_bot,static/description/icon.png"/>
+
+    <!-- Configuration Menu -->
+    <menuitem id="menu_telegram_bot_config"
+              name="Configuration"
+              parent="menu_telegram_bot_root"
+              sequence="100"/>
+
+    <!-- Bots Menu -->
+    <menuitem id="menu_telegram_bot_bots"
+              name="Bots"
+              parent="menu_telegram_bot_config"
+              action="telegram_bot_action"
+              sequence="10"/>
+
+    <!-- Commands Menu -->
+    <menuitem id="menu_telegram_bot_commands"
+              name="Commands"
+              parent="menu_telegram_bot_config"
+              action="telegram_bot_command_action"
+              sequence="20"/>
+
+    <!-- Chats Menu -->
+    <menuitem id="menu_telegram_bot_chats"
+              name="Chats"
+              parent="menu_telegram_bot_root"
+              action="telegram_bot_chat_action"
+              sequence="10"/>
+
+    <!-- Messages Menu -->
+    <menuitem id="menu_telegram_bot_messages"
+              name="Messages"
+              parent="menu_telegram_bot_root"
+              action="telegram_bot_message_action"
+              sequence="20"/>
+
+</odoo>
