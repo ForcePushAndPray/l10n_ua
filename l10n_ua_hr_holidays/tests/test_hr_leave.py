@@ -172,6 +172,8 @@ class TestHrLeave(TransactionCase):
             'name': 'Test',
             'employee_id': self.employee.id,
             'holiday_status_id': self.leave_type_calendar.id,
+            'request_date_from': date(2035, 3, 5),   # Mon
+            'request_date_to': date(2035, 3, 11),    # Sun
             'date_from': datetime(2035, 3, 5, 8, 0, 0),
             'date_to': datetime(2035, 3, 11, 17, 0, 0),
         })
@@ -190,6 +192,8 @@ class TestHrLeave(TransactionCase):
             'name': 'Test',
             'employee_id': self.employee.id,
             'holiday_status_id': self.leave_type_calendar.id,
+            'request_date_from': date(2035, 4, 16),  # Mon
+            'request_date_to': date(2035, 4, 20),    # Fri
             'date_from': datetime(2035, 4, 16, 8, 0, 0),  # Mon
             'date_to': datetime(2035, 4, 20, 17, 0, 0),   # Fri
         })
@@ -208,13 +212,15 @@ class TestHrLeave(TransactionCase):
             ('year', '=', 2036),
         ]).unlink()
 
-        # Validated leave: Mon Feb 2 – Fri Feb 6, 2036 (5 days, no public holidays)
+        # Validated leave: Mon Feb 4 – Fri Feb 8, 2036 (5 days, no public holidays)
         used_leave = self.env['hr.leave'].create({
             'name': 'Used Leave',
             'employee_id': self.employee.id,
             'holiday_status_id': self.leave_type_calendar.id,
-            'date_from': datetime(2036, 2, 2, 8, 0, 0),
-            'date_to': datetime(2036, 2, 6, 17, 0, 0),
+            'request_date_from': date(2036, 2, 4),   # Mon
+            'request_date_to': date(2036, 2, 8),     # Fri
+            'date_from': datetime(2036, 2, 4, 8, 0, 0),
+            'date_to': datetime(2036, 2, 8, 17, 0, 0),
         })
         # Bypass workflow — set state directly
         used_leave.sudo()._write({'state': 'validate'})
