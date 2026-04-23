@@ -211,17 +211,39 @@ class HrLeave(models.Model):
             if balance: 
                 leave.remaining_days_before = balance.total_available - balance.used_days
             elif leave.holiday_status_id.annual_days:
-                year_start = f'{year}-01-01'
-                year_end = f'{year}-12-31'
                 validated = self.env['hr.leave'].search([
                     ('employee_id', '=', leave.employee_id.id),
                     ('holiday_status_id', '=', leave.holiday_status_id.id),
                     ('state', '=', 'validate'),
-                    ('date_from', '<=', year_end),
-                    ('date_to', '>=', year_start),
+                    ('date_from', '<=', f'{year}-12-31'),
+                    ('date_to', '>=', f'{year}-01-01'),
                     ('id', '!=', leave._origin.id or 0),
                 ])
-                used = sum(validated.mapped('calendar_days'))
+
+                used = 0
+                for v in validated:
+                    if not v.request_date_from or not v.request_date_to:
+                        continue
+                    ol_from = max(v.request_date_from, year_start_d)
+                    ol_to = min(v.request_date_to, year_end_d)
+                    if ol_from > ol_to:
+                        continue
+                    total_overlap = (ol_to - ol_from).days + 1
+                    dt_from = datetime.combine(ol_from, dt_time.min)
+                    dt_to = datetime.combine(ol_to, dt_time.max)
+                    holidays = self.env['resource.calendar.leaves'].search([
+                        ('resource_id', '=', False),
+                        ('date_from', '<=', dt_to),
+                        ('date_to', '>=', dt_from),
+                    ])
+                    holiday_count = 0
+                    for h in holidays:
+                        h_from = max(h.date_from.date(), ol_from)
+                        h_to = min(h.date_to.date(), ol_to)
+                        if h_from <= h_to:
+                            holiday_count += (h_to - h_from).days + 1
+                    used += max(total_overlap - holiday_count, 0)
+
                 leave.remaining_days_before = leave.holiday_status_id.annual_days - used
             else:
                 leave.remaining_days_before = 0
