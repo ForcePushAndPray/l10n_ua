@@ -1,8 +1,9 @@
 from datetime import datetime, date
 from odoo.tests.common import TransactionCase
 from odoo.exceptions import ValidationError
+from odoo.tests import tagged
 
-
+@tagged('post_install', '-at_install')
 class TestHrLeave(TransactionCase):
     """Tests for hr.leave Ukrainian extensions"""
 
@@ -178,22 +179,23 @@ class TestHrLeave(TransactionCase):
         holiday.unlink()
 
     def test_working_days_excludes_public_holiday(self):
-        """Mo-Fr (5 working days), one of them — holiday → working_days == 4."""
+        """Mon-Fri (5 working days), one of them — holiday → working_days == 4."""
         holiday = self.env['resource.calendar.leaves'].create({
             'name': 'Holiday',
-            'date_from': datetime(2035, 4, 16, 0, 0, 0),  # Wednesday
-            'date_to': datetime(2035, 4, 16, 23, 59, 59),
+            'date_from': datetime(2035, 4, 18, 0, 0, 0),  # Wednesday
+            'date_to': datetime(2035, 4, 18, 23, 59, 59),
             'resource_id': False,
         })
         leave = self.env['hr.leave'].create({
             'name': 'Test',
             'employee_id': self.employee.id,
             'holiday_status_id': self.leave_type_calendar.id,
-            'date_from': datetime(2035, 4, 14, 8, 0, 0),  # Mo
-            'date_to': datetime(2035, 4, 18, 17, 0, 0),   # Fr
+            'date_from': datetime(2035, 4, 16, 8, 0, 0),  # Mon
+            'date_to': datetime(2035, 4, 20, 17, 0, 0),   # Fri
         })
         self.assertEqual(leave.working_days, 4)
         holiday.unlink()
+
 
     def test_remaining_before_fallback_no_balance_record(self):
         """_compute_remaining_before fallback: without hr.vacation.balance
