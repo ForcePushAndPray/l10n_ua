@@ -22,9 +22,9 @@
                         <field name="remaining_days_after"/>
                     </group>
                     <group>
-    			<field name="order_id"/>
-                        <field name="order_number"/>
-                        <field name="order_date"/>
+			<field name="order_id"/>
+			<field name="order_number" invisible="bool(order_id)"/>
+			<field name="order_date" invisible="bool(order_id)"/>
                     </group>
                 </group>
             </xpath>

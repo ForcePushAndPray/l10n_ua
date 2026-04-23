@@ -54,9 +54,18 @@ class HrLeave(models.Model):
     
     vacation_year = fields.Integer(
         string='Vacation Year',
-        help='Year for which vacation is taken'
+        help='Year for which vacation is taken',
+        compute='_compute_vacation_year',
+        store=True,
+        readonly=False,
+        precompute=True,
     )
 
+    @api.depends('request_date_from')
+    def _compute_vacation_year(self):
+        for leave in self:
+            if leave.request_date_from:
+                leave.vacation_year = leave.request_date_from.year
 
     @api.onchange('order_id')
     def _onchange_order_id(self):
@@ -83,8 +92,8 @@ class HrLeave(models.Model):
                 order_vals_list.append({
                     'order_type': 'vacation',
                     'employee_id': vals.get('employee_id'),
-                    'vacation_date_from': vals.get('date_from'),
-                    'vacation_date_to': vals.get('date_to'),
+                    'vacation_date_from': fields.Date.to_date(vals.get('date_from')),
+                    'vacation_date_to': fields.Date.to_date(vals.get('date_to')),
                     # holiday_status_id auto-derived from leave_id (related)
                 })
                 order_indices.append(idx)
@@ -100,12 +109,16 @@ class HrLeave(models.Model):
 
         leaves = super().create(vals_list)
 
-        # Back-link orders → leaves
+        # Back-link orders → leaves + sync dates from already-computed leave
         for leave in leaves:
             if leave.order_id and not leave.order_id.leave_id:
-                leave.order_id.with_context(_sync_order_leave=True).write(
-                    {'leave_id': leave.id}
-                )
+                date_from = leave.date_from.date() if leave.date_from else leave.request_date_from
+                date_to = leave.date_to.date() if leave.date_to else leave.request_date_to
+                leave.order_id.with_context(_sync_order_leave=True).write({
+                    'leave_id': leave.id,
+                    'vacation_date_from': date_from,
+                    'vacation_date_to': date_to,
+                })
         return leaves
 
     def write(self, vals):
@@ -114,9 +127,27 @@ class HrLeave(models.Model):
             if {'date_from', 'date_to'} & vals.keys():
                 for leave in self.filtered(lambda l: l.order_id):
                     leave.order_id.with_context(_sync_order_leave=True).write({
-                        'vacation_date_from': leave.date_from,
-                        'vacation_date_to': leave.date_to,
+                        'vacation_date_from': leave.date_from.date() if leave.date_from else False,
+                        'vacation_date_to': leave.date_to.date() if leave.date_to else False,
                     })
+            if 'holiday_status_id' in vals:
+                for leave in self.filtered(
+                    lambda l: not l.order_id
+                    and l.holiday_status_id
+                    and l.holiday_status_id.create_order
+                    and l.state not in ('validate', 'validate1', 'refuse')
+                ):
+                    order = self.env['hr.order'].with_context(
+                        _creating_order_from_leave=True
+                    ).create({
+                        'order_type': 'vacation',
+                        'employee_id': leave.employee_id.id,
+                        'vacation_date_from': leave.date_from.date() if leave.date_from else False,
+                        'vacation_date_to': leave.date_to.date() if leave.date_to else False,
+                        'subject': 'Про надання відпустки',
+                    })
+                    leave.with_context(_sync_order_leave=True).write({'order_id': order.id})
+                    order.with_context(_sync_order_leave=True).write({'leave_id': leave.id})
         return result
 
     def action_validate(self, *args, **kwargs):

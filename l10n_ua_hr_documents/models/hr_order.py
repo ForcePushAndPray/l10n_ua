@@ -91,7 +91,9 @@ class HrOrder(models.Model):
                 and self.job_id.company_id != self.company_id:
             self.job_id = False
 
-    subject = fields.Char(string='Subject', required=True, tracking=True, compute='_compute_subject', store=True, readonly=False)
+    subject = fields.Char(string='Subject', required=True, tracking=True, compute='_compute_subject', store=True, readonly=False, precompute=True)
+
+
 
     ORDER_TYPE_SUBJECTS = {
         'hiring': 'Про прийняття на роботу',
