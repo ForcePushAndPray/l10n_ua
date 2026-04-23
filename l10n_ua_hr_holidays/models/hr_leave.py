@@ -30,7 +30,16 @@ class HrLeave(models.Model):
     
     order_number = fields.Char(string='Order Number')
     order_date = fields.Date(string='Order Date')
-    
+   
+    order_id = fields.Many2one(
+        'hr.order',
+        string='Leave Order',
+        ondelete='set null',
+        copy=False,
+        index=True,
+        domain=[('order_type', '=', 'vacation')],
+    )
+
     remaining_days_before = fields.Float(
         string='Balance Before',
         compute='_compute_remaining_before',
@@ -47,6 +56,91 @@ class HrLeave(models.Model):
         string='Vacation Year',
         help='Year for which vacation is taken'
     )
+
+
+    @api.onchange('order_id')
+    def _onchange_order_id(self):
+        if self.order_id:
+            self.order_number = self.order_id.name
+            self.order_date = self.order_id.date
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        # Resolve which leaves should auto-create an order
+        type_ids = {v.get('holiday_status_id') for v in vals_list if v.get('holiday_status_id')}
+        types_with_order = set()
+        if type_ids:
+            types_with_order = set(self.env['hr.leave.type'].browse(type_ids).filtered(
+                lambda t: t.create_order
+            ).ids)
+
+        order_vals_list = []
+        order_indices = []
+        for idx, vals in enumerate(vals_list):
+            if (not vals.get('order_id')
+                    and not self.env.context.get('_creating_leave_from_order')
+                    and vals.get('holiday_status_id') in types_with_order):
+                order_vals_list.append({
+                    'order_type': 'vacation',
+                    'employee_id': vals.get('employee_id'),
+                    'vacation_date_from': vals.get('date_from'),
+                    'vacation_date_to': vals.get('date_to'),
+                    # holiday_status_id auto-derived from leave_id (related)
+                })
+                order_indices.append(idx)
+
+        if order_vals_list:
+            orders = self.env['hr.order'].with_context(
+                _creating_order_from_leave=True
+            ).create(order_vals_list)
+            for idx, order in zip(order_indices, orders):
+                vals_list[idx]['order_id'] = order.id
+                vals_list[idx].setdefault('order_number', order.name)
+                vals_list[idx].setdefault('order_date', order.date)
+
+        leaves = super().create(vals_list)
+
+        # Back-link orders → leaves
+        for leave in leaves:
+            if leave.order_id and not leave.order_id.leave_id:
+                leave.order_id.with_context(_sync_order_leave=True).write(
+                    {'leave_id': leave.id}
+                )
+        return leaves
+
+    def write(self, vals):
+        result = super().write(vals)
+        if not self.env.context.get('_sync_order_leave'):
+            if {'date_from', 'date_to'} & vals.keys():
+                for leave in self.filtered(lambda l: l.order_id):
+                    leave.order_id.with_context(_sync_order_leave=True).write({
+                        'vacation_date_from': leave.date_from,
+                        'vacation_date_to': leave.date_to,
+                    })
+        return result
+
+    def action_validate(self, *args, **kwargs):
+        res = super().action_validate(*args, **kwargs)
+        for leave in self.filtered(lambda l: l.order_id and l.order_id.state == 'draft'):
+            leave.order_id.with_context(_sync_order_leave=True).action_confirm()
+        return res
+
+    def action_refuse(self, *args, **kwargs):
+        res = super().action_refuse(*args, **kwargs)
+        for leave in self.filtered(lambda l: l.order_id and l.order_id.state != 'cancelled'):
+            leave.order_id.with_context(_sync_order_leave=True).write({'state': 'cancelled'})
+        return res
+
+    def unlink(self):
+        orders_to_delete = self.filtered(
+            lambda l: l.order_id
+            and l.state != 'validate'
+            and l.order_id.state == 'draft'
+        ).mapped('order_id')
+        res = super().unlink()
+        if orders_to_delete:
+            orders_to_delete.with_context(_sync_order_leave=True).unlink()
+        return res
 
     @api.constrains('employee_id', 'holiday_status_id', 'date_from')
     def _check_minimum_experience(self):
