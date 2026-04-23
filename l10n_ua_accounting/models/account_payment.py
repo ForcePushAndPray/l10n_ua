@@ -16,6 +16,7 @@ class AccountPayment(models.Model):
     standard Odoo widget, search method, and gin index — plays nicely with
     Enterprise Edition modules that may also extend account.payment.
     """
+    _name = 'account.payment'
     _inherit = ['account.payment', 'analytic.mixin']
 
     # --- Cash Order fields ---
