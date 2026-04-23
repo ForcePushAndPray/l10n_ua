@@ -163,32 +163,6 @@ class AccountPayment(models.Model):
             line_vals.setdefault('analytic_distribution', dict(self.analytic_distribution))
         return result
 
-    # --- Default journal for ПКО/ВКО actions ---
-
-    @api.depends('company_id', 'partner_id')
-    def _compute_journal_id(self):
-        """Prefer cash journal when opening form via ПКО/ВКО action.
-
-        Stock _compute_journal_id picks the first bank/cash/credit journal
-        — usually a bank journal first. When opening from ПКО/ВКО list,
-        we set context flag l10n_ua_default_cash_journal=True so the form
-        starts with a cash journal pre-selected.
-        """
-        super()._compute_journal_id()
-        if not self.env.context.get('l10n_ua_default_cash_journal'):
-            return
-        for payment in self:
-            if payment.journal_id.type == 'cash':
-                continue
-            cash_journal = self.env['account.journal'].search([
-                *self.env['account.journal']._check_company_domain(
-                    payment.company_id or self.env.company,
-                ),
-                ('type', '=', 'cash'),
-            ], limit=1)
-            if cash_journal:
-                payment.journal_id = cash_journal
-
     # --- Create with auto-sequencing ---
 
     @api.model_create_multi
