@@ -11,8 +11,12 @@ class AccountPayment(models.Model):
     - PKO (ПКО) = Прибутковий касовий ордер = Cash Receipt Order (inbound)
     - VKO (ВКО) = Видатковий касовий ордер = Cash Disbursement Order (outbound)
     - ПД = Платіжне доручення = Bank Payment Order (outbound bank transfer)
+
+    Inherits analytic.mixin to provide analytic_distribution field with the
+    standard Odoo widget, search method, and gin index — plays nicely with
+    Enterprise Edition modules that may also extend account.payment.
     """
-    _inherit = 'account.payment'
+    _inherit = ['account.payment', 'analytic.mixin']
 
     # --- Cash Order fields ---
     ua_cash_order_number = fields.Char(
@@ -100,9 +104,13 @@ class AccountPayment(models.Model):
         store=True,
     )
 
-    # --- Analytic distribution (стаття руху грошових коштів) ---
+    # analytic_distribution provided by analytic.mixin (Json + widget + gin index)
+    # Override label to Ukrainian via attribute redefinition
     analytic_distribution = fields.Json(
         string='Аналітичний розподіл',
+        compute='_compute_analytic_distribution',
+        search='_search_analytic_distribution',
+        store=True, copy=True, readonly=False,
         help='Стаття руху грошових коштів та інша аналітика. '
              'Передається на counterpart та write-off рядки журнальних проводок '
              'при підтвердженні платежу. Не передається на ліквідну (cash) сторону.',
