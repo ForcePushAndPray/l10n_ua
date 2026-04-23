@@ -189,7 +189,7 @@ class HrLeave(models.Model):
             else:
                 leave.vacation_pay_amount = 0.0
 
-    @api.depends('employee_id', 'holiday_status_id', 'vacation_year', 'request_date_from'
+    @api.depends('employee_id', 'holiday_status_id', 'vacation_year', 'request_date_from')
     def _compute_remaining_before(self):
         """Compute vacation balance before this leave from hr.vacation.balance"""
         for leave in self:
@@ -221,6 +221,8 @@ class HrLeave(models.Model):
                 ])
 
                 used = 0
+                year_start_d = fields.Date.from_string(f'{year}-01-01')
+                year_end_d = fields.Date.from_string(f'{year}-12-31')
                 for v in validated:
                     if not v.request_date_from or not v.request_date_to:
                         continue
