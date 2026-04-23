@@ -73,6 +73,16 @@ class HrLeave(models.Model):
             self.order_number = self.order_id.name
             self.order_date = self.order_id.date
 
+    def action_view_order(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.order',
+            'res_id': self.order_id.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
+
     @api.model_create_multi
     def create(self, vals_list):
         # Resolve which leaves should auto-create an order
@@ -118,6 +128,8 @@ class HrLeave(models.Model):
                     'leave_id': leave.id,
                     'vacation_date_from': date_from,
                     'vacation_date_to': date_to,
+                    'department_id': leave.employee_id.department_id.id,
+                    'job_id': leave.employee_id.job_id.id,
                 })
         return leaves
 
@@ -142,6 +154,8 @@ class HrLeave(models.Model):
                     ).create({
                         'order_type': 'vacation',
                         'employee_id': leave.employee_id.id,
+                        'department_id': leave.employee_id.department_id.id,
+                        'job_id': leave.employee_id.job_id.id,
                         'vacation_date_from': leave.date_from.date() if leave.date_from else False,
                         'vacation_date_to': leave.date_to.date() if leave.date_to else False,
                         'subject': 'Про надання відпустки',
