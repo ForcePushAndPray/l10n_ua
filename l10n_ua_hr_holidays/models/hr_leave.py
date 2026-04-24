@@ -1,6 +1,8 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
+from odoo.addons.hr_holidays.models.hr_leave import HOURS_PER_DAY
+from datetime import datetime, time as dt_time
 
 
 class HrLeave(models.Model):
@@ -258,7 +260,8 @@ class HrLeave(models.Model):
                 public_holidays = leave._get_public_holidays_count()
                 days = max(total_days - public_holidays, 0)
                 leave.number_of_days = days
-                leave.number_of_hours = days * 8
+                hours_per_day = leave.resource_calendar_id.hours_per_day or HOURS_PER_DAY
+                leave.number_of_hours = days * hours_per_day
             else:
                 leave.number_of_days = 0
                 leave.number_of_hours = 0
@@ -270,7 +273,6 @@ class HrLeave(models.Model):
         self.ensure_one()
         if not self.request_date_from or not self.request_date_to:
             return 0
-        from datetime import datetime, time as dt_time
         leave_from = self.request_date_from
         leave_to = self.request_date_to
         dt_from = datetime.combine(leave_from, dt_time.min)
@@ -290,7 +292,6 @@ class HrLeave(models.Model):
 
     @api.depends('request_date_from', 'request_date_to')
     def _compute_working_days(self):
-        from datetime import datetime, time as dt_time
         for leave in self:
             if leave.request_date_from and leave.request_date_to:
                 leave_from = leave.request_date_from
@@ -327,7 +328,7 @@ class HrLeave(models.Model):
             else:
                 leave.vacation_pay_amount = 0.0
 
-    @api.depends('employee_id', 'holiday_status_id', 'vacation_year', 'date_from')
+    @api.depends('employee_id', 'holiday_status_id', 'vacation_year', 'request_date_from')
     def _compute_remaining_before(self):
         """Compute vacation balance before this leave from hr.vacation.balance"""
         for leave in self:
@@ -349,17 +350,41 @@ class HrLeave(models.Model):
             if balance: 
                 leave.remaining_days_before = balance.total_available - balance.used_days
             elif leave.holiday_status_id.annual_days:
-                year_start = f'{year}-01-01'
-                year_end = f'{year}-12-31'
                 validated = self.env['hr.leave'].search([
                     ('employee_id', '=', leave.employee_id.id),
                     ('holiday_status_id', '=', leave.holiday_status_id.id),
                     ('state', '=', 'validate'),
-                    ('date_from', '>=', year_start),
-                    ('date_to', '<=', year_end),
-                    ('id', '!=', leave._origin.id),
+                    ('date_from', '<=', f'{year}-12-31'),
+                    ('date_to', '>=', f'{year}-01-01'),
+                    ('id', '!=', leave._origin.id or 0),
                 ])
-                used = sum(validated.mapped('calendar_days'))
+
+                used = 0
+                year_start_d = fields.Date.from_string(f'{year}-01-01')
+                year_end_d = fields.Date.from_string(f'{year}-12-31')
+                for v in validated:
+                    if not v.request_date_from or not v.request_date_to:
+                        continue
+                    ol_from = max(v.request_date_from, year_start_d)
+                    ol_to = min(v.request_date_to, year_end_d)
+                    if ol_from > ol_to:
+                        continue
+                    total_overlap = (ol_to - ol_from).days + 1
+                    dt_from = datetime.combine(ol_from, dt_time.min)
+                    dt_to = datetime.combine(ol_to, dt_time.max)
+                    holidays = self.env['resource.calendar.leaves'].search([
+                        ('resource_id', '=', False),
+                        ('date_from', '<=', dt_to),
+                        ('date_to', '>=', dt_from),
+                    ])
+                    holiday_count = 0
+                    for h in holidays:
+                        h_from = max(h.date_from.date(), ol_from)
+                        h_to = min(h.date_to.date(), ol_to)
+                        if h_from <= h_to:
+                            holiday_count += (h_to - h_from).days + 1
+                    used += max(total_overlap - holiday_count, 0)
+
                 leave.remaining_days_before = leave.holiday_status_id.annual_days - used
             else:
                 leave.remaining_days_before = 0
