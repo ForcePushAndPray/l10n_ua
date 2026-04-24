@@ -137,7 +137,8 @@ class HrLeave(models.Model):
 
     def write(self, vals):
         result = super().write(vals)
-        if not self.env.context.get('_sync_order_leave'):
+        # Add a check for _creating_leave_from_order to avoid order duplication
+        if not self.env.context.get('_sync_order_leave') and not self.env.context.get('_creating_leave_from_order'):
             if {'date_from', 'date_to'} & vals.keys():
                 for leave in self.filtered(lambda l: l.order_id):
                     leave.order_id.with_context(_sync_order_leave=True).write({
@@ -166,8 +167,8 @@ class HrLeave(models.Model):
                     order.with_context(_sync_order_leave=True).write({'leave_id': leave.id})
         return result
 
-    def action_validate(self, *args, **kwargs):
-        res = super().action_validate(*args, **kwargs)
+    def _action_validate(self, *args, **kwargs):
+        res = super()._action_validate(*args, **kwargs)
         for leave in self.filtered(lambda l: l.order_id and l.order_id.state == 'draft'):
             leave.order_id.with_context(_sync_order_leave=True).action_confirm()
         return res

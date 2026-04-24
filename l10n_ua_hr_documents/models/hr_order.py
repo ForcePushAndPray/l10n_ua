@@ -141,8 +141,8 @@ class HrOrder(models.Model):
                 leave_vals_list.append({
                     'employee_id': vals.get('employee_id'),
                     'holiday_status_id': vals.get('holiday_status_id'),
-                    'date_from': vals.get('vacation_date_from'),
-                    'date_to': vals.get('vacation_date_to'),
+                    'request_date_from': vals.get('vacation_date_from'),
+                    'request_date_to': vals.get('vacation_date_to'),
                 })
                 leave_indices.append(idx)
 
@@ -153,7 +153,8 @@ class HrOrder(models.Model):
             for idx, leave in zip(leave_indices, leaves):
                 vals_list[idx]['leave_id'] = leave.id
 
-        orders = super().create(vals_list)
+        # Add _sync_order_leave context to prevent duplicate orders on inverse related fields write
+        orders = super(HrOrder, self.with_context(_sync_order_leave=True)).create(vals_list)
 
         # Back-link leaves → orders in a single write per leave
         for order in orders:

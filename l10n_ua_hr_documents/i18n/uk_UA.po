@@ -1048,3 +1048,7 @@ msgstr "Дата закінчення відпустки"
 msgid "Leave Record"
 msgstr "Запис відпустки"
 
+#. module: l10n_ua_hr_documents
+#: model:ir.model.fields,field_description:l10n_ua_hr_documents.field_hr_order__holiday_status_id
+msgid "Leave Type"
+msgstr "Тип відпустки"
