@@ -75,11 +75,13 @@ class HrEmployeeVacationSummaryReport(models.Model):
             rec.total_remaining = sum(balances.mapped('remaining_days'))
 
     def action_generate(self):
+        Balance = self.env['hr.vacation.balance']
         for rec in self:
-            balances = rec.env['hr.vacation.balance'].search(
+            Balance.sudo().generate_balances(rec.year)
+            balances = Balance.search(
                 [
-                    ('company_id', '=', rec.company_id.id),
                     ('year', '=', rec.year),
+                    ('employee_id.company_id', '=', rec.company_id.id),
                 ],
                 order='employee_id, leave_type_id',
             )
