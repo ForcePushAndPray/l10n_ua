@@ -38,16 +38,6 @@
                 <page string="UA: Персональне" name="ua_personal" groups="hr.group_hr_user">
                     <group>
                         <group string="Документи">
-                            <label for="employee_number"/>
-                            <div class="o_row">
-                                <field name="employee_number" placeholder="e.g. 2026-0001"/>
-                                <button string="Generate" 
-                                        class="btn btn-link" 
-                                        type="object" 
-                                        name="action_generate_employee_number" 
-                                        invisible="employee_number"
-                                        groups="hr.group_hr_user"/>
-                            </div>
                             <field name="rnokpp" placeholder="1234567890"/>
                             <field name="document_type"/>
                             <field name="passport_series" invisible="document_type != 'passport'"/>
@@ -140,6 +130,23 @@
                     </group>
                 </page>
             </xpath>
+
+            <!-- Move Personnel Number to standard Work Information tab -->
+            <xpath expr="//page[@name='public']//div[@id='o_work_employee_main']" position="inside">
+                <group string="Work" name="work_personnel_number">
+                    <label for="employee_number" string="Personnel Number"/>
+                    <div class="o_row">
+                        <field name="employee_number" placeholder="e.g. 2026-0001"/>
+                        <button string="Generate" 
+                                class="btn btn-link" 
+                                type="object" 
+                                name="action_generate_employee_number" 
+                                invisible="employee_number"
+                                groups="hr.group_hr_user"/>
+                    </div>
+                </group>
+            </xpath>
+
         </field>
     </record>
 
