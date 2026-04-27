@@ -132,7 +132,7 @@
             </xpath>
 
             <!-- Move Personnel Number to standard Work Information tab -->
-            <xpath expr="//page[@name='public']" position="inside">
+            <xpath expr="//page[@name='work_information']" position="inside">
                 <group string="Work" name="work_personnel_number">
                     <label for="employee_number" string="Personnel Number"/>
                     <div class="o_row">
