@@ -61,7 +61,7 @@
             </tr>
             <tr>
                 <td style="padding: 5px;">Табельний номер:</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.barcode or '____________'" t-if="employee"/><t t-else="">____________</t></td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.employee_number or '____________'" t-if="employee"/><t t-else="">____________</t></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Структурний підрозділ:</td>
@@ -164,7 +164,7 @@
             </tr>
             <tr>
                 <td style="padding: 5px;">Табельний номер:</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.barcode or '____________'" t-if="employee"/><t t-else="">____________</t></td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.employee_number or '____________'" t-if="employee"/><t t-else="">____________</t></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Структурний підрозділ:</td>
@@ -269,7 +269,7 @@
             </tr>
             <tr>
                 <td style="padding: 5px;">Табельний номер:</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.barcode or '____________'" t-if="employee"/><t t-else="">____________</t></td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.employee_number or '____________'" t-if="employee"/><t t-else="">____________</t></td>
             </tr>
         </table>
 
@@ -376,7 +376,7 @@
             </tr>
             <tr>
                 <td style="padding: 5px;">Табельний номер:</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.barcode or '____________'" t-if="employee"/><t t-else="">____________</t></td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.employee_number or '____________'" t-if="employee"/><t t-else="">____________</t></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Структурний підрозділ:</td>
@@ -593,7 +593,7 @@
             </tr>
             <tr>
                 <td style="padding: 5px;">Табельний номер:</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.barcode or '____________'" t-if="employee"/><t t-else="">____________</t></td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.employee_number or '____________'" t-if="employee"/><t t-else="">____________</t></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Структурний підрозділ:</td>
@@ -714,7 +714,7 @@
             </tr>
             <tr>
                 <td style="padding: 5px;">Табельний номер:</td>
-                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.barcode or '____________'" t-if="employee"/><t t-else="">____________</t></td>
+                <td style="padding: 5px; border-bottom: 1px solid #000;"><t t-esc="employee.employee_number or '____________'" t-if="employee"/><t t-else="">____________</t></td>
             </tr>
             <tr>
                 <td style="padding: 5px;">Структурний підрозділ:</td>
