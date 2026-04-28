@@ -1,6 +1,7 @@
 from odoo.tests.common import TransactionCase
+from odoo.tests import tagged
 
-
+@tagged('post_install', '-at_install')
 class TestHrLeaveType(TransactionCase):
     """Tests for hr.leave.type Ukrainian extensions"""
 

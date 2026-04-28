@@ -49,6 +49,7 @@ Dependencies:
     'license': 'LGPL-3',
     'depends': [
         'account',
+        'analytic',
         'mail',
         'hr',
         'product',

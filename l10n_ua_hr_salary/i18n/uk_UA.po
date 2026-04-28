@@ -205,11 +205,13 @@ msgstr "Категорія"
 #. module: l10n_ua_hr_salary
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_execution_document_view_form
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_payslip_run_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_run_view_form
 msgid "Close"
 msgstr "Закрити"
 
 #. module: l10n_ua_hr_salary
 #: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_execution_document__state__closed
+#: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_salary_advance_run__state__closed
 msgid "Closed"
 msgstr "Закрито"
 
@@ -229,6 +231,8 @@ msgstr "Зібрана сума"
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_payslip__company_id
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_payslip_run__company_id
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_psp_parameters__company_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__company_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance_run__company_id
 msgid "Company"
 msgstr "Компанія"
 
@@ -259,6 +263,7 @@ msgstr "Налаштуйте параметри ПСП для кожного п�
 
 #. module: l10n_ua_hr_salary
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_payslip_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_form
 msgid "Confirm"
 msgstr "Підтвердити"
 
@@ -322,6 +327,8 @@ msgstr "Кредитовий рахунок"
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_payslip_accrual__currency_id
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_payslip_deduction__currency_id
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_payslip_run__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance_run__currency_id
 msgid "Currency"
 msgstr "Валюта"
 
@@ -409,6 +416,8 @@ msgstr "Ставка за замовчуванням (%)"
 
 #. module: l10n_ua_hr_salary
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_payslip__department_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__department_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_search
 msgid "Department"
 msgstr "Підрозділ"
 
@@ -450,6 +459,9 @@ msgstr "Виконано"
 #: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_execution_document__state__draft
 #: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_payslip__state__draft
 #: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_payslip_run__state__draft
+#: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_salary_advance__state__draft
+#: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_salary_advance_run__state__draft
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_search
 msgid "Draft"
 msgstr "Чернетка"
 
@@ -484,6 +496,8 @@ msgstr "Ставка ЄСВ (%)"
 #. module: l10n_ua_hr_salary
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_execution_document__employee_id
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_payslip__employee_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__employee_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_search
 msgid "Employee"
 msgstr "Працівник"
 
@@ -729,6 +743,7 @@ msgstr "Повідомлення"
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_accrual_type__is_military_tax
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_payslip_accrual__is_military_tax
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_payslip_view_form
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__military_amount
 msgid "Military Tax"
 msgstr "Військовий збір"
 
@@ -770,6 +785,7 @@ msgstr "Термін моєї активності"
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_deduction_type__name
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_payslip_run__name
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_psp_parameters__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance_run__name
 msgid "Name"
 msgstr "Назва"
 
@@ -819,6 +835,9 @@ msgstr "Немає"
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_payslip_run__notes
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_payslip_run_view_form
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_payslip_view_form
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__notes
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance_run__notes
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_run_view_form
 msgid "Notes"
 msgstr "Примітки"
 
@@ -869,6 +888,7 @@ msgstr "Інші утримання"
 
 #. module: l10n_ua_hr_salary
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_payslip_view_form
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__pdfo_amount
 msgid "PDFO"
 msgstr "ПДФО"
 
@@ -961,6 +981,7 @@ msgstr "Зарплата"
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_payslip_accrual__payslip_id
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_payslip_deduction__payslip_id
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_payslip_view_form
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__payslip_id
 msgid "Payslip"
 msgstr "Розрахунковий листок"
 
@@ -1104,6 +1125,7 @@ msgstr "РНОКПП отримувача"
 
 #. module: l10n_ua_hr_salary
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_payslip__name
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__name
 msgid "Reference"
 msgstr "Номер"
 
@@ -1164,6 +1186,8 @@ msgstr "Послідовність"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_execution_document_view_form
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_payslip_run_view_form
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_payslip_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_run_view_form
 msgid "Set to Draft"
 msgstr "Повернути в чернетку"
 
@@ -1186,6 +1210,9 @@ msgstr "Стандартна (50%)"
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_execution_document__state
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_payslip__state
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_payslip_run__state
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__state
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance_run__state
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_search
 msgid "Status"
 msgstr "Статус"
 
@@ -1255,6 +1282,9 @@ msgstr "Третя черга (інші борги)"
 #. module: l10n_ua_hr_salary
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_payslip_run_view_tree
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_payslip_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_run_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_run_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_list
 msgid "Total"
 msgstr "Всього"
 
@@ -1380,3 +1410,219 @@ msgstr "Рік"
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_psp_parameters__min_hourly_wage
 msgid "Minimum Hourly Wage"
 msgstr "Мінімальна погодинна ставка"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model,name:l10n_ua_hr_salary.model_hr_salary_advance
+msgid "Salary Advance"
+msgstr "Аванс із зарплати"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model,name:l10n_ua_hr_salary.model_hr_salary_advance_run
+msgid "Salary Advance Batch"
+msgstr "Пакет авансів"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__advance_run_id
+msgid "Advance Batch"
+msgstr "Пакет авансів"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.ui.menu,name:l10n_ua_hr_salary.menu_hr_salary_advance
+msgid "Advance List"
+msgstr "Перелік авансів"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance_run__advance_count
+msgid "Advance Count"
+msgstr "Кількість авансів"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance_run__advance_ids
+#: model:ir.ui.menu,name:l10n_ua_hr_salary.menu_hr_salary_advance_root
+msgid "Advances"
+msgstr "Аванси"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_salary_advance__state__confirmed
+#: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_salary_advance_run__state__confirmed
+msgid "Confirmed"
+msgstr "Підтверджено"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__gross_amount
+msgid "Gross"
+msgstr "Нараховано"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,help:l10n_ua_hr_salary.field_hr_salary_advance__payslip_id
+msgid "Payslip from which this advance was deducted"
+msgstr "Розрахунковий лист, з якого утримано аванс"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__military_rate
+msgid "Military Tax (%)"
+msgstr "Військовий збір (%)"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__amount
+msgid "Net Advance"
+msgstr "Аванс до виплати"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_salary_advance__state__paid
+msgid "Paid"
+msgstr "Виплачено"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__date
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance_run__date
+msgid "Payment Date"
+msgstr "Дата виплати"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__pdfo_rate
+msgid "PDFO (%)"
+msgstr "ПДФО (%)"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance_run__total_amount
+msgid "Total Amount"
+msgstr "Загальна сума"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__wage_percent
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance_run__wage_percent
+msgid "Wage Percentage"
+msgstr "Відсоток від окладу"
+
+#. module: l10n_ua_hr_salary
+#: code:addons/l10n_ua_hr_salary/models/hr_salary_advance.py:0
+#, python-format
+msgid "Cannot delete paid advances."
+msgstr "Виплачені аванси не можна видалити."
+
+#. module: l10n_ua_hr_salary
+#: code:addons/l10n_ua_hr_salary/models/hr_salary_advance.py:0
+#, python-format
+msgid "Only draft advances can be confirmed."
+msgstr "Підтвердити можна лише аванси у стані чернетки."
+
+#. module: l10n_ua_hr_salary
+#: code:addons/l10n_ua_hr_salary/models/hr_salary_advance.py:0
+#, python-format
+msgid "Paid advances cannot be reset to draft."
+msgstr "Виплачені аванси не можна повернути до чернетки."
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_run_view_form
+msgid "Advance Batch"
+msgstr "Пакет авансів"
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_run_view_list
+#: model:ir.actions.act_window,name:l10n_ua_hr_salary.action_hr_salary_advance_run
+#: model:ir.ui.menu,name:l10n_ua_hr_salary.menu_hr_salary_advance_run
+msgid "Advance Batches"
+msgstr "Пакети авансів"
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_run_view_form
+msgid "Advances"
+msgstr "Аванси"
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_form
+msgid "Batch &amp; Payroll Integration"
+msgstr "Пакет та інтеграція з розрахунком"
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_run_view_form
+msgid "Confirm All"
+msgstr "Підтвердити всі"
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_search
+msgid "Confirmed"
+msgstr "Підтверджено"
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_search
+msgid "Date"
+msgstr "Дата"
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_run_view_form
+msgid "Generate Advances"
+msgstr "Згенерувати аванси"
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_search
+msgid "Last Month"
+msgstr "Минулий місяць"
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_search
+msgid "Paid"
+msgstr "Виплачено"
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_form
+msgid "Salary Advance"
+msgstr "Аванс із зарплати"
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_search
+msgid "Salary Advances"
+msgstr "Аванси із зарплати"
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_search
+msgid "This Month"
+msgstr "Цей місяць"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.actions.act_window,name:l10n_ua_hr_salary.action_hr_salary_advance_run
+msgid "Advance Batches"
+msgstr "Пакети авансів"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.actions.act_window,name:l10n_ua_hr_salary.action_hr_salary_advance
+msgid "Salary Advances"
+msgstr "Аванси із зарплати"
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_salary.action_hr_salary_advance
+msgid "Advances are calculated as percentage of the employee wage."
+msgstr "Аванси розраховуються як відсоток від окладу працівника."
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_salary.action_hr_salary_advance
+msgid "Confirmed advances are automatically deducted from the payslip."
+msgstr "Підтверджені аванси автоматично утримуються з розрахункового листа."
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_salary.action_hr_salary_advance
+msgid "Create your first salary advance"
+msgstr "Створіть свій перший аванс із зарплати"
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_salary.action_hr_salary_advance_run
+msgid "Advances are calculated as percentage of the employee wage."
+msgstr "Аванси розраховуються як відсоток від окладу працівника."
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_salary.action_hr_salary_advance_run
+msgid "Create an advance batch to process multiple advances at once"
+msgstr "Створіть пакет авансів для одночасної обробки кількох авансів"
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_form
+msgid "Additional notes..."
+msgstr "Додаткові нотатки..."
+
+#. module: l10n_ua_hr_salary
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_salary_advance_view_form
+msgid "Reset to Draft"
+msgstr "Повернути в чернетку"
+
