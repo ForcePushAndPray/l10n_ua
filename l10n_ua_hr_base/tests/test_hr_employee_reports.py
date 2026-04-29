@@ -79,7 +79,7 @@ class TestHrEmployeeReports(TestHrUaBase):
         self.assertEqual(report.reserved_count, 1)
 
     def test_hr_employee_benefits_report(self):
-        employee_1 = self._create_employee(name='Emp 1', disability_group='group_2')
+        employee_1 = self._create_employee(name='Emp 1', disability_group='2')
         employee_2 = self._create_employee(name='Emp 2')
         
         report = self.env['hr.employee.benefits.report'].create({
