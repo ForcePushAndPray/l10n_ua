@@ -42,9 +42,19 @@ class TestHrOrder(TransactionCase):
         cls.leave_type = cls.env['hr.leave.type'].create({
             'name': 'Щорічна основна відпустка',
             'company_id': cls.company.id,
-            'requires_allocation': 'no',
+            'requires_allocation': 'yes',
             'leave_validation_type': 'both',
         })
+
+        cls.allocation = cls.env['hr.leave.allocation'].create({
+            'name': 'Test Leave Allocation',
+            'employee_id': cls.employee.id,
+            'holiday_status_id': cls.leave_type.id,
+            'number_of_days': 100,
+        })
+        cls.allocation.action_approve()
+        if cls.allocation.state == 'validate1':
+            cls.allocation.action_validate()
 
     def _create_order(self, order_type='hiring', **kwargs):
         vals = {
