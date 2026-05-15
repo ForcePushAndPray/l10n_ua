@@ -13,7 +13,8 @@ class HrVacationBalance(models.Model):
         'hr.employee',
         string='Employee',
         required=True,
-        index=True
+        index=True,
+        check_company=True
     )
     leave_type_id = fields.Many2one(
         'hr.leave.type',
@@ -29,6 +30,7 @@ class HrVacationBalance(models.Model):
     company_id = fields.Many2one(
         'res.company',
         string='Company',
+        required=True,
         default=lambda self: self.env.company
     )
     
@@ -67,6 +69,11 @@ class HrVacationBalance(models.Model):
         compute='_compute_display_name',
         store=True
     )
+
+    @api.onchange('company_id')
+    def _onchange_company_id(self):
+        self.employee_id = False
+        self.leave_type_id = False
 
     @api.depends('entitled_days', 'carried_over', 'used_days')
     def _compute_totals(self):
