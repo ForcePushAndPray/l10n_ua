@@ -169,9 +169,9 @@ class HrEmployeeTransferWizard(models.TransientModel):
     def _transfer_vacation_balance(self, new_employee):
         if self.vacation_transfer_mode != 'transfer':
             return
-        Balance = self.env['hr.vacation.balance']
-        if Balance._name not in self.env.registry:
+        if 'hr.vacation.balance' not in self.env:
             return
+        Balance = self.env['hr.vacation.balance']
         year = self.hire_date.year
         source_balances = Balance.sudo().search([
             ('employee_id', '=', self.source_employee_id.id),
