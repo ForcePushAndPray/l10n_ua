@@ -54,7 +54,7 @@ class AccountJournal(models.Model):
         if self.type != 'cash':
             return
 
-        IrSequence = self.env['ir.sequence']
+        IrSequence = self.env['ir.sequence'].sudo()
 
         if not self.ua_pko_sequence_id:
             pko_sequence = IrSequence.create({
@@ -83,7 +83,7 @@ class AccountJournal(models.Model):
             return
 
         if not self.ua_pd_sequence_id:
-            pd_sequence = self.env['ir.sequence'].create({
+            pd_sequence = self.env['ir.sequence'].sudo().create({
                 'name': f'ПД - {self.name}',
                 'code': f'ua.pd.{self.code or self.id}',
                 'prefix': 'ПД-',
