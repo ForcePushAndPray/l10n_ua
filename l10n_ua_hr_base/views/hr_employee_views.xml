@@ -72,6 +72,7 @@
                             <field name="spouse_rnokpp" invisible="marital not in ('married', 'cohabitant')"/>
                             <field name="children_count" string="Кількість дітей"/>
                             <field name="dependents_count"/>
+                            <field name="is_single_parent"/>
                         </group>
                     </group>
                     <separator string="Діти"/>
@@ -115,6 +116,7 @@
                             <field name="military_tcc_id" invisible="military_status not in ('liable', 'reserved')"/>
                             <field name="military_reservation" invisible="military_status not in ('liable', 'reserved')"/>
                             <field name="military_reservation_until" invisible="not military_reservation"/>
+                            <field name="military_reservation_expired" invisible="not military_reservation"/>
                             <field name="military_reservplus_id" invisible="not military_reservation"/>
                         </group>
                         <group string="Пільги">

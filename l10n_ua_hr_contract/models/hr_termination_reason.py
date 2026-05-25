@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import models, fields, api
 
 
 class HrTerminationReason(models.Model):
@@ -12,12 +12,22 @@ class HrTerminationReason(models.Model):
     
     article = fields.Char(string='Labor Code Article', help='e.g., 36, 38, 40')
     paragraph = fields.Char(string='Paragraph', help='e.g., п. 1, п. 2')
+    kzpt_code = fields.Char(
+        string='КЗпП Code',
+        compute='_compute_kzpt_code',
+        store=True,
+        index=True,
+        help='Normalized "<article>[.<paragraph>]" key for reporting and PFU exchange (e.g. "36.1", "38", "40.3").')
     full_reference = fields.Char(
-        string='Full Reference', 
-        compute='_compute_full_reference', 
+        string='Full Reference',
+        compute='_compute_full_reference',
         store=True
     )
     full_text = fields.Text(string='Full Text for Order')
+    description_html = fields.Html(
+        string='Legal Description',
+        sanitize=True,
+        help='Rich description of the legal basis — quoted КЗпП article text, jurisprudence notes, etc.')
     
     category = fields.Selection([
         ('own_will', 'Own Will (Art. 38)'),
@@ -56,6 +66,15 @@ class HrTerminationReason(models.Model):
             if rec.article:
                 parts.append(f'ст. {rec.article} КЗпП України')
             rec.full_reference = ' '.join(parts) if parts else ''
+
+    @api.depends('article', 'paragraph')
+    def _compute_kzpt_code(self):
+        for rec in self:
+            if not rec.article:
+                rec.kzpt_code = False
+                continue
+            digits = ''.join(ch for ch in (rec.paragraph or '') if ch.isdigit())
+            rec.kzpt_code = f"{rec.article}.{digits}" if digits else rec.article
 
     _unique_code = models.Constraint(
         'unique(code)',

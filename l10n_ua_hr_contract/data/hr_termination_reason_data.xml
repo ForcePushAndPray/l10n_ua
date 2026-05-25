@@ -279,6 +279,204 @@
             <field name="notice_days">3</field>
             <field name="sequence">220</field>
         </record>
-        
+
+        <!-- ============================================================ -->
+        <!-- Розширені підстави (КЗпП ст. 32, 36, 38, 39, 40, 41, 45, 119) -->
+        <!-- ============================================================ -->
+
+        <!-- Відмова від переведення в іншу місцевість (ст. 32) -->
+        <record id="termination_reason_refusal_relocation" model="hr.termination.reason">
+            <field name="name">Відмова від переведення в іншу місцевість</field>
+            <field name="code">REF_LOC</field>
+            <field name="article">32</field>
+            <field name="category">circumstances</field>
+            <field name="full_text">у зв'язку з відмовою від переведення на роботу в іншу місцевість разом з підприємством, ст. 32 КЗпП України</field>
+            <field name="requires_compensation">True</field>
+            <field name="compensation_amount">one_month</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">230</field>
+        </record>
+
+        <!-- Відмова від продовження роботи через зміну істотних умов праці (ст. 32) -->
+        <record id="termination_reason_refusal_essential" model="hr.termination.reason">
+            <field name="name">Відмова від продовження роботи (зміна істотних умов)</field>
+            <field name="code">REF_ESS</field>
+            <field name="article">32</field>
+            <field name="category">circumstances</field>
+            <field name="full_text">у зв'язку з відмовою від продовження роботи в зв'язку зі зміною істотних умов праці, ст. 32 КЗпП України</field>
+            <field name="requires_compensation">True</field>
+            <field name="compensation_amount">one_month</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">240</field>
+        </record>
+
+        <!-- Відмова від переведення на легшу роботу за станом здоров'я (ст. 36 п. 6) -->
+        <record id="termination_reason_refusal_health" model="hr.termination.reason">
+            <field name="name">Відмова від переведення за станом здоров'я</field>
+            <field name="code">REF_HEALTH</field>
+            <field name="article">36</field>
+            <field name="paragraph">п. 6</field>
+            <field name="category">circumstances</field>
+            <field name="full_text">у зв'язку з відмовою працівника від переведення на легшу роботу за станом здоров'я, п. 6 ст. 36 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">250</field>
+        </record>
+
+        <!-- Закінчення строку повноважень виборних осіб (ст. 36 п. 5) -->
+        <record id="termination_reason_elected_expiry" model="hr.termination.reason">
+            <field name="name">Закінчення строку повноважень виборних осіб</field>
+            <field name="code">ELECT_END</field>
+            <field name="article">36</field>
+            <field name="paragraph">п. 5</field>
+            <field name="category">circumstances</field>
+            <field name="full_text">у зв'язку із закінченням строку повноважень виборних осіб, п. 5 ст. 36 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">260</field>
+        </record>
+
+        <!-- Дострокове розірвання строкового договору з ініціативи працівника (ст. 39) -->
+        <record id="termination_reason_early_term_employee" model="hr.termination.reason">
+            <field name="name">Дострокове розірвання строкового договору (ініціатива працівника)</field>
+            <field name="code">EARLY_EMP</field>
+            <field name="article">39</field>
+            <field name="category">own_will</field>
+            <field name="full_text">у зв'язку з достроковим розірванням строкового трудового договору з ініціативи працівника, ст. 39 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">270</field>
+            <field name="description">Поважні причини: хвороба, інвалідність, переїзд, навчання, доглядання тощо.</field>
+        </record>
+
+        <!-- Дострокове розірвання строкового договору з ініціативи власника (ст. 39¹) -->
+        <record id="termination_reason_early_term_employer" model="hr.termination.reason">
+            <field name="name">Дострокове розірвання строкового договору (ініціатива власника)</field>
+            <field name="code">EARLY_EMR</field>
+            <field name="article">39</field>
+            <field name="paragraph">ч. 2</field>
+            <field name="category">employer_initiative</field>
+            <field name="full_text">у зв'язку з достроковим розірванням строкового трудового договору з ініціативи власника на підставах, передбачених статтями 40 і 41 КЗпП України</field>
+            <field name="requires_compensation">True</field>
+            <field name="compensation_amount">one_month</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">280</field>
+        </record>
+
+        <!-- Аморальний проступок (ст. 41 п. 3) -->
+        <record id="termination_reason_immoral" model="hr.termination.reason">
+            <field name="name">Аморальний проступок</field>
+            <field name="code">IMMORAL</field>
+            <field name="article">41</field>
+            <field name="paragraph">п. 3</field>
+            <field name="category">employer_initiative</field>
+            <field name="full_text">за вчинення працівником, який виконує виховні функції, аморального проступку, не сумісного з продовженням даної роботи, п. 3 ст. 41 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">290</field>
+        </record>
+
+        <!-- Винні дії посадової особи з втратою довіри (ст. 41 п. 4) -->
+        <record id="termination_reason_official_misconduct" model="hr.termination.reason">
+            <field name="name">Винні дії посадової особи (втрата довіри)</field>
+            <field name="code">OFF_MISC</field>
+            <field name="article">41</field>
+            <field name="paragraph">п. 4</field>
+            <field name="category">employer_initiative</field>
+            <field name="full_text">за вчинення посадовою особою винних дій, внаслідок яких заподіяна шкода державі або громадянину, п. 4 ст. 41 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">300</field>
+        </record>
+
+        <!-- Сексуальні домагання, дискримінація, мобінг (ст. 41 п. 3-1) -->
+        <record id="termination_reason_harassment" model="hr.termination.reason">
+            <field name="name">Дискримінація, мобінг, сексуальні домагання</field>
+            <field name="code">HARASS</field>
+            <field name="article">41</field>
+            <field name="paragraph">п. 3-1</field>
+            <field name="category">employer_initiative</field>
+            <field name="full_text">за вчинення працівником мобінгу (цькування), сексуальних домагань, дискримінації чи інших порушень законодавства про працю, встановлених судом, п. 3-1 ст. 41 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">310</field>
+        </record>
+
+        <!-- Невиявлення працівника понад 4 місяці під час воєнного стану (ст. 36 п. 8-3) -->
+        <record id="termination_reason_war_no_show" model="hr.termination.reason">
+            <field name="name">Неможливість встановити місцезнаходження працівника (воєнний стан)</field>
+            <field name="code">WAR_NSHOW</field>
+            <field name="article">36</field>
+            <field name="paragraph">п. 8-3</field>
+            <field name="category">circumstances</field>
+            <field name="full_text">у зв'язку з неможливістю забезпечити працівника роботою у разі відсутності його на робочому місці понад чотири місяці підряд через військові дії, п. 8-3 ст. 36 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">320</field>
+        </record>
+
+        <!-- Скасування допуску до державної таємниці (ст. 36 п. 9-1) -->
+        <record id="termination_reason_secret_access" model="hr.termination.reason">
+            <field name="name">Скасування допуску до державної таємниці</field>
+            <field name="code">SEC_ACCESS</field>
+            <field name="article">36</field>
+            <field name="paragraph">п. 9-1</field>
+            <field name="category">circumstances</field>
+            <field name="full_text">у зв'язку зі скасуванням допуску до державної таємниці, якщо виконання покладених обов'язків вимагає такого допуску, п. 9-1 ст. 36 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">330</field>
+        </record>
+
+        <!-- Розірвання за вимогою профспілки (ст. 45) -->
+        <record id="termination_reason_trade_union" model="hr.termination.reason">
+            <field name="name">На вимогу профспілки</field>
+            <field name="code">TRADE_UN</field>
+            <field name="article">45</field>
+            <field name="category">circumstances</field>
+            <field name="full_text">на вимогу виборного органу первинної профспілкової організації, ст. 45 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">340</field>
+        </record>
+
+        <!-- Призов на військову службу під час мобілізації (ст. 119) -->
+        <record id="termination_reason_mobilization" model="hr.termination.reason">
+            <field name="name">Призов на військову службу під час мобілізації</field>
+            <field name="code">MOBILIZE</field>
+            <field name="article">119</field>
+            <field name="category">circumstances</field>
+            <field name="full_text">у зв'язку з призовом працівника на військову службу під час мобілізації, ст. 119 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">350</field>
+            <field name="description">Звільнення працівника під час мобілізації заборонено. Місце роботи зберігається.</field>
+        </record>
+
+        <!-- Особливі підстави для деяких категорій працівників (ст. 7) -->
+        <record id="termination_reason_special_grounds" model="hr.termination.reason">
+            <field name="name">Особливі підстави для деяких категорій працівників</field>
+            <field name="code">SPECIAL</field>
+            <field name="article">7</field>
+            <field name="category">other</field>
+            <field name="full_text">з особливих підстав, передбачених для певних категорій працівників, ст. 7 КЗпП України</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">360</field>
+        </record>
+
+        <!-- Угода сторін під час воєнного стану (ст. 36 п. 1) -->
+        <record id="termination_reason_war_agreement" model="hr.termination.reason">
+            <field name="name">Призупинення трудового договору (воєнний стан)</field>
+            <field name="code">WAR_SUSP</field>
+            <field name="article">13</field>
+            <field name="category">circumstances</field>
+            <field name="full_text">призупинення трудового договору відповідно до Закону України «Про організацію трудових відносин в умовах воєнного стану»</field>
+            <field name="requires_compensation">False</field>
+            <field name="notice_days">0</field>
+            <field name="sequence">370</field>
+            <field name="description">Стаття 13 ЗУ «Про організацію трудових відносин в умовах воєнного стану». Не є звільненням, але оформлюється окремим документом.</field>
+        </record>
+
     </data>
 </odoo>

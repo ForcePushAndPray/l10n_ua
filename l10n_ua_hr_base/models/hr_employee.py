@@ -91,6 +91,12 @@ class HrEmployee(models.Model):
                                        help='Territorial Recruitment Center')
     military_reservation = fields.Boolean(string='Reserved (Booking)')
     military_reservation_until = fields.Date(string='Reserved Until')
+    military_reservation_expired = fields.Boolean(
+        string='Reservation Expired',
+        compute='_compute_military_reservation_expired',
+        store=True,
+        help='True when reservation end date has passed. Recomputed daily by cron — '
+             'flags employees whose military booking must be renewed (CMU Resolution 1608).')
     military_reservplus_id = fields.Char(string='Reserv+ ID',
                                           help='Ідентифікатор у системі Резерв+')
 
@@ -131,7 +137,10 @@ class HrEmployee(models.Model):
     children_ids = fields.One2many('hr.employee.child', 'employee_id', string='Children')
     children_count = fields.Integer(string='Children Count', compute='_compute_children_count', store=True)
     dependents_count = fields.Integer(string='Dependents Count', compute='_compute_dependents_count', store=True,
-                                       help='Number of dependents for PSP calculation')
+                                       help='Children under 18, or students (up to 23), or disabled children of any age — PSP-eligible.')
+    is_single_parent = fields.Boolean(
+        string='Single Parent',
+        help='Sole carer of dependent children. Used by payroll for elevated PSP (150% of base amount).')
 
     # === Work Experience & Bank ===
     hire_date = fields.Date(string='Hire Date')
@@ -189,10 +198,39 @@ class HrEmployee(models.Model):
         for employee in self:
             employee.children_count = len(employee.children_ids)
 
-    @api.depends('children_ids', 'children_ids.is_dependent')
+    @api.depends('children_ids', 'children_ids.age', 'children_ids.is_student',
+                  'children_ids.is_disabled')
     def _compute_dependents_count(self):
         for employee in self:
-            employee.dependents_count = len(employee.children_ids.filtered('is_dependent'))
+            employee.dependents_count = len(employee.children_ids.filtered(
+                lambda c: c.age < 18 or c.is_student or c.is_disabled))
+
+    @api.depends('military_reservation', 'military_reservation_until')
+    def _compute_military_reservation_expired(self):
+        today = date.today()
+        for employee in self:
+            employee.military_reservation_expired = bool(
+                employee.military_reservation
+                and employee.military_reservation_until
+                and employee.military_reservation_until < today
+            )
+
+    @api.model
+    def _cron_check_military_reservation_expired(self):
+        """Daily cron: flag employees whose reservation end date has just passed.
+
+        The stored compute depends on (military_reservation, military_reservation_until)
+        and won't refire on calendar advance, so the cron writes the flag directly.
+        """
+        today = date.today()
+        stale = self.search([
+            ('military_reservation', '=', True),
+            ('military_reservation_until', '!=', False),
+            ('military_reservation_until', '<', today),
+            ('military_reservation_expired', '=', False),
+        ])
+        if stale:
+            stale.write({'military_reservation_expired': True})
 
     @api.depends('hire_date')
     def _compute_work_experience_company(self):

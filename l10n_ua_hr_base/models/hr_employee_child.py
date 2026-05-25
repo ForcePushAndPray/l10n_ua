@@ -1,4 +1,5 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
+from odoo.exceptions import ValidationError
 from datetime import date
 from dateutil.relativedelta import relativedelta
 
@@ -21,8 +22,18 @@ class HrEmployeeChild(models.Model):
                           help='Registration Number of the Taxpayer Account Card')
     is_disabled = fields.Boolean(string='Disabled Child',
                                   help='Child with disability (for PSP calculation)')
-    is_dependent = fields.Boolean(string='Dependent', default=True,
-                                   help='Child is a dependent (for PSP calculation)')
+    disability_group = fields.Selection([
+        ('1', 'Group I'),
+        ('2', 'Group II'),
+        ('3', 'Group III'),
+    ], string='Disability Group',
+       help='Required when child is marked as disabled')
+    is_student = fields.Boolean(string='Student',
+                                 help='Full-time student (qualifies as dependent up to 23 y.o. per PSP rules)')
+    is_orphan = fields.Boolean(string='Orphan / Without Parental Care',
+                                help='Child orphan or deprived of parental care (PSP-relevant)')
+    is_dependent = fields.Boolean(string='Dependent (manual)', default=True,
+                                   help='Manual marker. Aggregate count on the employee uses age/student/disability logic regardless.')
     age = fields.Integer(string='Age', compute='_compute_age', store=True)
 
     @api.depends('birthday')
@@ -33,6 +44,19 @@ class HrEmployeeChild(models.Model):
                 child.age = relativedelta(today, child.birthday).years
             else:
                 child.age = 0
+
+    @api.onchange('is_disabled')
+    def _onchange_is_disabled(self):
+        if not self.is_disabled:
+            self.disability_group = False
+
+    @api.constrains('is_disabled', 'disability_group')
+    def _check_disability_group(self):
+        for child in self:
+            if child.is_disabled and not child.disability_group:
+                raise ValidationError(_(
+                    "Вкажіть групу інвалідності для дитини '%s' "
+                    "(відмічена як дитина-інвалід).") % child.name)
 
     @api.constrains('rnokpp')
     def _check_rnokpp(self):
