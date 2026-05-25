@@ -15,8 +15,10 @@
                 </page>
             </xpath>
 
-            <!-- Line-level fields inside the JE lines list -->
-            <xpath expr="//field[@name='line_ids']//list/field[@name='account_id']" position="after">
+            <!-- Line-level fields inside the JE lines list.
+                 The wrapping field is `line_ids` in community and `journal_line_ids`
+                 in enterprise; OR-predicate keeps the xpath portable. -->
+            <xpath expr="//field[@name='line_ids' or @name='journal_line_ids']/list/field[@name='account_id']" position="after">
                 <field name="ua_kekv_id" optional="show"/>
                 <field name="ua_kfk_id" optional="hide"/>
                 <field name="ua_kpkvk_id" optional="hide"/>
