@@ -1,0 +1,116 @@
+"""Tests for l10n_ua_education_scholarship — payment lifecycle and computed totals."""
+from odoo.exceptions import UserError, ValidationError
+from odoo.tests import TransactionCase, tagged
+
+
+@tagged('post_install', '-at_install', 'l10n_ua_education_scholarship')
+class TestScholarship(TransactionCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.scholarship_type = cls.env.ref('l10n_ua_education_scholarship.scholarship_type_academic_basic')
+        cls.kekv_2720 = cls.env['l10n_ua.kekv'].search([('code', '=', '2720')], limit=1)
+        cls.year = cls.env['l10n_ua.education.academic.year'].create({
+            'name': '2030/2031 SCHO',
+            'year_start': 2030,
+            'date_start': '2030-09-01',
+            'date_end': '2031-06-30',
+            'company_id': cls.env.company.id,
+        })
+        cls.partner1 = cls.env['res.partner'].create({'name': 'Студент 1', 'is_company': False})
+        cls.partner2 = cls.env['res.partner'].create({'name': 'Студент 2', 'is_company': False})
+        cls.member1 = cls.env['l10n_ua.education.contingent.member'].create({
+            'partner_id': cls.partner1.id, 'member_type': 'student',
+            'academic_year_id': cls.year.id, 'state': 'studying',
+        })
+        cls.member2 = cls.env['l10n_ua.education.contingent.member'].create({
+            'partner_id': cls.partner2.id, 'member_type': 'student',
+            'academic_year_id': cls.year.id, 'state': 'studying',
+        })
+
+    def test_create_with_sequence(self):
+        payment = self.env['l10n_ua.scholarship.payment'].create({
+            'scholarship_type_id': self.scholarship_type.id,
+            'period_year': 2025,
+            'period_month': '10',
+        })
+        self.assertNotEqual(payment.name, 'Нова')
+        self.assertTrue(payment.name.startswith('СТП-'),
+                         f"unexpected sequence: {payment.name}")
+
+    def test_default_kekv_from_type(self):
+        self.scholarship_type.default_kekv_id = self.kekv_2720
+        payment = self.env['l10n_ua.scholarship.payment'].create({
+            'scholarship_type_id': self.scholarship_type.id,
+            'period_year': 2025, 'period_month': '11',
+        })
+        self.assertEqual(payment.kekv_id, self.kekv_2720)
+
+    def test_lifecycle(self):
+        payment = self.env['l10n_ua.scholarship.payment'].create({
+            'scholarship_type_id': self.scholarship_type.id,
+            'period_year': 2025, 'period_month': '10',
+            'line_ids': [
+                (0, 0, {'member_id': self.member1.id, 'amount': 2000}),
+                (0, 0, {'member_id': self.member2.id, 'amount': 2500}),
+            ],
+        })
+        self.assertEqual(payment.state, 'draft')
+        self.assertEqual(payment.total_amount, 4500)
+        self.assertEqual(payment.line_count, 2)
+
+        payment.action_approve()
+        self.assertEqual(payment.state, 'approved')
+        payment.action_pay()
+        self.assertEqual(payment.state, 'paid')
+
+    def test_cannot_approve_empty(self):
+        payment = self.env['l10n_ua.scholarship.payment'].create({
+            'scholarship_type_id': self.scholarship_type.id,
+            'period_year': 2025, 'period_month': '10',
+        })
+        with self.assertRaises(UserError):
+            payment.action_approve()
+
+    def test_cannot_cancel_paid(self):
+        payment = self.env['l10n_ua.scholarship.payment'].create({
+            'scholarship_type_id': self.scholarship_type.id,
+            'period_year': 2025, 'period_month': '10',
+            'line_ids': [(0, 0, {'member_id': self.member1.id, 'amount': 1500})],
+        })
+        payment.action_approve()
+        payment.action_pay()
+        with self.assertRaises(UserError):
+            payment.action_cancel()
+
+    def test_no_duplicate_member_in_one_payment(self):
+        payment = self.env['l10n_ua.scholarship.payment'].create({
+            'scholarship_type_id': self.scholarship_type.id,
+            'period_year': 2025, 'period_month': '10',
+            'line_ids': [(0, 0, {'member_id': self.member1.id, 'amount': 1500})],
+        })
+        with self.assertRaises(Exception):
+            self.env['l10n_ua.scholarship.payment.line'].create({
+                'payment_id': payment.id,
+                'member_id': self.member1.id,
+                'amount': 2000,
+            })
+
+    def test_negative_amount_rejected(self):
+        payment = self.env['l10n_ua.scholarship.payment'].create({
+            'scholarship_type_id': self.scholarship_type.id,
+            'period_year': 2025, 'period_month': '10',
+        })
+        with self.assertRaises(ValidationError):
+            self.env['l10n_ua.scholarship.payment.line'].create({
+                'payment_id': payment.id,
+                'member_id': self.member1.id,
+                'amount': -100,
+            })
+
+    def test_member_domain_only_active_students(self):
+        """The member_id field on the line carries a domain restricting state."""
+        member_field = self.env['l10n_ua.scholarship.payment.line']._fields['member_id']
+        self.assertIn("'state', 'in'", member_field.domain)
+        self.assertIn("studying", member_field.domain)
