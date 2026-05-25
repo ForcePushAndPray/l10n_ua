@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_l10n_ua_budget_form_2d"
+              name="Форма 2д (виконання заг. фонду)"
+              parent="l10n_ua_budget_base.menu_l10n_ua_budget_root"
+              action="action_budget_form_2d_wizard"
+              sequence="70"/>
+</odoo>
