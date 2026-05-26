@@ -2,7 +2,7 @@
 
 from odoo.tests import tagged
 from odoo.exceptions import ValidationError
-from datetime import date
+from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
 
 from .common import TestHrUaBase
@@ -255,3 +255,68 @@ class TestHrEmployeeMilitaryBenefits(TestHrUaBase):
         self.assertEqual(employee.military_status, 'liable')
         self.assertEqual(employee.military_category, '1')
         self.assertEqual(employee.military_fitness, 'fit')
+
+
+@tagged('post_install', '-at_install')
+class TestHrEmployeeMilitaryCompliance3621IX(TestHrUaBase):
+    """#88 — Закон 3621-IX від 04.05.2024: military_fitness selection."""
+
+    def test_fitness_values_no_legacy_limited(self):
+        """'limited' must not be a valid selection any more."""
+        employee = self._create_employee()
+        with self.assertRaises(ValueError):
+            employee.military_fitness = 'limited'
+
+    def test_fitness_new_values_accepted(self):
+        """Both new values must work."""
+        employee = self._create_employee(military_fitness='fit_support')
+        self.assertEqual(employee.military_fitness, 'fit_support')
+        employee.military_fitness = 'temp_unfit'
+        self.assertEqual(employee.military_fitness, 'temp_unfit')
+
+
+@tagged('post_install', '-at_install')
+class TestHrEmployeeMilitaryMedical402(TestHrUaBase):
+    """#89 — Наказ МОУ № 402: medical_category, military_mlk_retest_date."""
+
+    def test_medical_category_can_be_set(self):
+        for code in ('A', 'B', 'V', 'G', 'D'):
+            employee = self._create_employee(military_medical_category=code)
+            self.assertEqual(employee.military_medical_category, code)
+
+    def test_mlk_retest_due_soon_true_within_14_days(self):
+        employee = self._create_employee(
+            military_mlk_retest_date=date.today() + timedelta(days=7),
+        )
+        self.assertTrue(employee.military_mlk_retest_due_soon)
+
+    def test_mlk_retest_due_soon_false_when_far(self):
+        employee = self._create_employee(
+            military_mlk_retest_date=date.today() + timedelta(days=30),
+        )
+        self.assertFalse(employee.military_mlk_retest_due_soon)
+
+    def test_mlk_retest_due_soon_false_when_blank(self):
+        employee = self._create_employee()
+        self.assertFalse(employee.military_mlk_retest_due_soon)
+
+
+@tagged('post_install', '-at_install')
+class TestHrEmployeeMilitaryRegister1487(TestHrUaBase):
+    """#90 — ПКМУ № 1487: military_register_category selection."""
+
+    def test_register_category_default(self):
+        employee = self._create_employee()
+        self.assertEqual(employee.military_register_category, 'not_applicable')
+
+    def test_register_category_all_values(self):
+        for code in ('conscript', 'liable', 'reservist', 'not_applicable'):
+            employee = self._create_employee(military_register_category=code)
+            self.assertEqual(employee.military_register_category, code)
+
+    def test_legacy_military_status_still_usable(self):
+        """Legacy military_status field stays — for historical data and reports."""
+        employee = self._create_employee(military_status='liable',
+                                          military_register_category='liable')
+        self.assertEqual(employee.military_status, 'liable')
+        self.assertEqual(employee.military_register_category, 'liable')
