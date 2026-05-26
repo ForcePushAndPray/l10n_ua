@@ -1,9 +1,8 @@
 from datetime import datetime
 from odoo.tests.common import TransactionCase
 from odoo.exceptions import ValidationError
-from odoo.tests import tagged
 
-@tagged('post_install', '-at_install')
+
 class TestHrVacationBalance(TransactionCase):
     """Tests for hr.vacation.balance model"""
 
