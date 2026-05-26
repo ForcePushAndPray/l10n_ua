@@ -114,3 +114,48 @@ class TestScholarship(TransactionCase):
         member_field = self.env['l10n_ua.scholarship.payment.line']._fields['member_id']
         self.assertIn("'state', 'in'", member_field.domain)
         self.assertIn("studying", member_field.domain)
+
+    def test_non_taxable_zero_tax(self):
+        """Academic scholarships (`is_taxable_pdfo=False`) have zero tax."""
+        # scholarship_type_academic_basic has is_taxable_pdfo=False by default
+        payment = self.env['l10n_ua.scholarship.payment'].create({
+            'scholarship_type_id': self.scholarship_type.id,
+            'period_year': 2031, 'period_month': '10',
+            'line_ids': [(0, 0, {'member_id': self.member1.id, 'amount': 2000})],
+        })
+        line = payment.line_ids
+        self.assertEqual(line.amount_pdfo, 0)
+        self.assertEqual(line.amount_vz, 0)
+        self.assertEqual(line.amount_net, 2000)
+
+    def test_taxable_scholarship_computes_pdfo_vz(self):
+        """Taxable scholarships compute 18% PDFO + 5% military tax."""
+        taxable_type = self.env['l10n_ua.scholarship.type'].create({
+            'name': 'Премія', 'code': 'PRZ', 'kind': 'other',
+            'is_taxable_pdfo': True,
+        })
+        payment = self.env['l10n_ua.scholarship.payment'].create({
+            'scholarship_type_id': taxable_type.id,
+            'period_year': 2031, 'period_month': '11',
+            'pdfo_rate': 18.0, 'vz_rate': 5.0,
+            'line_ids': [(0, 0, {'member_id': self.member1.id, 'amount': 1000})],
+        })
+        line = payment.line_ids
+        self.assertAlmostEqual(line.amount_pdfo, 180.0, places=2)
+        self.assertAlmostEqual(line.amount_vz, 50.0, places=2)
+        self.assertAlmostEqual(line.amount_net, 770.0, places=2)
+        self.assertAlmostEqual(payment.total_pdfo, 180.0, places=2)
+        self.assertAlmostEqual(payment.total_vz, 50.0, places=2)
+        self.assertAlmostEqual(payment.total_net, 770.0, places=2)
+
+    def test_pay_without_journal_keeps_compatibility(self):
+        """If journal_id is empty, action_pay just transitions state — backward compat."""
+        payment = self.env['l10n_ua.scholarship.payment'].create({
+            'scholarship_type_id': self.scholarship_type.id,
+            'period_year': 2031, 'period_month': '12',
+            'line_ids': [(0, 0, {'member_id': self.member1.id, 'amount': 1500})],
+        })
+        payment.action_approve()
+        payment.action_pay()
+        self.assertEqual(payment.state, 'paid')
+        self.assertFalse(payment.account_move_id)

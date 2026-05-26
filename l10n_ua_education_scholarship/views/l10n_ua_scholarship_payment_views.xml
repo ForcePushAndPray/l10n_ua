@@ -68,6 +68,10 @@
                                     <field name="partner_id" readonly="1"/>
                                     <field name="group_id" readonly="1" optional="show"/>
                                     <field name="amount"/>
+                                    <field name="amount_pdfo" optional="show" readonly="1"/>
+                                    <field name="amount_vz" optional="show" readonly="1"/>
+                                    <field name="amount_net" optional="show" readonly="1"/>
+                                    <field name="is_taxable" readonly="1" optional="hide"/>
                                     <field name="note"/>
                                     <field name="currency_id" column_invisible="True"/>
                                 </list>
@@ -75,6 +79,28 @@
                             <group class="oe_subtotal_footer oe_right">
                                 <field name="line_count" string="Кількість одержувачів"/>
                                 <field name="total_amount" widget="monetary"/>
+                                <field name="total_pdfo" widget="monetary"/>
+                                <field name="total_vz" widget="monetary"/>
+                                <field name="total_net" widget="monetary"
+                                       class="oe_subtotal_footer_separator"/>
+                            </group>
+                        </page>
+                        <page string="Бухгалтерія" name="accounting">
+                            <group>
+                                <group string="Ставки податків">
+                                    <field name="pdfo_rate"/>
+                                    <field name="vz_rate"/>
+                                </group>
+                                <group string="Журнал нарахування">
+                                    <field name="journal_id"/>
+                                    <field name="account_expense_id"/>
+                                    <field name="account_payable_id"/>
+                                    <field name="account_pdfo_id"/>
+                                    <field name="account_vz_id"/>
+                                </group>
+                            </group>
+                            <group string="Згенерована проводка" invisible="not account_move_id">
+                                <field name="account_move_id" readonly="1"/>
                             </group>
                         </page>
                         <page string="Примітки" name="notes">

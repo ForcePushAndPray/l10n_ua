@@ -59,9 +59,38 @@ class L10nUaScholarshipPayment(models.Model):
     line_ids = fields.One2many(
         'l10n_ua.scholarship.payment.line', 'payment_id',
         string='Рядки виплати', copy=True)
-    total_amount = fields.Monetary(string='Усього', currency_field='currency_id',
+    total_amount = fields.Monetary(string='Усього (брутто)', currency_field='currency_id',
                                     compute='_compute_total', store=True)
+    total_pdfo = fields.Monetary(string='Усього ПДФО', currency_field='currency_id',
+                                  compute='_compute_total', store=True)
+    total_vz = fields.Monetary(string='Усього військового збору', currency_field='currency_id',
+                                compute='_compute_total', store=True)
+    total_net = fields.Monetary(string='Усього (нетто, до виплати)', currency_field='currency_id',
+                                 compute='_compute_total', store=True)
     line_count = fields.Integer(compute='_compute_total', store=True)
+
+    # Tax rates — за чинним законодавством (Податковий кодекс)
+    pdfo_rate = fields.Float(string='Ставка ПДФО, %', default=18.0,
+                              help='Ставка податку на доходи фізосіб (стандартно 18%).')
+    vz_rate = fields.Float(string='Ставка військового збору, %', default=5.0,
+                            help='Ставка військового збору (з 01.12.2024 — 5%).')
+
+    # Accounts for generated journal entry (optional)
+    journal_id = fields.Many2one('account.journal', string='Журнал нарахування',
+                                   help='Якщо вказано — при action_pay створюється проводка нарахування.')
+    account_expense_id = fields.Many2one(
+        'account.account', string='Рахунок витрат',
+        help='Зазвичай 8011 (для нерозпорядників) або 8111 (для розпорядників).')
+    account_payable_id = fields.Many2one(
+        'account.account', string='Рахунок розрахунків зі студентами',
+        help='Зазвичай 6514 (депоновані) або інший liability_current.')
+    account_pdfo_id = fields.Many2one(
+        'account.account', string='Рахунок ПДФО (до перерахування в бюджет)')
+    account_vz_id = fields.Many2one(
+        'account.account', string='Рахунок військового збору')
+    account_move_id = fields.Many2one(
+        'account.move', string='Згенерована проводка', readonly=True, copy=False,
+        help='Документ нарахування стипендії — створюється при дії «Виплатити».')
 
     @api.depends('scholarship_type_id')
     def _compute_default_kekv(self):
@@ -69,10 +98,13 @@ class L10nUaScholarshipPayment(models.Model):
             if rec.scholarship_type_id and not rec.kekv_id:
                 rec.kekv_id = rec.scholarship_type_id.default_kekv_id
 
-    @api.depends('line_ids.amount')
+    @api.depends('line_ids.amount', 'line_ids.amount_pdfo', 'line_ids.amount_vz', 'line_ids.amount_net')
     def _compute_total(self):
         for rec in self:
             rec.total_amount = sum(rec.line_ids.mapped('amount'))
+            rec.total_pdfo = sum(rec.line_ids.mapped('amount_pdfo'))
+            rec.total_vz = sum(rec.line_ids.mapped('amount_vz'))
+            rec.total_net = sum(rec.line_ids.mapped('amount_net'))
             rec.line_count = len(rec.line_ids)
 
     @api.model_create_multi
@@ -97,7 +129,72 @@ class L10nUaScholarshipPayment(models.Model):
         for rec in self:
             if rec.state != 'approved':
                 raise UserError(_('Виплачувати можна лише затверджену відомість.'))
+            if rec.journal_id:
+                rec._create_account_move()
             rec.state = 'paid'
+
+    def _create_account_move(self):
+        """Generate accrual journal entry: Dr expense / Cr payable + tax payables."""
+        self.ensure_one()
+        if not (self.account_expense_id and self.account_payable_id):
+            raise UserError(_(
+                'Для нарахування потрібно заповнити журнал, рахунок витрат '
+                'і рахунок розрахунків зі студентами на відомості.'))
+
+        AccountMove = self.env['account.move']
+        # Aggregate per fund_type for cleaner posting (one move with grouped lines)
+        gross = sum(self.line_ids.mapped('amount'))
+        pdfo = sum(self.line_ids.mapped('amount_pdfo'))
+        vz = sum(self.line_ids.mapped('amount_vz'))
+        net = gross - pdfo - vz
+        if gross <= 0:
+            raise UserError(_('Сума брутто = 0, нічого нараховувати.'))
+
+        date_str = self.payment_date or fields.Date.context_today(self)
+        analytic = {
+            'ua_kekv_id': self.kekv_id.id,
+            'ua_fund_type': self.fund_type,
+            'ua_kpkvk_id': self.kpkvk_id.id if self.kpkvk_id else False,
+        }
+        lines = [
+            (0, 0, dict(
+                analytic,
+                account_id=self.account_expense_id.id,
+                name=_('Нарахування стипендій %s', self.name),
+                debit=gross, credit=0,
+            )),
+            (0, 0, dict(
+                analytic,
+                account_id=self.account_payable_id.id,
+                name=_('До виплати студентам %s', self.name),
+                debit=0, credit=net,
+            )),
+        ]
+        if pdfo > 0 and self.account_pdfo_id:
+            lines.append((0, 0, dict(
+                analytic,
+                account_id=self.account_pdfo_id.id,
+                name=_('ПДФО з стипендій %s', self.name),
+                debit=0, credit=pdfo,
+            )))
+        if vz > 0 and self.account_vz_id:
+            lines.append((0, 0, dict(
+                analytic,
+                account_id=self.account_vz_id.id,
+                name=_('Військовий збір з стипендій %s', self.name),
+                debit=0, credit=vz,
+            )))
+        move = AccountMove.create({
+            'move_type': 'entry',
+            'journal_id': self.journal_id.id,
+            'date': date_str,
+            'company_id': self.company_id.id,
+            'ref': _('Стипендії %s', self.name),
+            'line_ids': lines,
+        })
+        move.action_post()
+        self.account_move_id = move.id
+        return move
 
     def action_cancel(self):
         for rec in self:
@@ -128,9 +225,20 @@ class L10nUaScholarshipPaymentLine(models.Model):
         domain="[('state', 'in', ('enrolled', 'studying'))]")
     partner_id = fields.Many2one(related='member_id.partner_id', store=True, readonly=True)
     group_id = fields.Many2one(related='member_id.group_id', store=True, readonly=True)
-    amount = fields.Monetary(string='Сума', currency_field='currency_id',
+    amount = fields.Monetary(string='Сума (брутто)', currency_field='currency_id',
                               compute='_compute_amount', store=True, readonly=False,
                               required=True)
+    amount_pdfo = fields.Monetary(string='ПДФО', currency_field='currency_id',
+                                    compute='_compute_taxes', store=True,
+                                    help='Податок на доходи фізосіб. Розраховується, '
+                                         'якщо тип стипендії оподатковується.')
+    amount_vz = fields.Monetary(string='Військовий збір', currency_field='currency_id',
+                                  compute='_compute_taxes', store=True)
+    amount_net = fields.Monetary(string='До виплати (нетто)', currency_field='currency_id',
+                                   compute='_compute_taxes', store=True)
+    is_taxable = fields.Boolean(
+        related='payment_id.scholarship_type_id.is_taxable_pdfo',
+        store=True, readonly=True)
     note = fields.Char(string='Примітка')
 
     @api.depends('payment_id.scholarship_type_id')
@@ -138,6 +246,19 @@ class L10nUaScholarshipPaymentLine(models.Model):
         for line in self:
             if not line.amount and line.payment_id.scholarship_type_id:
                 line.amount = line.payment_id.scholarship_type_id.monthly_amount
+
+    @api.depends('amount', 'is_taxable', 'payment_id.pdfo_rate', 'payment_id.vz_rate')
+    def _compute_taxes(self):
+        for line in self:
+            if line.is_taxable and line.amount > 0:
+                pdfo_rate = (line.payment_id.pdfo_rate or 0) / 100.0
+                vz_rate = (line.payment_id.vz_rate or 0) / 100.0
+                line.amount_pdfo = round(line.amount * pdfo_rate, 2)
+                line.amount_vz = round(line.amount * vz_rate, 2)
+            else:
+                line.amount_pdfo = 0.0
+                line.amount_vz = 0.0
+            line.amount_net = line.amount - line.amount_pdfo - line.amount_vz
 
     @api.constrains('amount')
     def _check_non_negative(self):
