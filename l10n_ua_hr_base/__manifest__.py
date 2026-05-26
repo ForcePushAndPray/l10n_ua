@@ -40,6 +40,7 @@ This module is required for all other l10n_ua_hr_* modules.
         'data/hr_military_tcc_data.xml',
         'data/ir_sequence_data.xml',
         'data/ir_cron.xml',
+        'data/mail_template_data.xml',
         'data/report_paperformat_data.xml',
         'views/hr_employee_views.xml',
         'views/hr_employee_child_views.xml',

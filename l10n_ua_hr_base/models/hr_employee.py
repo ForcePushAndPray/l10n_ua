@@ -179,7 +179,10 @@ class HrEmployee(models.Model):
                                        help='Children under 18, or students (up to 23), or disabled children of any age — PSP-eligible.')
     is_single_parent = fields.Boolean(
         string='Single Parent',
-        help='Sole carer of dependent children. Used by payroll for elevated PSP (150% of base amount).')
+        groups='l10n_ua_hr_base.group_hr_ua_officer',
+        help='Sole carer of dependent children. Used by payroll for elevated PSP (150% of base amount). '
+             'Зміна цього поля захищена групою HR Officer — впливає на розрахунок ПДФО, '
+             'тому звичайний користувач не повинен мати змогу його редагувати.')
 
     # === Work Experience & Bank ===
     hire_date = fields.Date(string='Hire Date')
@@ -270,6 +273,8 @@ class HrEmployee(models.Model):
 
         The stored compute depends on (military_reservation, military_reservation_until)
         and won't refire on calendar advance, so the cron writes the flag directly.
+        For newly-expired (False → True transition), notifies HR officers via email
+        and activity (ПКМУ № 1608 — обов'язок роботодавця контролювати ліміти).
         """
         today = date.today()
         stale = self.search([
@@ -278,8 +283,66 @@ class HrEmployee(models.Model):
             ('military_reservation_until', '<', today),
             ('military_reservation_expired', '=', False),
         ])
-        if stale:
-            stale.write({'military_reservation_expired': True})
+        if not stale:
+            return
+        stale.write({'military_reservation_expired': True})
+        # Notify HR officers about newly-expired reservations
+        stale._notify_military_reservation_expired()
+
+    def _notify_military_reservation_expired(self):
+        """Post chatter message + schedule activity for HR officers when reservation expires.
+
+        Uses mail.template for body rendering, then message_post with HR partners
+        in partner_ids — this triggers emails to HR officers via mail thread.
+        """
+        template = self.env.ref(
+            'l10n_ua_hr_base.mail_template_military_reservation_expired',
+            raise_if_not_found=False,
+        )
+        activity_type = self.env.ref(
+            'mail.mail_activity_data_todo', raise_if_not_found=False,
+        )
+        hr_group = self.env.ref(
+            'l10n_ua_hr_base.group_hr_ua_officer', raise_if_not_found=False,
+        )
+        hr_users = hr_group.user_ids if hr_group else self.env['res.users']
+        hr_partners = hr_users.partner_id
+
+        for employee in self:
+            # Render body from template if available, else use a default body
+            body_html = _('<p>⚠️ Військове бронювання працівника <strong>%s</strong> '
+                          'прострочено (до %s). Згідно з ПКМУ № 1608 потрібне '
+                          'переоформлення або зняття з обліку.</p>',
+                          employee.name, employee.military_reservation_until)
+            if template:
+                try:
+                    rendered = template._render_field('body_html', [employee.id])
+                    body_html = rendered.get(employee.id) or body_html
+                except Exception:
+                    pass
+            # Post in employee chatter and notify HR officers via partner_ids
+            employee.message_post(
+                body=body_html,
+                subtype_xmlid='mail.mt_comment',
+                partner_ids=hr_partners.ids if hr_partners else [],
+            )
+            # Activity for the first HR officer (head-of-line)
+            if activity_type and hr_users:
+                manager = hr_users[0]
+                existing = employee.activity_ids.filtered(
+                    lambda a: a.activity_type_id == activity_type
+                    and 'бронювання' in (a.summary or '').lower()
+                )
+                if not existing:
+                    employee.activity_schedule(
+                        'mail.mail_activity_data_todo',
+                        user_id=manager.id,
+                        summary=_('Прострочене військове бронювання'),
+                        note=_('Бронювання працівника %s прострочено '
+                               '(до %s). Оформіть нове або зніміть з обліку.',
+                               employee.name,
+                               employee.military_reservation_until),
+                    )
 
     @api.model
     def _cron_check_military_mlk_retest(self):
