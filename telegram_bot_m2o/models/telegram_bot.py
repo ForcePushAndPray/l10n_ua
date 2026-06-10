@@ -393,8 +393,22 @@ class TelegramBot(models.Model):
             'phone': chat.phone,
             'message_text': message_text,
             'partner_id': chat.partner_id.id if chat.partner_id else None,
+            'chat_record_id': chat.id,
             'raw_message': message_data,
         }
+
+        # recent chat history for LLM context (last 15 messages, oldest first)
+        try:
+            recent = self.env['telegram.bot.message'].search(
+                [('chat_id', '=', chat.id)], order='id desc', limit=15)
+            payload['history'] = [{
+                'direction': m.direction,
+                'text': m.text or m.callback_data or '',
+                'date': m.create_date and m.create_date.isoformat() or '',
+            } for m in recent.sorted('id')]
+        except Exception as e:
+            _logger.warning(f"Could not build chat history: {e}")
+            payload['history'] = []
 
         try:
             response = requests.post(
