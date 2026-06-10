@@ -266,8 +266,9 @@ class TelegramBot(models.Model):
         data = {
             'chat_id': chat_id,
             'text': text,
-            'parse_mode': parse_mode,
         }
+        if parse_mode:
+            data['parse_mode'] = parse_mode
 
         if reply_markup:
             data['reply_markup'] = reply_markup
