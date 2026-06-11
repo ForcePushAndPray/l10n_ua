@@ -281,7 +281,8 @@ class TelegramBot(models.Model):
 
         return result
 
-    def _log_outgoing_message(self, chat_id, message_type, text=None, caption=None, telegram_message_id=None):
+    def _log_outgoing_message(self, chat_id, message_type, text=None, caption=None,
+                              telegram_message_id=None, att_bytes=None, att_name=None):
         """Log outgoing message and post to partner chatter"""
         Chat = self.env['telegram.bot.chat']
         Message = self.env['telegram.bot.message']
@@ -302,13 +303,16 @@ class TelegramBot(models.Model):
             'caption': caption,
             'telegram_message_id': str(telegram_message_id) if telegram_message_id else '',
         }
+        if message_type == 'document' and att_name:
+            vals['file_name'] = att_name
 
         message = Message.create(vals)
-        message._post_to_partner_chatter()
+        message._post_to_partner_chatter(att_bytes=att_bytes, att_name=att_name)
 
         return message
 
-    def send_photo(self, chat_id, photo, caption=None, reply_markup=None, log_message=True):
+    def send_photo(self, chat_id, photo, caption=None, reply_markup=None, log_message=True,
+                   filename='image.jpg', parse_mode='HTML'):
         """Send a photo"""
         self.ensure_one()
 
@@ -319,23 +323,27 @@ class TelegramBot(models.Model):
         }
         if caption:
             data['caption'] = caption
-            data['parse_mode'] = 'HTML'
+            if parse_mode:
+                data['parse_mode'] = parse_mode
         if reply_markup:
             data['reply_markup'] = json.dumps(reply_markup)
 
         # Decode base64 image
         photo_data = base64.b64decode(photo)
-        files = {'photo': ('image.jpg', photo_data, 'image/jpeg')}
+        files = {'photo': (filename or 'image.jpg', photo_data, 'image/jpeg')}
 
         result = self._call_telegram_api('sendPhoto', data, files=files)
 
         # Log outgoing message
         if log_message and result:
-            self._log_outgoing_message(chat_id, 'photo', caption=caption, telegram_message_id=result.get('message_id'))
+            self._log_outgoing_message(chat_id, 'photo', caption=caption,
+                                       telegram_message_id=result.get('message_id'),
+                                       att_bytes=photo_data, att_name=(filename or 'image.jpg'))
 
         return result
 
-    def send_document(self, chat_id, document, filename, caption=None, reply_markup=None, log_message=True):
+    def send_document(self, chat_id, document, filename, caption=None, reply_markup=None,
+                      log_message=True, parse_mode='HTML'):
         """Send a document"""
         self.ensure_one()
 
@@ -346,7 +354,8 @@ class TelegramBot(models.Model):
         }
         if caption:
             data['caption'] = caption
-            data['parse_mode'] = 'HTML'
+            if parse_mode:
+                data['parse_mode'] = parse_mode
         if reply_markup:
             data['reply_markup'] = json.dumps(reply_markup)
 
@@ -358,7 +367,9 @@ class TelegramBot(models.Model):
 
         # Log outgoing message
         if log_message and result:
-            self._log_outgoing_message(chat_id, 'document', caption=caption, telegram_message_id=result.get('message_id'))
+            self._log_outgoing_message(chat_id, 'document', caption=caption,
+                                       telegram_message_id=result.get('message_id'),
+                                       att_bytes=doc_data, att_name=filename)
 
         return result
 
