@@ -59,6 +59,20 @@ class HrOrder(models.Model):
         string='Dismissal Reason',
         help='Legal basis for dismissal (e.g., "за власним бажанням, ст. 38 КЗпП України")'
     )
+    previous_departure_date = fields.Date(
+        string='Previous Departure Date (backup)',
+        copy=False,
+        readonly=True,
+        help='Internal: saves employee.departure_date before this dismissal '
+             'order was applied, so cancellation can restore it.',
+    )
+    previous_departure_date_saved = fields.Boolean(
+        copy=False,
+        readonly=True,
+        default=False,
+        help='Internal: True if previous_departure_date holds a backed-up value '
+             '(needed because False is a legitimate previous value).',
+    )
     termination_reason_id = fields.Many2one(
         'hr.termination.reason',
         string='Termination Reason (from catalog)',
@@ -341,14 +355,78 @@ class HrOrder(models.Model):
 
     def action_confirm(self):
         self.write({'state': 'confirmed'})
+        for order in self.filtered(lambda o: o.order_type == 'dismissal' and o.employee_id):
+            order._apply_dismissal()
 
+    def _apply_dismissal(self):
+        """Apply a confirmed dismissal order to the employee:
+        close ALL contract versions and archive the employee.
+
+        We write contract_date_end to every hr.version of the employee:
+        Odoo core syncs contract_date_end across versions only on
+        `create_version`, not on direct `write`. Historical versions
+        would otherwise keep `contract_date_end = False` and slip
+        through the report filter `('contract_date_end', '=', False)`.
+        """
+        self.ensure_one()
+        employee = self.employee_id
+        dismissal_date = self.date_dismissal or self.date
+        versions = employee.with_context(active_test=False).version_ids
+        if versions:
+            versions.write({
+                'contract_date_end': dismissal_date,
+                'termination_order_number': self.name,
+                'termination_order_date': self.date,
+            })
+        if hasattr(employee, 'departure_date'):
+            # Back up the previous value once per apply/revert cycle so revert
+            # restores exactly what was there before this order — independent of
+            # later manual edits.
+            if not self.previous_departure_date_saved:
+                self.write({
+                    'previous_departure_date': employee.departure_date or False,
+                    'previous_departure_date_saved': True,
+                })
+            employee.departure_date = dismissal_date
+        if employee.active:
+            employee.active = False
+    
     def action_cancel(self):
         self.write({'state': 'cancelled'})
         for order in self.filtered(lambda o: o.leave_id):
             order.leave_id.message_post(
                 body=_('Linked vacation order %s was cancelled. Leave state is unchanged.', order.name)
             )
+        for order in self.filtered(lambda o: o.order_type == 'dismissal' and o.employee_id):
+            order._revert_dismissal()
         return True
+
+    def _revert_dismissal(self):
+        """Revert the effects of a previously confirmed dismissal order.
+
+        We match versions by termination_order_number == self.name so revert
+        is safe when several dismissal orders existed for the same employee.
+        """
+        self.ensure_one()
+        employee = self.employee_id
+        versions = employee.with_context(active_test=False).version_ids.filtered(
+            lambda v: v.termination_order_number == self.name
+        )
+        if versions:
+            versions.write({
+                'contract_date_end': False,
+                'termination_order_number': False,
+                'termination_order_date': False,
+            })
+        if hasattr(employee, 'departure_date') and self.previous_departure_date_saved:
+            employee.with_context(active_test=False).departure_date = \
+                self.previous_departure_date or False
+            self.write({
+                'previous_departure_date': False,
+                'previous_departure_date_saved': False,
+            })
+        if not employee.active:
+            employee.with_context(active_test=False).active = True
 
     def unlink(self):
         leaves = self.mapped('leave_id')
