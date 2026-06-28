@@ -6,6 +6,20 @@ from odoo import _, api, fields, models
 class Agreement(models.Model):
     _inherit = 'agreement'
 
+    # --- Українізація міток базових полів OCA-модуля agreement ---
+    code = fields.Char(string='Номер договору')
+    name = fields.Char(string='Назва договору')
+    partner_id = fields.Many2one(string='Клієнт')
+    agreement_type_id = fields.Many2one(string='Тип договору')
+    is_template = fields.Boolean(string='Шаблон')
+    signature_date = fields.Date(string='Дата підпису')
+    start_date = fields.Date(string='Дата початку')
+    end_date = fields.Date(string='Дата завершення')
+    domain = fields.Selection(
+        selection=[('sale', 'Продаж'), ('purchase', 'Закупівля')],
+        string='Сфера',
+    )
+
     state = fields.Selection(
         selection=[
             ('draft', 'Чернетка'),

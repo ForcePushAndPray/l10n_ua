@@ -52,6 +52,10 @@
                 <field name="is_amendment" invisible="1"/>
             </xpath>
 
+            <xpath expr="//label[@for='name']" position="attributes">
+                <attribute name="string">Назва договору</attribute>
+            </xpath>
+
             <xpath expr="//notebook" position="inside">
                 <page name="subject_page" string="Предмет договору">
                     <field name="subject" placeholder="Опишіть предмет договору, перелік послуг…"/>
@@ -102,6 +106,27 @@
         <field name="model">agreement</field>
         <field name="inherit_id" ref="agreement.agreement_search"/>
         <field name="arch" type="xml">
+            <field name="name" position="attributes">
+                <attribute name="string">Назва або номер</attribute>
+            </field>
+            <filter name="sale" position="attributes">
+                <attribute name="string">Продаж</attribute>
+            </filter>
+            <filter name="purchase" position="attributes">
+                <attribute name="string">Закупівля</attribute>
+            </filter>
+            <filter name="inactive" position="attributes">
+                <attribute name="string">Архівні</attribute>
+            </filter>
+            <filter name="partner_groupby" position="attributes">
+                <attribute name="string">Клієнт</attribute>
+            </filter>
+            <filter name="signature_date_groupby" position="attributes">
+                <attribute name="string">Дата підпису</attribute>
+            </filter>
+            <filter name="domain_groupby" position="attributes">
+                <attribute name="string">Сфера</attribute>
+            </filter>
             <field name="name" position="after">
                 <filter string="Чернетки" name="filter_draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="На підписанні" name="filter_to_sign" domain="[('state', '=', 'to_sign')]"/>

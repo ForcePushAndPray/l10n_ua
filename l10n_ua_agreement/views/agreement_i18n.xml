@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Українізація меню базового модуля agreement / agreement_sale -->
+    <menuitem id="agreement.agreement_menu_root" name="Договори"/>
+    <menuitem id="agreement.agreement_menu" name="Договори"/>
+    <menuitem id="agreement.agreement_reporting_menu" name="Звітність"/>
+    <menuitem id="agreement.agreement_setting_menu" name="Налаштування"/>
+    <menuitem id="agreement.agreement_type_menu_main" name="Типи договорів"/>
+
+    <!-- Назви дій -->
+    <record id="agreement.agreement_action" model="ir.actions.act_window">
+        <field name="name">Договори</field>
+    </record>
+    <record id="agreement.agreement_type_action" model="ir.actions.act_window">
+        <field name="name">Типи договорів</field>
+    </record>
+</odoo>

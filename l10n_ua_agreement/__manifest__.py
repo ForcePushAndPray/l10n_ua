@@ -35,6 +35,7 @@ Ukraine Agreements (Договори)
         'report/agreement_report.xml',
         'report/agreement_report_templates.xml',
         'views/agreement_views.xml',
+        'views/agreement_i18n.xml',
     ],
     'demo': [],
     'installable': True,
