@@ -13,21 +13,23 @@
     </record>
     <record id="agreement.agreement_reporting_menu" model="ir.ui.menu">
         <field name="name">Звітність</field>
+        <field name="active">True</field>
         <field name="parent_id" ref="agreement.agreement_menu_root"/>
     </record>
     <record id="agreement.agreement_setting_menu" model="ir.ui.menu">
         <field name="name">Налаштування</field>
+        <field name="active">True</field>
         <field name="parent_id" ref="agreement.agreement_menu_root"/>
     </record>
 
-    <!-- Типи договорів: один пункт під застосунком, без зайвої папки-обгортки -->
+    <!-- Типи договорів -> у Налаштування (без зайвої папки-обгортки) -->
     <record id="agreement.agreement_type_menu_main" model="ir.ui.menu">
         <field name="active">False</field>
     </record>
     <record id="agreement.agreement_type_menu" model="ir.ui.menu">
         <field name="name">Типи договорів</field>
         <field name="active">True</field>
-        <field name="parent_id" ref="agreement.agreement_menu_root"/>
+        <field name="parent_id" ref="agreement.agreement_setting_menu"/>
         <field name="group_ids" eval="[(5, 0, 0)]"/>
     </record>
 
