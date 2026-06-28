@@ -32,6 +32,7 @@ Ukraine Agreements (Договори)
         'contract',
     ],
     'data': [
+        'data/agreement_type_data.xml',
         'report/agreement_report.xml',
         'report/agreement_report_templates.xml',
         'views/agreement_views.xml',
