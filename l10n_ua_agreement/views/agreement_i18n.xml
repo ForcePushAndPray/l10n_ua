@@ -14,4 +14,9 @@
     <record id="agreement.agreement_type_action" model="ir.actions.act_window">
         <field name="name">Типи договорів</field>
     </record>
+
+    <!-- Вмикаємо використання типів договорів для внутрішніх користувачів -->
+    <record id="base.group_user" model="res.groups">
+        <field name="implied_ids" eval="[(4, ref('agreement.group_use_agreement_type'))]"/>
+    </record>
 </odoo>
