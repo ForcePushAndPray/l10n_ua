@@ -16,6 +16,9 @@
                     <button name="action_create_contract" type="object"
                             string="Створити періодичний договір"
                             invisible="state != 'signed'"/>
+                    <button name="action_print_act" type="object"
+                            string="Акт наданих послуг"
+                            invisible="state != 'signed'"/>
                     <button name="action_draft" type="object" string="В чернетку"
                             invisible="state in ('draft', 'cancelled')"/>
                     <button name="action_cancel" type="object" string="Скасувати"
@@ -54,6 +57,11 @@
 
             <xpath expr="//label[@for='name']" position="attributes">
                 <attribute name="string">Назва договору</attribute>
+            </xpath>
+
+            <!-- Тип договору показуємо завжди (без гейту по групі) -->
+            <xpath expr="//field[@name='agreement_type_id']" position="attributes">
+                <attribute name="groups"></attribute>
             </xpath>
 
             <xpath expr="//notebook" position="inside">

@@ -147,6 +147,12 @@ class Agreement(models.Model):
             'target': 'current',
         }
 
+    def action_print_act(self):
+        self.ensure_one()
+        return self.env.ref(
+            'l10n_ua_agreement.action_report_agreement_act'
+        ).report_action(self)
+
     def action_view_sign_requests(self):
         self.ensure_one()
         return {

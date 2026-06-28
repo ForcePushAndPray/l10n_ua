@@ -15,8 +15,10 @@
         <field name="name">Типи договорів</field>
     </record>
 
-    <!-- Вмикаємо використання типів договорів для внутрішніх користувачів -->
-    <record id="base.group_user" model="res.groups">
-        <field name="implied_ids" eval="[(4, ref('agreement.group_use_agreement_type'))]"/>
+    <!-- Меню типів: активуємо та прибираємо гейт по технічній групі -->
+    <record id="agreement.agreement_type_menu" model="ir.ui.menu">
+        <field name="name">Типи договорів</field>
+        <field name="active">True</field>
+        <field name="group_ids" eval="[(5, 0, 0)]"/>
     </record>
 </odoo>
