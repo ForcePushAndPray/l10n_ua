@@ -1,11 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Українізація меню базового модуля agreement / agreement_sale -->
-    <menuitem id="agreement.agreement_menu_root" name="Договори"/>
-    <menuitem id="agreement.agreement_menu" name="Договори"/>
-    <menuitem id="agreement.agreement_reporting_menu" name="Звітність"/>
-    <menuitem id="agreement.agreement_setting_menu" name="Налаштування"/>
-    <menuitem id="agreement.agreement_type_menu_main" name="Типи договорів"/>
+    <!-- Українізація назв + відновлення ієрархії меню.
+         УВАГА: <menuitem id=... name=...> без атрибута parent скидає parent_id,
+         тому перейменування робимо через <record> (оновлює лише вказані поля),
+         а батьків відновлюємо явно. -->
+    <record id="agreement.agreement_menu_root" model="ir.ui.menu">
+        <field name="name">Договори</field>
+    </record>
+    <record id="agreement.agreement_menu" model="ir.ui.menu">
+        <field name="name">Договори</field>
+        <field name="parent_id" ref="agreement.agreement_menu_root"/>
+    </record>
+    <record id="agreement.agreement_reporting_menu" model="ir.ui.menu">
+        <field name="name">Звітність</field>
+        <field name="parent_id" ref="agreement.agreement_menu_root"/>
+    </record>
+    <record id="agreement.agreement_setting_menu" model="ir.ui.menu">
+        <field name="name">Налаштування</field>
+        <field name="parent_id" ref="agreement.agreement_menu_root"/>
+    </record>
+
+    <!-- Типи договорів: один пункт під застосунком, без зайвої папки-обгортки -->
+    <record id="agreement.agreement_type_menu_main" model="ir.ui.menu">
+        <field name="active">False</field>
+    </record>
+    <record id="agreement.agreement_type_menu" model="ir.ui.menu">
+        <field name="name">Типи договорів</field>
+        <field name="active">True</field>
+        <field name="parent_id" ref="agreement.agreement_menu_root"/>
+        <field name="group_ids" eval="[(5, 0, 0)]"/>
+    </record>
 
     <!-- Назви дій -->
     <record id="agreement.agreement_action" model="ir.actions.act_window">
@@ -13,12 +37,5 @@
     </record>
     <record id="agreement.agreement_type_action" model="ir.actions.act_window">
         <field name="name">Типи договорів</field>
-    </record>
-
-    <!-- Меню типів: активуємо та прибираємо гейт по технічній групі -->
-    <record id="agreement.agreement_type_menu" model="ir.ui.menu">
-        <field name="name">Типи договорів</field>
-        <field name="active">True</field>
-        <field name="group_ids" eval="[(5, 0, 0)]"/>
     </record>
 </odoo>
