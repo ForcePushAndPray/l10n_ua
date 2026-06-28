@@ -91,6 +91,7 @@
         <field name="inherit_id" ref="agreement.agreement_tree"/>
         <field name="arch" type="xml">
             <field name="name" position="after">
+                <field name="agreement_type_id" optional="show"/>
                 <field name="amount_total" optional="show"/>
                 <field name="state" widget="badge"
                        decoration-success="state == 'signed'"
@@ -136,6 +137,7 @@
                 <filter string="Додаткові угоди" name="filter_amendments" domain="[('parent_agreement_id', '!=', False)]"/>
                 <group>
                     <filter string="Стан" name="groupby_state" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter string="Тип договору" name="groupby_type" domain="[]" context="{'group_by': 'agreement_type_id'}"/>
                     <filter string="Клієнт" name="groupby_partner" domain="[]" context="{'group_by': 'partner_id'}"/>
                 </group>
             </field>
