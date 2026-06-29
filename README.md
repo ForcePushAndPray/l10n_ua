@@ -8,7 +8,7 @@
 
 ## Огляд напрямків
 
-**Всього: 67 модулів** для Odoo 19.
+**Всього: 68 модулів** для Odoo 19.
 
 | Напрямок | Модулів | Статус | Детальна документація |
 |----------|:-------:|:------:|-----------------------|
@@ -18,6 +18,7 @@
 | ПРРО (фіскалізація) | 2 | 🟢 | [docs/prro.md](docs/prro.md) |
 | Доставка | 4 | 🟢 | [docs/delivery.md](docs/delivery.md) |
 | Маркетплейси | 5 | 🟢 | [docs/marketplaces.md](docs/marketplaces.md) |
+| Договори з клієнтами | 1 | 🟢 | [docs/agreements.md](docs/agreements.md) |
 | Ціни постачальників | 6 | 🟢 | [docs/supplier_prices.md](docs/supplier_prices.md) |
 | HR та зарплата (1С:ЗУП) | 13 | ✅ | [docs/hr.md](docs/hr.md) |
 | Бюджетні установи | 8 | 🟡 | [docs/budget.md](docs/budget.md) |
@@ -71,6 +72,12 @@ odoo-bin -d <db> -i l10n_ua_prro_checkbox,l10n_ua_bank_privat,l10n_ua_bank_mono 
 ### E-commerce (доставка + маркетплейси)
 ```bash
 odoo-bin -d <db> -i l10n_ua_delivery_novaposhta,l10n_ua_marketplace_rozetka --stop-after-init
+```
+
+### Договори з клієнтами
+```bash
+# Потребує OCA: agreement, agreement_sale, sign_oca, contract (гілка 19.0) в addons_path
+odoo-bin -d <db> -i l10n_ua_agreement --stop-after-init
 ```
 
 ### Галузеві збірки
