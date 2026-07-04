@@ -88,8 +88,8 @@ class TestHrVacationBalance(TransactionCase):
         self.assertEqual(balance.display_name, 'Test Employee Balance - 2034')
 
     def test_unique_constraint(self):
-        """Test unique constraint on employee + leave type + year exists"""
+        """Test unique constraint on employee + leave type + period exists"""
         constraint = self.env['ir.model.constraint'].search([
-            ('name', '=', 'hr_vacation_balance_unique_employee_id_leave_type_id_year'),
+            ('name', '=', 'hr_vacation_balance_unique_employee_id_leave_type_id_period_start'),
         ])
         self.assertTrue(constraint, "Unique constraint should exist on hr.vacation.balance")

@@ -1,12 +1,13 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
-
+from datetime import date
 
 class HrVacationBalance(models.Model):
     _name = 'hr.vacation.balance'
     _description = 'Vacation Balance'
-    _order = 'year desc, employee_id'
+    _order = 'period_start desc, employee_id'
+
     _rec_name = 'display_name'
 
     employee_id = fields.Many2one(
@@ -20,12 +21,40 @@ class HrVacationBalance(models.Model):
         'hr.leave.type',
         string='Leave Type',
         required=True,
-        domain="[('ua_leave_category', 'in', ['annual_basic', 'annual_additional'])]"
+        domain="[('ua_leave_category', 'in', ['annual_basic', 'annual_additional',"
+               " 'annual_hazardous', 'annual_special', 'annual_irregular'])]"
+    )
+    period_type = fields.Selection(
+        related='leave_type_id.period_type',
+        store=True,
+        index=True,
+    )
+    period_start = fields.Date(
+        string='Period Start',
+        required=True,
+        index=True,
+    )
+    period_end = fields.Date(
+        string='Period End',
+        required=True,
+    )
+    period_index = fields.Integer(
+        string='Period #',
+        help='Calendar year for calendar periods; sequential work-year '
+             'number from hire date for work periods.'
+    )
+    period_label = fields.Char(
+        string='Period',
+        compute='_compute_period_label',
+        store=True,
     )
     year = fields.Integer(
         string='Year',
-        required=True,
-        default=lambda self: fields.Date.today().year
+        compute='_compute_year',
+        store=True,
+        index=True,
+        help='Start year of the accounting period. Kept for backward '
+             'compatibility with year-based filters and reports.'
     )
     company_id = fields.Many2one(
         'res.company',
@@ -74,16 +103,92 @@ class HrVacationBalance(models.Model):
         store=True
     )
 
-    @api.depends('leave_type_id')
+    @api.model
+    def _get_period_for(self, employee, leave_type, ref_date):
+        """Return (period_start, period_end, period_index) of the accounting
+        period containing ref_date for the given employee and leave type.
+
+        Work-year types delegate to hr.employee._get_work_year_for_date;
+        calendar types return Jan 1 – Dec 31 with period_index = year.
+        Returns (False, False, 0) for work types without a hire anchor.
+        """
+        if leave_type.period_type == 'work':
+            return employee._get_work_year_for_date(ref_date)
+        return (date(ref_date.year, 1, 1), date(ref_date.year, 12, 31), ref_date.year)
+
+    @api.model
+    def _ref_date_for_year(self, year):
+        """Pick a reference date inside the requested year to resolve
+        the accounting period: today when generating for the current year,
+        end of year for past years, start of year for future years."""
+        today = fields.Date.today()
+        if year == today.year:
+            return today
+        if year < today.year:
+            return date(year, 12, 31)
+        return date(year, 1, 1)
+
+    @api.depends('period_start')
+    def _compute_year(self):
+        for rec in self:
+            rec.year = rec.period_start.year if rec.period_start else 0
+
+    @api.depends('period_type', 'period_start', 'period_end', 'period_index')
+    def _compute_period_label(self):
+        for rec in self:
+            if not rec.period_start or not rec.period_end:
+                rec.period_label = ''
+            elif rec.period_type == 'work':
+                rec.period_label = _(
+                    '%(start)s – %(end)s (work year %(index)s)',
+                    start=rec.period_start.strftime('%d.%m.%Y'),
+                    end=rec.period_end.strftime('%d.%m.%Y'),
+                    index=rec.period_index or '?',
+                )
+            else:
+                rec.period_label = str(rec.period_start.year)
+
+    @api.depends('leave_type_id', 'period_start', 'period_end')
     def _compute_entitled_days(self):
         for rec in self:
-            if rec.leave_type_id and not rec.entitled_days:
-                rec.entitled_days = rec.leave_type_id.annual_days or 0
+            if not rec.leave_type_id or rec.entitled_days:
+                continue
+            annual = rec.leave_type_id.annual_days or 0
+            entitled = annual
+            # Shortened period (e.g. termination mid work-year): prorate.
+            if rec.period_start and rec.period_end:
+                span_days = (rec.period_end - rec.period_start).days + 1
+                if span_days < 365:
+                    entitled = round(annual * span_days / 365.0, 2)
+            rec.entitled_days = entitled
 
     @api.onchange('company_id')
     def _onchange_company_id(self):
         self.employee_id = False
         self.leave_type_id = False
+
+    @api.onchange('employee_id', 'leave_type_id')
+    def _onchange_period_defaults(self):
+        """Prefill the accounting period once employee and type are chosen."""
+        for rec in self:
+            if not rec.employee_id or not rec.leave_type_id or rec.period_start:
+                continue
+            today = fields.Date.context_today(self)
+            start, end, index = self._get_period_for(
+                rec.employee_id, rec.leave_type_id, today)
+            if not start:
+                # Work-year type without hire anchor: calendar fallback
+                start, end, index = (
+                    date(today.year, 1, 1), date(today.year, 12, 31), today.year)
+            rec.period_start = start
+            rec.period_end = end
+            rec.period_index = index
+
+    @api.constrains('period_start', 'period_end')
+    def _check_period_bounds(self):
+        for rec in self:
+            if rec.period_start and rec.period_end and rec.period_start > rec.period_end:
+                raise ValidationError(_('Period start must be before period end.'))
 
     @api.depends('entitled_days', 'carried_over', 'used_days')
     def _compute_totals(self):
@@ -91,27 +196,32 @@ class HrVacationBalance(models.Model):
             rec.total_available = (rec.entitled_days or 0) + (rec.carried_over or 0)
             rec.remaining_days = rec.total_available - (rec.used_days or 0)
 
-    @api.depends('employee_id', 'leave_type_id', 'year')
+    @api.depends('employee_id', 'leave_type_id', 'period_start', 'period_end')
     def _compute_used_days(self):
         HrLeave = self.env['hr.leave']
         for rec in self:
-            if not rec.employee_id or not rec.leave_type_id or not rec.year:
+            if (not rec.employee_id or not rec.leave_type_id
+                    or not rec.period_start or not rec.period_end):
                 rec.used_days = 0
                 rec.planned_days = 0
                 continue
 
-            year_start = fields.Date.from_string(f'{rec.year}-01-01')
-            year_end = fields.Date.from_string(f'{rec.year}-12-31')
-
+            # Leaves explicitly linked to this balance, plus unlinked
+            # legacy leaves matched by vacation_year or by date overlap
+            # with the accounting period.
             base_domain = [
                 ('employee_id', '=', rec.employee_id.id),
                 ('holiday_status_id', '=', rec.leave_type_id.id),
                 '|',
-                    ('vacation_year', '=', rec.year),
-                    '&', '&',
-                        ('vacation_year', 'in', [False, 0]),
-                        ('request_date_from', '<=', year_end),
-                        ('request_date_to', '>=', year_start),
+                    ('vacation_balance_id', '=', rec.id),
+                    '&',
+                        ('vacation_balance_id', '=', False),
+                        '|',
+                            ('vacation_year', '=', rec.year),
+                            '&', '&',
+                                ('vacation_year', 'in', [False, 0]),
+                                ('request_date_from', '<=', rec.period_end),
+                                ('request_date_to', '>=', rec.period_start),
             ]
 
             used_leaves = HrLeave.search(base_domain + [('state', '=', 'validate')])
@@ -122,16 +232,26 @@ class HrVacationBalance(models.Model):
             ])
             rec.planned_days = sum(planned_leaves.mapped('calendar_days'))
 
-    @api.depends('employee_id', 'year')
+    @api.depends('employee_id', 'period_type', 'period_label', 'year')
     def _compute_display_name(self):
         for rec in self:
-            rec.display_name = f'{rec.employee_id.name} - {rec.year}'
+            if rec.period_type == 'work' and rec.period_label:
+                rec.display_name = f'{rec.employee_id.name} - {rec.period_label}'
+            else:
+                rec.display_name = f'{rec.employee_id.name} - {rec.year}'
 
     @api.model
-    def generate_balances(self, year=None):
-        """Generate vacation balances for all employees"""
+    def generate_balances(self, year=None, leave_types=None):
+        """Generate vacation balances for all employees.
+
+        Calendar-period types get a Jan 1 – Dec 31 balance for the
+        requested year; work-period types get the work year (anchored to
+        hire_date) containing the reference date of that year. Employees
+        without a hire anchor are skipped for work-period types.
+        """
         if year is None:
             year = fields.Date.today().year
+        ref_date = self._ref_date_for_year(year)
         
         domain = []
         if 'contract_id' in self.env['hr.employee']._fields:
@@ -139,52 +259,80 @@ class HrVacationBalance(models.Model):
         
         employees = self.env['hr.employee'].search(domain)
         
-        annual_leave_type = self.env['hr.leave.type'].search([
-            ('ua_leave_category', '=', 'annual_basic'),
-        ], limit=1)
-        
-        if not annual_leave_type:
-            return
-        
-        for employee in employees:
-            existing = self.search([
-                ('employee_id', '=', employee.id),
-                ('leave_type_id', '=', annual_leave_type.id),
-                ('year', '=', year),
-            ])
-            
-            if existing:
-                continue
-            
-            # Get previous year balance
-            prev_balance = self.search([
-                ('employee_id', '=', employee.id),
-                ('leave_type_id', '=', annual_leave_type.id),
-                ('year', '=', year - 1),
+        if leave_types is None:
+            leave_types = self.env['hr.leave.type'].search([
+                ('ua_leave_category', '=', 'annual_basic'),
             ], limit=1)
-            
-            carried = prev_balance.remaining_days if prev_balance else 0
-            
-            self.create({
-                'employee_id': employee.id,
-                'leave_type_id': annual_leave_type.id,
-                'year': year,
-                'entitled_days': annual_leave_type.annual_days,
-                'carried_over': carried,
-            })
+
+        for leave_type in leave_types:
+            for employee in employees:
+                start, end, index = self._get_period_for(
+                    employee, leave_type, ref_date)
+                if not start:
+                    # Work-year type and no hire anchor — cannot resolve
+                    # the period for this employee.
+                    continue
+
+                existing = self.search([
+                    ('employee_id', '=', employee.id),
+                    ('leave_type_id', '=', leave_type.id),
+                    ('period_start', '=', start),
+                ])
+                if existing:
+                    continue
+
+                # Carry over from the immediately preceding period
+                prev_balance = self.search([
+                    ('employee_id', '=', employee.id),
+                    ('leave_type_id', '=', leave_type.id),
+                    ('period_index', '=', index - 1),
+                ], limit=1)
+                carried = prev_balance.remaining_days if prev_balance else 0
+
+                self.create({
+                    'employee_id': employee.id,
+                    'leave_type_id': leave_type.id,
+                    'period_start': start,
+                    'period_end': end,
+                    'period_index': index,
+                    'entitled_days': leave_type.annual_days,
+                    'carried_over': carried,
+                })
+
+    def _link_related_leaves(self):
+        """Attach unlinked leaves that fall into this balance's period.
+
+        When a balance row appears after its leaves (manual creation,
+        generate_balances), the leaves' vacation_balance_id was computed
+        to False — recompute it now so rollups and per-leave chains see
+        the new period.
+        """
+        Leave = self.env['hr.leave']
+        for balance in self:
+            leaves = Leave.search([
+                ('employee_id', '=', balance.employee_id.id),
+                ('holiday_status_id', '=', balance.leave_type_id.id),
+                ('vacation_balance_id', '=', False),
+                ('request_date_from', '>=', balance.period_start),
+                ('request_date_from', '<=', balance.period_end),
+            ])
+            if leaves:
+                leaves._compute_vacation_balance()
+                leaves.flush_recordset(['vacation_balance_id'])
 
     def _recompute_related_leaves(self):
         """
-        Helper method to force recomputation of remaining days for all leaves 
+        Helper method to force recomputation of remaining days for all leaves
         associated with this balance record.
         """
         for balance in self:
             leaves = self.env['hr.leave'].search([
                 ('employee_id', '=', balance.employee_id.id),
                 ('holiday_status_id', '=', balance.leave_type_id.id),
-                '|', ('vacation_year', '=', balance.year),
-                     '&', ('request_date_from', '>=', f'{balance.year}-01-01'),
-                          ('request_date_from', '<=', f'{balance.year}-12-31')
+                '|', ('vacation_balance_id', '=', balance.id),
+                     '&', ('vacation_balance_id', '=', False),
+                          '&', ('request_date_from', '>=',balance.period_start),
+                               ('request_date_from', '<=', balance.period_end), 
             ])
             if leaves:
                 # Sort chronologically to ensure cascading subtraction is correct
@@ -194,49 +342,69 @@ class HrVacationBalance(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        # Backward-compat: derive the accounting period when the caller
+        # still passes only 'year' (transfer wizard, legacy code, tests).
+        for vals in vals_list:
+            if vals.get('period_start') and vals.get('period_end'):
+                continue
+            employee = self.env['hr.employee'].browse(vals.get('employee_id'))
+            leave_type = self.env['hr.leave.type'].browse(vals.get('leave_type_id'))
+            year = vals.get('year') or fields.Date.today().year
+            ref_date = self._ref_date_for_year(year)
+            start, end, index = self._get_period_for(employee, leave_type, ref_date)
+            if not start:
+                # Work-year type without hire anchor: calendar fallback
+                start, end, index = (
+                    date(year, 1, 1), date(year, 12, 31), year)
+            vals.setdefault('period_start', start)
+            vals.setdefault('period_end', end)
+            vals.setdefault('period_index', index)
         balances = super().create(vals_list)
-        # Trigger recomputation for existing leaves when a balance is manually created
+        # Attach pre-existing leaves, then refresh their chains and rollups
+        balances._link_related_leaves()
         balances._recompute_related_leaves()
         return balances
 
     def write(self, vals):
         res = super().write(vals)
-        # Trigger recomputation only when base days or year are modified
-        if any(field in vals for field in ['entitled_days', 'carried_over', 'year', 'employee_id', 'leave_type_id']):
+        # Trigger recomputation only when base days or the period are modified
+        if any(field in vals for field in [
+                'entitled_days', 'carried_over', 'period_start', 'period_end',
+                'employee_id', 'leave_type_id']):
             self._recompute_related_leaves()
         return res
 
-    _unique_employee_id_leave_type_id_year = models.Constraint(
-        'unique(employee_id, leave_type_id, year)',
-        'Balance for this employee, leave type and year already exists!',
+    _unique_employee_id_leave_type_id_period_start = models.Constraint(
+        'unique(employee_id, leave_type_id, period_start)',
+        'Balance for this employee, leave type and period already exists!',
     )
 
-    @api.constrains('carried_over', 'year', 'employee_id', 'leave_type_id')
+    @api.constrains('carried_over', 'period_index', 'employee_id', 'leave_type_id')
     def _check_carryover_limit(self):
         """Check that vacation is not carried over for more than max_carryover_years.
-        
         Ukrainian law requires that vacation must be used within 2 years.
+        Periods are compared by period_index, which is sequential for both
+        calendar years and work years.
         """
         for rec in self:
             if not rec.carried_over or rec.carried_over <= 0:
                 continue
             
             max_years = rec.leave_type_id.max_carryover_years or 2
-            
-            oldest_allowed_year = rec.year - max_years
+            oldest_allowed_index = (rec.period_index or rec.year) - max_years
             old_balances = self.search([
                 ('employee_id', '=', rec.employee_id.id),
                 ('leave_type_id', '=', rec.leave_type_id.id),
-                ('year', '<=', oldest_allowed_year),
+                ('period_index', '<=', oldest_allowed_index),
                 ('remaining_days', '>', 0),
             ])
-            
+
             if old_balances:
                 raise ValidationError(_(
-                    'Employee %(employee)s has unused vacation days from %(year)s or earlier. '
+                    'Employee %(employee)s has unused vacation days from period %(period)s or earlier. '
                     'According to Ukrainian law, vacation must be used within %(max_years)s years.',
                     employee=rec.employee_id.name,
-                    year=oldest_allowed_year,
+                    period=old_balances[0].period_label or oldest_allowed_index,
                     max_years=max_years,
                 ))
 

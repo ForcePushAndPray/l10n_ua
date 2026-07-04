@@ -1198,3 +1198,96 @@ msgid ""
 msgstr ""
 "Календарний рік: 1 січня – 31 грудня. Робочий рік: 12-місячний період від "
 "дати прийняття працівника на роботу (згідно зі ст. 6, 7, 8, 10 ЗУ «Про відпустки»)."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__period_start
+msgid "Period Start"
+msgstr "Початок періоду"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__period_end
+msgid "Period End"
+msgstr "Кінець періоду"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__period_index
+msgid "Period #"
+msgstr "№ періоду"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__period_label
+msgid "Period"
+msgstr "Період"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_balance__period_index
+msgid ""
+"Calendar year for calendar periods; sequential work-year number from hire "
+"date for work periods."
+msgstr ""
+"Календарний рік для календарних періодів; порядковий номер робочого року "
+"від дати прийняття на роботу для робочих періодів."
+
+#. module: l10n_ua_hr_holidays
+#. odoo-python
+#: code:addons/l10n_ua_hr_holidays/models/hr_vacation_balance.py:0
+msgid "%(start)s – %(end)s (work year %(index)s)"
+msgstr "%(start)s – %(end)s (робочий рік %(index)s)"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__vacation_balance_id
+msgid "Vacation Period"
+msgstr "Обліковий період відпустки"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave__vacation_balance_id
+msgid ""
+"Accounting period (vacation balance) this leave is charged against: a work "
+"year for annual leaves, a calendar year for social and other leaves. Can be "
+"overridden to attribute the leave to another period."
+msgstr ""
+"Обліковий період (баланс відпустки), за рахунок якого надається ця "
+"відпустка: робочий рік для щорічних відпусток, календарний рік для "
+"соціальних та інших. Можна змінити, щоб віднести відпустку до іншого "
+"періоду."
+
+#. module: l10n_ua_hr_holidays
+#. odoo-python
+#: code:addons/l10n_ua_hr_holidays/models/hr_vacation_balance.py:0
+msgid "Period start must be before period end."
+msgstr "Початок періоду має бути раніше за його кінець."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.constraint,message:l10n_ua_hr_holidays.constraint_hr_vacation_balance_unique_employee_id_leave_type_id_period_start
+msgid "Balance for this employee, leave type and period already exists!"
+msgstr "Баланс для цього працівника, типу відпустки та періоду вже існує!"
+
+#. module: l10n_ua_hr_holidays
+#. odoo-python
+#: code:addons/l10n_ua_hr_holidays/models/hr_vacation_balance.py:0
+msgid ""
+"Employee %(employee)s has unused vacation days from period %(period)s or earlier. "
+"According to Ukrainian law, vacation must be used within %(max_years)s years."
+msgstr ""
+"У працівника %(employee)s є невикористані дні відпустки за період %(period)s або раніше. "
+"Згідно з українським законодавством, відпустку треба використати протягом %(max_years)s років."
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_search
+msgid "Current Period"
+msgstr "Поточний період"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_search
+msgid "Current Year"
+msgstr "Поточний рік"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_search
+msgid "Work Periods"
+msgstr "Робочі періоди"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_search
+msgid "Calendar Periods"
+msgstr "Календарні періоди"

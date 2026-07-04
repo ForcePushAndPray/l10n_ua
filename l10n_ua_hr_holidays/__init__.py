@@ -1,4 +1,5 @@
 from . import models
+from . import test_vacation_period_balance
 
 def pre_init_hook(env):
     """

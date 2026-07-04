@@ -12,6 +12,7 @@
                     <group>
                         <field name="calendar_days"/>
                         <field name="working_days"/>
+                        <field name="vacation_balance_id"/>
                         <field name="vacation_year"/>
                     </group>
                     <group>
