@@ -17,6 +17,17 @@ def migrate(cr, version):
     3. Recomputes the stored rollups and labels through the ORM so the
        values reflect the corrected periods.
     """
+    # 0. UA-categorized leave types must not demand core allocations —
+    #    entitlement is tracked via hr.vacation.balance. The data file is
+    #    noupdate=1 and the ORM forbids flipping requires_allocation once
+    #    leaves of the type exist, so plain SQL is the only clean path.
+    cr.execute("""
+        UPDATE hr_leave_type
+           SET requires_allocation = false
+         WHERE ua_leave_category IS NOT NULL
+           AND requires_allocation = true
+    """)
+
     # 1. Work-year balances: re-anchor bounds to the hire anniversary
     cr.execute("""
         UPDATE hr_vacation_balance vb

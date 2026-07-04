@@ -92,7 +92,7 @@
                         domain="[('period_type', '=', 'work')]"/>
                 <filter string="Calendar Periods" name="filter_calendar_periods"
                         domain="[('period_type', '=', 'calendar')]"/>
-                <group expand="0" string="Group By">
+                <group>
                     <filter string="Employee" name="groupby_employee"
                             context="{'group_by': 'employee_id'}"/>
                     <filter string="Leave Type" name="groupby_leave_type"

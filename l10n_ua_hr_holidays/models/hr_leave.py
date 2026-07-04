@@ -421,7 +421,6 @@ class HrLeave(models.Model):
                 leave.remaining_days_before = 0
                 continue
 
-            total_available = balance.total_available if balance else (leave.holiday_status_id.annual_days or 0)
             balance = leave.vacation_balance_id
             if balance:
                 # Linked accounting period is the single source of truth:
@@ -450,7 +449,6 @@ class HrLeave(models.Model):
                          '&', ('request_date_from', '>=', f'{year}-01-01'),
                               ('request_date_from', '<=', f'{year}-12-31'),
                 ]
-
 
             # Find leaves of the same period. Chronological mode
             # (request_date_from set on the leave): only earlier-starting
