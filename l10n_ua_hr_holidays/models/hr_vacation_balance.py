@@ -1,14 +1,18 @@
+from datetime import date
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
-from datetime import date
 
 class HrVacationBalance(models.Model):
     _name = 'hr.vacation.balance'
     _description = 'Vacation Balance'
     _order = 'period_start desc, employee_id'
 
-    _rec_name = 'display_name'
+    # Record name is the period range. Odoo's base display_name is computed
+    # from _rec_name on the fly, so there is no stored display_name to keep
+    # in sync (and no employee name to leak into the label).
+    _rec_name = 'period_label'
+
 
     employee_id = fields.Many2one(
         'hr.employee',
@@ -97,12 +101,6 @@ class HrVacationBalance(models.Model):
         store=True
     )
     
-    display_name = fields.Char(
-        string='Name',
-        compute='_compute_display_name',
-        store=True
-    )
-
     @api.model
     def _get_period_for(self, employee, leave_type, ref_date):
         """Return (period_start, period_end, period_index) of the accounting
@@ -230,14 +228,6 @@ class HrVacationBalance(models.Model):
             ])
             rec.planned_days = sum(planned_leaves.mapped('calendar_days'))
 
-    @api.depends('employee_id', 'period_type', 'period_label', 'year')
-    def _compute_display_name(self):
-        for rec in self:
-            if rec.period_type == 'work' and rec.period_label:
-                rec.display_name = f'{rec.employee_id.name} - {rec.period_label}'
-            else:
-                rec.display_name = f'{rec.employee_id.name} - {rec.year}'
-
     @api.model
     def generate_balances(self, year=None, leave_types=None):
         """Generate vacation balances for all employees.
@@ -329,7 +319,7 @@ class HrVacationBalance(models.Model):
                 ('holiday_status_id', '=', balance.leave_type_id.id),
                 '|', ('vacation_balance_id', '=', balance.id),
                      '&', ('vacation_balance_id', '=', False),
-                          '&', ('request_date_from', '>=',balance.period_start),
+                          '&', ('request_date_from', '>=', balance.period_start),
                                ('request_date_from', '<=', balance.period_end), 
             ])
             if leaves:
@@ -469,8 +459,48 @@ class HrVacationBalance(models.Model):
             }
         }
 
+    def _reanchor_period(self):
+        """Fix work-year bounds that don't match the employee's hire
+        anniversary — e.g. a balance created or migrated while the
+        employee had no hire anchor yet (calendar fallback applied), or
+        whose hire_date was corrected afterwards.
+        Keeps the row's original start year as the anniversary year so
+        `year` and year-based reports stay stable. Skips silently when
+        no anchor is available or the target period already exists.
+        """
+        self.ensure_one()
+        if self.period_type != 'work' or not self.employee_id:
+            return
+        anchor = self.employee_id.hire_date
+        if not anchor:
+            version = self.employee_id.current_version_id
+            anchor = version.contract_date_start if version else False
+        if not anchor:
+            return
+        index = (self.year or anchor.year) - anchor.year + 1
+        if index < 1:
+            return
+        start = anchor + relativedelta(years=index - 1)
+        end = anchor + relativedelta(years=index) - relativedelta(days=1)
+        if start == self.period_start:
+            return
+        conflict = self.search_count([
+            ('employee_id', '=', self.employee_id.id),
+            ('leave_type_id', '=', self.leave_type_id.id),
+            ('period_start', '=', start),
+            ('id', '!=', self.id),
+        ])
+        if conflict:
+            return
+        self.write({
+            'period_start': start,
+            'period_end': end,
+            'period_index': index,
+        })
+
     def action_recalculate(self):
         for rec in self:
+            rec._reanchor_period()
             if rec.leave_type_id and not rec.entitled_days:
                 rec.entitled_days = rec.leave_type_id.annual_days or 0
         self.invalidate_recordset([

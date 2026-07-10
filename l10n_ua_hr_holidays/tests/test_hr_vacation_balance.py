@@ -78,14 +78,15 @@ class TestHrVacationBalance(TransactionCase):
         self.assertEqual(balance.planned_days, 0)
 
     def test_display_name(self):
-        """Test display name format"""
+        """Display name is the period only (employee shown elsewhere)."""
         balance = self.env['hr.vacation.balance'].create({
             'employee_id': self.employee.id,
             'leave_type_id': self.leave_type.id,
             'year': 2034,
             'entitled_days': 24,
         })
-        self.assertEqual(balance.display_name, 'Test Employee Balance - 2034')
+        self.assertEqual(balance.display_name, balance.period_label)
+        self.assertNotIn(self.employee.name, balance.display_name)
 
     def test_unique_constraint(self):
         """Test unique constraint on employee + leave type + period exists"""

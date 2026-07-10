@@ -9,9 +9,12 @@ def migrate(cr, version):
 
     1. Realigns work-year balances: pre-migration backfilled everything
        as calendar years; rows whose leave type accrues per work year get
-       their bounds re-anchored to the employee's hire_date anniversary.
+       their bounds re-anchored to the employee's hire anniversary.
        The mapping keeps the row's original year as the anniversary year,
        so `year` (= period_start.year) and year-based reports stay stable.
+       Done through the ORM (_reanchor_period) so the hire_date →
+       contract_date_start fallback applies — plain SQL cannot reach the
+       employee's current version.
     2. Links legacy leaves to their balance row — first by an explicitly
        set vacation_year, then by date containment.
     3. Recomputes the stored rollups and labels through the ORM so the
@@ -29,25 +32,11 @@ def migrate(cr, version):
     """)
 
     # 1. Work-year balances: re-anchor bounds to the hire anniversary
-    cr.execute("""
-        UPDATE hr_vacation_balance vb
-           SET period_start = (e.hire_date
-                   + make_interval(years =>
-                       vb.year - EXTRACT(YEAR FROM e.hire_date)::int)),
-               period_end = (e.hire_date
-                   + make_interval(years =>
-                       vb.year - EXTRACT(YEAR FROM e.hire_date)::int + 1)
-                   - interval '1 day'),
-               period_index =
-                   vb.year - EXTRACT(YEAR FROM e.hire_date)::int + 1
-          FROM hr_employee e,
-               hr_leave_type lt
-         WHERE e.id = vb.employee_id
-           AND lt.id = vb.leave_type_id
-           AND lt.period_type = 'work'
-           AND e.hire_date IS NOT NULL
-           AND vb.year >= EXTRACT(YEAR FROM e.hire_date)::int
-    """)
+    env = api.Environment(cr, SUPERUSER_ID, {})
+    work_balances = env['hr.vacation.balance'].search(
+        [('period_type', '=', 'work')])
+    for balance in work_balances:
+        balance._reanchor_period()
 
     # 2a. Link leaves with an explicit vacation_year to that year's balance
     cr.execute("""
@@ -75,13 +64,13 @@ def migrate(cr, version):
     """)
 
     # 3. Refresh stored computes affected by the SQL updates above
-    env = api.Environment(cr, SUPERUSER_ID, {})
+    #    (display_name is Odoo's on-the-fly compute from _rec_name, nothing
+    #    to recompute here).
     balances = env['hr.vacation.balance'].search([])
     if balances:
         balances.invalidate_recordset()
         balances._compute_year()
         balances._compute_period_label()
-        balances._compute_display_name()
         balances._compute_used_days()
         balances._compute_totals()
 
