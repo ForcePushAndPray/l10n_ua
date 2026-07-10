@@ -168,10 +168,9 @@
                 <notebook position="inside">
                     <page string="Subconto" name="subconto">
                         <group>
-                            <group string="Quick Fields">
+                            <group string="Quick Fields" name="subconto_quick_fields">
                                 <field name="subconto_partner_id"/>
                                 <field name="subconto_product_id"/>
-                                <field name="subconto_department_id"/>
                             </group>
                         </group>
                         <separator string="All Subconto Values"/>
