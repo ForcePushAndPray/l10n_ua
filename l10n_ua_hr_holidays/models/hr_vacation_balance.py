@@ -133,20 +133,18 @@ class HrVacationBalance(models.Model):
         for rec in self:
             rec.year = rec.period_start.year if rec.period_start else 0
 
-    @api.depends('period_type', 'period_start', 'period_end', 'period_index')
+    @api.depends('period_start', 'period_end')
     def _compute_period_label(self):
+        # Date range only, for both work and calendar periods
+        # (e.g. "01.07.2025 – 30.06.2026").
         for rec in self:
-            if not rec.period_start or not rec.period_end:
-                rec.period_label = ''
-            elif rec.period_type == 'work':
-                rec.period_label = _(
-                    '%(start)s – %(end)s (work year %(index)s)',
-                    start=rec.period_start.strftime('%d.%m.%Y'),
-                    end=rec.period_end.strftime('%d.%m.%Y'),
-                    index=rec.period_index or '?',
+            if rec.period_start and rec.period_end:
+                rec.period_label = '%s – %s' % (
+                    rec.period_start.strftime('%d.%m.%Y'),
+                    rec.period_end.strftime('%d.%m.%Y'),
                 )
             else:
-                rec.period_label = str(rec.period_start.year)
+                rec.period_label = ''
 
     @api.depends('leave_type_id', 'period_start', 'period_end')
     def _compute_entitled_days(self):

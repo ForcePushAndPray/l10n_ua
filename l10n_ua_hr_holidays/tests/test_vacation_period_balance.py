@@ -59,7 +59,7 @@ class TestVacationPeriodBalance(TransactionCase):
         })
         self.assertEqual(balance.period_type, 'calendar')
         self.assertEqual(balance.year, 2025)
-        self.assertEqual(balance.period_label, '2025')
+        self.assertEqual(balance.period_label, '01.01.2025 – 31.12.2025')
 
     def test_create_with_legacy_year_derives_work_period(self):
         """Legacy create({'year': ...}) still works: the period is derived
@@ -214,6 +214,41 @@ class TestVacationPeriodBalance(TransactionCase):
             ('leave_type_id', '=', self.annual_type.id),
         ])
         self.assertFalse(balance)
+
+    def test_reanchor_period_after_hire_date_set(self):
+        """A work-year balance created while the employee had no hire
+        anchor gets calendar bounds; once hire_date is known, Recalculate
+        re-anchors it to the hire anniversary."""
+        employee = self.env['hr.employee'].create({'name': 'Пізній якір'})
+        balance = self.env['hr.vacation.balance'].create({
+            'employee_id': employee.id,
+            'leave_type_id': self.annual_type.id,
+            'year': 2026,
+            'entitled_days': 24,
+        })
+        # No anchor at creation time → calendar fallback
+        self.assertEqual(balance.period_start, date(2026, 1, 1))
+        self.assertEqual(balance.period_end, date(2026, 12, 31))
+
+        employee.hire_date = date(2025, 7, 1)
+        balance.action_recalculate()
+
+        self.assertEqual(balance.period_start, date(2026, 7, 1))
+        self.assertEqual(balance.period_end, date(2027, 6, 30))
+        self.assertEqual(balance.period_index, 2)
+
+    def test_reanchor_noop_when_already_correct(self):
+        balance = self.env['hr.vacation.balance'].create({
+            'employee_id': self.employee.id,
+            'leave_type_id': self.annual_type.id,
+            'period_start': date(2024, 7, 15),
+            'period_end': date(2025, 7, 14),
+            'period_index': 1,
+            'entitled_days': 24,
+        })
+        balance.action_recalculate()
+        self.assertEqual(balance.period_start, date(2024, 7, 15))
+        self.assertEqual(balance.period_end, date(2025, 7, 14))
 
     def test_carryover_between_work_years(self):
         Balance = self.env['hr.vacation.balance']

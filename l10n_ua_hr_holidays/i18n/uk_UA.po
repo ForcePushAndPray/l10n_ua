@@ -1229,12 +1229,6 @@ msgstr ""
 "від дати прийняття на роботу для робочих періодів."
 
 #. module: l10n_ua_hr_holidays
-#. odoo-python
-#: code:addons/l10n_ua_hr_holidays/models/hr_vacation_balance.py:0
-msgid "%(start)s – %(end)s (work year %(index)s)"
-msgstr "%(start)s – %(end)s (робочий рік %(index)s)"
-
-#. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__vacation_balance_id
 msgid "Vacation Period"
 msgstr "Обліковий період відпустки"
