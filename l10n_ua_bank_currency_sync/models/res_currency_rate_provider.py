@@ -120,6 +120,47 @@ class ResCurrencyRateProvider(models.Model):
         self.last_sync_date = fields.Datetime.now()
         return result
 
+    # --- Cross-rate helpers ---
+
+    def _uah_per_company_unit(self, uah_rates):
+        """How many UAH one unit of the company currency is worth.
+
+        Ukrainian banks quote every currency against the hryvnia, so a company
+        keeping its books in another currency needs a cross-rate through UAH.
+        `uah_rates` maps a currency code to UAH per one unit of that currency.
+
+        Returns None when the company currency is not quoted by this provider:
+        no cross-rate can be derived, and writing the raw UAH quote instead
+        would silently corrupt res.currency.rate.
+        """
+        self.ensure_one()
+        code = self.company_id.currency_id.name
+        if code == 'UAH':
+            return 1.0
+        rate = uah_rates.get(code)
+        return rate if rate else None
+
+    def _rate_vals(self, uah_per_unit, uah_per_company_unit):
+        """Odoo rate vals for a currency quoted at `uah_per_unit` UAH.
+
+        Odoo stores `rate` as the number of units of the currency bought by one
+        unit of the company currency; `inverse_company_rate` is its reciprocal.
+        """
+        return {
+            'rate': uah_per_company_unit / uah_per_unit,
+            'inverse_company_rate': uah_per_unit / uah_per_company_unit,
+        }
+
+    def _log_missing_company_quote(self, provider_label):
+        self.ensure_one()
+        _logger.warning(
+            "%s provider %r: company currency %s is not quoted against UAH by this "
+            "provider, so no cross-rate can be computed. Skipping rate sync for "
+            "company %s.",
+            provider_label, self.display_name,
+            self.company_id.currency_id.name, self.company_id.display_name,
+        )
+
     def _sync_nbu_rates(self, target_date):
         """Sync rates from National Bank of Ukraine.
 
@@ -155,27 +196,30 @@ class ResCurrencyRateProvider(models.Model):
         sync_currencies = self.currency_ids or Currency.search([('active', 'in', [True, False])])
         sync_codes = {c.name: c for c in sync_currencies}
 
-        for item in data:
-            currency_code = item.get('cc')
-            rate = item.get('rate')
+        # NBU quotes: 1 foreign = X UAH
+        uah_rates = {
+            item['cc']: item['rate']
+            for item in data
+            if item.get('cc') and item.get('rate')
+        }
+        uah_per_company_unit = self._uah_per_company_unit(uah_rates)
+        if not uah_per_company_unit:
+            self._log_missing_company_quote('NBU')
+            return {'created': 0, 'updated': 0, 'skipped': len(uah_rates)}
 
-            if not currency_code or not rate:
-                continue
+        company_currency = self.company_id.currency_id
 
+        for currency_code, rate in uah_rates.items():
             currency = sync_codes.get(currency_code)
             if not currency:
                 skipped += 1
                 continue
 
-            # NBU rate is: 1 foreign = X UAH
-            # Odoo rate should be: 1 company_currency = X foreign
-            # If company currency is UAH: rate = 1 / nbu_rate
-            company_currency = self.company_id.currency_id
-            if company_currency.name == 'UAH':
-                odoo_rate = 1.0 / rate if rate else 0
-            else:
-                # If company currency is not UAH, we need cross-rate
-                odoo_rate = rate  # Simplified, may need adjustment
+            if currency == company_currency:
+                # A currency is always worth exactly one of itself.
+                continue
+
+            rate_vals = self._rate_vals(rate, uah_per_company_unit)
 
             # Check if rate exists for this date
             existing_rate = Rate.search([
@@ -185,18 +229,14 @@ class ResCurrencyRateProvider(models.Model):
             ], limit=1)
 
             if existing_rate:
-                existing_rate.write({
-                    'rate': odoo_rate,
-                    'inverse_company_rate': rate,
-                })
+                existing_rate.write(rate_vals)
                 updated += 1
             else:
                 Rate.create({
                     'currency_id': currency.id,
                     'name': target_date,
-                    'rate': odoo_rate,
-                    'inverse_company_rate': rate,
                     'company_id': self.company_id.id,
+                    **rate_vals,
                 })
                 created += 1
 
@@ -238,28 +278,36 @@ class ResCurrencyRateProvider(models.Model):
         sync_currencies = self.currency_ids or Currency.search([('active', 'in', [True, False])])
         sync_codes = {c.name: c for c in sync_currencies}
 
+        # PrivatBank quotes buy/sale; only pairs based on UAH are usable here.
+        uah_rates = {}
         for item in data:
             currency_code = item.get('ccy')
-            # PrivatBank provides buy and sale rates
+            base_ccy = item.get('base_ccy')
+            if not currency_code or (base_ccy and base_ccy != 'UAH'):
+                continue
             buy_rate = float(item.get('buy', 0))
             sale_rate = float(item.get('sale', 0))
-
-            if not currency_code or not buy_rate:
+            if not buy_rate:
                 continue
+            uah_rates[currency_code] = (buy_rate + sale_rate) / 2 if sale_rate else buy_rate
 
+        uah_per_company_unit = self._uah_per_company_unit(uah_rates)
+        if not uah_per_company_unit:
+            self._log_missing_company_quote('PrivatBank')
+            return {'created': 0, 'updated': 0, 'skipped': len(uah_rates)}
+
+        company_currency = self.company_id.currency_id
+
+        for currency_code, avg_rate in uah_rates.items():
             currency = sync_codes.get(currency_code)
             if not currency:
                 skipped += 1
                 continue
 
-            # Use average of buy/sale as the rate
-            avg_rate = (buy_rate + sale_rate) / 2 if sale_rate else buy_rate
+            if currency == company_currency:
+                continue
 
-            company_currency = self.company_id.currency_id
-            if company_currency.name == 'UAH':
-                odoo_rate = 1.0 / avg_rate if avg_rate else 0
-            else:
-                odoo_rate = avg_rate
+            rate_vals = self._rate_vals(avg_rate, uah_per_company_unit)
 
             existing_rate = Rate.search([
                 ('currency_id', '=', currency.id),
@@ -268,18 +316,14 @@ class ResCurrencyRateProvider(models.Model):
             ], limit=1)
 
             if existing_rate:
-                existing_rate.write({
-                    'rate': odoo_rate,
-                    'inverse_company_rate': avg_rate,
-                })
+                existing_rate.write(rate_vals)
                 updated += 1
             else:
                 Rate.create({
                     'currency_id': currency.id,
                     'name': target_date,
-                    'rate': odoo_rate,
-                    'inverse_company_rate': avg_rate,
                     'company_id': self.company_id.id,
+                    **rate_vals,
                 })
                 created += 1
 
@@ -322,29 +366,20 @@ class ResCurrencyRateProvider(models.Model):
         # Monobank returns pairs, we only want rates against UAH (980)
         uah_code = 980
 
+        uah_rates = {}
         for item in data:
-            currency_a = item.get('currencyCodeA')
-            currency_b = item.get('currencyCodeB')
-
             # Only process pairs where one side is UAH
-            if currency_b != uah_code:
+            if item.get('currencyCodeB') != uah_code:
                 continue
 
-            currency_code = MONO_CURRENCY_CODES.get(currency_a)
+            currency_code = MONO_CURRENCY_CODES.get(item.get('currencyCodeA'))
             if not currency_code:
                 skipped += 1
                 continue
 
-            currency = sync_codes.get(currency_code)
-            if not currency:
-                skipped += 1
-                continue
-
-            # Monobank provides rateBuy and rateSell
+            # Monobank provides rateBuy and rateSell; rateCross when it does not
             buy_rate = item.get('rateBuy', 0)
             sell_rate = item.get('rateSell', 0)
-
-            # Use rateCross if buy/sell not available
             if not buy_rate:
                 buy_rate = item.get('rateCross', 0)
             if not sell_rate:
@@ -354,13 +389,25 @@ class ResCurrencyRateProvider(models.Model):
                 skipped += 1
                 continue
 
-            avg_rate = (buy_rate + sell_rate) / 2 if sell_rate else buy_rate
+            uah_rates[currency_code] = (buy_rate + sell_rate) / 2 if sell_rate else buy_rate
 
-            company_currency = self.company_id.currency_id
-            if company_currency.name == 'UAH':
-                odoo_rate = 1.0 / avg_rate if avg_rate else 0
-            else:
-                odoo_rate = avg_rate
+        uah_per_company_unit = self._uah_per_company_unit(uah_rates)
+        if not uah_per_company_unit:
+            self._log_missing_company_quote('Monobank')
+            return {'created': 0, 'updated': 0, 'skipped': skipped + len(uah_rates)}
+
+        company_currency = self.company_id.currency_id
+
+        for currency_code, avg_rate in uah_rates.items():
+            currency = sync_codes.get(currency_code)
+            if not currency:
+                skipped += 1
+                continue
+
+            if currency == company_currency:
+                continue
+
+            rate_vals = self._rate_vals(avg_rate, uah_per_company_unit)
 
             existing_rate = Rate.search([
                 ('currency_id', '=', currency.id),
@@ -369,18 +416,14 @@ class ResCurrencyRateProvider(models.Model):
             ], limit=1)
 
             if existing_rate:
-                existing_rate.write({
-                    'rate': odoo_rate,
-                    'inverse_company_rate': avg_rate,
-                })
+                existing_rate.write(rate_vals)
                 updated += 1
             else:
                 Rate.create({
                     'currency_id': currency.id,
                     'name': target_date,
-                    'rate': odoo_rate,
-                    'inverse_company_rate': avg_rate,
                     'company_id': self.company_id.id,
+                    **rate_vals,
                 })
                 created += 1
 
