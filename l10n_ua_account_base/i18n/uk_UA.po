@@ -697,11 +697,6 @@ msgid "Product (Subconto)"
 msgstr "Номенклатура (субконто)"
 
 #. module: l10n_ua_account_base
-#: model:ir.model.fields,field_description:l10n_ua_account_base.field_account_move_line__subconto_department_id
-msgid "Department (Subconto)"
-msgstr "Підрозділ (субконто)"
-
-#. module: l10n_ua_account_base
 #: model_terms:ir.ui.view,arch_db:l10n_ua_account_base.view_account_form_subconto
 msgid "Subconto"
 msgstr "Субконто"

@@ -210,37 +210,35 @@ class AccountMoveLine(models.Model):
         inverse='_inverse_subconto_product',
         store=True,
     )
-    subconto_department_id = fields.Many2one(
-        'hr.department',
-        string='Department (Subconto)',
-        compute='_compute_subconto_quick_fields',
-        inverse='_inverse_subconto_department',
-        store=True,
-    )
+    def _subconto_quick_fields_map(self):
+        """Map a subconto model name to its quick access field on this model.
+
+        A module bridging another domain (hr, stock, …) extends this map instead
+        of declaring a Many2one to a model that l10n_ua_account_base does not
+        depend on. See l10n_ua_account_subconto_hr for an example.
+        """
+        return {
+            'res.partner': 'subconto_partner_id',
+            'product.product': 'subconto_product_id',
+        }
 
     @api.depends('subconto_ids', 'subconto_ids.res_model', 'subconto_ids.res_id')
     def _compute_subconto_quick_fields(self):
+        quick_fields = self._subconto_quick_fields_map()
         for line in self:
-            line.subconto_partner_id = False
-            line.subconto_product_id = False
-            line.subconto_department_id = False
+            for field_name in quick_fields.values():
+                line[field_name] = False
 
             for sub in line.subconto_ids:
-                if sub.res_model == 'res.partner':
-                    line.subconto_partner_id = sub.res_id
-                elif sub.res_model == 'product.product':
-                    line.subconto_product_id = sub.res_id
-                elif sub.res_model == 'hr.department':
-                    line.subconto_department_id = sub.res_id
+                field_name = quick_fields.get(sub.res_model)
+                if field_name:
+                    line[field_name] = sub.res_id
 
     def _inverse_subconto_partner(self):
         self._set_subconto_value('res.partner', 'subconto_partner_id')
 
     def _inverse_subconto_product(self):
         self._set_subconto_value('product.product', 'subconto_product_id')
-
-    def _inverse_subconto_department(self):
-        self._set_subconto_value('hr.department', 'subconto_department_id')
 
     def _set_subconto_value(self, model_name, field_name):
         """Helper to set subconto value from quick access field"""
