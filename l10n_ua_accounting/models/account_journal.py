@@ -37,10 +37,12 @@ class AccountJournal(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
-        """Create sequences for cash and bank journals."""
+        """Create sequences for cash and bank journals of Ukrainian companies."""
         journals = super().create(vals_list)
 
         for journal in journals:
+            if not journal.company_id._l10n_ua_is_ukrainian():
+                continue
             if journal.type == 'cash':
                 journal._create_ua_cash_sequences()
             elif journal.type == 'bank':
@@ -51,7 +53,7 @@ class AccountJournal(models.Model):
     def _create_ua_cash_sequences(self):
         """Create Ukrainian cash order sequences for this journal."""
         self.ensure_one()
-        if self.type != 'cash':
+        if self.type != 'cash' or not self.company_id._l10n_ua_is_ukrainian():
             return
 
         IrSequence = self.env['ir.sequence'].sudo()
@@ -79,7 +81,7 @@ class AccountJournal(models.Model):
     def _create_ua_bank_sequences(self):
         """Create Ukrainian payment order sequence for this bank journal."""
         self.ensure_one()
-        if self.type != 'bank':
+        if self.type != 'bank' or not self.company_id._l10n_ua_is_ukrainian():
             return
 
         if not self.ua_pd_sequence_id:

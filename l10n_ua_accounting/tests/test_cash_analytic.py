@@ -49,18 +49,28 @@ class TestCashAnalytic(AccountingTestCase):
         self.assertEqual(pko.analytic_distribution, distribution)
 
     def test_prepare_move_lines_propagates_to_counterpart(self):
-        """_prepare_move_lines_per_type injects distribution into counterpart, NOT liquidity."""
+        """_prepare_move_line_default_vals injects distribution into counterpart, NOT liquidity."""
         distribution = {str(self.analytic_account.id): 100.0}
         pko = self._create_pko(analytic_distribution=distribution)
-        lines_per_type = pko._prepare_move_lines_per_type()
-        for line_vals in lines_per_type['liquidity_lines']:
+        line_vals_list = pko._prepare_move_line_default_vals()
+
+        liquidity_vals = [
+            v for v in line_vals_list
+            if v.get('account_id') == pko.outstanding_account_id.id
+        ]
+        counterpart_vals = [
+            v for v in line_vals_list
+            if v.get('account_id') != pko.outstanding_account_id.id
+        ]
+        self.assertTrue(liquidity_vals, 'Expected a liquidity line')
+        self.assertTrue(counterpart_vals, 'Expected at least one counterpart line')
+
+        for line_vals in liquidity_vals:
             self.assertFalse(
                 line_vals.get('analytic_distribution'),
                 'Liquidity (cash) line must NOT carry analytic distribution',
             )
-        self.assertTrue(lines_per_type['counterpart_lines'],
-                        'Expected at least one counterpart line')
-        for line_vals in lines_per_type['counterpart_lines']:
+        for line_vals in counterpart_vals:
             self.assertEqual(
                 line_vals.get('analytic_distribution'), distribution,
                 'Counterpart line must carry analytic distribution from payment',
@@ -69,9 +79,29 @@ class TestCashAnalytic(AccountingTestCase):
     def test_prepare_move_lines_no_distribution(self):
         """Without analytic_distribution, lines stay clean."""
         pko = self._create_pko()
-        lines_per_type = pko._prepare_move_lines_per_type()
-        for line_vals in lines_per_type['liquidity_lines'] + lines_per_type['counterpart_lines']:
+        for line_vals in pko._prepare_move_line_default_vals():
             self.assertFalse(line_vals.get('analytic_distribution'))
+
+    def test_analytic_reaches_journal_items_after_post(self):
+        """End-to-end: the distribution must survive onto the posted account.move.line.
+
+        The unit tests above passed vacuously for a long time while the override
+        targeted a method that does not exist; assert on real journal items.
+        """
+        distribution = {str(self.analytic_account.id): 100.0}
+        pko = self._create_pko(analytic_distribution=distribution)
+        pko.action_post()
+
+        lines = pko.move_id.line_ids
+        self.assertTrue(lines, 'Posting must produce journal items')
+        liquidity = lines.filtered(lambda l: l.account_id == pko.outstanding_account_id)
+        counterpart = lines - liquidity
+
+        self.assertTrue(counterpart, 'Expected a counterpart journal item')
+        for line in counterpart:
+            self.assertEqual(line.analytic_distribution, distribution)
+        for line in liquidity:
+            self.assertFalse(line.analytic_distribution)
 
     def test_required_when_analytic_group_enabled(self):
         """If user has analytic_accounting group, posting PKO without distribution must fail."""

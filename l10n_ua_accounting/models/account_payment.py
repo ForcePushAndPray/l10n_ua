@@ -119,15 +119,19 @@ class AccountPayment(models.Model):
 
     # --- Cash order computes ---
 
-    @api.depends('journal_id', 'journal_id.type')
+    @api.depends('journal_id', 'journal_id.type', 'company_id.country_id')
     def _compute_is_ua_cash_order(self):
         for payment in self:
-            payment.is_ua_cash_order = payment.journal_id.type == 'cash'
+            payment.is_ua_cash_order = (
+                payment.journal_id.type == 'cash'
+                and payment.company_id._l10n_ua_is_ukrainian()
+            )
 
-    @api.depends('payment_type', 'journal_id.type')
+    @api.depends('payment_type', 'journal_id.type', 'company_id.country_id')
     def _compute_ua_cash_order_type(self):
         for payment in self:
-            if payment.journal_id.type == 'cash':
+            if (payment.journal_id.type == 'cash'
+                    and payment.company_id._l10n_ua_is_ukrainian()):
                 if payment.payment_type == 'inbound':
                     payment.ua_cash_order_type = 'pko'
                 else:
@@ -137,40 +141,45 @@ class AccountPayment(models.Model):
 
     # --- Payment order computes ---
 
-    @api.depends('journal_id', 'journal_id.type', 'payment_type')
+    @api.depends('journal_id', 'journal_id.type', 'payment_type', 'company_id.country_id')
     def _compute_is_ua_payment_order(self):
         for payment in self:
             payment.is_ua_payment_order = (
                 payment.journal_id.type == 'bank'
                 and payment.payment_type == 'outbound'
+                and payment.company_id._l10n_ua_is_ukrainian()
             )
 
-    @api.depends('payment_type', 'journal_id.type')
+    @api.depends('payment_type', 'journal_id.type', 'company_id.country_id')
     def _compute_ua_payment_order_type(self):
         for payment in self:
-            if payment.journal_id.type == 'bank' and payment.payment_type == 'outbound':
+            if (payment.journal_id.type == 'bank'
+                    and payment.payment_type == 'outbound'
+                    and payment.company_id._l10n_ua_is_ukrainian()):
                 payment.ua_payment_order_type = 'pd'
             else:
                 payment.ua_payment_order_type = 'other'
 
     # --- Analytic distribution propagation ---
 
-    def _prepare_move_lines_per_type(self, write_off_line_vals=None, force_balance=None):
+    def _prepare_move_line_default_vals(self, write_off_line_vals=None, force_balance=None):
         """Inject analytic_distribution into counterpart and write-off lines.
 
         Cash (liquidity) side does not get analytics — стаття руху грошових коштів
-        applies to the expense/income side of the cash transaction.
+        applies to the expense/income side of the cash transaction. Core returns a
+        flat list [liquidity, counterpart, *write_offs]; the liquidity line is the
+        one booked on the outstanding account.
         """
-        result = super()._prepare_move_lines_per_type(
+        line_vals_list = super()._prepare_move_line_default_vals(
             write_off_line_vals=write_off_line_vals, force_balance=force_balance,
         )
         if not self.analytic_distribution:
-            return result
-        for line_vals in result.get('counterpart_lines', []):
-            line_vals['analytic_distribution'] = dict(self.analytic_distribution)
-        for line_vals in result.get('write_off_lines', []):
+            return line_vals_list
+        for line_vals in line_vals_list:
+            if line_vals.get('account_id') == self.outstanding_account_id.id:
+                continue
             line_vals.setdefault('analytic_distribution', dict(self.analytic_distribution))
-        return result
+        return line_vals_list
 
     # --- Create with auto-sequencing ---
 
@@ -182,6 +191,11 @@ class AccountPayment(models.Model):
             if not journal_id:
                 continue
             journal = self.env['account.journal'].browse(journal_id)
+            company = journal.company_id
+            if vals.get('company_id'):
+                company = self.env['res.company'].browse(vals['company_id'])
+            if not company._l10n_ua_is_ukrainian():
+                continue
             payment_type = vals.get('payment_type', 'inbound')
 
             # Cash order number

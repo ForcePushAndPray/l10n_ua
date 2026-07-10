@@ -10,6 +10,9 @@ class AccountingTestCase(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.env.company
+        # UA documents (ПКО/ВКО/ПД) are only generated for Ukrainian companies,
+        # so the test company must have the country set before journals are made.
+        cls.company.country_id = cls.env.ref('base.ua')
         cls.currency = cls.company.currency_id
 
         # Cash journal
