@@ -193,6 +193,7 @@ class L10nUaPeriodClosing(models.Model):
             if not self[field]:
                 acc = Account.search([
                     ('code', '=like', code + '%'),
+                    ('company_ids', 'in', company.id),
                 ], limit=1)
                 if acc:
                     self[field] = acc

@@ -415,6 +415,7 @@ class L10nUaVatDeclaration(models.Model):
         # Find account 6411 (VAT settlements)
         account = self.env['account.account'].search([
             ('code', '=like', '6411%'),
+            ('company_ids', 'in', self.company_id.id),
         ], limit=1)
         if not account:
             raise UserError(_('Рахунок 6411 не знайдено в плані рахунків.'))

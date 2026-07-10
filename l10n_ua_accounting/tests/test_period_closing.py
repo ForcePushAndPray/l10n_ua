@@ -108,3 +108,19 @@ class TestPeriodClosing(AccountingTestCase):
         # Back to draft
         closing.action_draft()
         self.assertEqual(closing.state, 'draft')
+
+    def test_default_accounts_scoped_to_company(self):
+        """Auto-filled result accounts must belong to the closing's company — issue #175."""
+        closing = self.env['l10n_ua.period.closing'].create({
+            'period_id': self.period.id,
+            'journal_id': self.misc_journal.id,
+            'company_id': self.company.id,
+        })
+        closing._set_default_accounts()
+        for field in ('account_791_id', 'account_792_id', 'account_793_id',
+                      'account_profit_id', 'account_loss_id'):
+            acc = closing[field]
+            if acc:
+                self.assertIn(
+                    self.company.id, acc.company_ids.ids,
+                    '%s was filled with an account from another company' % field)
