@@ -30,3 +30,14 @@ class ResCompany(models.Model):
         currency_field='currency_id',
         help='Максимально допустимий залишок готівки в касі на кінець робочого дня',
     )
+
+    def _l10n_ua_is_ukrainian(self):
+        """Whether Ukrainian accounting rules apply to this company.
+
+        The module may be installed in a database that also hosts companies of
+        other countries; UA-specific documents and checks must not touch them.
+
+        Tolerates an empty recordset: computes run on new records whose
+        company_id is not set yet.
+        """
+        return len(self) == 1 and self.country_id.code == 'UA'
