@@ -360,7 +360,7 @@ class HrVacationBalance(models.Model):
                 '|', ('vacation_balance_id', '=', balance.id),
                      '&', ('vacation_balance_id', '=', False),
                           '&', ('request_date_from', '>=', balance.period_start),
-                               ('request_date_from', '<=', balance.period_end), 
+                               ('request_date_from', '<=', balance.period_end),
             ])
             if leaves:
                 # Sort chronologically to ensure cascading subtraction is correct
