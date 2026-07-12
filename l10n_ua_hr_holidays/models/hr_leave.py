@@ -96,16 +96,18 @@ class HrLeave(models.Model):
                 ('employee_id', '=', leave.employee_id.id),
                 ('leave_type_id', '=', leave.holiday_status_id.id),
             ]
-            balance = Balance.browse()
-            # A manually shifted vacation_year (differs from the start
-            # date's year) expresses explicit attribution — honour it first.
             if leave.vacation_year and leave.vacation_year != leave.request_date_from.year:
+                # A manually shifted vacation_year (differs from the start
+                # date's year) is an explicit override — match that year
+                # only, do NOT fall back to the date-containing period, or
+                # the link would disagree with _resolve_leave_period and the
+                # period constraint would reject it.
                 balance = Balance.search(
                     base_domain + [('year', '=', leave.vacation_year)],
                     limit=1, order='period_start')
-            if not balance:
-                # Period containing the start date — works for both
-                # calendar and work periods.
+            else:
+                # Default: the period containing the leave's start date —
+                # works for both calendar and work periods.
                 balance = Balance.search(base_domain + [
                     ('period_start', '<=', leave.request_date_from),
                     ('period_end', '>=', leave.request_date_from),
