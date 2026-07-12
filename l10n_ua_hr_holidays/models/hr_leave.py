@@ -148,11 +148,14 @@ class HrLeave(models.Model):
         emp = self.employee_id
         if not lt or not emp:
             return (False, False, 0)
-        year = self.vacation_year or (
-            self.request_date_from.year if self.request_date_from else False)
-        if not year:
+        rdf = self.request_date_from
+        if self.vacation_year and (not rdf or self.vacation_year != rdf.year):
+            ref_date = Balance._ref_date_for_year(self.vacation_year)
+        elif rdf:
+            ref_date = rdf
+        else:
             return (False, False, 0)
-        return Balance._get_period_for(emp, lt, Balance._ref_date_for_year(year))
+        return Balance._get_period_for(emp, lt, ref_date)
 
     def action_create_vacation_period(self):
         """Create (or reuse) the hr.vacation.balance for this leave's
