@@ -1,5 +1,5 @@
 from datetime import date
-
+from odoo.exceptions import ValidationError
 from odoo.tests.common import TransactionCase
 
 
@@ -32,6 +32,68 @@ class TestVacationPeriodBalance(TransactionCase):
     # ------------------------------------------------------------------
     # Balance period derivation
     # ------------------------------------------------------------------
+
+    def test_create_period_button_creates_and_links(self):
+        """The inline Create button builds the balance and links the leave;
+        the button hides once a period is linked."""
+        leave = self._create_leave(
+            self.annual_type, date(2025, 1, 10), date(2025, 1, 20))
+        # No matching balance yet → button is offered
+        self.assertFalse(leave.vacation_balance_id)
+        self.assertTrue(leave.show_create_vacation_period)
+
+        leave.action_create_vacation_period()
+
+        balance = leave.vacation_balance_id
+        self.assertTrue(balance)
+        self.assertEqual(balance.period_start, date(2024, 7, 15))
+        self.assertEqual(balance.period_end, date(2025, 7, 14))
+        self.assertEqual(balance.entitled_days, self.annual_type.annual_days)
+        # Linked now → button hidden
+        self.assertFalse(leave.show_create_vacation_period)
+
+    def test_create_period_button_hidden_for_untracked_type(self):
+        educational = self.env.ref('l10n_ua_hr_holidays.leave_type_educational')
+        leave = self._create_leave(
+            educational, date(2025, 3, 3), date(2025, 3, 7))
+        self.assertFalse(leave.show_create_vacation_period)
+
+    def test_year_change_relinks_matching_period(self):
+        """Changing vacation_year re-points the leave at the matching
+        period; the button reappears when none exists."""
+        b2025 = self.env['hr.vacation.balance'].create({
+            'employee_id': self.employee.id,
+            'leave_type_id': self.annual_type.id,
+            'period_start': date(2024, 7, 15),
+            'period_end': date(2025, 7, 14),
+            'period_index': 1,
+            'entitled_days': 24,
+        })
+        leave = self._create_leave(
+            self.annual_type, date(2025, 1, 10), date(2025, 1, 20))
+        self.assertEqual(leave.vacation_balance_id, b2025)
+        # Shift to a year with no balance → field clears, button returns
+        leave.vacation_year = 2027
+        leave._compute_vacation_balance()
+        leave._compute_show_create_vacation_period()
+        self.assertFalse(leave.vacation_balance_id)
+        self.assertTrue(leave.show_create_vacation_period)
+
+    def test_mismatched_period_blocks_save(self):
+        """A linked period whose year differs from the leave year is
+        rejected by the constraint."""
+        wrong = self.env['hr.vacation.balance'].create({
+            'employee_id': self.employee.id,
+            'leave_type_id': self.annual_type.id,
+            'period_start': date(2026, 7, 15),
+            'period_end': date(2027, 7, 14),
+            'period_index': 3,
+            'entitled_days': 24,
+        })
+        leave = self._create_leave(
+            self.annual_type, date(2025, 1, 10), date(2025, 1, 20))
+        with self.assertRaises(ValidationError):
+            leave.vacation_balance_id = wrong
 
     def test_work_period_balance_create(self):
         """Work-year balance derives bounds from hire_date anniversary."""

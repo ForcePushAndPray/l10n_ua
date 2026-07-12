@@ -12,8 +12,17 @@
                     <group>
                         <field name="calendar_days"/>
                         <field name="working_days"/>
-                        <field name="vacation_balance_id"/>
                         <field name="vacation_year"/>
+                        <field name="show_create_vacation_period" invisible="1"/>
+                        <label for="vacation_balance_id"/>
+                        <div class="o_row">
+                            <field name="vacation_balance_id" nolabel="1"
+                                   options="{'no_create': True}"/>
+                            <button name="action_create_vacation_period"
+                                    type="object" string="Create"
+                                    class="btn-link"
+                                    invisible="not show_create_vacation_period"/>
+                        </div>
                     </group>
                     <group>
                         <field name="average_daily_salary"/>

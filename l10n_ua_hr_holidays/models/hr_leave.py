@@ -1,5 +1,5 @@
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from dateutil.relativedelta import relativedelta
 from odoo.addons.hr_holidays.models.hr_leave import HOURS_PER_DAY
 from datetime import datetime, time as dt_time
@@ -111,6 +111,112 @@ class HrLeave(models.Model):
                     ('period_end', '>=', leave.request_date_from),
                 ], limit=1)
             leave.vacation_balance_id = balance
+
+    # Leave categories tracked by hr.vacation.balance (a fixed day budget
+    # per accounting period). Others (sick, unpaid, maternity, ...) have no
+    # per-period budget, so no balance is created for them.
+    _BALANCE_TRACKED_CATEGORIES = (
+        'annual_basic', 'annual_additional', 'annual_hazardous',
+        'annual_special', 'annual_irregular',
+        'social_children', 'chornobyl', 'veteran',
+    )
+
+    show_create_vacation_period = fields.Boolean(
+        string='Can Create Vacation Period',
+        compute='_compute_show_create_vacation_period',
+        help='Technical: drives the "Create" button next to the Vacation '
+             'Period field — true when the leave has no linked period yet '
+             'but one can be resolved for its type and year.'
+    )
+
+    @api.depends('employee_id', 'holiday_status_id', 'vacation_year',
+                 'request_date_from', 'vacation_balance_id')
+    def _compute_show_create_vacation_period(self):
+        for leave in self:
+            show = False
+            lt = leave.holiday_status_id
+            if (not leave.vacation_balance_id and leave.employee_id and lt
+                    and lt.ua_leave_category in self._BALANCE_TRACKED_CATEGORIES):
+                start, _end, _index = leave._resolve_leave_period()
+                show = bool(start)
+            leave.show_create_vacation_period = show
+
+    def _resolve_leave_period(self):
+        """Return (period_start, period_end, period_index) of the accounting
+        period this leave belongs to, from its type's period_type and its
+        vacation_year (falling back to the start date's year). Returns
+        (False, False, 0) when it cannot be resolved (e.g. work-year type
+        without a hire anchor)."""
+        self.ensure_one()
+        Balance = self.env['hr.vacation.balance']
+        lt = self.holiday_status_id
+        emp = self.employee_id
+        if not lt or not emp:
+            return (False, False, 0)
+        year = self.vacation_year or (
+            self.request_date_from.year if self.request_date_from else False)
+        if not year:
+            return (False, False, 0)
+        return Balance._get_period_for(emp, lt, Balance._ref_date_for_year(year))
+
+    def action_create_vacation_period(self):
+        """Create (or reuse) the hr.vacation.balance for this leave's
+        resolved period and link it — the inline "Create" button next to
+        the Vacation Period field."""
+        self.ensure_one()
+        start, end, index = self._resolve_leave_period()
+        if not start:
+            raise UserError(_(
+                'Cannot determine the accounting period. For work-year leave '
+                'types, set the employee\'s hire date first.'))
+        Balance = self.env['hr.vacation.balance'].sudo()
+        balance = Balance.search([
+            ('employee_id', '=', self.employee_id.id),
+            ('leave_type_id', '=', self.holiday_status_id.id),
+            ('period_start', '=', start),
+        ], limit=1)
+        if not balance:
+            prev = Balance.search([
+                ('employee_id', '=', self.employee_id.id),
+                ('leave_type_id', '=', self.holiday_status_id.id),
+                ('period_index', '=', index - 1),
+            ], limit=1)
+            balance = Balance.create({
+                'employee_id': self.employee_id.id,
+                'leave_type_id': self.holiday_status_id.id,
+                'period_start': start,
+                'period_end': end,
+                'period_index': index,
+                'entitled_days': self.holiday_status_id.annual_days,
+                'carried_over': prev.remaining_days if prev else 0,
+                'company_id': self.employee_id.company_id.id or self.env.company.id,
+            })
+        self.vacation_balance_id = balance.id
+        return True
+
+    @api.constrains('vacation_balance_id', 'vacation_year', 'request_date_from',
+                    'holiday_status_id', 'employee_id')
+    def _check_vacation_balance_period(self):
+        """Block saving when the linked vacation period does not match the
+        leave's employee/type or its year."""
+        for leave in self:
+            bal = leave.vacation_balance_id
+            if not bal:
+                continue
+            if (bal.employee_id != leave.employee_id
+                    or bal.leave_type_id != leave.holiday_status_id):
+                raise ValidationError(_(
+                    'The vacation period does not belong to this employee '
+                    'and leave type.'))
+            start, _end, _index = leave._resolve_leave_period()
+            if start and bal.period_start != start:
+                raise ValidationError(_(
+                    'The selected vacation period (%(period)s) does not match '
+                    'the leave year %(year)s. Pick or create the matching '
+                    'period.',
+                    period=bal.period_label,
+                    year=leave.vacation_year,
+                ))
 
     @api.onchange('order_id')
     def _onchange_order_id(self):

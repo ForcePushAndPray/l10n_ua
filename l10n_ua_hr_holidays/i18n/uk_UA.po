@@ -1285,3 +1285,39 @@ msgstr "Робочі періоди"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_search
 msgid "Calendar Periods"
 msgstr "Календарні періоди"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_leave_view_form_ua
+msgid "Create"
+msgstr "Створити"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__show_create_vacation_period
+msgid "Can Create Vacation Period"
+msgstr "Можна створити обліковий період"
+
+#. module: l10n_ua_hr_holidays
+#. odoo-python
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid ""
+"Cannot determine the accounting period. For work-year leave types, set the "
+"employee's hire date first."
+msgstr ""
+"Не вдається визначити обліковий період. Для типів відпусток з робочим "
+"періодом спершу вкажіть дату прийняття працівника на роботу."
+
+#. module: l10n_ua_hr_holidays
+#. odoo-python
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid "The vacation period does not belong to this employee and leave type."
+msgstr "Обліковий період не належить цьому працівникові та типу відпустки."
+
+#. module: l10n_ua_hr_holidays
+#. odoo-python
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid ""
+"The selected vacation period (%(period)s) does not match the leave year "
+"%(year)s. Pick or create the matching period."
+msgstr ""
+"Обраний обліковий період (%(period)s) не відповідає року відпустки "
+"%(year)s. Оберіть або створіть відповідний період."
