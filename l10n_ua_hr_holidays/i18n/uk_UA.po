@@ -1177,6 +1177,7 @@ msgstr ""
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__period_type
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__period_type
 msgid "Accounting Period"
 msgstr "Обліковий період"
 

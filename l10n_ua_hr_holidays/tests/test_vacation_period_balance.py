@@ -52,10 +52,26 @@ class TestVacationPeriodBalance(TransactionCase):
         # Linked now → button hidden
         self.assertFalse(leave.show_create_vacation_period)
 
-    def test_create_period_button_hidden_for_untracked_type(self):
+    def test_create_period_button_for_any_available_type(self):
+        """The button is offered for any employee-available leave type, not
+        just the annual ones — educational (calendar) included."""
         educational = self.env.ref('l10n_ua_hr_holidays.leave_type_educational')
         leave = self._create_leave(
             educational, date(2025, 3, 3), date(2025, 3, 7))
+        self.assertTrue(leave.show_create_vacation_period)
+        leave.action_create_vacation_period()
+        balance = leave.vacation_balance_id
+        self.assertTrue(balance)
+        self.assertEqual(balance.period_start, date(2025, 1, 1))
+        self.assertEqual(balance.period_end, date(2025, 12, 31))
+
+    def test_create_period_button_hidden_when_unresolvable(self):
+        """Work-year type without a hire anchor cannot resolve a period, so
+        the button stays hidden."""
+        anchorless = self.env['hr.employee'].create({'name': 'No hire date'})
+        leave = self._create_leave(
+            self.annual_type, date(2025, 3, 3), date(2025, 3, 7),
+            employee_id=anchorless.id)
         self.assertFalse(leave.show_create_vacation_period)
 
     def test_year_change_relinks_matching_period(self):
@@ -94,6 +110,36 @@ class TestVacationPeriodBalance(TransactionCase):
             self.annual_type, date(2025, 1, 10), date(2025, 1, 20))
         with self.assertRaises(ValidationError):
             leave.vacation_balance_id = wrong
+
+    def test_default_get_prefills_period_from_leave_context(self):
+        """default_get resolves the whole period from the leave form's
+        context defaults (employee, type, year)."""
+        Balance = self.env['hr.vacation.balance'].with_context(
+            default_employee_id=self.employee.id,
+            default_leave_type_id=self.annual_type.id,
+            default_period_year=2025,
+        )
+        defaults = Balance.default_get([
+            'employee_id', 'leave_type_id', 'company_id',
+            'period_start', 'period_end', 'period_index',
+        ])
+        self.assertEqual(defaults.get('period_start'), date(2025, 7, 15))
+        self.assertEqual(defaults.get('period_end'), date(2026, 7, 14))
+        self.assertEqual(defaults.get('period_index'), 2)
+        self.assertEqual(
+            defaults.get('company_id'), self.employee.company_id.id)
+
+    def test_default_get_calendar_type_from_context(self):
+        Balance = self.env['hr.vacation.balance'].with_context(
+            default_employee_id=self.employee.id,
+            default_leave_type_id=self.social_type.id,
+            default_period_year=2026,
+        )
+        defaults = Balance.default_get(
+            ['period_start', 'period_end', 'period_index'])
+        self.assertEqual(defaults.get('period_start'), date(2026, 1, 1))
+        self.assertEqual(defaults.get('period_end'), date(2026, 12, 31))
+        self.assertEqual(defaults.get('period_index'), 2026)
 
     def test_work_period_balance_create(self):
         """Work-year balance derives bounds from hire_date anniversary."""
