@@ -112,15 +112,6 @@ class HrLeave(models.Model):
                 ], limit=1)
             leave.vacation_balance_id = balance
 
-    # Leave categories tracked by hr.vacation.balance (a fixed day budget
-    # per accounting period). Others (sick, unpaid, maternity, ...) have no
-    # per-period budget, so no balance is created for them.
-    _BALANCE_TRACKED_CATEGORIES = (
-        'annual_basic', 'annual_additional', 'annual_hazardous',
-        'annual_special', 'annual_irregular',
-        'social_children', 'chornobyl', 'veteran',
-    )
-
     show_create_vacation_period = fields.Boolean(
         string='Can Create Vacation Period',
         compute='_compute_show_create_vacation_period',
@@ -132,11 +123,13 @@ class HrLeave(models.Model):
     @api.depends('employee_id', 'holiday_status_id', 'vacation_year',
                  'request_date_from', 'vacation_balance_id')
     def _compute_show_create_vacation_period(self):
+        # Offered for any leave type available to the employee, as long as
+        # the accounting period can be resolved (a hire anchor is needed
+        # for work-year types; calendar types always resolve).
         for leave in self:
             show = False
-            lt = leave.holiday_status_id
-            if (not leave.vacation_balance_id and leave.employee_id and lt
-                    and lt.ua_leave_category in self._BALANCE_TRACKED_CATEGORIES):
+            if (not leave.vacation_balance_id and leave.employee_id
+                    and leave.holiday_status_id):
                 start, _end, _index = leave._resolve_leave_period()
                 show = bool(start)
             leave.show_create_vacation_period = show

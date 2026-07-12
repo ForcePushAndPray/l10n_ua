@@ -25,8 +25,7 @@ class HrVacationBalance(models.Model):
         'hr.leave.type',
         string='Leave Type',
         required=True,
-        domain="[('ua_leave_category', 'in', ['annual_basic', 'annual_additional',"
-               " 'annual_hazardous', 'annual_special', 'annual_irregular'])]"
+        domain="[('ua_leave_category', '!=', False)]"
     )
     period_type = fields.Selection(
         related='leave_type_id.period_type',
@@ -158,10 +157,48 @@ class HrVacationBalance(models.Model):
                     entitled = round(annual * span_days / 365.0, 2)
             rec.entitled_days = entitled
 
+    @api.model
+    def default_get(self, fields_list):
+        """Prefill the balance from the leave form's context.
+
+        The Vacation Period field on hr.leave passes default_employee_id,
+        default_leave_type_id and default_period_year; from those we can
+        resolve the whole accounting period (dates, index, company) up
+        front, so the "create period" dialog opens fully populated.
+        """
+        res = super().default_get(fields_list)
+        ctx = self.env.context
+        emp_id = res.get('employee_id') or ctx.get('default_employee_id')
+        lt_id = res.get('leave_type_id') or ctx.get('default_leave_type_id')
+        if emp_id and lt_id and not res.get('period_start'):
+            employee = self.env['hr.employee'].browse(emp_id)
+            leave_type = self.env['hr.leave.type'].browse(lt_id)
+            ref_year = ctx.get('default_period_year') or fields.Date.today().year
+            start, end, index = self._get_period_for(
+                employee, leave_type, self._ref_date_for_year(ref_year))
+            if not start:
+                # Work-year type without a hire anchor: calendar fallback
+                start, end, index = (
+                    date(ref_year, 1, 1), date(ref_year, 12, 31), ref_year)
+            res.setdefault('period_start', start)
+            res.setdefault('period_end', end)
+            res.setdefault('period_index', index)
+            if 'company_id' in fields_list and not res.get('company_id'):
+                res['company_id'] = employee.company_id.id or self.env.company.id
+        return res
+
     @api.onchange('company_id')
     def _onchange_company_id(self):
-        self.employee_id = False
-        self.leave_type_id = False
+        # Only clear a now-incompatible employee/type on a genuine company
+        # switch — never wipe values prefilled from the leave form.
+        if (self.employee_id and self.employee_id.company_id
+                and self.company_id
+                and self.employee_id.company_id != self.company_id):
+            self.employee_id = False
+        if (self.leave_type_id and self.leave_type_id.company_id
+                and self.company_id
+                and self.leave_type_id.company_id != self.company_id):
+            self.leave_type_id = False
 
     @api.onchange('employee_id', 'leave_type_id')
     def _onchange_period_defaults(self):
@@ -169,13 +206,16 @@ class HrVacationBalance(models.Model):
         for rec in self:
             if not rec.employee_id or not rec.leave_type_id or rec.period_start:
                 continue
-            today = fields.Date.context_today(self)
+            ref_year = self.env.context.get('default_period_year')
+            ref_date = (self._ref_date_for_year(ref_year) if ref_year
+                        else fields.Date.context_today(self))
             start, end, index = self._get_period_for(
-                rec.employee_id, rec.leave_type_id, today)
+                rec.employee_id, rec.leave_type_id, ref_date)
             if not start:
                 # Work-year type without hire anchor: calendar fallback
                 start, end, index = (
-                    date(today.year, 1, 1), date(today.year, 12, 31), today.year)
+                    date(ref_date.year, 1, 1), date(ref_date.year, 12, 31),
+                    ref_date.year)
             rec.period_start = start
             rec.period_end = end
             rec.period_index = index
