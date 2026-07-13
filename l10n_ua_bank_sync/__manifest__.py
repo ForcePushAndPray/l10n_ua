@@ -31,6 +31,7 @@ from this module and implement bank-specific API calls.
     'data': [
         'security/ir.model.access.csv',
         'data/res_bank_data.xml',
+        'data/ir_cron_data.xml',
         'report/bank_statement_report.xml',
         'wizard/l10n_ua_bank_sync_wizard_views.xml',
         'wizard/l10n_ua_bank_statement_wizard_views.xml',

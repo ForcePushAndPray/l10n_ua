@@ -356,13 +356,16 @@
    викликає `_create_and_run_job()` (створює `l10n_ua.bank.sync.job`, проставляє `last_sync_job_id`,
    одразу `action_fetch()` → авто-`action_process`), відкриває форму завдання.
 2. **Майстер** (`action_open_sync_wizard` → `l10n_ua.bank.sync.wizard`) — довільний період `date_from`/`date_to`.
-3. **Крон** — модельний метод `_cron_auto_sync()`: `search([('auto_sync','=',True)])` і для кожного конфігу
-   викликає `action_sync_now()` (кожна помилка окремо логується `_logger.error`, не зриваючи решту).
+3. **Крон** (issue #189) — поставляється запис `ir.cron` **«Синхронізація банку: автозавантаження
+   виписок»** (`ir_cron_bank_auto_sync`), що щогодини викликає `_cron_auto_sync()`. Метод бере
+   `search([('auto_sync','=',True)])` і синхронізує лише ті конфіги, що **дозріли** за власним
+   `sync_interval_hours` (`_is_sync_due`: якщо `now ≥ last_sync_date + interval`). Кожен конфіг
+   ізольований `savepoint`-ом — помилка одного не зриває решту (логується `_logger.exception`).
+   `last_sync_date` тепер проставляється при кожному прогоні (`_create_and_run_job`).
 
-> **Чесне застереження (звірено з кодом):** метод `_cron_auto_sync()` **є**, але **жодного запису
-> `ir.cron` у модулях домену не поставляється** — тож «за розкладом» фактично вимагає **вручну створити
-> заплановану дію** (Налаштування → Технічне → Заплановані дії) з викликом `model._cron_auto_sync()`.
-> Поле `sync_interval_hours` при цьому **не** зчитується самим `_cron_auto_sync` (частоту задає сам `ir.cron`).
+> **Як налаштувати:** увімкніть `auto_sync` на конфізі та задайте `sync_interval_hours` (типово 24).
+> Крон тикає щогодини, але фактична частота синхронізації конкретного банку — саме його інтервал.
+> За потреби змініть розклад самого крону в **Налаштування → Технічне → Заплановані дії**.
 
 > _Скриншот:_ `11-auto-sync-config.png`
 
@@ -423,7 +426,7 @@
 - [x] **BANK-6** — правила: `check_match` (напрям / ЄДРПОУ / текст / діапазон суми / журнал), `sequence` first-match, у межах `company_id`
 - [x] **BANK-7** — `action_create_move()` формує `account.move` (Дт/Кт за знаком), dup-guard `ValidationError`, `action_post_move` / `action_delete_move` (проведену не видалити) / `action_create_and_post_move`; правило застосовується **при створенні проводки**, а не при обробці
 - [x] **BANK-8** — контрагент через `_match_partner()` (ЄДРПОУ → IBAN); `is_reconciled` — **ручний** прапорець (масові дії + фільтри); зв'язку з інвойсами в коді немає (штатна звірка Odoo на рівні `account.move`)
-- [x] **BANK-9** — `auto_sync` + `action_sync_now` / майстер / `_cron_auto_sync()`; ⚠ **запис `ir.cron` не поставляється** — заплановану дію треба створити вручну
+- [x] **BANK-9** — `auto_sync` + `action_sync_now` / майстер / `_cron_auto_sync()`; поставляється `ir.cron` (щогодини), кожен конфіг дозріває за `sync_interval_hours` (`_is_sync_due`), `last_sync_date` проставляється (issue #189, покрито `test_auto_sync.py`)
 - [x] **BANK-10** — `action_reprocess` (без re-fetch), `action_reset_to_draft`, відновлення з `error`, логи `action_view_logs`
 - [ ] **Флоу 3 — monobank:** конфіг `mono` (`X-Token`), обмеження 31 день, суми у гривнях — потребує зовнішнього токена (на демо не виконується)
 - [x] **Флоу 4 — QR НБУ:** генерується у друкованій формі рахунку без зовнішнього підключення (наживо працює)

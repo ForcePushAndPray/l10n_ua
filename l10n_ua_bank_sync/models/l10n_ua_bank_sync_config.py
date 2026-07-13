@@ -133,7 +133,10 @@ class L10nUaBankSyncConfig(models.Model):
             'date_from': date_from,
             'date_to': date_to,
         })
-        self.last_sync_job_id = job
+        self.write({
+            'last_sync_job_id': job.id,
+            'last_sync_date': fields.Datetime.now(),
+        })
         job.action_fetch()
         return {
             'type': 'ir.actions.act_window',
@@ -170,12 +173,34 @@ class L10nUaBankSyncConfig(models.Model):
             _("Provider '%s' does not implement _parse_transactions method") % self.provider
         )
 
+    def _is_sync_due(self, now=None):
+        """Whether this config should sync now, per its ``sync_interval_hours``.
+
+        Due when never synced, when the interval is not set (<=0 → every tick),
+        or when ``sync_interval_hours`` has elapsed since ``last_sync_date``.
+        """
+        self.ensure_one()
+        now = now or fields.Datetime.now()
+        interval = max(self.sync_interval_hours or 0, 0)
+        if self.last_sync_date and interval:
+            return now >= self.last_sync_date + timedelta(hours=interval)
+        return True
+
     @api.model
     def _cron_auto_sync(self):
-        """Cron job for auto-sync enabled configurations."""
+        """Scheduled auto-sync of enabled configurations.
+
+        The cron runs frequently (hourly); each config decides whether it is
+        actually due via its own ``sync_interval_hours``. Failures are isolated
+        per config with a savepoint so one broken feed does not abort the rest.
+        """
+        now = fields.Datetime.now()
         configs = self.search([('auto_sync', '=', True)])
         for config in configs:
+            if not config._is_sync_due(now):
+                continue
             try:
-                config.action_sync_now()
+                with self.env.cr.savepoint():
+                    config.action_sync_now()
             except Exception as e:
-                _logger.error("Auto-sync failed for %s: %s", config.name, str(e))
+                _logger.exception("Auto-sync failed for %s: %s", config.name, e)
