@@ -57,6 +57,11 @@ class HrExecutionDocument(models.Model):
     date_to = fields.Date(string='Date To', tracking=True)
     
     total_amount = fields.Float(string='Total Amount to Collect')
+    payslip_deduction_ids = fields.One2many(
+        'hr.payslip.deduction',
+        'execution_doc_id',
+        string='Payslip Deductions',
+    )
     collected_amount = fields.Float(
         string='Collected Amount',
         compute='_compute_collected_amount',
@@ -88,11 +93,16 @@ class HrExecutionDocument(models.Model):
                 and self.employee_id.company_id != self.company_id:
             self.employee_id = False
 
-    @api.depends('total_amount')
+    @api.depends('total_amount',
+                 'payslip_deduction_ids.amount',
+                 'payslip_deduction_ids.payslip_id.state')
     def _compute_collected_amount(self):
         for doc in self:
-            # TODO: Calculate from payslip deductions
-            doc.collected_amount = 0.0
+            # Only confirmed (posted) payslips count as actually collected.
+            doc.collected_amount = sum(
+                d.amount for d in doc.payslip_deduction_ids
+                if d.payslip_id.state == 'done'
+            )
             doc.remaining_amount = doc.total_amount - doc.collected_amount
 
     @api.constrains('percent_value')

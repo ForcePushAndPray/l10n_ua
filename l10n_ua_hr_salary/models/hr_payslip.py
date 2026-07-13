@@ -669,32 +669,55 @@ class HrPayslip(models.Model):
         # Delete only auto-generated deductions, preserve manual ones
         self.deduction_ids.filtered('is_auto_generated').unlink()
         
-        # Execution documents
+        # Execution documents, processed in legal order of priority
+        # (1 — alimony for minors, 2 — other alimony, 3 — other debts).
         exec_docs = self.env['hr.execution.document'].search([
             ('employee_id', '=', self.employee_id.id),
             ('state', '=', 'active'),
             ('date_from', '<=', self.date_to),
             '|', ('date_to', '>=', self.date_from), ('date_to', '=', False),
-        ])
-        
+        ]).sorted(key=lambda d: (int(d.deduction_priority or '9'), d.date_from))
+
         alimony_type = self.env['hr.deduction.type'].search([('code', '=', 'ALIMONY')], limit=1)
-        
+
+        # Legal ceiling: total execution-document withholdings may not exceed
+        # 50% (or 70% when alimony for minors is involved) of income after taxes.
+        net_after_tax = self.gross_salary - self.pdfo_amount - self.military_tax_amount
+        cap_percent = max(exec_docs.mapped('max_deduction_percent') or [50.0])
+        max_total = net_after_tax * cap_percent / 100
+        allocated = 0.0
+        params = self.env['hr.psp.parameters'].get_parameters(self.date_to)
+        min_wage = params.min_wage if params else 8000
+
         for doc in exec_docs:
             if doc.calculation_method == 'percent':
                 amount = self.gross_salary * doc.percent_value / 100
             elif doc.calculation_method == 'fixed':
                 amount = doc.fixed_amount
             else:
-                params = self.env['hr.psp.parameters'].get_parameters(self.date_to)
-                min_wage = params.min_wage if params else 8000
                 amount = min_wage * doc.percent_value / 100
-            
+
+            # Never collect more than the outstanding debt (finite documents only);
+            # the remainder carries over to the next period automatically.
+            if doc.total_amount > 0:
+                outstanding = doc.total_amount - doc.collected_amount
+                amount = min(amount, max(outstanding, 0.0))
+
+            # Enforce the cumulative legal ceiling: lower-priority documents get
+            # only what is left under the cap.
+            available = max_total - allocated
+            amount = min(amount, max(available, 0.0))
+            amount = round(amount, 2)
+            if amount <= 0:
+                continue
+            allocated += amount
+
             self.env['hr.payslip.deduction'].create({
                 'payslip_id': self.id,
                 'deduction_type_id': alimony_type.id if alimony_type else False,
                 'base_amount': self.gross_salary,
                 'rate': doc.percent_value if doc.calculation_method == 'percent' else 0,
-                'amount': round(amount, 2),
+                'amount': amount,
                 'execution_doc_id': doc.id,
                 'is_auto_generated': True,
             })
