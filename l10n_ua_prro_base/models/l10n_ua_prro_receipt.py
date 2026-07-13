@@ -103,10 +103,42 @@ class L10nUaPrroReceipt(models.Model):
             else:
                 receipt.name = f'Receipt (local #{receipt.local_number})'
 
-    @api.depends('cash_amount', 'card_amount')
+    @api.depends('cash_amount', 'card_amount', 'line_ids.subtotal')
     def _compute_total(self):
         for receipt in self:
-            receipt.total_amount = receipt.cash_amount + receipt.card_amount
+            payment_total = receipt.cash_amount + receipt.card_amount
+            # Fall back to the goods subtotal when the payment split is not set
+            # (e.g. receipt built from lines), so the total is never a bogus 0.
+            receipt.total_amount = payment_total or sum(
+                receipt.line_ids.mapped('subtotal')
+            )
+
+    @api.model
+    def _prepare_payment_vals(self, payments):
+        """Map a Checkbox payments list to cash/card/payment_type values.
+
+        Checkbox monetary values are in kopecks; ``type`` is ``CASH`` or
+        ``CASHLESS`` (card). Returns a vals dict so the stored ``total_amount``
+        compute (cash + card) yields the real receipt total.
+        """
+        cash = card = 0.0
+        for payment in payments or []:
+            value = (payment.get('value') or 0) / 100.0
+            if (payment.get('type') or '').upper() == 'CASH':
+                cash += value
+            else:
+                card += value
+        if cash and card:
+            payment_type = 'mixed'
+        elif card:
+            payment_type = 'card'
+        else:
+            payment_type = 'cash'
+        return {
+            'cash_amount': cash,
+            'card_amount': card,
+            'payment_type': payment_type,
+        }
 
 
 class L10nUaPrroReceiptLine(models.Model):

@@ -312,18 +312,23 @@ class L10nUaPrroCheckboxConfig(models.Model):
         try:
             api = self._get_api()
             response = api.create_receipt(receipt_data)
-            
-            # Create receipt record
+
+            # Create receipt record. `total_amount` is a stored computed field
+            # (cash + card), so the payment split must be populated — otherwise
+            # the total stays 0 and the API `total_sum` is lost. Prefer the sent
+            # tender (`receipt_data`), fall back to the fiscalised response.
+            Receipt = self.env['l10n_ua.prro.receipt']
             receipt_vals = {
                 'shift_id': self.current_shift_id.id,
                 'fiscal_number': response.get('fiscal_code'),
                 'local_number': response.get('serial'),
                 'receipt_type': 'sale',
-                'total_amount': response.get('total_sum', 0) / 100,
                 'state': 'registered',
             }
-            receipt = self.env['l10n_ua.prro.receipt'].create(receipt_vals)
-            
+            payments = receipt_data.get('payments') or response.get('payments')
+            receipt_vals.update(Receipt._prepare_payment_vals(payments))
+            receipt = Receipt.create(receipt_vals)
+
             return receipt
 
         except Exception as e:
