@@ -1,3 +1,5 @@
+import base64
+
 from odoo import api, fields, models
 from odoo.exceptions import UserError, ValidationError
 
@@ -8,6 +10,18 @@ PERIOD_QUARTERS = {
     '9m': ['1', '2', '3'],
     'year': ['1', '2', '3', '4'],
 }
+
+# Reporting period → (PERIOD_TYPE code, PERIOD_MONTH, quarter marker tag) for F0103309.
+# The single-tax declaration is cumulative, so the marker follows the last covered quarter.
+PERIOD_F0103309 = {
+    'q1': ('2', '3', 'H1KV'),
+    'h1': ('3', '6', 'H2KV'),
+    '9m': ('4', '9', 'H3KV'),
+    'year': ('5', '12', 'H4KV'),
+}
+
+# Military levy (військовий збір) rate for FOP single-tax payers, %.
+FOP_MILITARY_RATE = 1.0
 
 PERIOD_MONTHS = {
     'q1': 3,
@@ -320,8 +334,59 @@ class L10nUaFopDeclaration(models.Model):
         return action
 
     def action_generate_xml(self):
-        """Згенерувати XML для подання до ДПС."""
-        raise UserError(
-            'Генерація XML буде доступна в наступній версії.\n'
-            'Наразі використовуйте друкований бланк декларації.'
+        """Згенерувати XML декларації ЄП (форма F0103309) для подання до ДПС.
+
+        Делегує рендеринг до єдиного канонічного генератора з
+        l10n_ua_tax_F0103309, щоб не дублювати шаблон декларації.
+        """
+        self.ensure_one()
+        if self.state == 'draft':
+            raise UserError(
+                'Спершу розрахуйте декларацію (кнопка «Розрахувати»), '
+                'потім формуйте XML.'
+            )
+
+        period_type, period_month, quarter_marker = PERIOD_F0103309.get(
+            self.period, ('5', '12', 'H4KV'))
+
+        company = self.company_id
+        tax_office = company.l10n_ua_tax_office_id
+        activities = [
+            (link.kved_id.code, link.kved_id.name)
+            for link in company.l10n_ua_kved_ids
+        ]
+
+        # Військовий збір: 1% доходу (декларація не веде авансів, тож весь до сплати).
+        military_amount = self.total_income * FOP_MILITARY_RATE / 100
+
+        vals = {
+            'taxpayer_tin': company.vat or company.company_registry or '',
+            'taxpayer_name': company.name or '',
+            'taxpayer_address': self.env['l10n_ua.tax.document.wizard']
+                ._format_company_address(company),
+            'taxpayer_email': company.email or '',
+            'taxpayer_phone': company.phone or '',
+            'declaration_type': '0',  # Звітна
+            'tax_office_code': tax_office.code if tax_office else '',
+            'tax_office_name': tax_office.name if tax_office else '',
+            'quarter_marker': quarter_marker,
+            'period_type': period_type,
+            'period_month': period_month,
+            'year': self.year,
+            'employee_count': 0,
+            'activities': activities,
+            'income_total': self.total_income,
+            'tax_amount': self.single_tax,
+            'tax_paid_prev': 0.0,
+            'tax_to_pay': self.single_tax,
+            'military_amount': military_amount,
+            'military_paid_prev': 0.0,
+            'military_to_pay': military_amount,
+        }
+
+        xml = self.env['l10n_ua.tax.document.wizard']._render_F0103309_xml(vals)
+        self.xml_filename = (
+            f"{vals['taxpayer_tin']}_{self.year}_{period_month}_F0103309.xml"
         )
+        self.xml_file = base64.b64encode(xml.encode('windows-1251'))
+        return True

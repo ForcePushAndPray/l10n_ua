@@ -8,7 +8,9 @@ Tests cover:
 - State workflow
 """
 
+import base64
 from datetime import date
+from odoo.exceptions import UserError
 from odoo.tests import TransactionCase, tagged
 
 
@@ -130,4 +132,44 @@ class TestFopDeclaration(TransactionCase):
             decl = self._create_declaration(period, 2025)
             self.assertEqual(decl.esv_months, expected_months,
                              f'Period {period} should have {expected_months} ESV months')
+            decl.unlink()
+
+    def test_generate_xml_requires_calculation(self):
+        """action_generate_xml must refuse a draft declaration — issue #139."""
+        decl = self._create_declaration('year', 2025)
+        self.assertEqual(decl.state, 'draft')
+        with self.assertRaises(UserError):
+            decl.action_generate_xml()
+
+    def test_generate_xml_delegates_to_F0103309(self):
+        """XML is built via the canonical F0103309 generator, not a stub — issue #139."""
+        self._create_income_books()
+        decl = self._create_declaration('year', 2025)
+        decl.action_calculate()
+        result = decl.action_generate_xml()
+        self.assertTrue(result)
+        self.assertTrue(decl.xml_file, 'xml_file must be populated')
+        self.assertTrue(decl.xml_filename.endswith('_F0103309.xml'))
+
+        xml = base64.b64decode(decl.xml_file).decode('windows-1251')
+        # Canonical F0103309 structure and the declaration's own figures.
+        self.assertIn('<C_DOC>F01</C_DOC>', xml)
+        self.assertIn('<C_DOC_SUB>033</C_DOC_SUB>', xml)
+        self.assertIn('<H4KV>1</H4KV>', xml)          # annual → 4th-quarter marker
+        self.assertIn('<PERIOD_TYPE>5</PERIOD_TYPE>', xml)
+        self.assertIn('<R006G3>300000.00</R006G3>', xml)  # total income
+        self.assertIn('<R011G3>15000.00</R011G3>', xml)   # single tax 5%
+        self.assertIn('<R023G3>3000.00</R023G3>', xml)    # military levy 1%
+
+    def test_generate_xml_quarter_marker_matches_period(self):
+        """Each reporting period maps to the right cumulative quarter marker — issue #139."""
+        self._create_income_books()
+        cases = {'q1': 'H1KV', 'h1': 'H2KV', '9m': 'H3KV', 'year': 'H4KV'}
+        for period, marker in cases.items():
+            decl = self._create_declaration(period, 2025)
+            decl.action_calculate()
+            decl.action_generate_xml()
+            xml = base64.b64decode(decl.xml_file).decode('windows-1251')
+            self.assertIn(f'<{marker}>1</{marker}>', xml,
+                          f'Period {period} should emit marker {marker}')
             decl.unlink()

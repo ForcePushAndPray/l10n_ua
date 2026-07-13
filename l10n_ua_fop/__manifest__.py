@@ -27,6 +27,7 @@ Ukraine FOP Module (Єдиний податок ФОП)
     'depends': [
         'l10n_ua_tax',
         'l10n_ua_doc_reports',
+        'l10n_ua_tax_F0103309',
     ],
     'data': [
         'security/ir.model.access.csv',

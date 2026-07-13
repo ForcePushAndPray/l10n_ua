@@ -366,66 +366,111 @@ class L10nUaTaxDocumentWizardF0103309(models.TransientModel):
                 return 'H4KV'
 
     def _build_F0103309_xml(self, period_type, period_month):
-        """Build the XML content for F0103309 matching Tax Cabinet format."""
+        """Build the XML content for F0103309 matching Tax Cabinet format.
+
+        Thin adapter: collects the wizard's own field values into a plain dict
+        and delegates rendering to :meth:`_render_F0103309_xml`, so other modules
+        (e.g. l10n_ua_fop) can produce the exact same declaration without
+        duplicating the template.
+        """
+        return self._render_F0103309_xml({
+            'taxpayer_tin': self.taxpayer_tin,
+            'taxpayer_name': self.taxpayer_name,
+            'taxpayer_address': self.taxpayer_address or '',
+            'taxpayer_email': self.taxpayer_email or '',
+            'taxpayer_phone': self.taxpayer_phone or '',
+            'declaration_type': self.declaration_type,
+            'tax_office_code': self.tax_office_id.code if self.tax_office_id else '',
+            'tax_office_name': self.tax_office_id.name if self.tax_office_id else '',
+            'quarter_marker': self._get_quarter_marker(),
+            'period_type': period_type,
+            'period_month': period_month,
+            'year': self.year,
+            'employee_count': self.employee_count,
+            'activities': [(a.code, a.name) for a in self.activity_ids],
+            'income_total': self.income_total,
+            'tax_amount': self.tax_amount,
+            'tax_paid_prev': self.tax_paid_prev,
+            'tax_to_pay': self.tax_to_pay,
+            'military_amount': self.military_amount,
+            'military_paid_prev': self.military_paid_prev,
+            'military_to_pay': self.military_to_pay,
+        })
+
+    @api.model
+    def _render_F0103309_xml(self, vals):
+        """Render F0103309 XML from an explicit values dict (module-agnostic).
+
+        Kept stateless (reads only ``vals``, not ``self`` fields) so any module
+        can build a single-tax declaration through the single canonical template.
+
+        Expected keys: taxpayer_tin, taxpayer_name, taxpayer_address,
+        taxpayer_email, taxpayer_phone, declaration_type, tax_office_code,
+        tax_office_name, quarter_marker, period_type, period_month, year,
+        employee_count, activities (list of (code, name) tuples), income_total,
+        tax_amount, tax_paid_prev, tax_to_pay, military_amount,
+        military_paid_prev, military_to_pay.
+        """
         today = date.today()
 
         # Build activity codes XML
+        activities = vals.get('activities') or []
         activities_xml = ''
-        for idx, activity in enumerate(self.activity_ids, 1):
-            activities_xml += f'<T1RXXXXG1S ROWNUM="{idx}" >{self._escape_xml(activity.code)}</T1RXXXXG1S>\n'
-        for idx, activity in enumerate(self.activity_ids, 1):
-            activities_xml += f'<T1RXXXXG2S ROWNUM="{idx}" >{self._escape_xml(activity.name)}</T1RXXXXG2S>\n'
+        for idx, (code, name) in enumerate(activities, 1):
+            activities_xml += f'<T1RXXXXG1S ROWNUM="{idx}" >{self._escape_xml(code)}</T1RXXXXG1S>\n'
+        for idx, (code, name) in enumerate(activities, 1):
+            activities_xml += f'<T1RXXXXG2S ROWNUM="{idx}" >{self._escape_xml(name)}</T1RXXXXG2S>\n'
 
         # Get tax office codes
-        tax_office_code = self.tax_office_id.code if self.tax_office_id else ''
+        tax_office_code = vals.get('tax_office_code') or ''
         c_reg = tax_office_code[:2] if len(tax_office_code) >= 2 else ''
         c_raj = tax_office_code[2:4] if len(tax_office_code) >= 4 else ''
-        tax_office_name = self.tax_office_id.name if self.tax_office_id else ''
+        tax_office_name = vals.get('tax_office_name') or ''
 
         # Quarter marker
-        quarter_marker = self._get_quarter_marker()
+        quarter_marker = vals['quarter_marker']
 
         xml = f'''<?xml version="1.0" encoding="windows-1251"?>
         <DECLAR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="F0103309.XSD">
 <DECLARHEAD>
-    <TIN>{self._escape_xml(self.taxpayer_tin)}</TIN>
+    <TIN>{self._escape_xml(vals['taxpayer_tin'])}</TIN>
     <C_DOC>F01</C_DOC>
     <C_DOC_SUB>033</C_DOC_SUB>
     <C_DOC_VER>9</C_DOC_VER>
-    <C_DOC_TYPE>{self.declaration_type}</C_DOC_TYPE>
+    <C_DOC_TYPE>{vals['declaration_type']}</C_DOC_TYPE>
     <C_DOC_CNT>1</C_DOC_CNT>
     <C_REG>{c_reg}</C_REG>
     <C_RAJ>{c_raj}</C_RAJ>
-    <PERIOD_MONTH>{period_month}</PERIOD_MONTH>
-    <PERIOD_TYPE>{period_type}</PERIOD_TYPE>
-    <PERIOD_YEAR>{self.year}</PERIOD_YEAR>
+    <PERIOD_MONTH>{vals['period_month']}</PERIOD_MONTH>
+    <PERIOD_TYPE>{vals['period_type']}</PERIOD_TYPE>
+    <PERIOD_YEAR>{vals['year']}</PERIOD_YEAR>
     <C_STI_ORIG>{tax_office_code}</C_STI_ORIG>
     <C_DOC_STAN>1</C_DOC_STAN><D_FILL>{today.strftime('%d%m%Y')}</D_FILL>
 </DECLARHEAD>
         <DECLARBODY>
 <HZ>1</HZ>
 <{quarter_marker}>1</{quarter_marker}>
-<HZY>{self.year}</HZY>
+<HZY>{vals['year']}</HZY>
 <HSTI>{self._escape_xml(tax_office_name)}</HSTI>
-<HNAME>{self._escape_xml(self.taxpayer_name)}</HNAME>
-<HLOC>{self._escape_xml(self.taxpayer_address or '')}</HLOC>
-<HEMAIL>{self._escape_xml(self.taxpayer_email or '')}</HEMAIL>
-<HTEL>{self._escape_xml(self.taxpayer_phone or '')}</HTEL>
-<HTIN>{self._escape_xml(self.taxpayer_tin)}</HTIN>
-<HNACTL>{self.employee_count}</HNACTL>
-{activities_xml}<R006G3>{self._format_amount(self.income_total)}</R006G3>
-<R008G3>{self._format_amount(self.income_total)}</R008G3>
-<R011G3>{self._format_amount(self.tax_amount)}</R011G3>
-<R012G3>{self._format_amount(self.tax_amount)}</R012G3>
-<R013G3>{self._format_amount(self.tax_paid_prev)}</R013G3>
-<R0141G3>{self._format_amount(self.tax_to_pay)}</R0141G3>
-<R014G3>{self._format_amount(self.tax_to_pay)}</R014G3>
-<R023G3>{self._format_amount(self.military_amount)}</R023G3>
-<R024G3>{self._format_amount(self.military_paid_prev)}</R024G3>
-<R025G3>{self._format_amount(self.military_to_pay)}</R025G3>
+<HNAME>{self._escape_xml(vals['taxpayer_name'])}</HNAME>
+<HLOC>{self._escape_xml(vals.get('taxpayer_address') or '')}</HLOC>
+<HEMAIL>{self._escape_xml(vals.get('taxpayer_email') or '')}</HEMAIL>
+<HTEL>{self._escape_xml(vals.get('taxpayer_phone') or '')}</HTEL>
+<HTIN>{self._escape_xml(vals['taxpayer_tin'])}</HTIN>
+<HNACTL>{vals.get('employee_count') or 0}</HNACTL>
+{activities_xml}<R006G3>{self._format_amount(vals['income_total'])}</R006G3>
+<R008G3>{self._format_amount(vals['income_total'])}</R008G3>
+<R011G3>{self._format_amount(vals['tax_amount'])}</R011G3>
+<R012G3>{self._format_amount(vals['tax_amount'])}</R012G3>
+<R013G3>{self._format_amount(vals['tax_paid_prev'])}</R013G3>
+<R0141G3>{self._format_amount(vals['tax_to_pay'])}</R0141G3>
+<R014G3>{self._format_amount(vals['tax_to_pay'])}</R014G3>
+<R023G3>{self._format_amount(vals['military_amount'])}</R023G3>
+<R024G3>{self._format_amount(vals['military_paid_prev'])}</R024G3>
+<R025G3>{self._format_amount(vals['military_to_pay'])}</R025G3>
 <HFILL>{today.strftime('%d%m%Y')}</HFILL>
-<HKEXECUTOR>{self._escape_xml(self.taxpayer_tin)}</HKEXECUTOR>
-<HBOS>{self._escape_xml(self.taxpayer_name)}</HBOS>
+<HKEXECUTOR>{self._escape_xml(vals['taxpayer_tin'])}</HKEXECUTOR>
+<HBOS>{self._escape_xml(vals['taxpayer_name'])}</HBOS>
 </DECLARBODY></DECLAR>'''
         return xml
 
