@@ -1,4 +1,5 @@
 from . import test_asset
+from . import test_depreciation_posting
 from . import test_inventory
 from . import test_mnma
 from . import test_modernization

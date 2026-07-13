@@ -190,10 +190,69 @@ class L10nUaAsset(models.Model):
         string='Примітки',
     )
 
+    # --- Accounts for monthly depreciation posting (override group defaults) ---
+    depreciation_journal_id = fields.Many2one(
+        'account.journal',
+        string='Журнал амортизації',
+        domain="[('type', '=', 'general'), ('company_id', '=', company_id)]",
+        check_company=True,
+        help='Журнал для проводок амортизації. За замовч. береться з групи ОЗ.',
+    )
+    expense_account_id = fields.Many2one(
+        'account.account',
+        string='Рахунок витрат (Дт)',
+        domain="[('company_ids', 'in', company_id)]",
+        check_company=True,
+        help='Рахунок витрат на амортизацію (23/91/92/93/94). За замовч. з групи ОЗ.',
+    )
+    depreciation_account_id = fields.Many2one(
+        'account.account',
+        string='Рахунок зносу (Кт 131)',
+        domain="[('company_ids', 'in', company_id)]",
+        check_company=True,
+        help='Рахунок накопиченого зносу (131). За замовч. з групи ОЗ.',
+    )
+
     @api.onchange('group_id')
     def _onchange_group_id(self):
         if self.group_id and self.group_id.min_useful_life:
             self.useful_life = self.group_id.min_useful_life * 12
+        # Inherit posting accounts from the group unless already set on the asset.
+        if self.group_id:
+            if not self.depreciation_journal_id:
+                self.depreciation_journal_id = self.group_id.depreciation_journal_id
+            if not self.expense_account_id:
+                self.expense_account_id = self.group_id.expense_account_id
+            if not self.depreciation_account_id:
+                self.depreciation_account_id = self.group_id.depreciation_account_id
+
+    def _get_depreciation_accounts(self):
+        """Resolve (journal, expense account, accumulated-depreciation account).
+
+        Effective value = asset field, falling back to its group's default.
+        Raises if any is missing, so posting cannot create an unbalanced or
+        misdirected move.
+        """
+        self.ensure_one()
+        group = self.group_id
+        journal = self.depreciation_journal_id or (group.depreciation_journal_id if group else False)
+        expense = self.expense_account_id or (group.expense_account_id if group else False)
+        accumulated = self.depreciation_account_id or (group.depreciation_account_id if group else False)
+        missing = []
+        if not journal:
+            missing.append(_('журнал амортизації'))
+        if not expense:
+            missing.append(_('рахунок витрат (Дт)'))
+        if not accumulated:
+            missing.append(_('рахунок зносу (Кт 131)'))
+        if missing:
+            raise UserError(_(
+                'Неможливо провести амортизацію ОЗ "%(asset)s": не налаштовано %(missing)s. '
+                'Вкажіть на основному засобі або на групі ОЗ.',
+                asset=self.display_name,
+                missing=', '.join(missing),
+            ))
+        return journal, expense, accumulated
 
     @api.depends('revaluation_line_ids', 'revaluation_line_ids.state')
     def _compute_revaluation_count(self):
@@ -668,18 +727,73 @@ class L10nUaAssetDepreciation(models.Model):
         ondelete='set null',
         readonly=True,
     )
+    move_id = fields.Many2one(
+        'account.move',
+        string='Проводка',
+        readonly=True,
+        copy=False,
+        help='Бухгалтерська проводка амортизації (Дт витрати / Кт 131)',
+    )
     currency_id = fields.Many2one(
         'res.currency',
         related='asset_id.currency_id',
     )
 
     def action_post(self):
-        """Post depreciation line."""
-        self.write({'state': 'posted'})
+        """Post depreciation line and book it to the general ledger.
+
+        Дт expense account (23/91/92/93/94) — Кт 131 «Знос ОЗ».
+        Revaluation adjustment lines carry no cash impact of their own here —
+        their move is created by the revaluation document — so only genuine
+        depreciation rows generate a move.
+        """
+        for line in self:
+            if line.state == 'posted':
+                continue
+            if line.line_type == 'depreciation' and line.amount and not line.move_id:
+                line.move_id = line._create_depreciation_move()
+            line.state = 'posted'
 
     def action_draft(self):
-        """Revert to draft."""
-        self.write({'state': 'draft'})
+        """Revert to draft, removing the depreciation move if any."""
+        for line in self:
+            move = line.move_id
+            if move:
+                line.move_id = False
+                if move.state == 'posted':
+                    move.button_draft()
+                move.unlink()
+            line.state = 'draft'
+
+    def _create_depreciation_move(self):
+        """Create and post the monthly depreciation journal entry."""
+        self.ensure_one()
+        asset = self.asset_id
+        journal, expense, accumulated = asset._get_depreciation_accounts()
+        ref = _('Амортизація %(asset)s за %(date)s',
+                asset=asset.display_name, date=self.date)
+        move = self.env['account.move'].create({
+            'journal_id': journal.id,
+            'date': self.date,
+            'ref': ref,
+            'company_id': asset.company_id.id,
+            'line_ids': [
+                (0, 0, {
+                    'account_id': expense.id,
+                    'name': ref,
+                    'debit': self.amount,
+                    'credit': 0.0,
+                }),
+                (0, 0, {
+                    'account_id': accumulated.id,
+                    'name': ref,
+                    'debit': 0.0,
+                    'credit': self.amount,
+                }),
+            ],
+        })
+        move.action_post()
+        return move
 
     def unlink(self):
         if not self.env.context.get('skip_revaluation_protection'):

@@ -102,6 +102,13 @@
                         </group>
                     </group>
 
+                    <group string="Рахунки амортизації"
+                           help="Порожні поля успадковуються з групи ОЗ">
+                        <field name="depreciation_journal_id"/>
+                        <field name="expense_account_id"/>
+                        <field name="depreciation_account_id"/>
+                    </group>
+
                     <!-- Write-off section -->
                     <group invisible="state != 'close'">
                         <group string="Списання">
@@ -132,6 +139,7 @@
                                     <field name="remaining"
                                            readonly="line_type == 'revaluation' or state == 'posted'"/>
                                     <field name="revaluation_id" optional="hide" readonly="1"/>
+                                    <field name="move_id" optional="hide" readonly="1"/>
                                     <field name="state" widget="badge"
                                            decoration-info="state == 'draft'"
                                            decoration-success="state == 'posted'"
@@ -139,6 +147,9 @@
                                     <button name="action_post" type="object"
                                             string="Провести" class="btn-sm btn-primary"
                                             invisible="state != 'draft' or line_type == 'revaluation'"/>
+                                    <button name="action_draft" type="object"
+                                            string="Скасувати" class="btn-sm"
+                                            invisible="state != 'posted' or line_type == 'revaluation'"/>
                                 </list>
                             </field>
                         </page>
