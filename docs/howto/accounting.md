@@ -9,7 +9,7 @@
 > Дані на демо **не видаляються**, тож базу можна наповнювати під час тестування.
 >
 > Ролі та контрольні механізми (головбух, зарплатник, розрахунки, ТМЦ/ОЗ, касир) —
-> див. `ACCOUNTING_UKRAINE.md`.
+> див. [`../usecases/ACCOUNTING_UKRAINE.md`](../usecases/ACCOUNTING_UKRAINE.md).
 
 Скріншоти — у теці [`img/accounting/`](img/accounting/).
 
