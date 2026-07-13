@@ -69,3 +69,45 @@ class TestHrLeaveType(TransactionCase):
                 'payment_source': source,
             })
             self.assertEqual(leave_type.payment_source, source)
+
+    def test_default_leave_type_single_no_conflict(self):
+        """Setting a default with no existing default applies directly."""
+        company = self.env.company
+        lt = self.env['hr.leave.type'].create({
+            'name': 'Default A', 'company_id': company.id})
+        res = lt.action_set_as_default()
+        self.assertFalse(res)  # applied directly, no wizard
+        self.assertTrue(lt.ua_is_default)
+
+    def test_default_leave_type_conflict_opens_wizard_and_switches(self):
+        """A second default opens the confirm wizard; confirming switches
+        the default and clears the previous one within the company."""
+        company = self.env.company
+        lt_a = self.env['hr.leave.type'].create({
+            'name': 'Default A', 'company_id': company.id})
+        lt_b = self.env['hr.leave.type'].create({
+            'name': 'Default B', 'company_id': company.id})
+        lt_a.action_set_as_default()
+        self.assertTrue(lt_a.ua_is_default)
+
+        action = lt_b.action_set_as_default()
+        # A conflict returns a wizard action rather than applying directly.
+        self.assertIsInstance(action, dict)
+        self.assertEqual(action.get('res_model'),
+                         'hr.leave.type.default.confirm')
+
+        wizard = self.env['hr.leave.type.default.confirm'].create({
+            'leave_type_id': lt_b.id,
+            'current_default_ids': [(6, 0, lt_a.ids)],
+        })
+        wizard.action_confirm()
+        self.assertTrue(lt_b.ua_is_default)
+        self.assertFalse(lt_a.ua_is_default)
+
+    def test_default_leave_type_unset(self):
+        company = self.env.company
+        lt = self.env['hr.leave.type'].create({
+            'name': 'Default A', 'company_id': company.id})
+        lt.action_set_as_default()
+        lt.action_unset_default()
+        self.assertFalse(lt.ua_is_default)
