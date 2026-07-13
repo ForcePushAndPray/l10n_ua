@@ -591,8 +591,15 @@ class HrPayslip(models.Model):
 
         salary_type = self.env['hr.accrual.type'].search([('code', '=', 'SALARY')], limit=1)
         params = self.env['hr.psp.parameters'].get_parameters(self.date_to)
-        
-        if salary_type:
+
+        # If the user already entered a base-wage accrual by hand, don't add the
+        # version-based one on top — that would double-count the salary.
+        has_manual_salary = salary_type and any(
+            a.accrual_type_id == salary_type and not a.is_auto_generated
+            for a in self.accrual_ids
+        )
+
+        if salary_type and not has_manual_salary:
             # tariff grade calculations
             if hasattr(version, 'tariff_grade_id') and version.tariff_grade_id:
 

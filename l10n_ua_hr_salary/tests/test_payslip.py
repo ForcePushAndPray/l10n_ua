@@ -80,6 +80,16 @@ class TestPayslip(SalaryTestCase):
         self.assertGreater(payslip.net_salary, 0)
         self.assertLess(payslip.net_salary, 25000)
 
+    def test_manual_wage_not_doubled_on_compute(self):
+        """A hand-entered SALARY accrual must not be doubled by _generate_accruals — issue #185."""
+        payslip = self._create_payslip_with_accrual(25000)
+        payslip.action_compute_sheet()
+        salary_lines = payslip.accrual_ids.filtered(
+            lambda a: a.accrual_type_id == self.accrual_wage)
+        self.assertEqual(len(salary_lines), 1,
+                         'Base wage must appear exactly once, not manual + auto')
+        self.assertEqual(payslip.gross_salary, 25000)
+
     def test_payslip_state_verify(self):
         """After compute, state should be verify or remain draft."""
         payslip = self._create_payslip_with_accrual(25000)
