@@ -56,11 +56,11 @@ class HrLeave(models.Model):
     
     vacation_year = fields.Integer(
         string='Vacation Year',
-        help='Year for which vacation is taken',
+        help='Year of the leave start date. Computed automatically and '
+        'read-only.',
         compute='_compute_vacation_year',
         store=True,
-        readonly=False,
-        precompute=True,
+        readonly=True,
     )
 
     vacation_balance_id = fields.Many2one(
@@ -75,44 +75,31 @@ class HrLeave(models.Model):
                " ('leave_type_id', '=', holiday_status_id)]",
         help='Accounting period (vacation balance) this leave is charged '
              'against: a work year for annual leaves, a calendar year for '
-             'social and other leaves. Can be overridden to attribute the '
-             'leave to another period.'
+             'social and other leaves.'
     )
 
     @api.depends('request_date_from')
     def _compute_vacation_year(self):
+        # The vacation year always follows the leave's start date.
         for leave in self:
-            if leave.request_date_from:
-                leave.vacation_year = leave.request_date_from.year
+            leave.vacation_year = (
+                leave.request_date_from.year if leave.request_date_from else 0)
 
-    @api.depends('employee_id', 'holiday_status_id', 'request_date_from', 'vacation_year')
+    @api.depends('employee_id', 'holiday_status_id', 'request_date_from')
     def _compute_vacation_balance(self):
         Balance = self.env['hr.vacation.balance']
         for leave in self:
             if not leave.employee_id or not leave.holiday_status_id or not leave.request_date_from:
                 leave.vacation_balance_id = False
                 continue
-            base_domain = [
+            # The period containing the leave's start date — works for both
+            # calendar and work periods.
+            leave.vacation_balance_id = Balance.search([
                 ('employee_id', '=', leave.employee_id.id),
                 ('leave_type_id', '=', leave.holiday_status_id.id),
-            ]
-            if leave.vacation_year and leave.vacation_year != leave.request_date_from.year:
-                # A manually shifted vacation_year (differs from the start
-                # date's year) is an explicit override — match that year
-                # only, do NOT fall back to the date-containing period, or
-                # the link would disagree with _resolve_leave_period and the
-                # period constraint would reject it.
-                balance = Balance.search(
-                    base_domain + [('year', '=', leave.vacation_year)],
-                    limit=1, order='period_start')
-            else:
-                # Default: the period containing the leave's start date —
-                # works for both calendar and work periods.
-                balance = Balance.search(base_domain + [
-                    ('period_start', '<=', leave.request_date_from),
-                    ('period_end', '>=', leave.request_date_from),
-                ], limit=1)
-            leave.vacation_balance_id = balance
+                ('period_start', '<=', leave.request_date_from),
+                ('period_end', '>=', leave.request_date_from),
+            ], limit=1)
 
     show_create_vacation_period = fields.Boolean(
         string='Can Create Vacation Period',
@@ -122,7 +109,7 @@ class HrLeave(models.Model):
              'but one can be resolved for its type and year.'
     )
 
-    @api.depends('employee_id', 'holiday_status_id', 'vacation_year',
+    @api.depends('employee_id', 'holiday_status_id',
                  'request_date_from', 'vacation_balance_id')
     def _compute_show_create_vacation_period(self):
         # Offered for any leave type available to the employee, as long as
@@ -138,24 +125,17 @@ class HrLeave(models.Model):
 
     def _resolve_leave_period(self):
         """Return (period_start, period_end, period_index) of the accounting
-        period this leave belongs to, from its type's period_type and its
-        vacation_year (falling back to the start date's year). Returns
-        (False, False, 0) when it cannot be resolved (e.g. work-year type
-        without a hire anchor)."""
+        period this leave belongs to — the one containing its start date.
+        Works for both calendar and work years and keeps this method in step
+        with _compute_vacation_balance. Returns (False, False, 0) when it
+        cannot be resolved (e.g. a work-year type without a hire anchor)."""
         self.ensure_one()
         Balance = self.env['hr.vacation.balance']
         lt = self.holiday_status_id
         emp = self.employee_id
-        if not lt or not emp:
+        if not lt or not emp or not self.request_date_from:
             return (False, False, 0)
-        rdf = self.request_date_from
-        if self.vacation_year and (not rdf or self.vacation_year != rdf.year):
-            ref_date = Balance._ref_date_for_year(self.vacation_year)
-        elif rdf:
-            ref_date = rdf
-        else:
-            return (False, False, 0)
-        return Balance._get_period_for(emp, lt, ref_date)
+        return Balance._get_period_for(emp, lt, self.request_date_from)
 
     def action_create_vacation_period(self):
         """Create (or reuse) the hr.vacation.balance for this leave's

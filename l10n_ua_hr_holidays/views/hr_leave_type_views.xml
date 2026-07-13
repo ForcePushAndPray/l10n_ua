@@ -26,6 +26,18 @@
                         <field name="payment_source" invisible="not is_paid"/>
        		    	<field name="create_order"/>
                     </group>
+                    <group>
+                        <label for="ua_is_default"/>
+                        <div class="o_row">
+                            <field name="ua_is_default" readonly="1" nolabel="1"/>
+                            <button name="action_set_as_default" type="object"
+                                    string="Set as Default" class="btn-link"
+                                    invisible="ua_is_default"/>
+                            <button name="action_unset_default" type="object"
+                                    string="Unset Default" class="btn-link"
+                                    invisible="not ua_is_default"/>
+                        </div>
+                    </group>
                 </group>
             </xpath>
         </field>

@@ -1322,3 +1322,50 @@ msgid ""
 msgstr ""
 "Обраний обліковий період (%(period)s) не відповідає року відпустки "
 "%(year)s. Оберіть або створіть відповідний період."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__ua_is_default
+msgid "Show by Default"
+msgstr "Показувати за замовчуванням"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave_type__ua_is_default
+msgid ""
+"Preselect this leave type by default. Only one leave type per company may be "
+"the default at a time."
+msgstr ""
+"Попередньо обирати цей тип відпустки за замовчуванням. Лише один тип "
+"відпустки на компанію може бути за замовчуванням."
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_leave_type_view_form_ua
+msgid "Set as Default"
+msgstr "Зробити за замовчуванням"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_leave_type_view_form_ua
+msgid "Unset Default"
+msgstr "Прибрати за замовчуванням"
+
+#. module: l10n_ua_hr_holidays
+#. odoo-python
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave_type.py:0
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_leave_type_default_confirm_form
+#: model:ir.model,name:l10n_ua_hr_holidays.model_hr_leave_type_default_confirm
+msgid "Change Default Leave Type"
+msgstr "Зміна відпустки за замовчуванням"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_leave_type_default_confirm_form
+msgid "Yes, change default"
+msgstr "Так, змінити за замовчуванням"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type_default_confirm__leave_type_id
+msgid "New Default"
+msgstr "Нова за замовчуванням"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type_default_confirm__current_default_ids
+msgid "Current Default(s)"
+msgstr "Поточні за замовчуванням"

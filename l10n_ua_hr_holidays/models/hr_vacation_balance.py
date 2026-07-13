@@ -120,7 +120,7 @@ class HrVacationBalance(models.Model):
         return (date(ref_date.year, 1, 1), date(ref_date.year, 12, 31), ref_date.year)
 
     @api.model
-        def _employee_hire_anchor(self, employee):
+    def _employee_hire_anchor(self, employee):
         """Explicit hire date used to bound accounting periods and to block
         pre-hire leaves/periods. Only employee.hire_date (the UA-managed
         field) is used here — the work-year anchor keeps its own
@@ -275,21 +275,21 @@ class HrVacationBalance(models.Model):
                 continue
 
             # Leaves explicitly linked to this balance, plus unlinked
-            # legacy leaves matched by vacation_year or by date overlap
-            # with the accounting period.
+            # legacy leaves whose START date falls inside this period.
+            # A leave belongs to the single period containing its start
+            # date — matching on vacation_year instead would lump leaves
+            # from other work years that merely share a calendar year with
+            # this period's start (e.g. a Feb-2026 leave of the 2025/26
+            # work year vs the 2026/27 work year, both year == 2026).
             base_domain = [
                 ('employee_id', '=', rec.employee_id.id),
                 ('holiday_status_id', '=', rec.leave_type_id.id),
                 '|',
                     ('vacation_balance_id', '=', rec.id),
-                    '&',
+                    '&', '&',
                         ('vacation_balance_id', '=', False),
-                        '|',
-                            ('vacation_year', '=', rec.year),
-                            '&', '&',
-                                ('vacation_year', 'in', [False, 0]),
-                                ('request_date_from', '<=', rec.period_end),
-                                ('request_date_to', '>=', rec.period_start),
+                        ('request_date_from', '>=', rec.period_start),
+                        ('request_date_from', '<=', rec.period_end),
             ]
 
             used_leaves = HrLeave.search(base_domain + [('state', '=', 'validate')])

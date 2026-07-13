@@ -74,10 +74,11 @@ class TestVacationPeriodBalance(TransactionCase):
             employee_id=anchorless.id)
         self.assertFalse(leave.show_create_vacation_period)
 
-    def test_year_change_relinks_matching_period(self):
-        """Changing vacation_year re-points the leave at the matching
-        period; the button reappears when none exists."""
-        b2025 = self.env['hr.vacation.balance'].create({
+    def test_date_change_relinks_matching_period(self):
+        """Changing the leave dates re-points the leave at the period that
+        contains the new start date; the button reappears when none exists.
+        vacation_year follows the start date and is read-only."""
+        b1 = self.env['hr.vacation.balance'].create({
             'employee_id': self.employee.id,
             'leave_type_id': self.annual_type.id,
             'period_start': date(2024, 7, 15),
@@ -87,13 +88,18 @@ class TestVacationPeriodBalance(TransactionCase):
         })
         leave = self._create_leave(
             self.annual_type, date(2025, 1, 10), date(2025, 1, 20))
-        self.assertEqual(leave.vacation_balance_id, b2025)
-        # Shift to a year with no balance → field clears, button returns
-        leave.vacation_year = 2027
-        leave._compute_vacation_balance()
-        leave._compute_show_create_vacation_period()
+        self.assertEqual(leave.vacation_balance_id, b1)
+        self.assertEqual(leave.vacation_year, 2025)
+        # Move the dates into a work year with no balance yet.
+        leave.write({
+            'request_date_from': date(2026, 9, 1),
+            'request_date_to': date(2026, 9, 10),
+            'date_from': datetime(2026, 9, 1, 8, 0, 0),
+            'date_to': datetime(2026, 9, 10, 17, 0, 0),
+        })        
         self.assertFalse(leave.vacation_balance_id)
         self.assertTrue(leave.show_create_vacation_period)
+        self.assertEqual(leave.vacation_year, 2026)
 
     def test_mismatched_period_blocks_save(self):
         """A linked period whose year differs from the leave year is
@@ -110,6 +116,31 @@ class TestVacationPeriodBalance(TransactionCase):
             self.annual_type, date(2025, 1, 10), date(2025, 1, 20))
         with self.assertRaises(ValidationError):
             leave.vacation_balance_id = wrong
+
+    def test_used_days_not_lumped_from_other_work_year(self):
+        """A leave belonging to an earlier work year must not inflate a
+        later work year's used_days just because they share a calendar year
+        in the `year` field (period_start.year)."""
+        # Employee hired 2024-07-15:
+        #   work year 1: 2024-07-15 .. 2025-07-14  (year = 2024)
+        #   work year 2: 2025-07-15 .. 2026-07-14  (year = 2025)
+        wy2 = self.env['hr.vacation.balance'].create({
+            'employee_id': self.employee.id,
+            'leave_type_id': self.annual_type.id,
+            'period_start': date(2025, 7, 15),
+            'period_end': date(2026, 7, 14),
+            'period_index': 2,
+            'entitled_days': 24,
+        })
+        # Leave on 2025-03 belongs to work year 1 (no balance for it yet, so
+        # it stays unlinked); its vacation_year is 2025, which equals wy2.year.
+        leave = self._create_leave(
+            self.annual_type, date(2025, 3, 3), date(2025, 3, 7))
+        self.assertFalse(leave.vacation_balance_id)
+        wy2.invalidate_recordset(['used_days', 'planned_days'])
+        wy2._compute_used_days()
+        self.assertEqual(wy2.used_days, 0)
+        self.assertEqual(wy2.planned_days, 0)
 
     def test_backdated_period_carries_over_to_current(self):
         """Creating a past period (with an unused-days leave) propagates its

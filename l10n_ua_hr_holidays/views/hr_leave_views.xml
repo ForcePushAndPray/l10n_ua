@@ -7,12 +7,19 @@
         <field name="inherit_id" ref="hr_holidays.hr_leave_view_form"/>
         <field name="arch" type="xml">
 
+            <!-- Show the vacation year (from the start date) inside the
+                 Dates row where the leave dates are picked. -->
+            <xpath expr="//div[@id='full_date']" position="inside">
+                <span class="o_form_label ms-2" invisible="not vacation_year">Рік:</span>
+                <field name="vacation_year" readonly="1" nolabel="1"
+                       class="w-auto" invisible="not vacation_year"/>
+            </xpath>
+
             <xpath expr="//sheet" position="inside">
                 <group string="Ukrainian Specifics" name="ua_details">
                     <group>
                         <field name="calendar_days"/>
                         <field name="working_days"/>
-                        <field name="vacation_year"/>
                         <field name="show_create_vacation_period" invisible="1"/>
                         <label for="vacation_balance_id"/>
                         <div class="o_row">

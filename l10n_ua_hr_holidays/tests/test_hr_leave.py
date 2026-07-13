@@ -132,13 +132,19 @@ class TestHrLeave(TransactionCase):
         self.assertEqual(leave.order_date, date(2026, 1, 10))
 
     def test_vacation_year_field(self):
-        """Test vacation year field"""
+        """Vacation year is read-only and follows the leave start date."""
         leave = self.env['hr.leave'].create({
             'name': 'Test Leave',
             'employee_id': self.employee.id,
             'holiday_status_id': self.leave_type_calendar.id,
             'date_from': datetime(2026, 1, 15, 8, 0, 0),
             'date_to': datetime(2026, 1, 21, 17, 0, 0),
-            'vacation_year': 2025,
+            'vacation_year': 2025,  # ignored — the field is computed
         })
-        self.assertEqual(leave.vacation_year, 2025)
+        self.assertEqual(leave.vacation_year, 2026)
+        # Moving the dates re-derives the year automatically.
+        leave.write({
+            'date_from': datetime(2027, 3, 1, 8, 0, 0),
+            'date_to': datetime(2027, 3, 5, 17, 0, 0),
+        })
+        self.assertEqual(leave.vacation_year, 2027)
