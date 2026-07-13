@@ -109,6 +109,7 @@ class HrLeaveType(models.Model):
         res = super().write(vals)
         if 'ua_is_default' in vals and vals['ua_is_default']:
             for record in self:
-                record._default_conflicts().write({'ua_is_default': False})
-                record.ua_is_default = True
+                conflicts = record._default_conflicts()
+                if conflicts:
+                    conflicts.write({'ua_is_default': False})
         return res

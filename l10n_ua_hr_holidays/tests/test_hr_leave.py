@@ -100,20 +100,24 @@ class TestHrLeave(TransactionCase):
         balance = self.env['hr.vacation.balance'].create({
             'employee_id': self.employee.id,
             'leave_type_id': self.leave_type_calendar.id,
-            'year': 2028,
+            'period_start': date(2028, 1, 1),
+            'period_end': date(2028, 12, 31),
             'entitled_days': 24,
             'carried_over': 0,
+            'company_id': self.company.id,
         })
-        
+
         leave = self.env['hr.leave'].create({
             'name': 'Test Leave',
             'employee_id': self.employee.id,
             'holiday_status_id': self.leave_type_calendar.id,
+            'request_date_from': date(2028, 1, 15),
+            'request_date_to': date(2028, 1, 21),
             'date_from': datetime(2028, 1, 15, 8, 0, 0),
             'date_to': datetime(2028, 1, 21, 17, 0, 0),
-            'vacation_year': 2028,
+            'vacation_balance_id': balance.id,
         })
-        
+
         self.assertGreaterEqual(leave.remaining_days_before, 0)
         self.assertLess(leave.remaining_days_after, leave.remaining_days_before)
 

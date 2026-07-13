@@ -7,10 +7,16 @@
         <field name="inherit_id" ref="hr_holidays.hr_leave_view_form"/>
         <field name="arch" type="xml">
 
-            <!-- Make date fields more compact to fit on one line -->
-            <xpath expr="//div[@id='full_date']" position="attributes">
-                <attribute name="class">d-flex gap-2 align-items-center</attribute>
-            </xpath>
+        <!-- Keep the dates + the day counter on a single line.
+             Add nowrap classes non-destructively (Odoo's `add`/separator
+             syntax) instead of replacing full_date's native classes, so
+             the day-count text next to the dates never wraps. -->
+        <xpath expr="//div[@id='full_date']" position="attributes">
+            <attribute name="class" add="text-nowrap" separator=" "/>
+        </xpath>
+        <xpath expr="//div[@id='full_date']/.." position="attributes">
+            <attribute name="class" add="flex-nowrap text-nowrap" separator=" "/>
+        </xpath>
 
             <xpath expr="//sheet" position="inside">
                 <group string="Ukrainian Specifics" name="ua_details">

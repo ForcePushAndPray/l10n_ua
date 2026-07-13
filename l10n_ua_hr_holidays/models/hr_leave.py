@@ -234,6 +234,25 @@ class HrLeave(models.Model):
             'target': 'current',
         }
 
+    @api.model
+    def default_get(self, fields_list):
+        """Pre-fill the leave type on the new-leave form with the company's
+        default (ua_is_default) type, so it shows up before the record is
+        saved. hr_holidays' own default_get picks an arbitrary first type;
+        we override it with the UA company default unless the caller passed
+        an explicit default_holiday_status_id via context."""
+        res = super().default_get(fields_list)
+        if ('holiday_status_id' in fields_list
+                and not self.env.context.get('default_holiday_status_id')):
+            company_id = res.get('company_id') or self.env.company.id
+            default_lt = self.env['hr.leave.type'].search([
+                ('ua_is_default', '=', True),
+                ('company_id', '=', company_id),
+            ], limit=1)
+            if default_lt:
+                res['holiday_status_id'] = default_lt.id
+        return res
+
     @api.model_create_multi
     def create(self, vals_list):
         # Preselect default leave type if not provided
