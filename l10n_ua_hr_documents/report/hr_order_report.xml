@@ -72,6 +72,20 @@
                         </div>
                     </t>
 
+                    <t t-if="order.order_type == 'dismissal' and order.dismissal_reason">
+                        <div style="margin-bottom: 10px;">
+                            <strong>Підстава:</strong> <span t-field="order.dismissal_reason"/>
+                        </div>
+                    </t>
+
+                    <t t-if="order.order_type == 'dismissal' and order.include_vacation_compensation and order.unused_vacation_days &gt; 0">
+                        <div style="margin-top: 15px; margin-bottom: 10px;">
+                            Бухгалтерії підприємства виплатити компенсацію за
+                            <strong><span t-out="order.unused_vacation_days" t-options='{"widget": "float", "precision": 0}'/></strong>
+                            календарних днів невикористаної відпустки.
+                        </div>
+                    </t>
+
                     <div style="margin-top: 50px;">
                         <table style="width: 100%;">
                             <tr>

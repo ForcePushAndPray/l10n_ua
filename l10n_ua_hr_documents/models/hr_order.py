@@ -81,6 +81,36 @@ class HrOrder(models.Model):
              'When set, the dismissal order will use its full_text and render '
              'description_html (legal explanation) in the print template.',
     )
+    include_vacation_compensation = fields.Boolean(
+        string='Compensate Unused Vacation',
+        default=True,
+        help='Add the standard "виплатити компенсацію за N календарних днів '
+             'невикористаної відпустки" phrase to the dismissal order.',
+    )
+    unused_vacation_days = fields.Float(
+        string='Unused Vacation Days',
+        compute='_compute_unused_vacation_days',
+        store=True,
+        readonly=False,
+        help='Calendar days of unused vacation to compensate on dismissal. '
+             'Auto-filled from the vacation balance; editable.',
+    )
+
+    @api.depends('order_type', 'employee_id', 'date_dismissal', 'date')
+    def _compute_unused_vacation_days(self):
+        has_balance = 'hr.vacation.balance' in self.env
+        for order in self:
+            days = 0.0
+            if (has_balance and order.order_type == 'dismissal'
+                    and order.employee_id):
+                ref_date = (order.date_dismissal or order.date
+                            or fields.Date.context_today(order))
+                balances = self.env['hr.vacation.balance'].search([
+                    ('employee_id', '=', order.employee_id.id),
+                    ('year', '=', ref_date.year),
+                ])
+                days = sum(balances.mapped('remaining_days'))
+            order.unused_vacation_days = max(0.0, days)
 
     # Vacation-specific fields
     vacation_date_from = fields.Date(string='Vacation Start Date', tracking=True)
