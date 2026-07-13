@@ -22,6 +22,13 @@
                                invisible="not l10n_ua_cash_limit_enabled"/>
                     </group>
                 </group>
+                <group string="Авансові звіти (UA)">
+                    <group>
+                        <field name="l10n_ua_advance_journal_id"/>
+                        <field name="l10n_ua_advance_account_id"/>
+                        <field name="l10n_ua_advance_expense_account_id"/>
+                    </group>
+                </group>
             </xpath>
         </field>
     </record>

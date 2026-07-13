@@ -31,6 +31,30 @@ class ResCompany(models.Model):
         help='Максимально допустимий залишок готівки в касі на кінець робочого дня',
     )
 
+    # --- Advance report (авансовий звіт) posting ---
+    l10n_ua_advance_journal_id = fields.Many2one(
+        'account.journal',
+        string='Журнал авансових звітів',
+        domain="[('type', '=', 'general'), ('company_id', '=', id)]",
+        help='Журнал для проводок авансових звітів. '
+             'Якщо не задано — береться перший загальний журнал компанії.',
+    )
+    l10n_ua_advance_account_id = fields.Many2one(
+        'account.account',
+        string='Рахунок підзвітних осіб (372)',
+        check_company=True,
+        help='Рахунок розрахунків з підзвітними особами (372), '
+             'на кредит якого списуються витрати. '
+             'Якщо не задано — шукається рахунок із кодом 372.',
+    )
+    l10n_ua_advance_expense_account_id = fields.Many2one(
+        'account.account',
+        string='Типовий рахунок витрат авансзвіту',
+        check_company=True,
+        help='Рахунок витрат за замовчуванням для рядків авансового звіту '
+             '(використовується, якщо в рядку не вказано власний рахунок).',
+    )
+
     def _l10n_ua_is_ukrainian(self):
         """Whether Ukrainian accounting rules apply to this company.
 

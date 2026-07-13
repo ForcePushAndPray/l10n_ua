@@ -64,7 +64,11 @@
                                     <field name="partner_id"/>
                                     <field name="document_type"/>
                                     <field name="document_number"/>
+                                    <field name="account_id"
+                                           optional="show"
+                                           domain="[('company_ids', 'in', parent.company_id)]"/>
                                     <field name="amount"/>
+                                    <field name="company_id" column_invisible="True"/>
                                     <field name="currency_id" column_invisible="True"/>
                                 </list>
                             </field>
