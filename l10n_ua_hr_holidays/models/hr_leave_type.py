@@ -87,50 +87,9 @@ class HrLeaveType(models.Model):
         default=False,
         help='Automatically create a vacation order (form П-3) when a leave of this type is created',
     )
-ua_is_default = fields.Boolean(
+    ua_is_default = fields.Boolean(
         string='Show by Default',
         copy=False,
         help='Preselect this leave type by default. Only one leave type per '
              'company may be the default at a time.',
     )
-
-    def _default_conflicts(self):
-        """Other leave types of the same company already flagged as default."""
-        self.ensure_one()
-        return self.search([
-            ('id', '!=', self.id),
-            ('company_id', '=', self.company_id.id),
-            ('ua_is_default', '=', True),
-        ])
-
-    def _apply_default(self):
-        """Make this the single default leave type of its company, clearing
-        the flag on every other type of the same company."""
-        self.ensure_one()
-        self._default_conflicts().write({'ua_is_default': False})
-        self.ua_is_default = True
-
-    def action_set_as_default(self):
-        """Set this leave type as the company default. If another one is
-        already the default, ask the user to confirm the switch."""
-        self.ensure_one()
-        conflicts = self._default_conflicts()
-        if conflicts:
-            return {
-                'type': 'ir.actions.act_window',
-                'name': _('Change Default Leave Type'),
-                'res_model': 'hr.leave.type.default.confirm',
-                'view_mode': 'form',
-                'target': 'new',
-                'context': {
-                    'default_leave_type_id': self.id,
-                    'default_current_default_ids': [(6, 0, conflicts.ids)],
-                },
-            }
-        self._apply_default()
-        return False
-
-    def action_unset_default(self):
-        self.ensure_one()
-        self.ua_is_default = False
-        return False

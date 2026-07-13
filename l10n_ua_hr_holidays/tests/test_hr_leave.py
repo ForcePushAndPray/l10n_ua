@@ -148,3 +148,64 @@ class TestHrLeave(TransactionCase):
             'date_to': datetime(2027, 3, 5, 17, 0, 0),
         })
         self.assertEqual(leave.vacation_year, 2027)
+
+
+    def test_default_leave_type_preselected(self):
+        """When creating a leave without specifying type, default is preselected."""
+        # Set leave_type_calendar as default
+        self.leave_type_calendar.write({'ua_is_default': True})
+        # Create leave without specifying holiday_status_id
+        leave = self.env['hr.leave'].create({
+            'name': 'Test Leave',
+            'employee_id': self.employee.id,
+            'date_from': datetime(2026, 1, 15, 8, 0, 0),
+            'date_to': datetime(2026, 1, 21, 17, 0, 0),
+        })
+        self.assertEqual(leave.holiday_status_id, self.leave_type_calendar)
+
+    def test_vacation_period_auto_selected(self):
+        """When creating a leave, matching period is auto-selected if it exists."""
+        # Create a vacation balance for this employee/type
+        balance = self.env['hr.vacation.balance'].create({
+            'employee_id': self.employee.id,
+            'leave_type_id': self.leave_type_calendar.id,
+            'period_start': date(2026, 1, 1),
+            'period_end': date(2026, 12, 31),
+            'entitled_days': 24,
+            'company_id': self.company.id,
+        })
+        # Create leave with dates in that period
+        leave = self.env['hr.leave'].create({
+            'name': 'Test Leave',
+            'employee_id': self.employee.id,
+            'holiday_status_id': self.leave_type_calendar.id,
+            'date_from': datetime(2026, 6, 15, 8, 0, 0),
+            'date_to': datetime(2026, 6, 21, 17, 0, 0),
+        })
+        self.assertEqual(leave.vacation_balance_id, balance)
+
+    def test_vacation_period_cleared_if_not_matching(self):
+        """When dates change to no matching period, the field is cleared."""
+        # Create leave with a period
+        balance = self.env['hr.vacation.balance'].create({
+            'employee_id': self.employee.id,
+            'leave_type_id': self.leave_type_calendar.id,
+            'period_start': date(2026, 1, 1),
+            'period_end': date(2026, 12, 31),
+            'entitled_days': 24,
+            'company_id': self.company.id,
+        })
+        leave = self.env['hr.leave'].create({
+            'name': 'Test Leave',
+            'employee_id': self.employee.id,
+            'holiday_status_id': self.leave_type_calendar.id,
+            'date_from': datetime(2026, 6, 15, 8, 0, 0),
+            'date_to': datetime(2026, 6, 21, 17, 0, 0),
+            'vacation_balance_id': balance.id,
+        })
+        # Change dates to 2027 (no matching period)
+        leave.write({
+            'date_from': datetime(2027, 6, 15, 8, 0, 0),
+            'date_to': datetime(2027, 6, 21, 17, 0, 0),
+        })
+        self.assertFalse(leave.vacation_balance_id)

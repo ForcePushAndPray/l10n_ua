@@ -236,6 +236,39 @@ class HrLeave(models.Model):
 
     @api.model_create_multi
     def create(self, vals_list):
+        # Preselect default leave type if not provided
+        for vals in vals_list:
+            if not vals.get('holiday_status_id'):
+                company_id = vals.get('company_id') or self.env.company.id
+                default_lt = self.env['hr.leave.type'].search([
+                    ('ua_is_default', '=', True),
+                    ('company_id', '=', company_id),
+                ], limit=1)
+                if default_lt:
+                    vals['holiday_status_id'] = default_lt.id
+
+        # Auto-select vacation period based on dates and auto-create if needed
+        Balance = self.env['hr.vacation.balance']
+        for vals in vals_list:
+            emp_id = vals.get('employee_id')
+            lt_id = vals.get('holiday_status_id')
+            date_from = vals.get('date_from') or vals.get('request_date_from')
+
+            if emp_id and lt_id and date_from:
+                # Don't override if already set
+                if not vals.get('vacation_balance_id'):
+                    # Try to find matching period
+                    if isinstance(date_from, str):
+                        date_from = fields.Datetime.from_string(date_from)
+                    balance = Balance.search([
+                        ('employee_id', '=', emp_id),
+                        ('leave_type_id', '=', lt_id),
+                        ('period_start', '<=', date_from),
+                        ('period_end', '>=', date_from),
+                    ], limit=1)
+                    if balance:
+                        vals['vacation_balance_id'] = balance.id
+
         # Resolve which leaves should auto-create an order
         type_ids = {v.get('holiday_status_id') for v in vals_list if v.get('holiday_status_id')}
         types_with_order = set()
@@ -289,13 +322,40 @@ class HrLeave(models.Model):
         return leaves
 
     def write(self, vals):
+        # Auto-select vacation period when dates change (if not already set)
+        if {'request_date_from', 'request_date_to', 'date_from', 'date_to'} & vals.keys():
+            Balance = self.env['hr.vacation.balance']
+            for leave in self:
+                # Use the new date if provided, otherwise use existing
+                date_from = vals.get('request_date_from') or vals.get('date_from') or leave.request_date_from
+                emp_id = vals.get('employee_id') or leave.employee_id.id
+                lt_id = vals.get('holiday_status_id') or leave.holiday_status_id.id
+
+                if date_from and emp_id and lt_id:
+                    # Convert if string
+                    if isinstance(date_from, str):
+                        date_from = fields.Datetime.from_string(date_from)
+                    # Only auto-select if not manually set in this write
+                    if 'vacation_balance_id' not in vals:
+                        balance = Balance.search([
+                            ('employee_id', '=', emp_id),
+                            ('leave_type_id', '=', lt_id),
+                            ('period_start', '<=', date_from),
+                            ('period_end', '>=', date_from),
+                        ], limit=1)
+                        if balance:
+                            vals['vacation_balance_id'] = balance.id
+                        else:
+                            # If no matching period, clear the field to prompt user
+                            vals['vacation_balance_id'] = False
+
         # Capture balance keys BEFORE the write so we also refresh rows
         # we move away from (e.g. employee_id or vacation_year changed).
         old_balance_keys = (
             self._balance_keys()
             if self._BALANCE_TRIGGER_FIELDS & vals.keys()
             else set()
-        )        
+        )
         result = super().write(vals)
         # Add a check for _creating_leave_from_order to avoid order duplication
         if not self.env.context.get('_sync_order_leave') and not self.env.context.get('_creating_leave_from_order'):

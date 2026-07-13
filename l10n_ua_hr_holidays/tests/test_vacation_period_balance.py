@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from odoo.exceptions import ValidationError
 from odoo.tests.common import TransactionCase
 

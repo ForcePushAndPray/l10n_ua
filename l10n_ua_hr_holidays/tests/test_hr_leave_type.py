@@ -71,43 +71,32 @@ class TestHrLeaveType(TransactionCase):
             self.assertEqual(leave_type.payment_source, source)
 
     def test_default_leave_type_single_no_conflict(self):
-        """Setting a default with no existing default applies directly."""
+        """Setting a default with no existing default via checkbox."""
         company = self.env.company
         lt = self.env['hr.leave.type'].create({
             'name': 'Default A', 'company_id': company.id})
-        res = lt.action_set_as_default()
-        self.assertFalse(res)  # applied directly, no wizard
+        lt.write({'ua_is_default': True})
         self.assertTrue(lt.ua_is_default)
 
-    def test_default_leave_type_conflict_opens_wizard_and_switches(self):
-        """A second default opens the confirm wizard; confirming switches
-        the default and clears the previous one within the company."""
+    def test_default_leave_type_conflict_auto_resolves(self):
+        """Setting a second default automatically clears the previous one."""
         company = self.env.company
         lt_a = self.env['hr.leave.type'].create({
             'name': 'Default A', 'company_id': company.id})
         lt_b = self.env['hr.leave.type'].create({
             'name': 'Default B', 'company_id': company.id})
-        lt_a.action_set_as_default()
+        lt_a.write({'ua_is_default': True})
         self.assertTrue(lt_a.ua_is_default)
-
-        action = lt_b.action_set_as_default()
-        # A conflict returns a wizard action rather than applying directly.
-        self.assertIsInstance(action, dict)
-        self.assertEqual(action.get('res_model'),
-                         'hr.leave.type.default.confirm')
-
-        wizard = self.env['hr.leave.type.default.confirm'].create({
-            'leave_type_id': lt_b.id,
-            'current_default_ids': [(6, 0, lt_a.ids)],
-        })
-        wizard.action_confirm()
+        # Setting lt_b as default automatically clears lt_a
+        lt_b.write({'ua_is_default': True})
         self.assertTrue(lt_b.ua_is_default)
         self.assertFalse(lt_a.ua_is_default)
 
     def test_default_leave_type_unset(self):
+        """Unsetting a default via checkbox."""
         company = self.env.company
         lt = self.env['hr.leave.type'].create({
             'name': 'Default A', 'company_id': company.id})
-        lt.action_set_as_default()
-        lt.action_unset_default()
+        lt.write({'ua_is_default': True})
+        lt.write({'ua_is_default': False})
         self.assertFalse(lt.ua_is_default)
