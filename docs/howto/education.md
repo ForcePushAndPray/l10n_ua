@@ -74,7 +74,9 @@ applicant (абітурієнт) → enrolled (зараховано) → studyin
 **Створити члена контингенту:** кнопка **Новий** → оберіть фізособу-партнера, групу,
 навчальний рік → збережіть. Далі проводьте по станах кнопками статусної панелі.
 
-> _Скриншоти:_ `03-contingent-list.png`, `04-contingent-form.png`
+![Контингент — 125 учнів](img/education/01-contingent.png)
+
+> _Ще скриншот:_ `04-contingent-form.png` (картка учня з life-cycle)
 
 ---
 
@@ -111,7 +113,9 @@ draft (чернетка) → approved (затверджено) → paid (вип�
 - для **оподатковуваних** типів автоматично рахуються **ПДФО (18 %)** і **ВЗ (5 %)**; для
   неоподатковуваних податок = 0.
 
-> _Скриншоти:_ `05-scholarship-types.png`, `06-scholarship-payment.png`,
+![Стипендіальні відомості](img/education/02-scholarships.png)
+
+> _Ще скриншоти:_ `05-scholarship-types.png`, `06-scholarship-payment.png`,
 > `07-scholarship-lines.png`
 
 ---
