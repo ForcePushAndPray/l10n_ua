@@ -216,6 +216,28 @@ class HrLeave(models.Model):
                     year=leave.vacation_year,
                 ))
 
+    @api.constrains('request_date_from', 'employee_id', 'holiday_status_id')
+    def _check_leave_after_hire(self):
+        """A UA-managed leave cannot start before the employee was hired —
+        neither the leave nor its accounting period may predate the hire
+        date."""
+        Balance = self.env['hr.vacation.balance']
+        for leave in self:
+            lt = leave.holiday_status_id
+            if (not lt or not lt.ua_leave_category
+                    or not leave.employee_id or not leave.request_date_from):
+                continue
+            hire = Balance._employee_hire_anchor(leave.employee_id)
+            if hire and leave.request_date_from < hire:
+                raise ValidationError(_(
+                    'Cannot record a "%(type)s" leave starting %(date)s for '
+                    '%(employee)s, before the hire date (%(hire)s).',
+                    type=lt.name,
+                    date=leave.request_date_from.strftime('%d.%m.%Y'),
+                    employee=leave.employee_id.name,
+                    hire=hire.strftime('%d.%m.%Y'),
+                ))
+
     @api.onchange('order_id')
     def _onchange_order_id(self):
         if self.order_id:
@@ -672,6 +694,9 @@ class HrLeave(models.Model):
             ])
             balances._compute_used_days()
             balances._compute_totals()
+            # A change in used days shifts remaining days, which the next
+            # period carries over — propagate it forward.
+            balances._recompute_carryover_chain()
 
     def _recompute_subsequent_leaves(self):
         """Helper method: forcibly updates the balance for leaves that come AFTER the current one."""

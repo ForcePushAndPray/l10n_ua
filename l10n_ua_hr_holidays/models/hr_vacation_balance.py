@@ -107,11 +107,26 @@ class HrVacationBalance(models.Model):
 
         Work-year types delegate to hr.employee._get_work_year_for_date;
         calendar types return Jan 1 – Dec 31 with period_index = year.
-        Returns (False, False, 0) for work types without a hire anchor.
+        Returns (False, False, 0) for work types without a hire anchor, or
+        for any period that ends before the employee's hire date (no leave
+        or balance can exist before the person was hired).
         """
         if leave_type.period_type == 'work':
             return employee._get_work_year_for_date(ref_date)
+        hire = self._employee_hire_anchor(employee)
+        if hire and date(ref_date.year, 12, 31) < hire:
+            # The whole calendar year precedes the hire date.
+            return (False, False, 0)
         return (date(ref_date.year, 1, 1), date(ref_date.year, 12, 31), ref_date.year)
+
+    @api.model
+        def _employee_hire_anchor(self, employee):
+        """Explicit hire date used to bound accounting periods and to block
+        pre-hire leaves/periods. Only employee.hire_date (the UA-managed
+        field) is used here — the work-year anchor keeps its own
+        contract_date_start fallback in hr.employee._get_work_year_for_date,
+        but the hard block relies on the value HR actually maintains."""
+        return employee.hire_date if employee else False
 
     @api.model
     def _ref_date_for_year(self, year):
@@ -225,6 +240,23 @@ class HrVacationBalance(models.Model):
         for rec in self:
             if rec.period_start and rec.period_end and rec.period_start > rec.period_end:
                 raise ValidationError(_('Period start must be before period end.'))
+
+    @api.constrains('period_end', 'employee_id', 'leave_type_id')
+    def _check_period_after_hire(self):
+        """No accounting period may end before the employee was hired."""
+        for rec in self:
+            if not rec.employee_id or not rec.period_end:
+                continue
+            hire = self._employee_hire_anchor(rec.employee_id)
+            if hire and rec.period_end < hire:
+                raise ValidationError(_(
+                    'The accounting period (ending %(end)s) precedes the hire '
+                    'date of %(employee)s (%(hire)s). A vacation period cannot '
+                    'start before the employee was hired.',
+                    end=rec.period_end.strftime('%d.%m.%Y'),
+                    employee=rec.employee_id.name,
+                    hire=hire.strftime('%d.%m.%Y'),
+                ))
 
     @api.depends('entitled_days', 'carried_over', 'used_days')
     def _compute_totals(self):
@@ -348,6 +380,34 @@ class HrVacationBalance(models.Model):
                 leaves._compute_vacation_balance()
                 leaves.flush_recordset(['vacation_balance_id'])
 
+    def _recompute_carryover_chain(self):
+        """Propagate carry-over across each (employee, leave_type) period
+        chain: every period after the first inherits the previous period's
+        remaining days.
+
+        Lets a back-dated period feed its unused days into the following
+        periods (e.g. a leave entered late for last year updates this
+        year's Carried Over). The first period keeps its own (possibly
+        manual) carried_over untouched.
+        """
+        seen = set()
+        for rec in self:
+            if not rec.employee_id or not rec.leave_type_id:
+                continue
+            key = (rec.employee_id.id, rec.leave_type_id.id)
+            if key in seen:
+                continue
+            seen.add(key)
+            chain = self.search([
+                ('employee_id', '=', rec.employee_id.id),
+                ('leave_type_id', '=', rec.leave_type_id.id),
+            ], order='period_start')
+            prev = None
+            for bal in chain:
+                if prev is not None and bal.carried_over != prev.remaining_days:
+                    bal.carried_over = prev.remaining_days
+                prev = bal
+
     def _recompute_related_leaves(self):
         """
         Helper method to force recomputation of remaining days for all leaves
@@ -388,9 +448,17 @@ class HrVacationBalance(models.Model):
             vals.setdefault('period_end', end)
             vals.setdefault('period_index', index)
         balances = super().create(vals_list)
-        # Attach pre-existing leaves, then refresh their chains and rollups
+        # Attach pre-existing leaves, then refresh rollups so used_days
+        # reflects them before the carry-over is propagated.
         balances._link_related_leaves()
+        balances.invalidate_recordset([
+            'used_days', 'planned_days', 'total_available', 'remaining_days',
+        ])
+        balances._compute_used_days()
+        balances._compute_totals()
         balances._recompute_related_leaves()
+        # A new (possibly back-dated) period may change carry-over downstream.
+        balances._recompute_carryover_chain()
         return balances
 
     def write(self, vals):
@@ -548,6 +616,7 @@ class HrVacationBalance(models.Model):
         ])
         self._compute_used_days()
         self._compute_totals()
+        self._recompute_carryover_chain()
         return True
 
     def action_recalculate_all(self):

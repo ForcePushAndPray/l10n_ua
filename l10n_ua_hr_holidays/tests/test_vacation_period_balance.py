@@ -111,6 +111,58 @@ class TestVacationPeriodBalance(TransactionCase):
         with self.assertRaises(ValidationError):
             leave.vacation_balance_id = wrong
 
+    def test_backdated_period_carries_over_to_current(self):
+        """Creating a past period (with an unused-days leave) propagates its
+        remaining days as Carried Over into the following period."""
+        # Current work year (index 2) already exists with no carry-over.
+        current = self.env['hr.vacation.balance'].create({
+            'employee_id': self.employee.id,
+            'leave_type_id': self.annual_type.id,
+            'period_start': date(2025, 7, 15),
+            'period_end': date(2026, 7, 14),
+            'period_index': 2,
+            'entitled_days': 24,
+        })
+        self.assertEqual(current.carried_over, 0)
+
+        # Back-dated leave for the previous work year (index 1), using 10 days.
+        past_leave = self._create_leave(
+            self.annual_type, date(2024, 9, 2), date(2024, 9, 11))
+        # Create the missing past period via the leave's button.
+        past_leave.action_create_vacation_period()
+        past = past_leave.vacation_balance_id
+        self.assertEqual(past.period_start, date(2024, 7, 15))
+        self.assertEqual(past.used_days, past_leave.calendar_days)
+
+        # The current period now carries the past period's remaining days.
+        expected = past.total_available - past.used_days
+        self.assertEqual(current.carried_over, expected)
+        self.assertEqual(current.total_available, 24 + expected)
+
+    def test_leave_before_hire_is_blocked(self):
+        """A leave that starts before the employee's hire date is rejected."""
+        with self.assertRaises(ValidationError):
+            self._create_leave(
+                self.annual_type, date(2023, 5, 1), date(2023, 5, 10))
+
+    def test_calendar_period_before_hire_hidden_and_blocked(self):
+        """A calendar-type leave whose whole year precedes the hire date
+        offers no Create button, and the balance itself is rejected."""
+        social = self.social_type
+        # Employee hired 2024-07-15; a 2023 social leave predates hire.
+        with self.assertRaises(ValidationError):
+            self._create_leave(social, date(2023, 3, 1), date(2023, 3, 5))
+        # Direct balance for a fully-pre-hire calendar year is rejected too.
+        with self.assertRaises(ValidationError):
+            self.env['hr.vacation.balance'].create({
+                'employee_id': self.employee.id,
+                'leave_type_id': social.id,
+                'period_start': date(2023, 1, 1),
+                'period_end': date(2023, 12, 31),
+                'period_index': 2023,
+                'entitled_days': 10,
+            })
+
     def test_default_get_prefills_period_from_leave_context(self):
         """default_get resolves the whole period from the leave form's
         context defaults (employee, type, year)."""
