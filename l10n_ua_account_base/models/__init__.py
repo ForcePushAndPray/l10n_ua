@@ -1,4 +1,6 @@
 from . import res_partner
+from . import res_company
+from . import res_users
 from . import l10n_ua_koatuu
 from . import l10n_ua_kved
 from . import l10n_ua_tax_office
