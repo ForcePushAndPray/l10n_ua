@@ -1369,3 +1369,43 @@ msgstr "Нова за замовчуванням"
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type_default_confirm__current_default_ids
 msgid "Current Default(s)"
 msgstr "Поточні за замовчуванням"
+
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__carryover_warning
+msgid "Carry-over Warning"
+msgstr "Попередження про перенесення"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave__carryover_warning
+msgid ""
+"Non-blocking notice shown when unused days from the previous period cannot "
+"be fully carried over under this leave type's transfer rules (Transferable / "
+"Max Transfer Days)."
+msgstr ""
+"Необов'язкове попередження, що з'являється, коли невикористані дні "
+"попереднього періоду не можуть бути повністю перенесені за правилами цього "
+"типу відпустки (Переноситься / Макс. днів для перенесення)."
+
+#. module: l10n_ua_hr_holidays
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid "Vacation carry-over"
+msgstr "Перенесення відпустки"
+
+#. module: l10n_ua_hr_holidays
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid ""
+"Leave type \"%(type)s\" does not allow carrying days over: %(lost).1f unused "
+"day(s) from the previous period (%(period)s) will be forfeited."
+msgstr ""
+"Тип відпустки \"%(type)s\" не дозволяє перенесення днів: %(lost).1f "
+"невикористаних дн(ів) з попереднього періоду (%(period)s) буде втрачено."
+
+#. module: l10n_ua_hr_holidays
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid ""
+"Only %(max)s day(s) may be carried over for \"%(type)s\": %(lost).1f day(s) "
+"from the previous period (%(period)s) exceed the limit and will be forfeited."
+msgstr ""
+"Для \"%(type)s\" можна перенести лише %(max)s дн(ів): %(lost).1f дн(ів) з "
+"попереднього періоду (%(period)s) перевищують ліміт і будуть втрачені."
