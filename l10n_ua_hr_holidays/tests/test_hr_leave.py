@@ -183,6 +183,8 @@ class TestHrLeave(TransactionCase):
             'name': 'Test Leave',
             'employee_id': self.employee.id,
             'holiday_status_id': self.leave_type_calendar.id,
+            'request_date_from': date(2026, 6, 15),
+            'request_date_to': date(2026, 6, 21),
             'date_from': datetime(2026, 6, 15, 8, 0, 0),
             'date_to': datetime(2026, 6, 21, 17, 0, 0),
         })
@@ -196,6 +198,8 @@ class TestHrLeave(TransactionCase):
             'name': 'Test Leave',
             'employee_id': self.employee.id,
             'holiday_status_id': self.leave_type_calendar.id,
+            'request_date_from': date(2029, 6, 15),
+            'request_date_to': date(2029, 6, 21),
             'date_from': datetime(2029, 6, 15, 8, 0, 0),
             'date_to': datetime(2029, 6, 21, 17, 0, 0),
         })
@@ -223,12 +227,16 @@ class TestHrLeave(TransactionCase):
             'name': 'Test Leave',
             'employee_id': self.employee.id,
             'holiday_status_id': self.leave_type_calendar.id,
+            'request_date_from': date(2026, 6, 15),
+            'request_date_to': date(2026, 6, 21),
             'date_from': datetime(2026, 6, 15, 8, 0, 0),
             'date_to': datetime(2026, 6, 21, 17, 0, 0),
         })
         self.assertEqual(leave.vacation_balance_id, balance)
         # Move to 2030 (no period yet) → a new period is created and linked.
         leave.write({
+            'request_date_from': date(2030, 6, 15),
+            'request_date_to': date(2030, 6, 21),
             'date_from': datetime(2030, 6, 15, 8, 0, 0),
             'date_to': datetime(2030, 6, 21, 17, 0, 0),
         })

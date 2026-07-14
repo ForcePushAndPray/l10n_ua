@@ -382,27 +382,23 @@ class HrLeave(models.Model):
         leaves._recompute_balances_for_keys(leaves._balance_keys())               
         return leaves
 
-    def write(self, vals):
-        # When the dates change, re-link (or create) the matching vacation
-        # period so the leave never ends up without one. Skipped when the
-        # caller sets the period explicitly in the same write.
-        if ({'request_date_from', 'request_date_to', 'date_from', 'date_to'}
-                & vals.keys() and 'vacation_balance_id' not in vals):
-            Balance = self.env['hr.vacation.balance']
-            for leave in self:
-                date_from = (vals.get('request_date_from') or vals.get('date_from')
-                             or leave.request_date_from)
-                emp = leave.employee_id
-                lt = leave.holiday_status_id
-                if date_from and emp and lt:
-                    period = Balance._get_or_create_period(
-                        emp, lt, fields.Date.to_date(date_from))
-                    # Write per-record so a multi-leave write keeps each leave
-                    # on its own period instead of sharing the last one. The
-                    # 'vacation_balance_id not in vals' guard above stops this
-                    # inner write from recursing back into the relink branch.
-                    leave.vacation_balance_id = period.id if period else False
+    def _ensure_vacation_period(self):
+        """Link (creating if needed) the accounting period for each leave's
+        current dates. The stored compute re-links to an existing period; this
+        creates one when none exists yet. Runs after dates are written, so the
+        period matches request_date_from and the period constraint is happy."""
+        Balance = self.env['hr.vacation.balance']
+        for leave in self:
+            if (leave.vacation_balance_id or not leave.request_date_from
+                    or not leave.employee_id or not leave.holiday_status_id):
+                continue
+            period = Balance._get_or_create_period(
+                leave.employee_id, leave.holiday_status_id,
+                leave.request_date_from)
+            if period:
+                leave.vacation_balance_id = period.id
 
+    def write(self, vals):
         # Capture balance keys BEFORE the write so we also refresh rows
         # we move away from (e.g. employee_id or vacation_year changed).
         old_balance_keys = (
@@ -411,6 +407,15 @@ class HrLeave(models.Model):
             else set()
         )
         result = super().write(vals)
+        # After the dates are written (so request_date_from is up to date),
+        # make sure each leave has its accounting period, creating it when
+        # none exists yet. The stored compute already re-links to an existing
+        # period; this only fills the gap. Skipped when the caller sets the
+        # period explicitly in the same write.
+        if ({'request_date_from', 'request_date_to', 'date_from', 'date_to',
+             'employee_id', 'holiday_status_id'} & vals.keys()
+                and 'vacation_balance_id' not in vals):
+            self._ensure_vacation_period()
         # Add a check for _creating_leave_from_order to avoid order duplication
         if not self.env.context.get('_sync_order_leave') and not self.env.context.get('_creating_leave_from_order'):
             if {'date_from', 'date_to'} & vals.keys():

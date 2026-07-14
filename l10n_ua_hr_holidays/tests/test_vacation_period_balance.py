@@ -33,50 +33,40 @@ class TestVacationPeriodBalance(TransactionCase):
     # Balance period derivation
     # ------------------------------------------------------------------
 
-    def test_create_period_button_creates_and_links(self):
-        """The inline Create button builds the balance and links the leave;
-        the button hides once a period is linked."""
+    def test_period_auto_created_and_linked_on_create(self):
+        """Saving a leave with no existing period auto-creates the matching
+        work-year period and links it."""
         leave = self._create_leave(
             self.annual_type, date(2025, 1, 10), date(2025, 1, 20))
-        # No matching balance yet → button is offered
-        self.assertFalse(leave.vacation_balance_id)
-        self.assertTrue(leave.show_create_vacation_period)
-
-        leave.action_create_vacation_period()
-
         balance = leave.vacation_balance_id
         self.assertTrue(balance)
         self.assertEqual(balance.period_start, date(2024, 7, 15))
         self.assertEqual(balance.period_end, date(2025, 7, 14))
         self.assertEqual(balance.entitled_days, self.annual_type.annual_days)
-        # Linked now → button hidden
-        self.assertFalse(leave.show_create_vacation_period)
 
-    def test_create_period_button_for_any_available_type(self):
-        """The button is offered for any employee-available leave type, not
-        just the annual ones — educational (calendar) included."""
+    def test_period_auto_created_for_calendar_type(self):
+        """A calendar leave type (educational) also auto-creates its
+        Jan 1 – Dec 31 period on save."""
         educational = self.env.ref('l10n_ua_hr_holidays.leave_type_educational')
         leave = self._create_leave(
             educational, date(2025, 3, 3), date(2025, 3, 7))
-        self.assertTrue(leave.show_create_vacation_period)
-        leave.action_create_vacation_period()
         balance = leave.vacation_balance_id
         self.assertTrue(balance)
         self.assertEqual(balance.period_start, date(2025, 1, 1))
         self.assertEqual(balance.period_end, date(2025, 12, 31))
 
-    def test_create_period_button_hidden_when_unresolvable(self):
+    def test_period_not_created_when_unresolvable(self):
         """Work-year type without a hire anchor cannot resolve a period, so
-        the button stays hidden."""
+                nothing is auto-created and the leave stays unlinked."""
         anchorless = self.env['hr.employee'].create({'name': 'No hire date'})
         leave = self._create_leave(
             self.annual_type, date(2025, 3, 3), date(2025, 3, 7),
             employee_id=anchorless.id)
-        self.assertFalse(leave.show_create_vacation_period)
+        self.assertFalse(leave.vacation_balance_id)
 
     def test_date_change_relinks_matching_period(self):
         """Changing the leave dates re-points the leave at the period that
-        contains the new start date; the button reappears when none exists.
+        contains the new start date, auto-creating it when none exists.
         vacation_year follows the start date and is read-only."""
         b1 = self.env['hr.vacation.balance'].create({
             'employee_id': self.employee.id,
@@ -90,16 +80,19 @@ class TestVacationPeriodBalance(TransactionCase):
             self.annual_type, date(2025, 1, 10), date(2025, 1, 20))
         self.assertEqual(leave.vacation_balance_id, b1)
         self.assertEqual(leave.vacation_year, 2025)
-        # Move the dates into a work year with no balance yet.
+        # Move the dates into the next work year, which has no balance yet:
+        # a new period is auto-created for it and linked.
         leave.write({
-            'request_date_from': date(2026, 9, 1),
-            'request_date_to': date(2026, 9, 10),
-            'date_from': datetime(2026, 9, 1, 8, 0, 0),
-            'date_to': datetime(2026, 9, 10, 17, 0, 0),
-        })        
-        self.assertFalse(leave.vacation_balance_id)
-        self.assertTrue(leave.show_create_vacation_period)
-        self.assertEqual(leave.vacation_year, 2026)
+            'request_date_from': date(2025, 9, 1),
+            'request_date_to': date(2025, 9, 10),
+            'date_from': datetime(2025, 9, 1, 8, 0, 0),
+            'date_to': datetime(2025, 9, 10, 17, 0, 0),
+        })
+        self.assertTrue(leave.vacation_balance_id)
+        self.assertNotEqual(leave.vacation_balance_id, b1)
+        self.assertEqual(
+            leave.vacation_balance_id.period_start, date(2025, 7, 15))
+        self.assertEqual(leave.vacation_year, 2025)
 
     def test_mismatched_period_blocks_save(self):
         """A linked period whose year differs from the leave year is
@@ -132,11 +125,13 @@ class TestVacationPeriodBalance(TransactionCase):
             'period_index': 2,
             'entitled_days': 24,
         })
-        # Leave on 2025-03 belongs to work year 1 (no balance for it yet, so
-        # it stays unlinked); its vacation_year is 2025, which equals wy2.year.
+        # Leave on 2025-03 belongs to work year 1; it auto-creates and links
+        # the WY1 period. Its vacation_year is 2025 (= wy2.year), but it must
+        # NOT count against wy2 (work year 2).
         leave = self._create_leave(
             self.annual_type, date(2025, 3, 3), date(2025, 3, 7))
-        self.assertFalse(leave.vacation_balance_id)
+        self.assertEqual(
+            leave.vacation_balance_id.period_start, date(2024, 7, 15))
         wy2.invalidate_recordset(['used_days', 'planned_days'])
         wy2._compute_used_days()
         self.assertEqual(wy2.used_days, 0)
@@ -334,19 +329,19 @@ class TestVacationPeriodBalance(TransactionCase):
         self.assertEqual(leave.vacation_balance_id, balance)
         self.assertEqual(balance.used_days, leave.calendar_days)
 
-    def test_balance_created_after_leave_links_retroactively(self):
-        """generate/manual balance created later picks up existing leaves."""
+    def test_leave_auto_creates_and_links_its_balance(self):
+        """A leave with no pre-existing period auto-creates its balance and
+        links to it, so the period shows up in Vacation Balances."""
         leave = self._create_leave(
             self.annual_type, date(2024, 9, 2), date(2024, 9, 8))
-        self.assertFalse(leave.vacation_balance_id)
-        balance = self.env['hr.vacation.balance'].create({
-            'employee_id': self.employee.id,
-            'leave_type_id': self.annual_type.id,
-            'period_start': date(2024, 7, 15),
-            'period_end': date(2025, 7, 14),
-            'entitled_days': 24,
-        })
-        self.assertEqual(leave.vacation_balance_id, balance)
+        balance = leave.vacation_balance_id
+        self.assertTrue(balance)
+        self.assertEqual(balance.period_start, date(2024, 7, 15))
+        self.assertEqual(balance.period_end, date(2025, 7, 14))
+        self.assertIn(balance, self.env['hr.vacation.balance'].search([
+            ('employee_id', '=', self.employee.id),
+            ('leave_type_id', '=', self.annual_type.id),
+        ]))
 
     def test_remaining_before_within_work_period(self):
         """Chronological remaining_before counts leaves of the same work
