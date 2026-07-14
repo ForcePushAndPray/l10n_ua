@@ -5,7 +5,8 @@
     <menuitem id="menu_marketplace_root"
               name="Marketplaces"
               web_icon="l10n_ua_marketplace_base,static/description/icon.png"
-              sequence="45"/>
+              sequence="45"
+              groups="group_marketplace_user"/>
 
     <!-- Orders Menu -->
     <menuitem id="menu_marketplace_orders"

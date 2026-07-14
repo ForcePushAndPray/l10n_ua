@@ -15,14 +15,14 @@
 
 | Seq | id | Мітка | groups | Модуль | Зараз | Ціль |
 |----:|----|-------|--------|--------|-------|------|
-| 30 | `menu_hr_payroll_root` | Payroll | ⚠ немає | hr_salary | власний апп | апп (seq→band, +group) |
-| 45 | `menu_marketplace_root` | Marketplaces | ⚠ немає | marketplace_base | власний апп | апп (+group) |
-| 50 | `menu_hr_timesheet_root` | Timesheet | ⚠ немає | hr_attendance_sheet | власний апп | апп (+group) |
+| 30 | `menu_hr_payroll_root` | Payroll | group_hr_ua_user ✅ | hr_salary | власний апп | апп (seq→band) |
+| 45 | `menu_marketplace_root` | Marketplaces | group_marketplace_user ✅ | marketplace_base | власний апп | апп |
+| 50 | `menu_hr_timesheet_root` | Timesheet | group_hr_ua_user ✅ | hr_attendance_sheet | власний апп | апп |
 | 51 | `menu_ua_accounting_root` | Accounting | group_ua_accountant | accounting | власний апп | апп |
 | 53 | `menu_ua_bank_root` | Bank | group_ua_accountant | bank_sync | власний апп | апп |
 | 54 | `menu_ua_tax_root` | Taxes UA | group_ua_tax_accountant | tax | власний апп | апп |
-| 55 | `menu_l10n_ua_education_root` | Освіта (UA) | group_ua_education_user | education_base | власний апп | апп (⚠ чужа іконка) |
-| 56 | `menu_medecin_root` | Медицина (UA) | group_ua_medecin_user | medecin_base | власний апп | апп (⚠ без web_icon) |
+| 55 | `menu_l10n_ua_education_root` | Освіта (UA) | group_ua_education_user | education_base | власний апп | апп (✅ власна іконка) |
+| 56 | `menu_medecin_root` | Медицина (UA) | group_ua_medecin_user | medecin_base | власний апп | апп (✅ web_icon) |
 | 65 | `menu_telegram_bot_root` | Telegram | ⚠ немає | telegram_bot_m2o | власний апп | апп (+group) |
 | 100 | `menu_l10n_ua_root` | Ukraine | ⚠ немає | account_base | Finance→Config | лише крос-довідники (KOATUU/KVED/subconto) |
 | 100 | `menu_l10n_ua_budget_root` | Бюджетний облік (UA) | group_ua_budget_user | budget_base | Finance→Config | під Accounting-апп |

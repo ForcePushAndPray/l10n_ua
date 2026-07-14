@@ -3,6 +3,7 @@
     <menuitem id="menu_medecin_root"
               name="Медицина (UA)"
               sequence="56"
+              web_icon="l10n_ua_medecin_base,static/description/icon.png"
               groups="group_ua_medecin_user"/>
 
     <menuitem id="menu_medecin_config"

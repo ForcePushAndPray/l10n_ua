@@ -82,10 +82,14 @@ UA-«парасольки» всередині `Accounting → Configuration`, �
   рідним Odoo Accounting, «Timesheet» (50) поруч із core Timesheets, «Bank» (53) —
   насправді піддомен обліку, піднятий у власний тайл.
 
-- **H3. Негейтовані чутливі корені:** `menu_hr_payroll_root`,
+- **H3. Негейтовані чутливі корені** (issue #191): `menu_hr_payroll_root`,
   `menu_hr_timesheet_root`, `menu_marketplace_root`, `menu_telegram_bot_root` —
   **без `groups=`** → зарплатний застосунок і конфіг Telegram видно кожному
-  користувачу. → *issue про негейтовані корені*.
+  користувачу.
+  **✅ Виправлено** для 3 наших коренів (Payroll/Timesheet → `group_hr_ua_user`,
+  Marketplaces → `group_marketplace_user`). `menu_telegram_bot_root` — сторонній
+  модуль (`telegram_bot_m2o`, author «Many2one»); гейтати слід glue-оверрайдом,
+  а не правкою вендорного коду.
 
 ### 🟡 Medium
 
@@ -100,8 +104,9 @@ UA-«парасольки» всередині `Accounting → Configuration`, �
 
 ### 🟢 Low
 
-- **L1. web_icon:** Освіта позичає `web_icon="hr,…"` (чужа іконка); Медицина — **без
-  `web_icon`** (сірий тайл).
+- **L1. web_icon:** Освіта позичала `web_icon="hr,…"` (чужа іконка); Медицина — без
+  `web_icon` (сірий тайл). **✅ Виправлено** — обидва модулі мають власний
+  `static/description/icon.png`, `web_icon` тепер вказує на нього.
 
 ### Що вже добре (не чіпати)
 
