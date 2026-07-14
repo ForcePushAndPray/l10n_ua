@@ -139,36 +139,15 @@ class HrLeave(models.Model):
 
     def action_create_vacation_period(self):
         """Create (or reuse) the hr.vacation.balance for this leave's
-        resolved period and link it — the inline "Create" button next to
-        the Vacation Period field."""
+        resolved period and link it. Periods are normally created
+        automatically on save; this stays as an explicit fallback."""
         self.ensure_one()
-        start, end, index = self._resolve_leave_period()
-        if not start:
+        balance = self.env['hr.vacation.balance'].sudo()._get_or_create_period(
+            self.employee_id, self.holiday_status_id, self.request_date_from)
+        if not balance:
             raise UserError(_(
                 'Cannot determine the accounting period. For work-year leave '
                 'types, set the employee\'s hire date first.'))
-        Balance = self.env['hr.vacation.balance'].sudo()
-        balance = Balance.search([
-            ('employee_id', '=', self.employee_id.id),
-            ('leave_type_id', '=', self.holiday_status_id.id),
-            ('period_start', '=', start),
-        ], limit=1)
-        if not balance:
-            prev = Balance.search([
-                ('employee_id', '=', self.employee_id.id),
-                ('leave_type_id', '=', self.holiday_status_id.id),
-                ('period_index', '=', index - 1),
-            ], limit=1)
-            balance = Balance.create({
-                'employee_id': self.employee_id.id,
-                'leave_type_id': self.holiday_status_id.id,
-                'period_start': start,
-                'period_end': end,
-                'period_index': index,
-                'entitled_days': self.holiday_status_id.annual_days,
-                'carried_over': prev.remaining_days if prev else 0,
-                'company_id': self.employee_id.company_id.id or self.env.company.id,
-            })
         self.vacation_balance_id = balance.id
         return True
 
@@ -266,27 +245,25 @@ class HrLeave(models.Model):
                 if default_lt:
                     vals['holiday_status_id'] = default_lt.id
 
-        # Auto-select vacation period based on dates and auto-create if needed
+        # Link the vacation period for the leave's dates, creating it when it
+        # does not exist yet, so every saved leave lands in a period (and the
+        # period shows up in the Vacation Balances report). Skipped only when
+        # the caller set the period explicitly or the period is unresolvable.
         Balance = self.env['hr.vacation.balance']
         for vals in vals_list:
             emp_id = vals.get('employee_id')
             lt_id = vals.get('holiday_status_id')
             date_from = vals.get('date_from') or vals.get('request_date_from')
 
-            if emp_id and lt_id and date_from:
-                # Don't override if already set
-                if not vals.get('vacation_balance_id'):
-                    # Try to find matching period
-                    if isinstance(date_from, str):
-                        date_from = fields.Datetime.from_string(date_from)
-                    balance = Balance.search([
-                        ('employee_id', '=', emp_id),
-                        ('leave_type_id', '=', lt_id),
-                        ('period_start', '<=', date_from),
-                        ('period_end', '>=', date_from),
-                    ], limit=1)
-                    if balance:
-                        vals['vacation_balance_id'] = balance.id
+            if emp_id and lt_id and date_from and not vals.get('vacation_balance_id'):
+                ref_date = fields.Date.to_date(date_from)
+                period = Balance._get_or_create_period(
+                    self.env['hr.employee'].browse(emp_id),
+                    self.env['hr.leave.type'].browse(lt_id),
+                    ref_date,
+                )
+                if period:
+                    vals['vacation_balance_id'] = period.id
 
         # Resolve which leaves should auto-create an order
         type_ids = {v.get('holiday_status_id') for v in vals_list if v.get('holiday_status_id')}
@@ -341,32 +318,25 @@ class HrLeave(models.Model):
         return leaves
 
     def write(self, vals):
-        # Auto-select vacation period when dates change (if not already set)
-        if {'request_date_from', 'request_date_to', 'date_from', 'date_to'} & vals.keys():
+        # When the dates change, re-link (or create) the matching vacation
+        # period so the leave never ends up without one. Skipped when the
+        # caller sets the period explicitly in the same write.
+        if ({'request_date_from', 'request_date_to', 'date_from', 'date_to'}
+                & vals.keys() and 'vacation_balance_id' not in vals):
             Balance = self.env['hr.vacation.balance']
             for leave in self:
-                # Use the new date if provided, otherwise use existing
-                date_from = vals.get('request_date_from') or vals.get('date_from') or leave.request_date_from
-                emp_id = vals.get('employee_id') or leave.employee_id.id
-                lt_id = vals.get('holiday_status_id') or leave.holiday_status_id.id
-
-                if date_from and emp_id and lt_id:
-                    # Convert if string
-                    if isinstance(date_from, str):
-                        date_from = fields.Datetime.from_string(date_from)
-                    # Only auto-select if not manually set in this write
-                    if 'vacation_balance_id' not in vals:
-                        balance = Balance.search([
-                            ('employee_id', '=', emp_id),
-                            ('leave_type_id', '=', lt_id),
-                            ('period_start', '<=', date_from),
-                            ('period_end', '>=', date_from),
-                        ], limit=1)
-                        if balance:
-                            vals['vacation_balance_id'] = balance.id
-                        else:
-                            # If no matching period, clear the field to prompt user
-                            vals['vacation_balance_id'] = False
+                date_from = (vals.get('request_date_from') or vals.get('date_from')
+                             or leave.request_date_from)
+                emp = leave.employee_id
+                lt = leave.holiday_status_id
+                if date_from and emp and lt:
+                    period = Balance._get_or_create_period(
+                        emp, lt, fields.Date.to_date(date_from))
+                    # Write per-record so a multi-leave write keeps each leave
+                    # on its own period instead of sharing the last one. The
+                    # 'vacation_balance_id not in vals' guard above stops this
+                    # inner write from recursing back into the relink branch.
+                    leave.vacation_balance_id = period.id if period else False
 
         # Capture balance keys BEFORE the write so we also refresh rows
         # we move away from (e.g. employee_id or vacation_year changed).

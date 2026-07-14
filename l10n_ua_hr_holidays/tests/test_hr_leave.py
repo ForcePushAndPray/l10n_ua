@@ -188,9 +188,29 @@ class TestHrLeave(TransactionCase):
         })
         self.assertEqual(leave.vacation_balance_id, balance)
 
-    def test_vacation_period_cleared_if_not_matching(self):
-        """When dates change to no matching period, the field is cleared."""
-        # Create leave with a period
+    def test_vacation_period_auto_created_on_create(self):
+        """Creating a leave for dates with no existing period auto-creates
+        the period (and it lands in hr.vacation.balance / Vacation Balances)."""
+        # No balance exists for 2029 yet.
+        leave = self.env['hr.leave'].create({
+            'name': 'Test Leave',
+            'employee_id': self.employee.id,
+            'holiday_status_id': self.leave_type_calendar.id,
+            'date_from': datetime(2029, 6, 15, 8, 0, 0),
+            'date_to': datetime(2029, 6, 21, 17, 0, 0),
+        })
+        self.assertTrue(leave.vacation_balance_id)
+        self.assertEqual(leave.vacation_balance_id.period_start, date(2029, 1, 1))
+        self.assertEqual(leave.vacation_balance_id.period_end, date(2029, 12, 31))
+        # The period is a real hr.vacation.balance record (Vacation Balances).
+        self.assertIn(leave.vacation_balance_id, self.env['hr.vacation.balance'].search([
+            ('employee_id', '=', self.employee.id),
+            ('leave_type_id', '=', self.leave_type_calendar.id),
+        ]))
+
+    def test_vacation_period_recreated_on_date_change(self):
+        """Moving dates to a period that does not exist yet creates and links
+        the matching period instead of leaving the leave orphaned."""
         balance = self.env['hr.vacation.balance'].create({
             'employee_id': self.employee.id,
             'leave_type_id': self.leave_type_calendar.id,
@@ -205,11 +225,13 @@ class TestHrLeave(TransactionCase):
             'holiday_status_id': self.leave_type_calendar.id,
             'date_from': datetime(2026, 6, 15, 8, 0, 0),
             'date_to': datetime(2026, 6, 21, 17, 0, 0),
-            'vacation_balance_id': balance.id,
         })
-        # Change dates to 2027 (no matching period)
+        self.assertEqual(leave.vacation_balance_id, balance)
+        # Move to 2030 (no period yet) → a new period is created and linked.
         leave.write({
-            'date_from': datetime(2027, 6, 15, 8, 0, 0),
-            'date_to': datetime(2027, 6, 21, 17, 0, 0),
+            'date_from': datetime(2030, 6, 15, 8, 0, 0),
+            'date_to': datetime(2030, 6, 21, 17, 0, 0),
         })
-        self.assertFalse(leave.vacation_balance_id)
+        self.assertTrue(leave.vacation_balance_id)
+        self.assertNotEqual(leave.vacation_balance_id, balance)
+        self.assertEqual(leave.vacation_balance_id.period_start, date(2030, 1, 1))

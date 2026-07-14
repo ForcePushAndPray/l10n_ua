@@ -24,16 +24,10 @@
                         <field name="calendar_days"/>
                         <field name="working_days"/>
                         <field name="vacation_year" readonly="1"/>
-                        <field name="show_create_vacation_period" invisible="1"/>
-                        <label for="vacation_balance_id"/>
-                        <div class="o_row">
-                            <field name="vacation_balance_id" nolabel="1"
-                                   options="{'no_create': True}"/>
-                            <button name="action_create_vacation_period"
-                                    type="object" string="Create"
-                                    class="btn-link"
-                                    invisible="not show_create_vacation_period"/>
-                        </div>
+                        <!-- The accounting period is created automatically on
+                             save; shown read-only for reference. -->
+                        <field name="vacation_balance_id" readonly="1"
+                               options="{'no_create': True}"/>			
                     </group>
                     <group>
                         <field name="average_daily_salary"/>

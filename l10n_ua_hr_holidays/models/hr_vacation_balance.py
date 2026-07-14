@@ -120,6 +120,42 @@ class HrVacationBalance(models.Model):
         return (date(ref_date.year, 1, 1), date(ref_date.year, 12, 31), ref_date.year)
 
     @api.model
+    def _get_or_create_period(self, employee, leave_type, ref_date):
+        """Return the accounting period (hr.vacation.balance) that contains
+        ref_date for this employee/leave type, creating it if it does not
+        exist yet. A newly created period inherits its carried_over days from
+        the previous period in the chain. Returns an empty recordset when the
+        period cannot be resolved (e.g. a work-year type without a hire
+        anchor), so callers can leave the leave unlinked in that edge case."""
+        if not employee or not leave_type or not ref_date:
+            return self.browse()
+        start, end, index = self._get_period_for(employee, leave_type, ref_date)
+        if not start:
+            return self.browse()
+        balance = self.search([
+            ('employee_id', '=', employee.id),
+            ('leave_type_id', '=', leave_type.id),
+            ('period_start', '=', start),
+        ], limit=1)
+        if balance:
+            return balance
+        prev = self.search([
+            ('employee_id', '=', employee.id),
+            ('leave_type_id', '=', leave_type.id),
+            ('period_index', '=', index - 1),
+        ], limit=1)
+        return self.create({
+            'employee_id': employee.id,
+            'leave_type_id': leave_type.id,
+            'period_start': start,
+            'period_end': end,
+            'period_index': index,
+            'entitled_days': leave_type.annual_days,
+            'carried_over': prev.remaining_days if prev else 0,
+            'company_id': employee.company_id.id or self.env.company.id,
+        })
+
+    @api.model
     def _employee_hire_anchor(self, employee):
         """Explicit hire date used to bound accounting periods and to block
         pre-hire leaves/periods. Only employee.hire_date (the UA-managed
