@@ -61,7 +61,7 @@
 
 ![Module Architecture](diagrams/full_architecture.svg)
 
-Усі діаграми — у теці [`diagrams/`](diagrams/) (`.puml` + `.svg`): загальна архітектура, структура меню, HR, модель даних, процеси ПРРО, банків, прийому на роботу, розрахунку зарплати тощо.
+Оглядову діаграму архітектури згенеровано скриптом [`diagrams/gen_full_architecture.py`](diagrams/gen_full_architecture.py) (перегенерувати після додавання модулів: `python3 diagrams/gen_full_architecture.py`). Решта діаграм — у теці [`diagrams/`](diagrams/) (`.puml` + `.svg`): структура меню, HR, модель даних, процеси ПРРО, банків, прийому на роботу, розрахунку зарплати тощо.
 
 ---
 
