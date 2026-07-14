@@ -20,6 +20,10 @@
 
             <xpath expr="//sheet" position="inside">
                 <group string="Ukrainian Specifics" name="ua_details">
+                    <div class="alert alert-warning" role="alert" colspan="2"
+                         invisible="not carryover_warning">
+                        <field name="carryover_warning" readonly="1" nolabel="1"/>
+                    </div>
                     <group>
                         <field name="calendar_days"/>
                         <field name="working_days"/>

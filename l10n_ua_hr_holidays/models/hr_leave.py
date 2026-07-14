@@ -78,6 +78,71 @@ class HrLeave(models.Model):
              'social and other leaves.'
     )
 
+    carryover_warning = fields.Char(
+        string='Carry-over Warning',
+        compute='_compute_carryover_warning',
+        help='Non-blocking notice shown when unused days from the previous '
+             'period cannot be fully carried over under this leave type\'s '
+             'transfer rules (Transferable / Max Transfer Days).'
+    )
+
+    @api.depends('holiday_status_id', 'request_date_from', 'employee_id',
+                 'vacation_balance_id')
+    def _compute_carryover_warning(self):
+        for leave in self:
+            leave.carryover_warning = leave._carryover_warning_message()
+
+    def _carryover_warning_message(self):
+        """Return a human-readable warning when the previous period leaves
+        unused days that this leave type's transfer rules cannot carry over
+        (they would be forfeited), or False when nothing is at risk. Purely
+        advisory — never blocks saving."""
+        self.ensure_one()
+        lt = self.holiday_status_id
+        emp = self.employee_id
+        if not lt or not emp or not self.request_date_from:
+            return False
+        Balance = self.env['hr.vacation.balance']
+        _start, _end, index = self._resolve_leave_period()
+        if not index:
+            return False
+        prev = Balance.search([
+            ('employee_id', '=', emp.id),
+            ('leave_type_id', '=', lt.id),
+            ('period_index', '<', index),
+        ], order='period_index desc', limit=1)
+        if not prev or prev.remaining_days <= 0:
+            return False
+        allowed = Balance._allowed_carryover(lt, prev.remaining_days)
+        lost = prev.remaining_days - allowed
+        if lost <= 0:
+            return False
+        if not lt.is_transferable:
+            return _(
+                'Leave type "%(type)s" does not allow carrying days over: '
+                '%(lost).1f unused day(s) from the previous period '
+                '(%(period)s) will be forfeited.',
+                type=lt.name, lost=lost, period=prev.period_label)
+        return _(
+            'Only %(max)s day(s) may be carried over for "%(type)s": '
+            '%(lost).1f day(s) from the previous period (%(period)s) '
+            'exceed the limit and will be forfeited.',
+            max=lt.max_transfer_days, type=lt.name, lost=lost,
+            period=prev.period_label)
+
+    @api.onchange('holiday_status_id', 'request_date_from', 'request_date_to',
+                  'employee_id')
+    def _onchange_carryover_warning(self):
+        """Pop a non-blocking warning on the form as soon as the chosen type
+        and dates would forfeit carried-over days."""
+        message = self._carryover_warning_message()
+        if message:
+            return {'warning': {
+                'title': _('Vacation carry-over'),
+                'message': message,
+            }}
+
+
     @api.depends('request_date_from')
     def _compute_vacation_year(self):
         # The vacation year always follows the leave's start date.

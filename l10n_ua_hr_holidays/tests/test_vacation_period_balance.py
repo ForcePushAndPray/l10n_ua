@@ -464,3 +464,63 @@ class TestVacationPeriodBalance(TransactionCase):
         })
         self.assertEqual(second.total_available, 48)
 
+    # ------------------------------------------------------------------
+    # Per-type transfer rules: carry-over cap + non-blocking warning
+    # ------------------------------------------------------------------
+
+    def _work_type(self, **overrides):
+        vals = {
+            'name': 'Transfer Rule Type',
+            'ua_leave_category': 'other',
+            'period_type': 'work',
+            'annual_days': 24,
+            'is_transferable': True,
+            'requires_allocation': False,
+        }
+        vals.update(overrides)
+        return self.env['hr.leave.type'].create(vals)
+
+    def _wy1_with_unused(self, leave_type):
+        """A first work-year period (index 1) with 24 unused days."""
+        return self.env['hr.vacation.balance'].create({
+            'employee_id': self.employee.id,
+            'leave_type_id': leave_type.id,
+            'period_start': date(2024, 7, 15),
+            'period_end': date(2025, 7, 14),
+            'period_index': 1,
+            'entitled_days': 24,
+        })
+
+    def test_non_transferable_type_forfeits_and_warns(self):
+        """A non-transferable type carries nothing forward; the leave still
+        saves but shows a non-blocking warning about forfeited days."""
+        lt = self._work_type(is_transferable=False)
+        self._wy1_with_unused(lt)
+        leave = self._create_leave(lt, date(2025, 9, 1), date(2025, 9, 5))
+        wy2 = leave.vacation_balance_id
+        self.assertEqual(wy2.period_index, 2)
+        self.assertEqual(wy2.carried_over, 0)          # nothing carried
+        self.assertTrue(leave.carryover_warning)       # 24 days forfeited
+        self.assertTrue(leave.id)                       # saved despite warning
+
+    def test_capped_transfer_caps_and_warns(self):
+        """max_transfer_days caps the carry-over; the excess is reported as a
+        warning without blocking the save."""
+        lt = self._work_type(is_transferable=True, max_transfer_days=10)
+        self._wy1_with_unused(lt)
+        leave = self._create_leave(lt, date(2025, 9, 1), date(2025, 9, 5))
+        wy2 = leave.vacation_balance_id
+        self.assertEqual(wy2.carried_over, 10)         # capped at the max
+        self.assertTrue(leave.carryover_warning)       # 14 days forfeited
+
+    def test_unlimited_transfer_no_warning(self):
+        """A transferable type with no cap carries everything and warns of
+        nothing."""
+        lt = self._work_type(is_transferable=True)     # no max_transfer_days
+        self._wy1_with_unused(lt)
+        leave = self._create_leave(lt, date(2025, 9, 1), date(2025, 9, 5))
+        wy2 = leave.vacation_balance_id
+        self.assertEqual(wy2.carried_over, 24)         # everything carried
+        self.assertFalse(leave.carryover_warning)
+
+

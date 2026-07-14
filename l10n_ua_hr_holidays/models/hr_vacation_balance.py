@@ -151,9 +151,24 @@ class HrVacationBalance(models.Model):
             'period_end': end,
             'period_index': index,
             'entitled_days': leave_type.annual_days,
-            'carried_over': prev.remaining_days if prev else 0,
+            'carried_over': (
+                self._allowed_carryover(leave_type, prev.remaining_days)
+                if prev else 0),
             'company_id': employee.company_id.id or self.env.company.id,
         })
+
+    @api.model
+    def _allowed_carryover(self, leave_type, prev_remaining):
+        """Days that may actually be carried into the next period given the
+        leave type's transfer rules: non-transferable types carry nothing,
+        and `max_transfer_days` caps the rest. Returns the carried amount
+        (never negative). Days above the cap are forfeited — surfaced to the
+        user as a non-blocking warning on the leave, not enforced here."""
+        if prev_remaining <= 0 or not leave_type.is_transferable:
+            return 0
+        if leave_type.max_transfer_days:
+            return min(prev_remaining, leave_type.max_transfer_days)
+        return prev_remaining
 
     @api.model
     def _employee_hire_anchor(self, employee):
@@ -419,7 +434,9 @@ class HrVacationBalance(models.Model):
     def _recompute_carryover_chain(self):
         """Propagate carry-over across each (employee, leave_type) period
         chain: every period after the first inherits the previous period's
-        remaining days.
+        remaining days, capped by the leave type's transfer rules
+        (_allowed_carryover — non-transferable types carry nothing, and
+        max_transfer_days limits the rest).
 
         Lets a back-dated period feed its unused days into the following
         periods (e.g. a leave entered late for last year updates this
@@ -440,8 +457,11 @@ class HrVacationBalance(models.Model):
             ], order='period_start')
             prev = None
             for bal in chain:
-                if prev is not None and bal.carried_over != prev.remaining_days:
-                    bal.carried_over = prev.remaining_days
+                if prev is not None:
+                    allowed = self._allowed_carryover(
+                        bal.leave_type_id, prev.remaining_days)
+                    if bal.carried_over != allowed:
+                        bal.carried_over = allowed
                 prev = bal
 
     def _recompute_related_leaves(self):
@@ -511,34 +531,11 @@ class HrVacationBalance(models.Model):
         'Balance for this employee, leave type and period already exists!',
     )
 
-    @api.constrains('carried_over', 'period_index', 'employee_id', 'leave_type_id')
-    def _check_carryover_limit(self):
-        """Check that vacation is not carried over for more than max_carryover_years.
-        Ukrainian law requires that vacation must be used within 2 years.
-        Periods are compared by period_index, which is sequential for both
-        calendar years and work years.
-        """
-        for rec in self:
-            if not rec.carried_over or rec.carried_over <= 0:
-                continue
-            
-            max_years = rec.leave_type_id.max_carryover_years or 2
-            oldest_allowed_index = (rec.period_index or rec.year) - max_years
-            old_balances = self.search([
-                ('employee_id', '=', rec.employee_id.id),
-                ('leave_type_id', '=', rec.leave_type_id.id),
-                ('period_index', '<=', oldest_allowed_index),
-                ('remaining_days', '>', 0),
-            ])
-
-            if old_balances:
-                raise ValidationError(_(
-                    'Employee %(employee)s has unused vacation days from period %(period)s or earlier. '
-                    'According to Ukrainian law, vacation must be used within %(max_years)s years.',
-                    employee=rec.employee_id.name,
-                    period=old_balances[0].period_label or oldest_allowed_index,
-                    max_years=max_years,
-                ))
+    # NOTE: carry-over is no longer hard-blocked. Transfer limits differ per
+    # leave type (is_transferable / max_transfer_days) and are applied when
+    # computing carried_over (see _allowed_carryover). Days that cannot be
+    # transferred are surfaced to the user as a non-blocking warning on the
+    # leave (hr.leave._carryover_warning_message), never enforced here.
 
     def calculate_compensation(self, termination_date=None, is_termination=True):
         """Calculate compensation for unused vacation.
