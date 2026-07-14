@@ -152,10 +152,11 @@ class TestVacationPeriodBalance(TransactionCase):
         self.assertEqual(current.carried_over, 0)
 
         # Back-dated leave for the previous work year (index 1), using 10 days.
+        # Its period is auto-created on save; approve it so the days count as
+        # *used* (a draft leave would only count as planned).
         past_leave = self._create_leave(
             self.annual_type, date(2024, 9, 2), date(2024, 9, 11))
-        # Create the missing past period via the leave's button.
-        past_leave.action_create_vacation_period()
+        past_leave.action_approve()
         past = past_leave.vacation_balance_id
         self.assertEqual(past.period_start, date(2024, 7, 15))
         self.assertEqual(past.used_days, past_leave.calendar_days)

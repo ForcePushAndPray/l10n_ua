@@ -89,8 +89,14 @@ class TestHrVacationBalance(TransactionCase):
         self.assertNotIn(self.employee.name, balance.display_name)
 
     def test_unique_constraint(self):
-        """Test unique constraint on employee + leave type + period exists"""
+        """Test unique constraint on employee + leave type + period exists.
+
+        The full name (hr_vacation_balance_unique_employee_id_leave_type_id_
+        period_start) exceeds PostgreSQL's 63-char identifier limit, so it is
+        truncated and hashed; match by the stable prefix instead of the exact
+        (untruncated) name."""
         constraint = self.env['ir.model.constraint'].search([
-            ('name', '=', 'hr_vacation_balance_unique_employee_id_leave_type_id_period_start'),
+            ('name', 'like',
+             'hr_vacation_balance_unique_employee_id_leave_type_id_p%'),
         ])
         self.assertTrue(constraint, "Unique constraint should exist on hr.vacation.balance")
