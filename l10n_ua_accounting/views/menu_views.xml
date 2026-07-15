@@ -101,65 +101,12 @@
               action="l10n_ua_bank_sync.action_bank_statement"
               sequence="50"/> -->
 
-    <!-- ==================== VAT ==================== -->
-    <menuitem id="menu_ua_vat"
-              name="VAT"
-              parent="menu_ua_accounting_root"
-              sequence="35"/>
-
-    <menuitem id="menu_ua_vat_issued"
-              name="Issued Tax Invoices"
-              parent="menu_ua_vat"
-              action="l10n_ua_account_vat.l10n_ua_tax_invoice_issued_action"
-              sequence="10"/>
-
-    <menuitem id="menu_ua_vat_received"
-              name="Received Tax Invoices"
-              parent="menu_ua_vat"
-              action="l10n_ua_account_vat.l10n_ua_tax_invoice_received_action"
-              sequence="20"/>
-
-    <menuitem id="menu_ua_vat_registers"
-              name="Tax Invoice Registers"
-              parent="menu_ua_vat"
-              action="l10n_ua_account_vat.l10n_ua_vat_register_action"
-              sequence="30"/>
-
-    <menuitem id="menu_ua_vat_declaration"
-              name="VAT Declaration"
-              parent="menu_ua_vat"
-              action="l10n_ua_account_vat.l10n_ua_vat_declaration_action"
-              sequence="40"/>
-
-    <menuitem id="menu_ua_vat_erpn_limit"
-              name="Registration Limit"
-              parent="menu_ua_vat"
-              action="l10n_ua_account_vat.l10n_ua_vat_erpn_limit_action"
-              sequence="50"/>
-
-    <menuitem id="menu_ua_vat_deadlines"
-              name="Registration Deadlines"
-              parent="menu_ua_vat"
-              action="l10n_ua_account_vat.l10n_ua_tax_invoice_deadline_action"
-              sequence="60"/>
-
-    <!-- ==================== Fixed Assets ==================== -->
-    <menuitem id="menu_ua_assets"
-              name="Fixed Assets"
-              parent="menu_ua_accounting_root"
-              sequence="30"/>
-
-    <menuitem id="menu_ua_assets_cards"
-              name="Asset Cards"
-              parent="menu_ua_assets"
-              action="l10n_ua_assets.l10n_ua_asset_action"
-              sequence="10"/>
-
-    <menuitem id="menu_ua_assets_mnma"
-              name="Low Value Assets (MNMA)"
-              parent="menu_ua_assets"
-              action="l10n_ua_assets.l10n_ua_mnma_action"
-              sequence="20"/>
+    <!-- VAT (ПДВ) та Fixed Assets (Основні засоби) навмисно НЕ оголошуються тут.
+         Їхні actions уже мають єдиний дім у модулях-фічах (антипатерн H1, #190):
+           • ПДВ  → l10n_ua_account_vat  (апп «Taxes UA» → VAT)
+           • ОЗ   → l10n_ua_assets       (апп «Ukraine» → Fixed Assets)
+         Дублювати їх під «Accounting» = два шляхи до одних даних. Див.
+         docs/menu_registry.md (H1) та docs/menu_architecture.md. -->
 
     <!-- ==================== Reports ==================== -->
     <menuitem id="menu_ua_reports"
