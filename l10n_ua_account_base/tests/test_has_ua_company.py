@@ -49,6 +49,21 @@ class TestHasUaCompany(TransactionCase):
         self.non_ua_co.country_id = self.ua
         self.assertIn(self.group, u.group_ids)
 
+    def test_move_gate_flag_follows_company(self):
+        """account.move.l10n_ua_is_ua_company mirrors its company (drives UI gate)."""
+        Journal = self.env['account.journal']
+        j_ua = Journal.create({'name': 'M UA', 'code': 'MUA',
+                               'type': 'general', 'company_id': self.ua_co.id})
+        j_fo = Journal.create({'name': 'M FO', 'code': 'MFO',
+                               'type': 'general', 'company_id': self.non_ua_co.id})
+        Move = self.env['account.move']
+        m_ua = Move.create({'move_type': 'entry', 'journal_id': j_ua.id,
+                            'company_id': self.ua_co.id})
+        m_fo = Move.create({'move_type': 'entry', 'journal_id': j_fo.id,
+                            'company_id': self.non_ua_co.id})
+        self.assertTrue(m_ua.l10n_ua_is_ua_company)
+        self.assertFalse(m_fo.l10n_ua_is_ua_company)
+
     def test_group_follows_company_ids_change(self):
         u = self._user(self.non_ua_co)
         self.assertNotIn(self.group, u.group_ids)
