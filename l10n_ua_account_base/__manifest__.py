@@ -56,7 +56,6 @@ This module is required for all other l10n_ua_* modules.
         'views/menu_views.xml',
     ],
     'demo': [],
-    'post_init_hook': 'post_init_hook',
     'images': ['static/description/icon.png'],
     'installable': True,
     'application': False,

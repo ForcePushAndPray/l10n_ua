@@ -6,12 +6,6 @@ from ..tools.formatters import amount_to_words_ua
 class AccountMove(models.Model):
     _inherit = 'account.move'
 
-    # Drives visibility of UA-specific fields/buttons: hides them for non-UA
-    # companies (respects the active company; see issue #178).
-    l10n_ua_is_ua_company = fields.Boolean(
-        related='company_id.l10n_ua_is_ua_company',
-    )
-
     ua_doc_type = fields.Selection(
         selection=[
             ('invoice', 'Invoice (Рахунок)'),
