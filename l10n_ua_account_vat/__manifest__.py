@@ -28,6 +28,7 @@ Requires l10n_ua_tax module.
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/l10n_ua_account_vat_security.xml',
         'data/ir_sequence_data.xml',
         'report/tax_invoice_report.xml',
         'views/res_company_views.xml',
