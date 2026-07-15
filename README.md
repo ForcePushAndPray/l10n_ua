@@ -65,6 +65,8 @@
 
 Архітектура меню (аналіз, проблеми, видимість для UA/не-UA компаній) — [`docs/menu_architecture.md`](docs/menu_architecture.md); конвенції та реєстр коренів — [`docs/menu_registry.md`](docs/menu_registry.md).
 
+Правила розробки (мультикомпанійність, меню, тести) — [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
 ---
 
 ## Швидке встановлення
