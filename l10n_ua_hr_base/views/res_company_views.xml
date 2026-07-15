@@ -12,6 +12,7 @@
                         <group string="Registration">
                             <field name="edrpou"/>
                             <field name="koatuu"/>
+                            <field name="katottg" placeholder="UA + 17 цифр"/>
                             <field name="kved_main"/>
                             <field name="ownership_form"/>
                         </group>

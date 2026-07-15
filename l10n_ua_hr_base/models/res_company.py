@@ -10,6 +10,10 @@ class ResCompany(models.Model):
     koatuu = fields.Char(
         string='KOATUU', size=10,
         help='Code of the Classification of Administrative-Territorial Units of Ukraine')
+    katottg = fields.Char(
+        string='KATOTTG', size=19,
+        help='Код КАТОТТГ (кодифікатор адміністративно-територіальних одиниць), '
+             'формат UA + 17 цифр. Потрібен для звітності 4ДФ/об\'єднаного розрахунку.')
     legal_address = fields.Text(string='Legal Address')
     director_id = fields.Many2one(
         'hr.employee', string='Director',

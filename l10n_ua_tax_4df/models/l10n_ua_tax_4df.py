@@ -6,16 +6,25 @@
 Форма J0501T01 (юридична особа) / F0501T01 (ФОП).
 Нормативка: Наказ Мінфіну № 4 від 13.01.2015 зі змінами.
 
-MVP scope:
-- Header model + Appendix 4DF (per person PDFO/ВЗ) + Appendix 1 (ЄСВ summary)
-- Appendix 5 (insured persons) і Appendix 6 (hazardous workers) — TODO
-- XML export — basic stub; повна валідація по XSD ДПС — окрема задача
+Обсяг:
+- Модель заголовка + Додаток 4ДФ (ПДФО/ВЗ по особах) + Додаток 1 (ЄСВ)
+- XML Додатка 4ДФ (F0510410/J0510410 v10) — валідний за офіційним XSD ДПС
+  (tests/test_xsd_validation.py). Головна форма F0500110/J0500110, Д1/Д5/Д6
+  та пакування LINKED_DOCS — наступні інкременти (#142).
 """
 
+import re
 from datetime import date
+from xml.sax.saxutils import escape
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+
+# Додаток 4ДФ = F0510410 (ФОП) / J0510410 (юрособа), версія 10 об'єднаного
+# розрахунку. Коди й структура звірені з офіційним XSD ДПС (пакет СКЗ 1.34.0.0).
+D4_C_DOC_SUB = '104'
+D4_C_DOC_VER = '10'
+D4_SOFTWARE = 'Odoo l10n_ua'
 
 
 class L10nUaTax4DF(models.Model):
@@ -293,68 +302,192 @@ class L10nUaTax4DF(models.Model):
         return True
 
     def action_generate_xml(self):
-        """Сформувати XML-файл звіту (заглушка-структура).
+        """Сформувати XML Додатка 4ДФ (F0510410/J0510410 v10), валідний за XSD ДПС.
 
-        Повна валідація по XSD ДПС/ПФУ — окрема задача (FREDO/М.Е.Doc).
+        Наразі формує саме Додаток 4ДФ (per-person ПДФО/ВЗ). Головна форма
+        (F0500110/J0500110), Д1/Д5/Д6 і пакування через LINKED_DOCS — окремі
+        інкременти (див. #142). Валідність структури підтверджує
+        tests/test_xsd_validation.py проти вендореного F0510410.xsd.
         """
         import base64
-        from xml.sax.saxutils import escape
         for rec in self:
             if rec.state == 'draft':
                 raise UserError(_('Спочатку згенеруйте звіт з payslips.'))
-            rec.xml_file = base64.b64encode(rec._build_xml_bytes())
-            rec.xml_filename = '%s_%s_Q%s.xml' % (
-                rec.form_code, rec.year, rec.quarter)
+            xml = self._render_d4_xml(rec._d4_vals())
+            rec.xml_file = base64.b64encode(xml.encode('windows-1251'))
+            prefix = 'F0510410' if rec._d4_prefix() == 'F05' else 'J0510410'
+            rec.xml_filename = '%s_%s_Q%s.xml' % (prefix, rec.year, rec.quarter)
         return True
 
-    def _build_xml_bytes(self):
-        """Побудувати XML-байти. Структура — спрощена."""
+    def _d4_prefix(self):
+        """C_DOC-префікс додатка: F05 (ФОП) / J05 (юрособа)."""
+        return 'F05' if (self.form_code or '').startswith('F') else 'J05'
+
+    def _d4_vals(self):
+        """Зібрати значення Додатка 4ДФ із запису (компанія + рядки).
+
+        Обов'язкові реквізити, яких нема в даних, — явна помилка користувачу
+        (не підставляємо фейк у документ, який піде до ДПС).
+        """
         self.ensure_one()
-        from xml.sax.saxutils import escape
-        lines = ['<?xml version="1.0" encoding="UTF-8"?>']
-        lines.append('<DECLAR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">')
-        lines.append('<DECLARHEAD>')
-        lines.append('<TIN>%s</TIN>' % escape(
-            self.company_id.partner_id.company_registry or ''))
-        lines.append('<C_DOC>%s</C_DOC>' % escape(self.form_code or ''))
-        lines.append('<PERIOD_MONTH>%s</PERIOD_MONTH>' % (int(self.quarter) * 3))
-        lines.append('<PERIOD_YEAR>%s</PERIOD_YEAR>' % self.year)
-        lines.append('<C_STI_ORIG>%s</C_STI_ORIG>' % escape(
-            self.company_id.name or ''))
-        lines.append('</DECLARHEAD>')
-        lines.append('<DECLARBODY>')
-        # Appendix 4DF — per person
-        lines.append('<T1RXXXXG1S>')
+        company = self.company_id
+        edrpou = re.sub(r'\D', '', company.edrpou or '')
+        office = company.tax_office_code or ''
+        director = company.director_id
+        director_rnokpp = re.sub(
+            r'\D', '', (director.rnokpp or '') if director else '')
+
+        missing = []
+        if not edrpou:
+            missing.append(_('код ЄДРПОУ/РНОКПП компанії'))
+        if not company.katottg:
+            missing.append(_('КАТОТТГ компанії'))
+        if not director_rnokpp:
+            missing.append(_('РНОКПП керівника (director_id)'))
+        if missing:
+            raise UserError(_(
+                'Для формування 4ДФ заповніть: %s.') % ', '.join(missing))
+
+        month = int(self.quarter) * 3
+        persons = []
         for line in self.line_4df_ids:
-            lines.append('<ROW>')
-            lines.append('<RNOKPP>%s</RNOKPP>' % escape(line.rnokpp or ''))
-            lines.append('<ACCRUED>%.2f</ACCRUED>' % line.accrued_amount)
-            lines.append('<PAID>%.2f</PAID>' % line.paid_amount)
-            lines.append('<PDFO>%.2f</PDFO>' % line.pdfo_amount)
-            lines.append('<MILITARY>%.2f</MILITARY>' % line.military_amount)
-            lines.append('<INCOME_TYPE>%s</INCOME_TYPE>' % escape(
-                line.income_type or ''))
-            if line.date_hire:
-                lines.append('<DATE_HIRE>%s</DATE_HIRE>' % line.date_hire)
-            if line.date_termination:
-                lines.append('<DATE_TERMINATION>%s</DATE_TERMINATION>' %
-                             line.date_termination)
-            lines.append('</ROW>')
-        lines.append('</T1RXXXXG1S>')
-        # Appendix 1 — ESV
-        lines.append('<T1RXXXXG2S>')
-        for line in self.line_t1_ids:
-            lines.append('<ROW>')
-            lines.append('<RNOKPP>%s</RNOKPP>' % escape(line.rnokpp or ''))
-            lines.append('<ACCRUED>%.2f</ACCRUED>' % line.accrued_amount)
-            lines.append('<ESV_BASE>%.2f</ESV_BASE>' % line.esv_base)
-            lines.append('<ESV>%.2f</ESV>' % line.esv_amount)
-            lines.append('<MONTHS>%s</MONTHS>' % line.months_count)
-            lines.append('</ROW>')
-        lines.append('</T1RXXXXG2S>')
-        lines.append('</DECLARBODY>')
-        lines.append('</DECLAR>')
-        return '\n'.join(lines).encode('utf-8')
+            persons.append({
+                'rnokpp': re.sub(r'\D', '', line.rnokpp or ''),
+                'income_accrued': line.accrued_amount,
+                'income_paid': line.paid_amount,
+                'pdfo_accrued': line.pdfo_amount,
+                'pdfo_paid': line.pdfo_amount,
+                'mil_accrued': line.military_amount,
+                'mil_paid': line.military_amount,
+                'income_code': re.sub(r'\D', '', line.income_type or '101'),
+                'date_hire': line.date_hire,
+                'date_term': line.date_termination,
+                'ozn': '1' if line.income_sign == '1' else '0',
+            })
+        return {
+            'prefix': self._d4_prefix(),
+            'tin': edrpou,
+            'doc_type': 0,
+            'doc_cnt': 1,
+            'c_reg': office[:2],
+            'c_raj': office[2:4],
+            'period_month': month,
+            'period_type': 2,  # квартальна
+            'period_year': self.year,
+            'c_sti_orig': office,
+            'doc_stan': 1,
+            'd_fill': date.today().strftime('%d%m%Y'),
+            'hzy': self.year,
+            'hzm': month,
+            'hnum': 1,
+            'hname': company.name or '',
+            'htin': edrpou,
+            'hkatottg': company.katottg,
+            'hkbos': director_rnokpp,
+            'hbos': director.name or '',
+            'persons': persons,
+        }
+
+    @api.model
+    def _render_d4_xml(self, vals):
+        """Рендер XML Додатка 4ДФ (F0510410/J0510410 v10) з dict значень.
+
+        Стейтлес (лише ``vals``) — щоб валідацію проти офіційного XSD можна
+        було проганяти без залежності від наявних записів. Кодування —
+        windows-1251 (як приймає ДПС). Порядок і склад елементів звірені з
+        F0510410.xsd (DBody: HZ, HZY, HZM, HNUM, HNAME, HTIN, HKATOTTG,
+        лічильники, стовпці T1RXXXXG02..G09 по особах, підсумки, HFILL,
+        HKBOS, HBOS).
+        """
+        def esc(v):
+            return escape(str(v or ''))
+
+        def num(v):
+            return '%.2f' % (v or 0.0)
+
+        def dt(v):
+            return v.strftime('%d%m%Y') if v else None
+
+        persons = vals.get('persons') or []
+        n = len(persons)
+
+        # Стовпці таблиці 1 — column-major (усі значення одного стовпця підряд,
+        # ROWNUM = порядковий номер особи), як вимагає послідовність у XSD.
+        def column(tag, key, fmt):
+            rows = []
+            for i, p in enumerate(persons, 1):
+                val = p.get(key)
+                if val in (None, ''):
+                    continue
+                rows.append('        <%s ROWNUM="%d">%s</%s>' % (
+                    tag, i, fmt(val), tag))
+            return '\n'.join(rows)
+
+        cols = [
+            column('T1RXXXXG02', 'rnokpp', lambda v: esc(v)),
+            column('T1RXXXXG03A', 'income_accrued', num),
+            column('T1RXXXXG03', 'income_paid', num),
+            column('T1RXXXXG04A', 'pdfo_accrued', num),
+            column('T1RXXXXG04', 'pdfo_paid', num),
+            column('T1RXXXXG5A', 'mil_accrued', num),
+            column('T1RXXXXG5', 'mil_paid', num),
+            column('T1RXXXXG05', 'income_code', lambda v: esc(v)),
+            column('T1RXXXXG06D', 'date_hire', dt),
+            column('T1RXXXXG07D', 'date_term', dt),
+            column('T1RXXXXG09', 'ozn', lambda v: esc(v)),
+        ]
+        table = '\n'.join(c for c in cols if c)
+
+        # Підсумки розділу I (всього нараховано/виплачено/утримано).
+        tot_inc_a = sum(p['income_accrued'] for p in persons)
+        tot_inc = sum(p['income_paid'] for p in persons)
+        tot_pdfo_a = sum(p['pdfo_accrued'] for p in persons)
+        tot_pdfo = sum(p['pdfo_paid'] for p in persons)
+        tot_mil_a = sum(p['mil_accrued'] for p in persons)
+        tot_mil = sum(p['mil_paid'] for p in persons)
+
+        xml = f'''<?xml version="1.0" encoding="windows-1251"?>
+<DECLAR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="{vals['prefix'][0]}0510410.xsd">
+    <DECLARHEAD>
+        <TIN>{esc(vals['tin'])}</TIN>
+        <C_DOC>{vals['prefix']}</C_DOC>
+        <C_DOC_SUB>{D4_C_DOC_SUB}</C_DOC_SUB>
+        <C_DOC_VER>{D4_C_DOC_VER}</C_DOC_VER>
+        <C_DOC_TYPE>{vals['doc_type']}</C_DOC_TYPE>
+        <C_DOC_CNT>{vals['doc_cnt']}</C_DOC_CNT>
+        <C_REG>{esc(vals['c_reg'])}</C_REG>
+        <C_RAJ>{esc(vals['c_raj'])}</C_RAJ>
+        <PERIOD_MONTH>{vals['period_month']}</PERIOD_MONTH>
+        <PERIOD_TYPE>{vals['period_type']}</PERIOD_TYPE>
+        <PERIOD_YEAR>{vals['period_year']}</PERIOD_YEAR>
+        <C_STI_ORIG>{esc(vals['c_sti_orig'])}</C_STI_ORIG>
+        <C_DOC_STAN>{vals['doc_stan']}</C_DOC_STAN>
+        <D_FILL>{vals['d_fill']}</D_FILL>
+        <SOFTWARE>{D4_SOFTWARE}</SOFTWARE>
+    </DECLARHEAD>
+    <DECLARBODY>
+        <HZ>1</HZ>
+        <HZY>{vals['hzy']}</HZY>
+        <HZM>{vals['hzm']}</HZM>
+        <HNUM>{vals['hnum']}</HNUM>
+        <HNAME>{esc(vals['hname'])}</HNAME>
+        <HTIN>{esc(vals['htin'])}</HTIN>
+        <HKATOTTG>{esc(vals['hkatottg'])}</HKATOTTG>
+        <R00G01I>{n}</R00G01I>
+        <R00G02I>{n}</R00G02I>
+{table}
+        <R01G03A>{num(tot_inc_a)}</R01G03A>
+        <R01G03>{num(tot_inc)}</R01G03>
+        <R01G04A>{num(tot_pdfo_a)}</R01G04A>
+        <R01G04>{num(tot_pdfo)}</R01G04>
+        <R01G5A>{num(tot_mil_a)}</R01G5A>
+        <R01G5>{num(tot_mil)}</R01G5>
+        <HFILL>{vals['d_fill']}</HFILL>
+        <HKBOS>{esc(vals['hkbos'])}</HKBOS>
+        <HBOS>{esc(vals['hbos'])}</HBOS>
+    </DECLARBODY>
+</DECLAR>'''
+        return xml
 
 
 class L10nUaTax4DFLine4DF(models.Model):
