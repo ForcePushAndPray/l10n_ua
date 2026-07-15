@@ -169,11 +169,11 @@ class TestFopDeclaration(TransactionCase):
     def test_generate_xml_quarter_marker_matches_period(self):
         """Each reporting period maps to the F0103309 body period marker — issue #139.
 
-        Markers per the real DPS form: only 'h1' → HHY is verified against an
-        accepted CABINET declaration; the rest follow F0103309_BODY_PERIOD_MARKER.
+        Markers звірені з офіційним XSD ДПС (DBody: H1KV/HHY/H3KV/HY) —
+        див. l10n_ua_tax_F0103309/tests/test_xsd_validation.py.
         """
         self._create_income_books()
-        cases = {'q1': 'HKV', 'h1': 'HHY', '9m': 'H3KV', 'year': 'HY'}
+        cases = {'q1': 'H1KV', 'h1': 'HHY', '9m': 'H3KV', 'year': 'HY'}
         for period, marker in cases.items():
             decl = self._create_declaration(period, 2025)
             decl.action_calculate()

@@ -10,16 +10,14 @@ _logger = logging.getLogger(__name__)
 
 # DECLARBODY reporting-period marker tag, keyed by DECLARHEAD PERIOD_TYPE
 # (1=month, 2=quarter, 3=half-year, 4=9-months, 5=year).
-# NB: only '3' (півріччя → HHY) is verified against a REAL accepted DPS
-# declaration (CABINET 0.5.0 export, I півріччя 2026). The others are
-# best-effort — confirm against real Q1 / 9-month / year samples before
-# relying on them for submission.
+# Звірено з ОФІЦІЙНИМ XSD ДПС F0103309.xsd (DBody дозволяє саме ці елементи:
+# H1KV, HHY, H3KV, HY) — пакет СКЗ 1.34.0.0. Тест: tests/test_xsd_validation.py.
 F0103309_BODY_PERIOD_MARKER = {
-    '1': 'HKV',   # місяць (нетипово для гр.3) — не звірено
-    '2': 'HKV',   # I квартал — не звірено
-    '3': 'HHY',   # півріччя — ЗВІРЕНО з прийнятим зразком ДПС
-    '4': 'H3KV',  # три квартали — не звірено
-    '5': 'HY',    # рік — не звірено
+    '1': 'H1KV',  # місяць (нетипово для гр.3) → I квартал
+    '2': 'H1KV',  # I квартал
+    '3': 'HHY',   # півріччя
+    '4': 'H3KV',  # три квартали
+    '5': 'HY',    # рік
 }
 
 # Identifies the generating software in DECLARHEAD/SOFTWARE (XSD-required element).
