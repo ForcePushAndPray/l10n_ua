@@ -30,6 +30,7 @@ from this module and implement bank-specific API calls.
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/multicompany_security.xml',
         'data/res_bank_data.xml',
         'data/ir_cron_data.xml',
         'report/bank_statement_report.xml',

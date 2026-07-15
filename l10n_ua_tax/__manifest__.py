@@ -32,6 +32,7 @@ Requires l10n_ua_account_base module.
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/multicompany_security.xml',
         'data/account_tax_data.xml',
         'data/l10n_ua_budget_code_data.xml',
         'data/l10n_ua_tax_document_type_data.xml',

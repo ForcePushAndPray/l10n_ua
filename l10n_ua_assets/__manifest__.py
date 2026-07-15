@@ -38,6 +38,7 @@ Requires l10n_ua_account_base and l10n_ua_doc_reports modules.
     'data': [
         # Security
         'security/ir.model.access.csv',
+        'security/multicompany_security.xml',
         # Data
         'data/l10n_ua_asset_group_data.xml',
         'data/ir_sequence_data.xml',

@@ -4,3 +4,4 @@ from . import test_inventory
 from . import test_mnma
 from . import test_modernization
 from . import test_revaluation
+from . import test_multicompany

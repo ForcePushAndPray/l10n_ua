@@ -31,6 +31,7 @@ Ukraine FOP Module (Єдиний податок ФОП)
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/multicompany_security.xml',
         'data/l10n_ua_fop_group_data.xml',
         'views/l10n_ua_fop_income_book_views.xml',
         'views/l10n_ua_fop_declaration_views.xml',

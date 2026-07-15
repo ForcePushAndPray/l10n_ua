@@ -67,6 +67,7 @@ Dependencies:
     'data': [
         # Security
         'security/ir.model.access.csv',
+        'security/multicompany_security.xml',
         # Data
         'data/period_closing_data.xml',
         'data/cash_limit_cron.xml',

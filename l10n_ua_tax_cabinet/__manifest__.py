@@ -32,6 +32,7 @@ Extends l10n_ua.tax.document with cabinet-specific fields and actions.
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/multicompany_security.xml',
         'wizard/l10n_ua_tax_cabinet_sync_wizard_views.xml',
         'wizard/l10n_ua_tax_cabinet_password_wizard_views.xml',
         'wizard/l10n_ua_tax_document_wizard_views.xml',

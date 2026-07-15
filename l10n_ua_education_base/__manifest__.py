@@ -36,6 +36,7 @@ Ukraine Education Base
     'data': [
         'security/security.xml',
         'security/ir.model.access.csv',
+        'security/multicompany_security.xml',
         'data/l10n_ua_education_academic_year_data.xml',
         'views/res_company_views.xml',
         'views/l10n_ua_education_academic_year_views.xml',

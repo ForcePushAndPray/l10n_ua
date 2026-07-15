@@ -8,3 +8,4 @@ from . import test_aging_report
 from . import test_balance_pnl
 from . import test_non_ua_company
 from . import test_advance_report
+from . import test_multicompany

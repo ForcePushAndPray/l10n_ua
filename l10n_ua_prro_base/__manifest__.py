@@ -25,6 +25,7 @@ Requires l10n_ua_account_base module.
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/multicompany_security.xml',
         'data/pos_payment_method_data.xml',
         'views/l10n_ua_prro_config_views.xml',
         'views/l10n_ua_prro_receipt_views.xml',
