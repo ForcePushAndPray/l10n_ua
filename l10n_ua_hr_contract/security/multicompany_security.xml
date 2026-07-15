@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Multi-company record rules (issue #178).
+             These models carry company_id but had no multi-company ir.rule,
+             so records leaked across ALL companies. Global rules scope them
+             to the user's allowed companies. Standard Odoo pattern
+             (see l10n_ua_account_vat pilot). -->
+
+        <record id="hr_job_combining_company_rule" model="ir.rule">
+            <field name="name">Суміщення посад: multi-company</field>
+            <field name="model_id" ref="model_hr_job_combining"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">
+                ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
+            </field>
+        </record>
+
+        <record id="hr_version_amendment_company_rule" model="ir.rule">
+            <field name="name">Зміна умов договору: multi-company</field>
+            <field name="model_id" ref="model_hr_version_amendment"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">
+                ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
+            </field>
+        </record>
+
+        <record id="hr_version_salary_change_company_rule" model="ir.rule">
+            <field name="name">Зміна окладу: multi-company</field>
+            <field name="model_id" ref="model_hr_version_salary_change"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">
+                ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
+            </field>
+        </record>
+
+        <record id="hr_work_schedule_company_rule" model="ir.rule">
+            <field name="name">Графік роботи: multi-company</field>
+            <field name="model_id" ref="model_hr_work_schedule"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">
+                ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
+            </field>
+        </record>
+
+    </data>
+</odoo>

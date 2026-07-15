@@ -12,6 +12,7 @@
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/multicompany_security.xml',
         'data/hr_salary_account_data.xml',
         'views/hr_salary_account_config_views.xml',
         'views/hr_department_views.xml',

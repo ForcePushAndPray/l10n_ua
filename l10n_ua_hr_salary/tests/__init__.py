@@ -6,3 +6,4 @@ from . import test_execution_document
 from . import test_execution_document_limit
 from . import test_execution_document_multi_company
 from . import test_salary_advance
+from . import test_multicompany

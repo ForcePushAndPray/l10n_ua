@@ -35,6 +35,7 @@ Ukraine Budget Estimate
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/multicompany_security.xml',
         'data/ir_sequence_data.xml',
         'views/l10n_ua_budget_estimate_views.xml',
         'views/menu_views.xml',

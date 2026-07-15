@@ -27,6 +27,7 @@ Bonuses are automatically included in salary calculation when:
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/multicompany_security.xml',
         'data/ir_sequence_data.xml',
         'data/hr_bonus_type_data.xml',
         'views/hr_bonus_type_views.xml',

@@ -31,6 +31,7 @@ This module is required for all other l10n_ua_hr_* modules.
     'data': [
         'security/hr_ua_security.xml',
         'security/ir.model.access.csv',
+        'security/multicompany_security.xml',
         'data/hr_education_level_data.xml',
         'data/hr_military_rank_data.xml',
         'data/hr_employee_benefit_data.xml',

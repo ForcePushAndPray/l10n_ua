@@ -37,6 +37,7 @@ to avoid naming conflicts with existing modules on Odoo Apps.
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/multicompany_security.xml',
         'data/ir_sequence_data.xml',
         'data/hr_accrual_type_data.xml',
         'data/hr_deduction_type_data.xml',

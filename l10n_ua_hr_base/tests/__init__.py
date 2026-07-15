@@ -7,3 +7,4 @@ from . import test_hr_staffing_table
 from . import test_hr_employee_reports
 from . import test_employee_number
 from . import test_hr_kp2010
+from . import test_multicompany

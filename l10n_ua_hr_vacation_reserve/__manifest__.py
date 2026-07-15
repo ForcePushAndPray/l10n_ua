@@ -29,6 +29,7 @@ Requires l10n_ua_hr_holidays, l10n_ua_hr_salary, and account modules.
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/multicompany_security.xml',
         'data/ir_sequence_data.xml',
         'data/ir_cron_data.xml',
         'views/res_company_views.xml',

@@ -29,6 +29,7 @@ Requires l10n_ua_hr_base module.
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/multicompany_security.xml',
         'data/hr_timesheet_code_data.xml',
         'views/hr_timesheet_views.xml',
         'views/hr_timesheet_code_views.xml',

@@ -1,0 +1,17 @@
+"""Multi-company record-rule presence (issue #178)."""
+
+from odoo.tests import TransactionCase, tagged
+
+
+@tagged('post_install', '-at_install')
+class TestAttendanceSheetMultiCompany(TransactionCase):
+
+    def test_rules_exist_and_are_global(self):
+        refs = [
+            'l10n_ua_hr_attendance_sheet.hr_timesheet_company_rule',
+            'l10n_ua_hr_attendance_sheet.hr_production_calendar_company_rule',
+        ]
+        for ref in refs:
+            rule = self.env.ref(ref)
+            self.assertTrue(rule, f"Rule {ref} must exist")
+            self.assertTrue(rule['global'], f"Rule {ref} must be global")

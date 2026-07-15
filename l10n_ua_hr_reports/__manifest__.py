@@ -27,6 +27,7 @@ Requires l10n_ua_hr_salary module.
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/multicompany_security.xml',
         'views/hr_report_1df_views.xml',
         'views/hr_report_d5_views.xml',
         'views/hr_report_headcount_views.xml',

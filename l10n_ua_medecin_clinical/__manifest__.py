@@ -26,6 +26,7 @@ Medecin Clinical
     ],
     'data': [
         'security/ir.model.access.csv',
+        'security/multicompany_security.xml',
         'data/l10n_ua_medecin_icd10_data.xml',
         'views/l10n_ua_medecin_icd10_views.xml',
         'views/l10n_ua_medecin_encounter_views.xml',
