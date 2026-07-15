@@ -155,16 +155,25 @@ class TestFopDeclaration(TransactionCase):
         # Canonical F0103309 structure and the declaration's own figures.
         self.assertIn('<C_DOC>F01</C_DOC>', xml)
         self.assertIn('<C_DOC_SUB>033</C_DOC_SUB>', xml)
-        self.assertIn('<H4KV>1</H4KV>', xml)          # annual → 4th-quarter marker
+        self.assertIn('<HY>1</HY>', xml)              # annual → year marker
         self.assertIn('<PERIOD_TYPE>5</PERIOD_TYPE>', xml)
         self.assertIn('<R006G3>300000.00</R006G3>', xml)  # total income
         self.assertIn('<R011G3>15000.00</R011G3>', xml)   # single tax 5%
         self.assertIn('<R023G3>3000.00</R023G3>', xml)    # military levy 1%
+        # Structural elements the DPS XSD requires (verified against a real
+        # accepted CABINET declaration — see F0103309 renderer).
+        self.assertIn('<LINKED_DOCS xsi:nil="true"/>', xml)
+        self.assertIn('<SOFTWARE>', xml)
+        self.assertIn('<T2RXXXXG2S ROWNUM="1" xsi:nil="true"/>', xml)
 
     def test_generate_xml_quarter_marker_matches_period(self):
-        """Each reporting period maps to the right cumulative quarter marker — issue #139."""
+        """Each reporting period maps to the F0103309 body period marker — issue #139.
+
+        Markers per the real DPS form: only 'h1' → HHY is verified against an
+        accepted CABINET declaration; the rest follow F0103309_BODY_PERIOD_MARKER.
+        """
         self._create_income_books()
-        cases = {'q1': 'H1KV', 'h1': 'H2KV', '9m': 'H3KV', 'year': 'H4KV'}
+        cases = {'q1': 'HKV', 'h1': 'HHY', '9m': 'H3KV', 'year': 'HY'}
         for period, marker in cases.items():
             decl = self._create_declaration(period, 2025)
             decl.action_calculate()

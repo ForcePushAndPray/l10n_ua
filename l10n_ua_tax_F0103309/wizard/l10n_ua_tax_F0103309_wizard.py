@@ -8,6 +8,23 @@ from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
+# DECLARBODY reporting-period marker tag, keyed by DECLARHEAD PERIOD_TYPE
+# (1=month, 2=quarter, 3=half-year, 4=9-months, 5=year).
+# NB: only '3' (півріччя → HHY) is verified against a REAL accepted DPS
+# declaration (CABINET 0.5.0 export, I півріччя 2026). The others are
+# best-effort — confirm against real Q1 / 9-month / year samples before
+# relying on them for submission.
+F0103309_BODY_PERIOD_MARKER = {
+    '1': 'HKV',   # місяць (нетипово для гр.3) — не звірено
+    '2': 'HKV',   # I квартал — не звірено
+    '3': 'HHY',   # півріччя — ЗВІРЕНО з прийнятим зразком ДПС
+    '4': 'H3KV',  # три квартали — не звірено
+    '5': 'HY',    # рік — не звірено
+}
+
+# Identifies the generating software in DECLARHEAD/SOFTWARE (XSD-required element).
+F0103309_SOFTWARE = 'Odoo l10n_ua'
+
 
 class L10nUaTaxDocumentWizardF0103309(models.TransientModel):
     """
@@ -413,13 +430,15 @@ class L10nUaTaxDocumentWizardF0103309(models.TransientModel):
         """
         today = date.today()
 
-        # Build activity codes XML
+        # Build activity codes XML (KVED). Table 1: G1S = code column, G2S = name
+        # column. Indented to 8 spaces to match DECLARBODY nesting; no space
+        # before ">" (matches the accepted CABINET sample).
         activities = vals.get('activities') or []
         activities_xml = ''
         for idx, (code, name) in enumerate(activities, 1):
-            activities_xml += f'<T1RXXXXG1S ROWNUM="{idx}" >{self._escape_xml(code)}</T1RXXXXG1S>\n'
+            activities_xml += f'        <T1RXXXXG1S ROWNUM="{idx}">{self._escape_xml(code)}</T1RXXXXG1S>\n'
         for idx, (code, name) in enumerate(activities, 1):
-            activities_xml += f'<T1RXXXXG2S ROWNUM="{idx}" >{self._escape_xml(name)}</T1RXXXXG2S>\n'
+            activities_xml += f'        <T1RXXXXG2S ROWNUM="{idx}">{self._escape_xml(name)}</T1RXXXXG2S>\n'
 
         # Get tax office codes
         tax_office_code = vals.get('tax_office_code') or ''
@@ -427,51 +446,57 @@ class L10nUaTaxDocumentWizardF0103309(models.TransientModel):
         c_raj = tax_office_code[2:4] if len(tax_office_code) >= 4 else ''
         tax_office_name = vals.get('tax_office_name') or ''
 
-        # Quarter marker
-        quarter_marker = vals['quarter_marker']
+        # Body reporting-period marker, derived from the (verified) PERIOD_TYPE.
+        period_marker = F0103309_BODY_PERIOD_MARKER.get(
+            str(vals.get('period_type')), 'HKV')
 
         xml = f'''<?xml version="1.0" encoding="windows-1251"?>
-        <DECLAR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="F0103309.XSD">
-<DECLARHEAD>
-    <TIN>{self._escape_xml(vals['taxpayer_tin'])}</TIN>
-    <C_DOC>F01</C_DOC>
-    <C_DOC_SUB>033</C_DOC_SUB>
-    <C_DOC_VER>9</C_DOC_VER>
-    <C_DOC_TYPE>{vals['declaration_type']}</C_DOC_TYPE>
-    <C_DOC_CNT>1</C_DOC_CNT>
-    <C_REG>{c_reg}</C_REG>
-    <C_RAJ>{c_raj}</C_RAJ>
-    <PERIOD_MONTH>{vals['period_month']}</PERIOD_MONTH>
-    <PERIOD_TYPE>{vals['period_type']}</PERIOD_TYPE>
-    <PERIOD_YEAR>{vals['year']}</PERIOD_YEAR>
-    <C_STI_ORIG>{tax_office_code}</C_STI_ORIG>
-    <C_DOC_STAN>1</C_DOC_STAN><D_FILL>{today.strftime('%d%m%Y')}</D_FILL>
-</DECLARHEAD>
-        <DECLARBODY>
-<HZ>1</HZ>
-<{quarter_marker}>1</{quarter_marker}>
-<HZY>{vals['year']}</HZY>
-<HSTI>{self._escape_xml(tax_office_name)}</HSTI>
-<HNAME>{self._escape_xml(vals['taxpayer_name'])}</HNAME>
-<HLOC>{self._escape_xml(vals.get('taxpayer_address') or '')}</HLOC>
-<HEMAIL>{self._escape_xml(vals.get('taxpayer_email') or '')}</HEMAIL>
-<HTEL>{self._escape_xml(vals.get('taxpayer_phone') or '')}</HTEL>
-<HTIN>{self._escape_xml(vals['taxpayer_tin'])}</HTIN>
-<HNACTL>{vals.get('employee_count') or 0}</HNACTL>
-{activities_xml}<R006G3>{self._format_amount(vals['income_total'])}</R006G3>
-<R008G3>{self._format_amount(vals['income_total'])}</R008G3>
-<R011G3>{self._format_amount(vals['tax_amount'])}</R011G3>
-<R012G3>{self._format_amount(vals['tax_amount'])}</R012G3>
-<R013G3>{self._format_amount(vals['tax_paid_prev'])}</R013G3>
-<R0141G3>{self._format_amount(vals['tax_to_pay'])}</R0141G3>
-<R014G3>{self._format_amount(vals['tax_to_pay'])}</R014G3>
-<R023G3>{self._format_amount(vals['military_amount'])}</R023G3>
-<R024G3>{self._format_amount(vals['military_paid_prev'])}</R024G3>
-<R025G3>{self._format_amount(vals['military_to_pay'])}</R025G3>
-<HFILL>{today.strftime('%d%m%Y')}</HFILL>
-<HKEXECUTOR>{self._escape_xml(vals['taxpayer_tin'])}</HKEXECUTOR>
-<HBOS>{self._escape_xml(vals['taxpayer_name'])}</HBOS>
-</DECLARBODY></DECLAR>'''
+<DECLAR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="F0103309.xsd">
+    <DECLARHEAD>
+        <TIN>{self._escape_xml(vals['taxpayer_tin'])}</TIN>
+        <C_DOC>F01</C_DOC>
+        <C_DOC_SUB>033</C_DOC_SUB>
+        <C_DOC_VER>9</C_DOC_VER>
+        <C_DOC_TYPE>{vals['declaration_type']}</C_DOC_TYPE>
+        <C_DOC_CNT>1</C_DOC_CNT>
+        <C_REG>{c_reg}</C_REG>
+        <C_RAJ>{c_raj}</C_RAJ>
+        <PERIOD_MONTH>{vals['period_month']}</PERIOD_MONTH>
+        <PERIOD_TYPE>{vals['period_type']}</PERIOD_TYPE>
+        <PERIOD_YEAR>{vals['year']}</PERIOD_YEAR>
+        <C_STI_ORIG>{tax_office_code}</C_STI_ORIG>
+        <C_DOC_STAN>1</C_DOC_STAN>
+        <LINKED_DOCS xsi:nil="true"/>
+        <D_FILL>{today.strftime('%d%m%Y')}</D_FILL>
+        <SOFTWARE>{F0103309_SOFTWARE}</SOFTWARE>
+    </DECLARHEAD>
+    <DECLARBODY>
+        <HZ>1</HZ>
+        <{period_marker}>1</{period_marker}>
+        <HZY>{vals['year']}</HZY>
+        <HSTI>{self._escape_xml(tax_office_name)}</HSTI>
+        <HNAME>{self._escape_xml(vals['taxpayer_name'])}</HNAME>
+        <HLOC>{self._escape_xml(vals.get('taxpayer_address') or '')}</HLOC>
+        <HEMAIL>{self._escape_xml(vals.get('taxpayer_email') or '')}</HEMAIL>
+        <HTEL>{self._escape_xml(vals.get('taxpayer_phone') or '')}</HTEL>
+        <HTIN>{self._escape_xml(vals['taxpayer_tin'])}</HTIN>
+        <HNACTL>{vals.get('employee_count') or 0}</HNACTL>
+{activities_xml}        <R006G3>{self._format_amount(vals['income_total'])}</R006G3>
+        <R008G3>{self._format_amount(vals['income_total'])}</R008G3>
+        <R011G3>{self._format_amount(vals['tax_amount'])}</R011G3>
+        <R012G3>{self._format_amount(vals['tax_amount'])}</R012G3>
+        <R013G3>{self._format_amount(vals['tax_paid_prev'])}</R013G3>
+        <R0141G3>{self._format_amount(vals['tax_to_pay'])}</R0141G3>
+        <R014G3>{self._format_amount(vals['tax_to_pay'])}</R014G3>
+        <R023G3>{self._format_amount(vals['military_amount'])}</R023G3>
+        <R024G3>{self._format_amount(vals['military_paid_prev'])}</R024G3>
+        <R025G3>{self._format_amount(vals['military_to_pay'])}</R025G3>
+        <T2RXXXXG2S ROWNUM="1" xsi:nil="true"/>
+        <HFILL>{today.strftime('%d%m%Y')}</HFILL>
+        <HKEXECUTOR>{self._escape_xml(vals['taxpayer_tin'])}</HKEXECUTOR>
+        <HBOS>{self._escape_xml(vals['taxpayer_name'])}</HBOS>
+    </DECLARBODY>
+</DECLAR>'''
         return xml
 
     def _format_amount(self, value):
