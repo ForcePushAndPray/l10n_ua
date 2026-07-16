@@ -90,6 +90,23 @@ class TestPayslip(SalaryTestCase):
                          'Base wage must appear exactly once, not manual + auto')
         self.assertEqual(payslip.gross_salary, 25000)
 
+    def test_work_rate_proportional_salary(self):
+        """work_rate масштабує базовий оклад: 0.5 ставки → половина (#149)."""
+        self.version.work_rate = 1.0
+        payslip = self._create_payslip()
+        payslip.action_compute_sheet()
+        full = sum(payslip.accrual_ids.filtered(
+            lambda a: a.is_auto_generated and a.accrual_type_id == self.accrual_wage
+        ).mapped('amount'))
+        self.assertGreater(full, 0, 'Auto base wage expected at full rate')
+
+        self.version.work_rate = 0.5
+        payslip.action_compute_sheet()
+        half = sum(payslip.accrual_ids.filtered(
+            lambda a: a.is_auto_generated and a.accrual_type_id == self.accrual_wage
+        ).mapped('amount'))
+        self.assertAlmostEqual(half, full * 0.5, places=2)
+
     def test_payslip_state_verify(self):
         """After compute, state should be verify or remain draft."""
         payslip = self._create_payslip_with_accrual(25000)

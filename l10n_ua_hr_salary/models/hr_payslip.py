@@ -635,12 +635,16 @@ class HrPayslip(models.Model):
             # monthly wage calculation
             else:
                 effective_wage = self._get_effective_wage(version)
-                if effective_wage and self.scheduled_days > 0:
+                # Ставка зайнятості (work_rate): 0.5 ставки → половина окладу.
+                # Тарифний (погодинний) шлях цього не потребує — там
+                # пропорційність дають фактично відпрацьовані години.
+                monthly_wage = effective_wage * (version.work_rate or 1.0)
+                if monthly_wage and self.scheduled_days > 0:
                     # scheduled_days - number of expected working days in the months
-                    daily_rate = effective_wage / self.scheduled_days
+                    daily_rate = monthly_wage / self.scheduled_days
                     
                     if self.worked_days >= self.scheduled_days:
-                        amount = effective_wage # full amount if worked all days 
+                        amount = monthly_wage  # full (rate-adjusted) amount if worked all days
                     else:
                         amount = daily_rate * self.worked_days
 
