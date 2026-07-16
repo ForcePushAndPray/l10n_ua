@@ -44,6 +44,12 @@
               action="l10n_ua_osv_action"
               sequence="20"/>
 
+    <menuitem id="menu_l10n_ua_account_card"
+              name="Account Card"
+              parent="menu_l10n_ua_accounting"
+              action="l10n_ua_account_card_action"
+              sequence="30"/>
+
     <!-- Subconto Configuration -->
     <menuitem id="menu_l10n_ua_subconto_types"
               name="Subconto Types"

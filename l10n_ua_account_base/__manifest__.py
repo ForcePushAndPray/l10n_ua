@@ -53,6 +53,7 @@ This module is required for all other l10n_ua_* modules.
         'views/account_move_views.xml',
         'views/l10n_ua_journal_order_views.xml',
         'views/l10n_ua_osv_views.xml',
+        'views/l10n_ua_account_card_views.xml',
         'views/l10n_ua_subconto_views.xml',
         'views/menu_views.xml',
     ],
