@@ -20,8 +20,8 @@ class TestValidateEdrpou(TransactionCase):
             '00032129',  # Національний банк України
             '00032112',  # Верховна Рада України
             '14360570',  # ПриватБанк
-            '19351840',  # monobank (Universal Bank)
-            '21684166',  # Розетка
+            '21133352',  # monobank (Universal Bank)
+            '37193071',  # Розетка (Rozetka.UA)
             '20953647',  # Нова Пошта
         ]
         for code in valid_codes:
@@ -32,7 +32,7 @@ class TestValidateEdrpou(TransactionCase):
         """Test valid EDRPOU codes in 30-60 million range."""
         # Codes in the special range use different weights
         valid_codes = [
-            '32352220',  # Example in 30-60M range
+            '32352228',  # Example in 30-60M range
             '40075815',  # Example in 30-60M range
         ]
         for code in valid_codes:
@@ -78,7 +78,7 @@ class TestValidateIpn(TransactionCase):
         # Test IPN codes (generated according to algorithm)
         valid_codes = [
             '2222222225',  # Test code
-            '3333333337',  # Test code
+            '3333333332',  # Test code
         ]
         for code in valid_codes:
             is_valid, error = validate_ipn(code)
