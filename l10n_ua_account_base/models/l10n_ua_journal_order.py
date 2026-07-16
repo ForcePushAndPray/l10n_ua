@@ -1,4 +1,5 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 
 
 class L10nUaJournalOrder(models.Model):
@@ -75,10 +76,37 @@ class L10nUaJournalOrder(models.Model):
             record.total_credit = sum(record.line_ids.mapped('credit'))
 
     def action_compute(self):
-        """Compute journal order lines from account moves."""
+        """Наповнити рядки журналу-ордера рознесеними проводками за журнал/період.
+
+        Читає posted-рядки ``account.move.line`` обраного журналу в межах
+        періоду (за зразком ОСВ, #128) і створює по рядку на кожну проводку:
+        дата, рахунок, партнер, дебет, кредит, документ, опис.
+        """
         self.ensure_one()
+        if not self.period_start or not self.period_end:
+            raise UserError(_('Вкажіть початок і кінець періоду.'))
+        if self.period_end < self.period_start:
+            raise UserError(_('Кінець періоду не може бути раніше за початок.'))
+
         self.line_ids.unlink()
-        # TODO: Implement computation logic
+
+        amls = self.env['account.move.line'].search([
+            ('parent_state', '=', 'posted'),
+            ('company_id', '=', self.company_id.id),
+            ('journal_id', '=', self.journal_id.id),
+            ('date', '>=', self.period_start),
+            ('date', '<=', self.period_end),
+        ], order='date, move_id, id')
+
+        self.line_ids = [(0, 0, {
+            'date': aml.date,
+            'account_id': aml.account_id.id,
+            'partner_id': aml.partner_id.id or False,
+            'description': aml.name or aml.move_id.ref or aml.move_id.name or '',
+            'debit': aml.debit,
+            'credit': aml.credit,
+            'move_id': aml.move_id.id,
+        }) for aml in amls]
         return True
 
     def action_confirm(self):
