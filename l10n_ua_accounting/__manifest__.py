@@ -80,6 +80,7 @@ Dependencies:
         'views/l10n_ua_balance_report_views.xml',
         'views/l10n_ua_pnl_report_views.xml',
         'views/l10n_ua_period_closing_views.xml',
+        'views/l10n_ua_currency_revaluation_views.xml',
         'views/l10n_ua_aging_report_views.xml',
         # Wizards
         'wizard/cash_book_wizard_views.xml',

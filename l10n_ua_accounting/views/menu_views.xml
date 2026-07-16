@@ -161,6 +161,12 @@
               action="l10n_ua_period_closing_action"
               sequence="50"/>
 
+    <menuitem id="menu_ua_currency_revaluation"
+              name="Currency Revaluation"
+              parent="menu_ua_reports"
+              action="l10n_ua_currency_revaluation_action"
+              sequence="55"/>
+
     <!-- ==================== Inventory ==================== -->
     <menuitem id="menu_ua_stock"
               name="Inventory"

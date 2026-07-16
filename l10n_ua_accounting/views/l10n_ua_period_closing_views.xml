@@ -10,6 +10,9 @@
                 <header>
                     <button name="action_compute" string="Розрахувати" type="object"
                             class="btn-secondary" invisible="state != 'draft'"/>
+                    <button name="action_open_currency_revaluation"
+                            string="Переоцінка валюти" type="object"
+                            class="btn-secondary" invisible="state != 'draft'"/>
                     <button name="action_close" string="Закрити період" type="object"
                             class="btn-primary" invisible="state != 'draft'"
                             confirm="Ви впевнені? Буде створено проводки закриття та встановлено блокування періоду."/>

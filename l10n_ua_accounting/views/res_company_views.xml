@@ -29,6 +29,16 @@
                         <field name="l10n_ua_advance_expense_account_id"/>
                     </group>
                 </group>
+                <group string="Курсові різниці (UA)">
+                    <group>
+                        <field name="l10n_ua_fx_gain_op_account_id"/>
+                        <field name="l10n_ua_fx_loss_op_account_id"/>
+                    </group>
+                    <group>
+                        <field name="l10n_ua_fx_gain_nonop_account_id"/>
+                        <field name="l10n_ua_fx_loss_nonop_account_id"/>
+                    </group>
+                </group>
             </xpath>
         </field>
     </record>

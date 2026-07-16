@@ -55,6 +55,28 @@ class ResCompany(models.Model):
              '(використовується, якщо в рядку не вказано власний рахунок).',
     )
 
+    # --- Курсові різниці (переоцінка валютних коштів) ---
+    l10n_ua_fx_gain_op_account_id = fields.Many2one(
+        'account.account', check_company=True,
+        string='Дохід від операційної курсової різниці (714)',
+        help='Рахунок для додатних операційних курсових різниць.',
+    )
+    l10n_ua_fx_loss_op_account_id = fields.Many2one(
+        'account.account', check_company=True,
+        string='Втрати від операційної курсової різниці (945)',
+        help='Рахунок для відʼємних операційних курсових різниць.',
+    )
+    l10n_ua_fx_gain_nonop_account_id = fields.Many2one(
+        'account.account', check_company=True,
+        string='Дохід від неопераційної курсової різниці (744)',
+        help='Рахунок для додатних неопераційних курсових різниць.',
+    )
+    l10n_ua_fx_loss_nonop_account_id = fields.Many2one(
+        'account.account', check_company=True,
+        string='Втрати від неопераційної курсової різниці (974)',
+        help='Рахунок для відʼємних неопераційних курсових різниць.',
+    )
+
     def _l10n_ua_is_ukrainian(self):
         """Whether Ukrainian accounting rules apply to this company.
 

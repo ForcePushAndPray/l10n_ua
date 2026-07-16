@@ -555,6 +555,32 @@ class L10nUaPeriodClosing(models.Model):
         })
         self.closing_line_ids.unlink()
 
+    def action_open_currency_revaluation(self):
+        """Відкрити переоцінку валютних коштів на дату закриття (#141).
+
+        Регламентну операцію «Переоцінка валютних коштів» виконують перед
+        закриттям місяця. Кнопка знаходить наявну переоцінку на цю дату або
+        створює чернетку.
+        """
+        self.ensure_one()
+        Reval = self.env['l10n_ua.currency.revaluation']
+        reval = Reval.search([
+            ('company_id', '=', self.company_id.id),
+            ('date', '=', self.date),
+        ], limit=1) or Reval.create({
+            'company_id': self.company_id.id,
+            'date': self.date,
+            'journal_id': self.journal_id.id,
+        })
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Переоцінка валюти'),
+            'res_model': 'l10n_ua.currency.revaluation',
+            'res_id': reval.id,
+            'view_mode': 'form',
+            'target': 'current',
+        }
+
     @api.constrains('period_id', 'company_id')
     def _check_unique_closing(self):
         for rec in self:
