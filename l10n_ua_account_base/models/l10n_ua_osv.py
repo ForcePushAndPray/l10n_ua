@@ -43,9 +43,20 @@ class L10nUaOsv(models.Model):
         selection=[
             ('synthetic', 'Synthetic'),
             ('analytic', 'Analytic'),
+            ('subconto', 'By Subconto'),
         ],
         string='Type',
         default='synthetic',
+    )
+    subconto_type_id = fields.Many2one(
+        'l10n_ua.subconto.type',
+        string='Subconto Type',
+        help='Вид субконто для розбивки (лише для типу «By Subconto»).',
+    )
+    account_id = fields.Many2one(
+        'account.account',
+        string='Account',
+        help='Обмежити ОСВ одним рахунком (опційно).',
     )
     currency_id = fields.Many2one(
         'res.currency',
@@ -54,8 +65,9 @@ class L10nUaOsv(models.Model):
 
     @api.depends('period_start', 'period_end', 'osv_type')
     def _compute_name(self):
+        type_names = dict(self._fields['osv_type'].selection)
         for record in self:
-            type_name = 'Synthetic' if record.osv_type == 'synthetic' else 'Analytic'
+            type_name = type_names.get(record.osv_type, '')
             if record.period_start:
                 record.name = f'OSV {type_name} ({record.period_start} - {record.period_end})'
             else:
@@ -76,24 +88,45 @@ class L10nUaOsv(models.Model):
         self.line_ids.unlink()
 
         AML = self.env['account.move.line']
-        analytic = self.osv_type == 'analytic'
-        groupby = ['account_id', 'partner_id'] if analytic else ['account_id']
-        empty_partner = self.env['res.partner']
         currency = self.company_id.currency_id
+
+        # Вимір розбивки: None (синтетична) / 'partner_id' (аналітична) /
+        # quick-поле субконто (розбивка по обраному виду субконто).
+        dim_field = None
+        if self.osv_type == 'analytic':
+            dim_field = 'partner_id'
+        elif self.osv_type == 'subconto':
+            if not self.subconto_type_id:
+                raise UserError(_('Оберіть вид субконто для розбивки.'))
+            dim_field = AML._subconto_quick_fields_map().get(
+                self.subconto_type_id.model_name)
+            if not dim_field:
+                raise UserError(_(
+                    'Для виду субконто «%s» немає швидкого поля для групування. '
+                    'Додайте bridge-модуль (напр. l10n_ua_account_subconto_hr).'
+                ) % self.subconto_type_id.name)
+
+        groupby = ['account_id'] + ([dim_field] if dim_field else [])
+        empty_rec = self.env['res.partner']
 
         base_domain = [
             ('parent_state', '=', 'posted'),
             ('company_id', '=', self.company_id.id),
         ]
+        if self.account_id:
+            base_domain.append(('account_id', '=', self.account_id.id))
+        if self.osv_type == 'subconto':
+            # Лише рядки, що мають значення обраного субконто.
+            base_domain.append((dim_field, '!=', False))
 
         # key -> accumulator
         data = {}
 
-        def bucket(account, partner):
-            key = (account.id, partner.id)
+        def bucket(account, dim):
+            key = (account.id, dim.id if dim else False)
             return data.setdefault(key, {
                 'account': account,
-                'partner': partner,
+                'dim': dim,
                 'opening': 0.0,
                 'turnover_debit': 0.0,
                 'turnover_credit': 0.0,
@@ -107,8 +140,8 @@ class L10nUaOsv(models.Model):
         )
         for row in opening_rows:
             account = row[0]
-            partner = row[1] if analytic else empty_partner
-            bucket(account, partner)['opening'] += row[-1] or 0.0
+            dim = row[1] if dim_field else empty_rec
+            bucket(account, dim)['opening'] += row[-1] or 0.0
 
         # Turnover: debit/credit movements within the period.
         turnover_rows = AML._read_group(
@@ -121,17 +154,20 @@ class L10nUaOsv(models.Model):
         )
         for row in turnover_rows:
             account = row[0]
-            partner = row[1] if analytic else empty_partner
-            acc = bucket(account, partner)
+            dim = row[1] if dim_field else empty_rec
+            acc = bucket(account, dim)
             acc['turnover_debit'] += row[-2] or 0.0
             acc['turnover_credit'] += row[-1] or 0.0
 
+        is_partner_dim = dim_field == 'partner_id'
+        is_subconto = self.osv_type == 'subconto'
         lines = []
         for acc in data.values():
             opening = acc['opening']
             turnover_debit = acc['turnover_debit']
             turnover_credit = acc['turnover_credit']
             closing = opening + turnover_debit - turnover_credit
+            dim = acc['dim']
 
             # Skip fully empty accounts (e.g. equal debit/credit netting to zero).
             if (currency.is_zero(opening)
@@ -141,7 +177,8 @@ class L10nUaOsv(models.Model):
 
             lines.append((0, 0, {
                 'account_id': acc['account'].id,
-                'partner_id': acc['partner'].id or False,
+                'partner_id': dim.id if (is_partner_dim and dim) else False,
+                'subconto_label': dim.display_name if (is_subconto and dim) else '',
                 'opening_debit': opening if opening > 0 else 0.0,
                 'opening_credit': -opening if opening < 0 else 0.0,
                 'turnover_debit': turnover_debit,
@@ -179,6 +216,10 @@ class L10nUaOsvLine(models.Model):
     partner_id = fields.Many2one(
         'res.partner',
         string='Partner',
+    )
+    subconto_label = fields.Char(
+        string='Subconto',
+        help='Значення субконто (для ОСВ по субконто).',
     )
     opening_debit = fields.Monetary(
         string='Opening Debit',
