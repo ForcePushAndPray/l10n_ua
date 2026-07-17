@@ -1,5 +1,4 @@
 from . import models
-from . import wizard
 
 def pre_init_hook(env):
     """

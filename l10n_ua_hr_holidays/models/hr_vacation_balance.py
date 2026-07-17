@@ -180,6 +180,23 @@ class HrVacationBalance(models.Model):
         return employee.hire_date if employee else False
 
     @api.model
+    def _employee_period_anchor(self, employee):
+        """Date the employee's accounting history starts from: hire_date,
+        falling back to the current contract start (same anchor
+        hr.employee._get_work_year_for_date uses). Used as the walk's starting
+        point when backfilling the full period chain — unlike
+        _employee_hire_anchor, which stays hire_date-only for pre-hire
+        blocking. Without this fallback an employee with a contract but no
+        hire_date would backfill only the current period."""
+        if not employee:
+            return False
+        if employee.hire_date:
+            return employee.hire_date
+        version = (employee.current_version_id
+                   if 'current_version_id' in employee._fields else False)
+        return version.contract_date_start if version else False
+
+    @api.model
     def _ref_date_for_year(self, year):
         """Pick a reference date inside the requested year to resolve
         the accounting period: today when generating for the current year,
@@ -325,22 +342,20 @@ class HrVacationBalance(models.Model):
                 rec.planned_days = 0
                 continue
 
-            # Leaves explicitly linked to this balance, plus unlinked
-            # legacy leaves whose START date falls inside this period.
-            # A leave belongs to the single period containing its start
-            # date — matching on vacation_year instead would lump leaves
-            # from other work years that merely share a calendar year with
-            # this period's start (e.g. a Feb-2026 leave of the 2025/26
-            # work year vs the 2026/27 work year, both year == 2026).
+            # A leave belongs to the single period whose bounds contain its
+            # START date, so count by date containment regardless of the
+            # leave's vacation_balance_id link. Auto-linking can point a leave
+            # at a differently-bounded (migrated/duplicate) row covering the
+            # same span; matching on the link alone would then drop it from
+            # the displayed period's rollup (used days shown as 0). Date
+            # containment stays correct for work years too — Feb-2026 belongs
+            # to the 2025/26 work year, not 2026/27 — because periods never
+            # overlap, so each leave falls in exactly one period.
             base_domain = [
                 ('employee_id', '=', rec.employee_id.id),
                 ('holiday_status_id', '=', rec.leave_type_id.id),
-                '|',
-                    ('vacation_balance_id', '=', rec.id),
-                    '&', '&',
-                        ('vacation_balance_id', '=', False),
-                        ('request_date_from', '>=', rec.period_start),
-                        ('request_date_from', '<=', rec.period_end),
+                ('request_date_from', '>=', rec.period_start),
+                ('request_date_from', '<=', rec.period_end),
             ]
 
             used_leaves = HrLeave.search(base_domain + [('state', '=', 'validate')])
@@ -352,63 +367,118 @@ class HrVacationBalance(models.Model):
             rec.planned_days = sum(planned_leaves.mapped('calendar_days'))
 
     @api.model
-    def generate_balances(self, year=None, leave_types=None):
-        """Generate vacation balances for all employees.
+    def _generate_period_chain(self, employee, leave_type, up_to_date=None):
+        """Create every missing accounting period for (employee, leave_type)
+        from the employee's first period (on/after the hire anchor) up to the
+        period containing up_to_date (default: today).
 
-        Calendar-period types get a Jan 1 – Dec 31 balance for the
-        requested year; work-period types get the work year (anchored to
-        hire_date) containing the reference date of that year. Employees
-        without a hire anchor are skipped for work-period types.
-        """
-        if year is None:
-            year = fields.Date.today().year
-        ref_date = self._ref_date_for_year(year)
-        
-        domain = []
-        if 'contract_id' in self.env['hr.employee']._fields:
-            domain.append(('contract_id.state', '=', 'open'))
-        
-        employees = self.env['hr.employee'].search(domain)
-        
-        if leave_types is None:
-            leave_types = self.env['hr.leave.type'].search([
-                ('ua_leave_category', '=', 'annual_basic'),
-            ], limit=1)
-
-        for leave_type in leave_types:
-            for employee in employees:
-                start, end, index = self._get_period_for(
-                    employee, leave_type, ref_date)
-                if not start:
-                    # Work-year type and no hire anchor — cannot resolve
-                    # the period for this employee.
-                    continue
-
-                existing = self.search([
-                    ('employee_id', '=', employee.id),
-                    ('leave_type_id', '=', leave_type.id),
-                    ('period_start', '=', start),
-                ])
-                if existing:
-                    continue
-
-                # Carry over from the immediately preceding period
-                prev_balance = self.search([
-                    ('employee_id', '=', employee.id),
-                    ('leave_type_id', '=', leave_type.id),
-                    ('period_index', '=', index - 1),
-                ], limit=1)
-                carried = prev_balance.remaining_days if prev_balance else 0
-
-                self.create({
+        Filling the gaps is what lets carry-over cascade across a year in
+        which no leave was taken: without the missing year's row, its unused
+        entitlement is silently dropped instead of rolling into the next
+        period. Returns the balances that were created (carried_over is left
+        to the carry-over chain). Yields nothing when the period cannot be
+        resolved (e.g. a work-year type without a hire anchor)."""
+        if not employee or not leave_type:
+            return self.browse()
+        if up_to_date is None:
+            up_to_date = fields.Date.today()
+        # Walk from the employment anchor (hire_date or contract start)
+        # forward so the whole history is filled; with no anchor at all we can
+        # only handle the current period.
+        cursor = self._employee_period_anchor(employee) or up_to_date
+        created = self.browse()
+        guard = 0
+        while cursor <= up_to_date and guard < 200:
+            guard += 1
+            start, end, index = self._get_period_for(
+                employee, leave_type, cursor)
+            if not start:
+                break
+            # Skip when an existing balance already OVERLAPS this range, not
+            # only when one has the exact same period_start. A legacy or
+            # differently-anchored row (e.g. a calendar-year period, or one
+            # created before hire_date was corrected) covers the same span
+            # with a different start; matching on start alone would create a
+            # canonical period on top of it — a visible duplicate.
+            overlaps = self.search_count([
+                ('employee_id', '=', employee.id),
+                ('leave_type_id', '=', leave_type.id),
+                ('period_start', '<=', end),
+                ('period_end', '>=', start),
+            ])
+            if not overlaps:
+                created |= self.create({
                     'employee_id': employee.id,
                     'leave_type_id': leave_type.id,
                     'period_start': start,
                     'period_end': end,
                     'period_index': index,
-                    'entitled_days': leave_type.annual_days,
-                    'carried_over': carried,
+                    'company_id': (employee.company_id.id
+                                   or self.env.company.id),
                 })
+            cursor = end + relativedelta(days=1)
+        return created
+
+    def generate_balances(self, year=None, leave_types=None):
+        """Backfill accounting periods for all employees so carry-over
+        cascades across the full history.
+
+        Runs for transferable, day-accruing leave types that are additionally
+        flagged with ua_auto_calc_balance; for each of them, every period from
+        the employee's hire anchor up to the reference year is created if
+        missing — so a year with no leave taken no longer breaks the carry-over
+        chain. Employees without a hire anchor get only the currently
+        resolvable period (work-year types: none).
+        """
+        up_to_date = self._ref_date_for_year(year) if year else fields.Date.today()
+ 
+        domain = []
+        if 'contract_id' in self.env['hr.employee']._fields:
+            domain.append(('contract_id.state', '=', 'open'))
+        employees = self.env['hr.employee'].search(domain)
+
+        if leave_types is None:
+            # Types whose unused days roll forward AND that the user opted in
+            # to auto-calculate balances for.
+            leave_types = self.env['hr.leave.type'].search([
+                ('is_transferable', '=', True),
+                ('annual_days', '>', 0),
+                ('ua_auto_calc_balance', '=', True),
+            ])
+
+        created = self.browse()
+        for leave_type in leave_types:
+            lt_company = leave_type.company_id
+            for employee in employees:
+                # Skip cross-company pairings. In multi-company mode each
+                # company has its own annual_basic leave type; without this
+                # guard an employee would get a balance for every company's
+                # type — same employee and period, different leave_type_id —
+                # which the unique constraint allows and shows up as a
+                # duplicate for the same period. A company-less (shared) leave
+                # type still matches any employee.
+                if lt_company and employee.company_id != lt_company:
+                    continue
+                created |= self._generate_period_chain(
+                    employee, leave_type, up_to_date)
+        # Refresh the rollups for EVERY period of the processed types back to
+        # the hire date — not only the newly created rows — so "Recalculate"
+        # actually re-runs used/planned/remaining and the carry-over chain for
+        # all historical periods, not just the current one.
+        if leave_types and employees:
+            all_balances = self.search([
+                ('employee_id', 'in', employees.ids),
+                ('leave_type_id', 'in', leave_types.ids),
+            ])
+            if all_balances:
+                all_balances.invalidate_recordset([
+                    'used_days', 'planned_days',
+                    'total_available', 'remaining_days',
+                ])
+                all_balances._compute_used_days()
+                all_balances._compute_totals()
+                all_balances._recompute_carryover_chain()
+        return created
 
     def _link_related_leaves(self):
         """Attach unlinked leaves that fall into this balance's period.

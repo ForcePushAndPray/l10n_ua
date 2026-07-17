@@ -21,6 +21,7 @@ class ResCompany(models.Model):
                 'annual_days': 24,
                 'is_calendar_days': True,
                 'is_transferable': True,
+                'ua_auto_calc_balance': True,
                 'requires_experience': True,
                 'min_experience_months': 6,
                 'is_paid': True,

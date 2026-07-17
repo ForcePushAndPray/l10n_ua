@@ -28,6 +28,7 @@
                     </group>
                     <group>
                         <field name="ua_is_default"/>
+                        <field name="ua_auto_calc_balance"/>
                     </group>
                 </group>
             </xpath>

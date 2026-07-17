@@ -69,7 +69,6 @@ class HrLeave(models.Model):
         compute='_compute_vacation_balance',
         store=True,
         readonly=False,
-        precompute=True,
         index=True,
         domain="[('employee_id', '=', employee_id),"
                " ('leave_type_id', '=', holiday_status_id)]",
@@ -142,6 +141,14 @@ class HrLeave(models.Model):
                 'message': message,
             }}
 
+    def _compute_display_name(self):
+        # Base hr_holidays builds the label as "<person> on <type>: ...".
+        # The English " on " separator is left untranslated in the UA UI, so
+        # swap it for " - " (first occurrence only — that is the separator).
+        super()._compute_display_name()
+        for leave in self:
+            if leave.display_name and ' on ' in leave.display_name:
+                leave.display_name = leave.display_name.replace(' on ', ' - ', 1)
 
     @api.depends('request_date_from')
     def _compute_vacation_year(self):
@@ -216,11 +223,20 @@ class HrLeave(models.Model):
         self.vacation_balance_id = balance.id
         return True
 
-    @api.constrains('vacation_balance_id', 'vacation_year', 'request_date_from',
+    @api.constrains('vacation_balance_id', 'request_date_from',
                     'holiday_status_id', 'employee_id')
     def _check_vacation_balance_period(self):
-        """Block saving when the linked vacation period does not match the
-        leave's employee/type or its year."""
+        """Block saving when the linked vacation period does not belong to the
+        leave's employee/type, or when the leave's start date falls outside
+        the linked period's bounds.
+
+        The check uses date containment (period_start <= start <= period_end)
+        — the same rule _compute_vacation_balance links by — rather than
+        comparing against a freshly recomputed canonical period. That keeps
+        a leave valid whenever it truly sits inside its linked period, even
+        if that period's stored bounds differ from the hire-anchored canonical
+        ones (e.g. a migrated/back-filled balance), so balance recalculation
+        does not spuriously fail while re-linking related leaves."""
         for leave in self:
             bal = leave.vacation_balance_id
             if not bal:
@@ -230,14 +246,15 @@ class HrLeave(models.Model):
                 raise ValidationError(_(
                     'The vacation period does not belong to this employee '
                     'and leave type.'))
-            start, _end, _index = leave._resolve_leave_period()
-            if start and bal.period_start != start:
+            if (leave.request_date_from and bal.period_start and bal.period_end
+                    and not (bal.period_start <= leave.request_date_from
+                             <= bal.period_end)):
                 raise ValidationError(_(
-                    'The selected vacation period (%(period)s) does not match '
-                    'the leave year %(year)s. Pick or create the matching '
-                    'period.',
+                    'The leave start date %(date)s is outside the selected '
+                    'vacation period (%(period)s). Pick or create the '
+                    'matching period.',
+                    date=leave.request_date_from.strftime('%d.%m.%Y'),
                     period=bal.period_label,
-                    year=leave.vacation_year,
                 ))
 
     @api.constrains('request_date_from', 'employee_id', 'holiday_status_id')

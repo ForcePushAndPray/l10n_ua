@@ -9,6 +9,7 @@
             <field name="is_calendar_days">True</field>
             <field name="period_type">work</field>
             <field name="is_transferable">True</field>
+            <field name="ua_auto_calc_balance">True</field>
             <field name="requires_experience">True</field>
             <field name="min_experience_months">6</field>
             <field name="is_paid">True</field>

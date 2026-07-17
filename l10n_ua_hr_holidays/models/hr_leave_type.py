@@ -94,6 +94,15 @@ class HrLeaveType(models.Model):
              'company may be the default at a time.',
     )
 
+    ua_auto_calc_balance = fields.Boolean(
+        string='Auto-calculate Balance',
+        default=False,
+        help='When enabled, the "Recalculate" action in Vacation Balances '
+             'generates and maintains the accounting periods for this leave '
+             'type. Off by default — only types with this ticked are '
+             'recalculated.',
+    )
+
     def _default_conflicts(self):
         """Other leave types of the same company already flagged as default."""
         self.ensure_one()

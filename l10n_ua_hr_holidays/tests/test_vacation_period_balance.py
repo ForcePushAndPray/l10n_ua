@@ -402,6 +402,79 @@ class TestVacationPeriodBalance(TransactionCase):
         ])
         self.assertFalse(balance)
 
+    def test_generate_backfills_missing_periods_and_cascades(self):
+        """generate_balances fills gaps from the hire date so carry-over
+        cascades across a year that had no balance record (employee took no
+        leave that year)."""
+        Balance = self.env['hr.vacation.balance']
+        # Only work year 1 exists, fully unused (24 days). WY2 is missing.
+        wy1 = Balance.create({
+            'employee_id': self.employee.id,
+            'leave_type_id': self.annual_type.id,
+            'period_start': date(2024, 7, 15),
+            'period_end': date(2025, 7, 14),
+            'period_index': 1,
+            'entitled_days': 24,
+        })
+        self.assertEqual(wy1.remaining_days, 24)
+        # Backfill up to today (which falls in work year 2).
+        Balance.generate_balances(
+            year=date.today().year, leave_types=self.annual_type)
+        wy2 = Balance.search([
+            ('employee_id', '=', self.employee.id),
+            ('leave_type_id', '=', self.annual_type.id),
+            ('period_start', '=', date(2025, 7, 15)),
+        ])
+        self.assertTrue(wy2, "Work year 2 should have been backfilled")
+        # WY1's 24 unused days now carry into WY2 (annual is transferable).
+        self.assertEqual(wy2.carried_over, 24)
+        self.assertEqual(wy2.total_available, 48)
+
+    def test_generate_only_for_auto_calc_types(self):
+        """generate_balances (no explicit types) processes only leave types
+        flagged with ua_auto_calc_balance."""
+        Balance = self.env['hr.vacation.balance']
+        # Flag OFF -> nothing generated for this type (annual_basic ships
+        # with the flag on, so turn it off explicitly for this assertion).
+        self.annual_type.ua_auto_calc_balance = False
+        Balance.generate_balances(year=date.today().year)
+        self.assertFalse(Balance.search([
+            ('employee_id', '=', self.employee.id),
+            ('leave_type_id', '=', self.annual_type.id),
+        ]))
+        # Flag ON -> now its periods are generated.
+        self.annual_type.ua_auto_calc_balance = True
+        Balance.generate_balances(year=date.today().year)
+        self.assertTrue(Balance.search([
+            ('employee_id', '=', self.employee.id),
+            ('leave_type_id', '=', self.annual_type.id),
+        ]))
+
+    def test_generate_skips_cross_company_leave_types(self):
+        """generate_balances must not pair an employee with another company's
+        leave type (multi-company: one annual_basic per company would create
+        a duplicate balance for the same employee and period)."""
+        Balance = self.env['hr.vacation.balance']
+        company_b = self.env['res.company'].create({'name': 'Company B'})
+        lt_b = self.env['hr.leave.type'].create({
+            'name': 'Annual B',
+            'ua_leave_category': 'annual_basic',
+            'period_type': 'work',
+            'annual_days': 24,
+            'is_transferable': True,
+            'ua_auto_calc_balance': True,
+            'company_id': company_b.id,
+            'requires_allocation': False,
+        })
+        # self.employee is not in company B, so no balance may be created for
+        # it under company B's leave type.
+        Balance.generate_balances(
+            year=date.today().year, leave_types=lt_b)
+        self.assertFalse(Balance.search([
+            ('employee_id', '=', self.employee.id),
+            ('leave_type_id', '=', lt_b.id),
+        ]))
+
     def test_reanchor_period_after_hire_date_set(self):
         """A work-year balance created while the employee had no hire
         anchor gets calendar bounds; once hire_date is known, Recalculate
