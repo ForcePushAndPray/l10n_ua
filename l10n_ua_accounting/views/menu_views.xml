@@ -126,11 +126,11 @@
               action="l10n_ua_account_base.l10n_ua_journal_order_action"
               sequence="20"/>
 
-    <!-- General Ledger / Journal Items - standard Odoo -->
+    <!-- General Ledger — власний звіт Головної книги (#137) -->
     <menuitem id="menu_ua_reports_general_ledger"
               name="General Ledger"
               parent="menu_ua_reports"
-              action="account.action_account_moves_all"
+              action="l10n_ua_account_base.l10n_ua_general_ledger_action"
               sequence="25"/>
 
     <!-- AR/AP Aging -->

@@ -56,6 +56,12 @@
               action="l10n_ua_account_analysis_action"
               sequence="35"/>
 
+    <menuitem id="menu_l10n_ua_general_ledger"
+              name="General Ledger"
+              parent="menu_l10n_ua_accounting"
+              action="l10n_ua_general_ledger_action"
+              sequence="37"/>
+
     <!-- Subconto Configuration -->
     <menuitem id="menu_l10n_ua_subconto_types"
               name="Subconto Types"
