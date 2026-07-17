@@ -19,7 +19,11 @@ class TestHeadcountReport(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.company = cls.env.company
+        # Виділена компанія: звіт рахує чисельність по всій компанії, тож на
+        # заповненій dev-БД env.company містить сторонніх працівників і
+        # абсолютні лічильники стають недетермінованими. Своя порожня
+        # компанія робить перевірки стабільними на будь-якій базі.
+        cls.company = cls.env['res.company'].create({'name': 'Headcount Test Co'})
 
         cls.employee = cls.env['hr.employee'].create({
             'name': 'Тестовий Співробітник',
