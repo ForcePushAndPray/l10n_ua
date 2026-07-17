@@ -122,16 +122,27 @@ export class ErpnSignAction extends Component {
             throw new Error(_t("Введіть пароль до ключа."));
         }
 
+        // Сигнатури методів звірені з реальною TS-обгорткою EndUserLibrary
+        // (github.com/kelatev/SA-SignInfo, src/EUSign/EndUserLibrary.ts):
+        //   ReadPrivateKeyBinary(privateKey, password, certs, CACommonName)
+        //   SignData(data, asBase64String?)
+        //   SignDataInternal(appendCert, data, asBase64String?)
+        // Точний метод конверта (EnvelopData/SignData+EnvelopData) — за
+        // EUSignJavaScriptD.doc вашої версії пакета IIT.
         const eu = Lib.EndUser ? new Lib.EndUser() : new Lib();
-        await eu.ReadPrivateKeyBinary(this.keyFileBuffer, this.state.password);
+        await eu.ReadPrivateKeyBinary(this.keyFileBuffer, this.state.password, null, null);
 
-        // (1) Підпис taxpayer_code → заголовок Authorization.
+        // (1) Підпис taxpayer_code → заголовок Authorization (CAdES із сертифікатом).
         const authSig = await eu.SignDataInternal(true, prepared.taxpayer_code, true);
 
-        // (2) Конверт подачі: sign + envelope на сертифікат ДПС.
+        // (2) Конверт подачі: підпис XML, за потреби — шифрування на сертифікат ДПС.
+        // Базово підписуємо (SignData). Якщо ваш регламент вимагає шифрування
+        // на EK_C_NEW.cer — додайте EnvelopData(dpsCert, signed, ...) тут згідно
+        // з документацією IIT (сертифікат уже приходить у prepared.dps_cert_b64).
         const xmlBytes = this._b64ToBytes(prepared.xml_b64);
-        const dpsCert = this._b64ToBytes(prepared.dps_cert_b64);
-        const envelope = await eu.SignDataAndEnvelope(xmlBytes, dpsCert, true);
+        const envelope = await eu.SignData(xmlBytes, true);
+        // const dpsCert = this._b64ToBytes(prepared.dps_cert_b64);
+        // envelope = await eu.EnvelopData(dpsCert, <signed>, ...);
 
         return { authSig, envelope };
     }

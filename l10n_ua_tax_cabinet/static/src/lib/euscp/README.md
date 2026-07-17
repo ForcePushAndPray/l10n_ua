@@ -45,6 +45,25 @@
 підпису КЕП безкоштовне, але перед комітом файлів у публічний репозиторій
 звірте умови розповсюдження IIT — можливо, тримати їх лише локально/приватно.
 
+## Референс-проєкти на GitHub (як інтегрувати euscp у браузері)
+
+- **kelatev/SA-SignInfo** (TypeScript) — найповніша обгортка EndUser:
+  worker `euscp.worker.js?maxDataSize=25`, режими SW(WASM)/JS(agent), точні
+  сигнатури `ReadPrivateKeyBinary` / `SignData` / `SignDataInternal`
+  (`src/EUSign/EndUserLibrary.ts`). Наш `_signInBrowser()` звірено саме з ним.
+- **MeinLiX/CertVal** (TypeScript) — `CertVal.Web/src/lib/iit/signClient.ts`,
+  клієнт підпису IIT.
+- **NadiiaStoiko/modern-sign-server** — HTML-демо із `euscp.worker.js`.
+- **gnelitsa/EUSignWidget-Usage-20200922** (JS) — приклад використання
+  EUSign-віджета.
+- **balrogden/EUSignES6** (JS) — ES6-обгортка EUSign.
+- **gorserg/sign_sample** — статичне дзеркало файлів `public/js/lib/eu/`
+  (euscp.js/euscpm.js/euscpt.js/euutils.js/manager.js).
+- **@it-enterprise/digital-signature** (npm) — бандл із worker+WASM.
+- Серверні/десктопні обгортки (для довідки): GorulkoAV/EUSignDFS (C#),
+  matasarei/euspe (PHP), dstucrypt/social.eusign та muromec/flask-eusign-demo
+  (Python, авторизація через eusign.org).
+
 ## Web-розширення (альтернатива, якщо оберете інший режим)
 Інсталятори хост-агента: `EUSignWebInstall.exe/.msi/.pkg`, `euswi.deb/.rpm`
 з тієї ж сторінки https://www.iit.com.ua/downloads + браузерне розширення
