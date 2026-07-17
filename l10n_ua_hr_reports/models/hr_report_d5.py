@@ -1,4 +1,30 @@
-from odoo import models, fields, api
+import base64
+import re
+from datetime import date
+from xml.sax.saxutils import escape
+
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError
+
+# Додаток 1 (Відомості про нарахування ЄСВ) об'єднаного розрахунку —
+# форма J0510210, версія 10 (Наказ Мінфіну № 4 від 13.01.2015 у ред. № 39
+# від 24.04.2025 зі змінами № 53 від 30.05.2025). Коди C_DOC/C_DOC_SUB/
+# C_DOC_VER — fixed-значення з офіційного XSD ДПС (пакет СКЗ), звірені
+# в tests/test_xsd_validation.py проти J0510210.xsd.
+D1_C_DOC = 'J05'
+D1_C_DOC_SUB = '102'
+D1_C_DOC_VER = '10'
+D1_SOFTWARE = 'Odoo l10n_ua'
+
+# Категорія працівника (модель) -> код категорії застрахованої особи (гр.8,
+# DGI2inom 1..99) за довідником ДПС. Best-effort для домінантних випадків;
+# рідкісні категорії уточнюються за фактичним статусом ЗО.
+D1_ZO_CATEGORY = {
+    '1': 1,   # найманий працівник
+    '2': 26,  # особа за ЦПХ-договором
+    '3': 2,   # найманий працівник з інвалідністю
+    '4': 1,   # декрет — базова категорія (уточнюється за випадком)
+}
 
 
 class HrReportD5(models.Model):
@@ -62,6 +88,9 @@ class HrReportD5(models.Model):
     
     submission_date = fields.Date(string='Submission Date')
     notes = fields.Text(string='Notes')
+
+    xml_file = fields.Binary(string='XML-файл', attachment=True, copy=False)
+    xml_filename = fields.Char(copy=False)
 
     @api.depends('year', 'month')
     def _compute_name(self):
@@ -145,9 +174,203 @@ class HrReportD5(models.Model):
         self.write({'state': 'draft'})
 
     def action_export_xml(self):
-        """Export report to XML format for submission"""
-        # TODO: Implement XML export
-        pass
+        """Сформувати XML Додатка 1 (ЄСВ, J0510210 v10), валідний за XSD ДПС.
+
+        Зберігає результат у ``xml_file`` (кодування windows-1251, як приймає
+        ДПС) і публікує повідомлення в чатер. Структуру звірено з офіційним
+        XSD (tests/test_xsd_validation.py). Порожня заглушка більше не
+        використовується — кнопка справді генерує подавальний файл.
+        """
+        self.ensure_one()
+        if self.state == 'draft':
+            raise UserError(_('Спочатку згенеруйте звіт (кнопка «Generate»).'))
+        xml = self._render_d1_xml(self._d1_vals())
+        self.xml_file = base64.b64encode(xml.encode('windows-1251'))
+        self.xml_filename = 'J0510210_%s_%02d.xml' % (self.year, int(self.month))
+        self.message_post(body=_('Сформовано XML Додатка 1 (ЄСВ): %s') % self.xml_filename)
+        return True
+
+    def _d1_vals(self):
+        """Зібрати значення Додатка 1 із запису (компанія + рядки).
+
+        Обов'язкові реквізити, яких нема в даних, — явна помилка користувачу
+        (не підставляємо фейк у документ, який піде до ДПС/ПФУ).
+        """
+        self.ensure_one()
+        company = self.company_id
+        edrpou = re.sub(r'\D', '', company.edrpou or '')
+        office = company.tax_office_code or ''
+        director = company.director_id
+        director_rnokpp = re.sub(
+            r'\D', '', (director.rnokpp or '') if director else '')
+        accountant = company.accountant_id
+        accountant_rnokpp = re.sub(
+            r'\D', '', (accountant.rnokpp or '') if accountant else '')
+
+        missing = []
+        if not edrpou:
+            missing.append(_('код ЄДРПОУ компанії'))
+        if not office:
+            missing.append(_('код ДПІ компанії (tax_office_code)'))
+        if not director_rnokpp:
+            missing.append(_('РНОКПП керівника (director_id)'))
+        if not (director and director.name):
+            missing.append(_('ПІБ керівника (director_id)'))
+        if missing:
+            raise UserError(_(
+                'Для формування Додатка 1 заповніть: %s.') % ', '.join(missing))
+
+        month = int(self.month)
+        persons = []
+        for line in self.line_ids:
+            persons.append({
+                'rnokpp': re.sub(r'\D', '', line.rnokpp or ''),
+                'last_name': line.last_name or '',
+                'first_name': line.first_name or '',
+                'middle_name': line.middle_name or '',
+                'zo_category': D1_ZO_CATEGORY.get(line.category or '1', 1),
+                'esv_base': line.esv_base,
+                'esv_amount': line.esv_amount,
+            })
+        return {
+            'tin': edrpou,
+            'c_reg': int(office[:2]) if len(office) >= 2 else 0,
+            'c_raj': int(office[2:4]) if len(office) >= 4 else 0,
+            'period_month': month,
+            'period_type': 1,  # місячна (модель Д5 — помісячна)
+            'period_year': self.year,
+            'c_sti_orig': office,
+            'hzy': self.year,
+            'hzm': month,
+            'hname': company.name or '',
+            'htin': edrpou,
+            'hfill': date.today().strftime('%d%m%Y'),
+            'hkbos': director_rnokpp,
+            'hbos': director.name or '',
+            'hkbuh': accountant_rnokpp,
+            'hbuh': (accountant.name or '') if accountant else '',
+            'persons': persons,
+        }
+
+    @api.model
+    def _render_d1_xml(self, vals):
+        """Рендер XML Додатка 1 (J0510210 v10) з dict значень.
+
+        Стейтлес (лише ``vals``) — щоб валідацію проти офіційного XSD можна
+        було проганяти без залежності від записів. Порядок і склад елементів
+        звірені з J0510210.xsd (DHead: fixed J05/102/10; DBody: choice
+        HZ|HZN|HZU, HZY, HZM, HNAME, HTIN, таблиця персон column-major
+        T1RXXXXG5..G17, підсумки R01G14..G16, HFILL, HKBOS, HBOS).
+
+        Поколонкова відомість про ставки ЄСВ (R01..R06 G3..G6) — опційний блок
+        (minOccurs=0), наразі не заповнюється (потребує розбивки за ставками);
+        документ лишається XSD-валідним. Це наступний інкремент.
+        """
+        def esc(v):
+            return escape(str(v or ''))
+
+        def num(v):
+            return '%.2f' % (v or 0.0)
+
+        def i(v):  # цілі колонки (ознаки/тип/період) — 0 має рендеритись як «0»
+            return str(int(v))
+
+        persons = vals.get('persons') or []
+
+        # Технічні сталі колонки (ознаки/тип нарахування/період) — по кожній
+        # особі, до рендеру column-major нижче.
+        for p in persons:
+            p.setdefault('g5', 0)
+            p.setdefault('accrual_type', 1)
+            p.setdefault('month', vals['hzm'])
+            p.setdefault('year', vals['hzy'])
+            p.setdefault('g17', 0)
+
+        def column(tag, key, fmt):
+            rows = []
+            for i, p in enumerate(persons, 1):
+                val = p.get(key)
+                if val in (None, ''):
+                    continue
+                rows.append('        <%s ROWNUM="%d">%s</%s>' % (
+                    tag, i, fmt(val), tag))
+            return '\n'.join(rows)
+
+        cols = [
+            column('T1RXXXXG5', 'g5', i),
+            column('T1RXXXXG6S', 'rnokpp', lambda v: esc(v)),
+            column('T1RXXXXG71S', 'last_name', lambda v: esc(v)),
+            column('T1RXXXXG72S', 'first_name', lambda v: esc(v)),
+            column('T1RXXXXG73S', 'middle_name', lambda v: esc(v)),
+            column('T1RXXXXG8', 'zo_category', i),
+            column('T1RXXXXG12', 'accrual_type', i),
+            column('T1RXXXXG131', 'month', i),
+            column('T1RXXXXG132', 'year', i),
+            column('T1RXXXXG14', 'esv_base', num),
+            column('T1RXXXXG15', 'esv_base', num),
+            column('T1RXXXXG16', 'esv_amount', num),
+            column('T1RXXXXG17', 'g17', i),
+        ]
+        table = '\n'.join(c for c in cols if c)
+
+        tot_base = sum(p['esv_base'] for p in persons)
+        tot_esv = sum(p['esv_amount'] for p in persons)
+
+        totals = (
+            '        <R01G14>%s</R01G14>\n'
+            '        <R01G15>%s</R01G15>\n'
+            '        <R01G16>%s</R01G16>' % (
+                num(tot_base), num(tot_base), num(tot_esv))
+        ) if persons else ''
+
+        accountant = ''
+        if vals.get('hkbuh') and vals.get('hbuh'):
+            accountant = (
+                '        <HKBUH>%s</HKBUH>\n'
+                '        <HBUH>%s</HBUH>\n' % (
+                    esc(vals['hkbuh']), esc(vals['hbuh']))
+            )
+
+        parts = [
+            '<?xml version="1.0" encoding="windows-1251"?>',
+            '<DECLAR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"'
+            ' xsi:noNamespaceSchemaLocation="J0510210.xsd">',
+            '    <DECLARHEAD>',
+            '        <TIN>%s</TIN>' % esc(vals['tin']),
+            '        <C_DOC>%s</C_DOC>' % D1_C_DOC,
+            '        <C_DOC_SUB>%s</C_DOC_SUB>' % D1_C_DOC_SUB,
+            '        <C_DOC_VER>%s</C_DOC_VER>' % D1_C_DOC_VER,
+            '        <C_DOC_TYPE>0</C_DOC_TYPE>',
+            '        <C_DOC_CNT>1</C_DOC_CNT>',
+            '        <C_REG>%s</C_REG>' % vals['c_reg'],
+            '        <C_RAJ>%s</C_RAJ>' % vals['c_raj'],
+            '        <PERIOD_MONTH>%s</PERIOD_MONTH>' % vals['period_month'],
+            '        <PERIOD_TYPE>%s</PERIOD_TYPE>' % vals['period_type'],
+            '        <PERIOD_YEAR>%s</PERIOD_YEAR>' % vals['period_year'],
+            '        <C_STI_ORIG>%s</C_STI_ORIG>' % esc(vals['c_sti_orig']),
+            '        <C_DOC_STAN>1</C_DOC_STAN>',
+            '        <D_FILL>%s</D_FILL>' % vals['hfill'],
+            '        <SOFTWARE>%s</SOFTWARE>' % D1_SOFTWARE,
+            '    </DECLARHEAD>',
+            '    <DECLARBODY>',
+            '        <HZ>1</HZ>',
+            '        <HZY>%s</HZY>' % vals['hzy'],
+            '        <HZM>%s</HZM>' % vals['hzm'],
+            '        <HNAME>%s</HNAME>' % esc(vals['hname']),
+            '        <HTIN>%s</HTIN>' % esc(vals['htin']),
+        ]
+        if table:
+            parts.append(table)
+        if totals:
+            parts.append(totals)
+        parts.append('        <HFILL>%s</HFILL>' % vals['hfill'])
+        parts.append('        <HKBOS>%s</HKBOS>' % esc(vals['hkbos']))
+        parts.append('        <HBOS>%s</HBOS>' % esc(vals['hbos']))
+        if accountant:
+            parts.append(accountant.rstrip('\n'))
+        parts.append('    </DECLARBODY>')
+        parts.append('</DECLAR>')
+        return '\n'.join(parts)
 
     _unique_year_month_company_id = models.Constraint(
         'unique(year, month, company_id)',

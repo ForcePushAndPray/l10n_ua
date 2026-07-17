@@ -7,8 +7,12 @@ Tests cover:
 - Computed totals
 - Report line fields
 - Unique constraint
+- XML export of Додаток 1 (ЄСВ), #187
 """
 
+import base64
+
+from odoo.exceptions import UserError
 from odoo.tests import TransactionCase, tagged
 
 
@@ -100,6 +104,43 @@ class TestReportD5(TransactionCase):
             'esv_amount': 5500,
         })
         self.assertEqual(len(report.line_ids), 1)
+
+    def test_export_xml_requires_company_data(self):
+        """Без реквізитів компанії експорт має чітко просити їх заповнити."""
+        self.company.write({
+            'edrpou': False, 'tax_office_code': False, 'director_id': False})
+        report = self._create_report(year=2027, month='5')
+        report.action_generate()
+        with self.assertRaises(UserError):
+            report.action_export_xml()
+
+    def test_export_xml_draft_blocked(self):
+        """У чернетці кнопка експорту має відмовити (спершу Generate)."""
+        report = self._create_report(year=2027, month='7')
+        with self.assertRaises(UserError):
+            report.action_export_xml()
+
+    def test_export_xml_produces_file(self):
+        """Повний прохід: реквізити + рядок → xml_file збережено, це J0510210."""
+        director = self.env['hr.employee'].create({
+            'name': 'Директоренко Іван', 'company_id': self.company.id,
+            'rnokpp': '2940910418'})
+        self.company.write({
+            'edrpou': '12345678', 'tax_office_code': '1716',
+            'director_id': director.id})
+        report = self._create_report(year=2027, month='9')
+        report.action_generate()
+        self.env['hr.report.d5.line'].create({
+            'report_id': report.id, 'employee_id': self.employee.id,
+            'rnokpp': '3184710691', 'last_name': 'Петренко',
+            'first_name': 'Олександр', 'middle_name': 'Миколайович',
+            'category': '1', 'esv_base': 25000, 'esv_amount': 5500})
+        report.action_export_xml()
+        self.assertTrue(report.xml_file)
+        self.assertTrue(report.xml_filename.startswith('J0510210_2027_09'))
+        xml = base64.b64decode(report.xml_file).decode('windows-1251')
+        self.assertIn('<C_DOC>J05</C_DOC>', xml)
+        self.assertIn('<T1RXXXXG6S ROWNUM="1">3184710691</T1RXXXXG6S>', xml)
 
     def test_report_line_categories(self):
         """Report line categories should be valid."""

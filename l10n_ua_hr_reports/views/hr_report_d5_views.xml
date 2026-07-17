@@ -34,6 +34,9 @@
                             <field name="total_esv_base"/>
                             <field name="total_esv"/>
                             <field name="submission_date" invisible="state != 'submitted'"/>
+                            <field name="xml_filename" invisible="1"/>
+                            <field name="xml_file" filename="xml_filename"
+                                   invisible="not xml_file"/>
                         </group>
                     </group>
                     <notebook>
