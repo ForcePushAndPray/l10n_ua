@@ -50,6 +50,12 @@
               action="l10n_ua_account_card_action"
               sequence="30"/>
 
+    <menuitem id="menu_l10n_ua_account_analysis"
+              name="Account Analysis"
+              parent="menu_l10n_ua_accounting"
+              action="l10n_ua_account_analysis_action"
+              sequence="35"/>
+
     <!-- Subconto Configuration -->
     <menuitem id="menu_l10n_ua_subconto_types"
               name="Subconto Types"
