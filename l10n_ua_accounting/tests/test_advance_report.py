@@ -20,13 +20,18 @@ class TestAdvanceReport(AccountingTestCase):
     def setUpClass(cls):
         super().setUpClass()
         Account = cls.env['account.account']
-        # Accountable-persons settlement account (372) — credited on posting
-        cls.account_372 = Account.create({
-            'code': '3721',
-            'name': 'Розрахунки з підзвітними особами (тест)',
-            'account_type': 'asset_current',
-            'company_ids': [(6, 0, [cls.company.id])],
-        })
+        # Accountable-persons settlement account (372) — credited on posting.
+        # Reuse the chart's 372 if present so `_get_settlement_account`'s
+        # by-code lookup resolves to the SAME account this test references
+        # (a freshly-created "3721" would be shadowed by the chart's "372").
+        cls.account_372 = Account.search([('code', '=like', '372%')], limit=1)
+        if not cls.account_372:
+            cls.account_372 = Account.create({
+                'code': '3721',
+                'name': 'Розрахунки з підзвітними особами (тест)',
+                'account_type': 'asset_current',
+                'company_ids': [(6, 0, [cls.company.id])],
+            })
         # Expense account (Дт)
         cls.account_92 = Account.create({
             'code': '9201',
