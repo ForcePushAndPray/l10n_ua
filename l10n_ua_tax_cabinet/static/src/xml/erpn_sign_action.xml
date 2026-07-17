@@ -30,9 +30,10 @@
                 <t t-else="">
                     <t t-if="!state.libAvailable">
                         <div class="alert alert-warning" role="alert">
-                            Бібліотеку підпису IIT (euscp) не встановлено. Додайте файли
-                            бібліотеки у <code>static/src/lib/euscp</code> та оновіть модуль,
-                            щоб підписувати ключем у браузері.
+                            Файли бібліотеки підпису IIT (euscp) не знайдено у
+                            <code>static/src/lib/euscp</code>. Покладіть їх туди
+                            (euscp.js, euscpm.js, euutils.js, eusw.js, euscp.worker.js) —
+                            вони підвантажаться автоматично за URL при підписі.
                         </div>
                     </t>
 

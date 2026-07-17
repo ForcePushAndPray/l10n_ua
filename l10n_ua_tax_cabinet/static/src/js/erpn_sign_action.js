@@ -5,6 +5,15 @@ import { useService } from "@web/core/utils/hooks";
 import { Component, useState, onWillStart } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 
+// Файли бібліотеки IIT euscp лежать тут (пропрієтарні, поза бандлом і git —
+// див. static/src/lib/euscp/README.md). Вантажимо їх ЛІНИВО за URL, а не
+// через web.assets_backend: euscp.worker.js ~16МБ, euscp.js ~5МБ — у бандлі
+// це зламало б worker і роздуло кожну сторінку.
+const EUSCP_BASE = "/l10n_ua_tax_cabinet/static/src/lib/euscp";
+// Порядок важливий. За потреби підлаштуйте під вашу версію пакета IIT
+// (орієнтир — github.com/kelatev/SA-SignInfo).
+const EUSCP_SCRIPTS = ["euscpm.js", "euutils.js", "eusw.js", "euscp.js"];
+
 /**
  * Клієнтський action для реєстрації податкової накладної в ЄРПН (#146).
  *
@@ -45,7 +54,8 @@ export class ErpnSignAction extends Component {
 
         onWillStart(async () => {
             try {
-                this.state.libAvailable = !!this._getEuLibrary();
+                // Легка перевірка наявності файлів (без завантаження 21МБ).
+                this.state.libAvailable = await this._checkLibPresent();
                 this.state.prepared = await this.orm.call(
                     this.model, "erpn_prepare_signing", [this.resId]
                 );
@@ -59,10 +69,65 @@ export class ErpnSignAction extends Component {
 
     /**
      * Глобальний об'єкт бібліотеки підпису IIT (euscp «Підпис для WEB»).
-     * Повертає null, якщо бібліотеку не встановлено (файли в static/src/lib/euscp).
+     * Повертає null, доки бібліотеку не підвантажено (_ensureEuscpLoaded).
      */
     _getEuLibrary() {
         return window.EndUserLibrary || window.euscp || window.EndUser || null;
+    }
+
+    /** HEAD-перевірка, що файли бібліотеки лежать на місці (без завантаження). */
+    async _checkLibPresent() {
+        try {
+            const resp = await fetch(`${EUSCP_BASE}/${EUSCP_SCRIPTS[0]}`, {
+                method: "HEAD",
+            });
+            return resp.ok;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    /** Динамічно вставити <script> за URL і дочекатись завантаження. */
+    _loadScript(url) {
+        return new Promise((resolve, reject) => {
+            const existing = document.querySelector(`script[data-euscp="${url}"]`);
+            if (existing) {
+                resolve();
+                return;
+            }
+            const s = document.createElement("script");
+            s.src = url;
+            s.async = false;
+            s.dataset.euscp = url;
+            s.onload = () => resolve();
+            s.onerror = () => reject(new Error(`Не вдалося завантажити ${url}`));
+            document.head.appendChild(s);
+        });
+    }
+
+    /**
+     * Лінива підгрузка бібліотеки euscp за URL (лише при першому підписі).
+     * Worker euscp.worker.js вантажиться самою бібліотекою за URL з EUSCP_BASE —
+     * тут головне виставити базовий шлях, а не конкатенувати worker у бандл.
+     */
+    async _ensureEuscpLoaded() {
+        if (this._getEuLibrary()) {
+            return this._getEuLibrary();
+        }
+        // Підказати бібліотеці, де взяти worker/wasm (назва хука залежить від
+        // версії пакета; за потреби звірте з README/SA-SignInfo).
+        window.EU_WORKER_URL = window.EU_WORKER_URL || `${EUSCP_BASE}/euscp.worker.js`;
+        for (const name of EUSCP_SCRIPTS) {
+            await this._loadScript(`${EUSCP_BASE}/${name}`);
+        }
+        const lib = this._getEuLibrary();
+        if (!lib) {
+            throw new Error(_t(
+                "Бібліотеку euscp завантажено, але глобальний об'єкт не знайдено — " +
+                "підлаштуйте EUSCP_SCRIPTS / назву глобала під вашу версію IIT."
+            ));
+        }
+        return lib;
     }
 
     _errMessage(e) {
@@ -102,19 +167,14 @@ export class ErpnSignAction extends Component {
      * підлаштувати під конкретну версію API бібліотеки IIT.
      *
      * Очікуваний контракт (EndUserLibrary, promise-API):
-     *   await eu.ReadPrivateKeyBinary(keyBytes, password)
+     *   await eu.ReadPrivateKeyBinary(keyBytes, password, null, null)
      *   authSig  = await eu.SignDataInternal(true, taxpayerCode, true)   // base64
-     *   envelope = await eu.SignDataAndEnvelope(xmlBytes, dpsCertBytes)   // base64
+     *   envelope = await eu.SignData(xmlBytes, true)                     // base64
      * Повертає { authSig, envelope } (обидва base64).
      */
     async _signInBrowser(prepared) {
-        const Lib = this._getEuLibrary();
-        if (!Lib) {
-            throw new Error(_t(
-                "Бібліотеку підпису IIT (euscp) не встановлено. Додайте файли " +
-                "бібліотеки у static/src/lib/euscp та оновіть модуль."
-            ));
-        }
+        // Лінива підгрузка бібліотеки за URL (перший підпис вантажить ~21МБ).
+        const Lib = await this._ensureEuscpLoaded();
         if (!this.keyFileBuffer) {
             throw new Error(_t("Виберіть файл-ключ (.dat/.jks)."));
         }
