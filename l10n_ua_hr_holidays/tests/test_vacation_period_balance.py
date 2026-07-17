@@ -1,6 +1,7 @@
 from datetime import date, datetime
 from odoo.exceptions import ValidationError
 from odoo.tests.common import TransactionCase
+from odoo.tools import mute_logger
 
 
 class TestVacationPeriodBalance(TransactionCase):
@@ -272,13 +273,16 @@ class TestVacationPeriodBalance(TransactionCase):
         self.assertEqual(balance.period_end, date(2024, 12, 31))
 
     def test_unique_constraint_on_period_start(self):
+        # Deliberately create a duplicate period to prove the unique
+        # constraint fires. The IntegrityError is expected and caught here;
+        # mute_logger silences the (otherwise alarming) SQL error log line.
         self.env['hr.vacation.balance'].create({
             'employee_id': self.employee.id,
             'leave_type_id': self.annual_type.id,
             'period_start': date(2024, 7, 15),
             'period_end': date(2025, 7, 14),
         })
-        with self.assertRaises(Exception):
+        with self.assertRaises(Exception), self.env.cr.savepoint():
             self.env['hr.vacation.balance'].create({
                 'employee_id': self.employee.id,
                 'leave_type_id': self.annual_type.id,
@@ -474,6 +478,32 @@ class TestVacationPeriodBalance(TransactionCase):
             ('employee_id', '=', self.employee.id),
             ('leave_type_id', '=', lt_b.id),
         ]))
+
+    def test_generate_creates_no_overlapping_duplicates(self):
+        """The backfill must not create a canonical period on top of an
+        existing one whose start differs (legacy / differently-anchored row),
+        which would look like a duplicate for the same span."""
+        Balance = self.env['hr.vacation.balance']
+        # Existing period with a non-canonical start (canonical WY2 starts
+        # 2025-07-15) that still covers roughly work year 2.
+        Balance.create({
+            'employee_id': self.employee.id,
+            'leave_type_id': self.annual_type.id,
+            'period_start': date(2025, 9, 1),
+            'period_end': date(2026, 8, 31),
+            'entitled_days': 24,
+        })
+        Balance.generate_balances(
+            year=date.today().year, leave_types=self.annual_type)
+        rows = Balance.search([
+            ('employee_id', '=', self.employee.id),
+            ('leave_type_id', '=', self.annual_type.id),
+        ], order='period_start')
+        # No two periods may overlap.
+        for a, b in zip(rows, rows[1:]):
+            self.assertLess(
+                a.period_end, b.period_start,
+                'Generated periods must not overlap an existing one')
 
     def test_reanchor_period_after_hire_date_set(self):
         """A work-year balance created while the employee had no hire
