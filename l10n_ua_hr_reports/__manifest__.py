@@ -24,6 +24,8 @@ Requires l10n_ua_hr_salary module.
     'license': 'LGPL-3',
     'depends': [
         'l10n_ua_hr_salary',
+        'l10n_ua_sign',
+        'l10n_ua_tax_cabinet',
     ],
     'data': [
         'security/ir.model.access.csv',

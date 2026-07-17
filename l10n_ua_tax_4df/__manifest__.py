@@ -30,6 +30,8 @@ a filing for submission through M.E.Doc / FREDO / Tax Cabinet.
         'account',
         'l10n_ua_account_base',
         'l10n_ua_hr_salary',
+        'l10n_ua_sign',
+        'l10n_ua_tax_cabinet',
     ],
     'data': [
         'security/ir.model.access.csv',

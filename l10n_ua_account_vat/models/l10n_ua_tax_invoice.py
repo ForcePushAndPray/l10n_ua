@@ -1,10 +1,13 @@
 import base64
 import calendar
 import io
+import logging
 from datetime import timedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 VAT_RATE_SELECTION = [
     ('20', '20%'),
@@ -18,7 +21,7 @@ VAT_RATE_SELECTION = [
 class L10nUaTaxInvoice(models.Model):
     _name = 'l10n_ua.tax.invoice'
     _description = 'Tax Invoice (Податкова накладна)'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'l10n_ua.dps.submit.mixin']
     _order = 'date desc, number desc'
 
     name = fields.Char(
@@ -260,84 +263,46 @@ class L10nUaTaxInvoice(models.Model):
             'erpn_verified_date': fields.Date.context_today(self),
         })
 
-    def _get_cabinet_config(self):
-        """Активна конфігурація кабінету ДПС для компанії накладної (або UserError)."""
-        self.ensure_one()
-        Config = self.env.get('l10n_ua.tax.cabinet.config')
-        if Config is None:
-            raise UserError(_(
-                'Модуль інтеграції з кабінетом ДПС (l10n_ua_tax_cabinet) '
-                'не встановлено — реєстрація в ЄРПН неможлива.'))
-        config = Config.search([
-            ('company_id', '=', self.company_id.id),
-            ('active', '=', True),
-        ], limit=1)
-        if not config:
-            raise UserError(_(
-                'Не налаштовано кабінет ДПС / КЕП для компанії «%s». '
-                'Створіть конфігурацію (Кабінет ДПС) перед реєстрацією в ЄРПН.'
-            ) % self.company_id.display_name)
-        return config
-
     def action_register_erpn(self):
-        """Відкрити клієнтське КЕП-підписування для реальної реєстрації в ЄРПН (#146).
+        """Відкрити клієнтське КЕП-підписування для реєстрації в ЄРПН (#146).
 
-        Більше не фейковий фліп статусу: гарантує наявність XML і конфігурації
-        кабінету, а далі відкриває браузерний віджет підпису. Статус
-        'registered' виставляється лише після квитанції ДПС у erpn_submit_signed.
+        Тонка обгортка над спільним action_kep_submit (l10n_ua.dps.submit.mixin):
+        валідує чернетку/XML/конфіг і відкриває універсальний діалог підпису.
+        Статус 'registered' — лише після квитанції ДПС.
         """
-        self.ensure_one()
-        if self.state != 'draft':
-            raise UserError(_('Можна реєструвати тільки чернетки.'))
-        if not self.file_xml:
-            self.action_generate_xml()
-        self._get_cabinet_config()  # валідація: інакше чіткий UserError
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'l10n_ua_tax_cabinet.erpn_sign',
-            'params': {'model': self._name, 'res_id': self.id},
-        }
+        return self.action_kep_submit()
 
-    def erpn_prepare_signing(self):
-        """Дані для браузерного підпису: XML, taxpayer_code, сертифікат ДПС, ім'я файлу.
+    # --- перевизначення контракту l10n_ua.dps.submit.mixin ---
 
-        Викликається OWL-віджетом через ORM. Приватний ключ/пароль тут не
-        фігурують — підпис робиться в браузері.
-        """
+    def _dps_check_can_submit(self):
+        for rec in self:
+            if rec.state != 'draft':
+                raise UserError(_('Можна реєструвати тільки чернетки.'))
+
+    def _dps_ensure_xml(self):
         self.ensure_one()
         if not self.file_xml:
             self.action_generate_xml()
-        config = self._get_cabinet_config()
-        dps_cert = config._get_dps_encrypt_certificate()
-        return {
-            'xml_b64': (self.file_xml or b'').decode()
-            if isinstance(self.file_xml, bytes) else (self.file_xml or ''),
-            'taxpayer_code': config.taxpayer_code or '',
-            'dps_cert_b64': base64.b64encode(dps_cert).decode() if dps_cert else '',
-            'filename': self._generate_xml_filename(),
-        }
 
-    def erpn_submit_signed(self, auth_signature_b64, envelope_b64, filename):
-        """Релей підписаного в браузері конверта до ЄРПН і фіксація результату.
+    def _dps_document_b64(self):
+        self._dps_ensure_xml()
+        xml = self.file_xml or b''
+        return xml.decode() if isinstance(xml, bytes) else xml
 
-        auth_signature_b64 — підпис taxpayer_code (заголовок Authorization),
-        envelope_b64 — sign+encrypt конверт на сертифікат ДПС. Обидва створені
-        в браузері. Статус 'registered' — лише за успішною квитанцією.
-        """
-        self.ensure_one()
-        if self.state != 'draft':
-            raise UserError(_('Можна реєструвати тільки чернетки.'))
-        config = self._get_cabinet_config()
-        result = config._api_submit_document_presigned(
-            envelope_b64, filename, auth_signature_b64)
-        receipt = result.get('message') if isinstance(result, dict) else str(result)
+    def _dps_filename(self):
+        return self._generate_xml_filename()
+
+    def _dps_submit_label(self):
+        return _('Зареєструвати в ЄРПН')
+
+    def _dps_on_submitted(self, receipt):
         self.write({
             'state': 'registered',
             'erpn_date': fields.Datetime.now(),
             'erpn_receipt': receipt,
         })
-        self.message_post(body=_('Зареєстровано в ЄРПН. Квитанція: %s') % (receipt or '—'))
-        return {'state': 'registered', 'receipt': receipt}
+        self.message_post(
+            body=_('Зареєстровано в ЄРПН. Квитанція: %s') % (receipt or '—'))
 
     def action_cancel(self):
         self.write({'state': 'cancelled'})

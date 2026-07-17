@@ -25,6 +25,7 @@ Requires l10n_ua_tax module.
     'depends': [
         'account',
         'l10n_ua_tax',
+        'l10n_ua_sign',
         'l10n_ua_tax_cabinet',
     ],
     'data': [

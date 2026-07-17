@@ -63,10 +63,15 @@ class TestReportD5(TransactionCase):
         self.assertEqual(report.state, 'generated')
 
     def test_report_submit(self):
-        """Submit should move to submitted state."""
+        """Submit (симуляція успішної подачі) → submitted.
+
+        action_submit тепер відкриває КЕП-підпис (l10n_ua.dps.submit.mixin);
+        стан 'submitted' виставляє _dps_on_submitted за квитанцією. Повний
+        КЕП-потік покрито тестами ЄРПН.
+        """
         report = self._create_report()
         report.action_generate()
-        report.action_submit()
+        report._dps_on_submitted('ok')
         self.assertEqual(report.state, 'submitted')
 
     def test_report_draft_reset(self):
