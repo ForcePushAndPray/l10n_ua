@@ -21,7 +21,7 @@ VAT_RATE_SELECTION = [
 class L10nUaTaxInvoice(models.Model):
     _name = 'l10n_ua.tax.invoice'
     _description = 'Tax Invoice (Податкова накладна)'
-    _inherit = ['mail.thread', 'mail.activity.mixin', 'l10n_ua.sign.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'l10n_ua.dps.submit.mixin']
     _order = 'date desc, number desc'
 
     name = fields.Char(
@@ -263,88 +263,46 @@ class L10nUaTaxInvoice(models.Model):
             'erpn_verified_date': fields.Date.context_today(self),
         })
 
-    def _get_cabinet_config(self):
-        """Активна конфігурація кабінету ДПС для компанії накладної (або UserError)."""
-        self.ensure_one()
-        Config = self.env.get('l10n_ua.tax.cabinet.config')
-        if Config is None:
-            raise UserError(_(
-                'Модуль інтеграції з кабінетом ДПС (l10n_ua_tax_cabinet) '
-                'не встановлено — реєстрація в ЄРПН неможлива.'))
-        config = Config.search([
-            ('company_id', '=', self.company_id.id),
-            ('active', '=', True),
-        ], limit=1)
-        if not config:
-            raise UserError(_(
-                'Не налаштовано кабінет ДПС / КЕП для компанії «%s». '
-                'Створіть конфігурацію (Кабінет ДПС) перед реєстрацією в ЄРПН.'
-            ) % self.company_id.display_name)
-        return config
-
     def action_register_erpn(self):
         """Відкрити клієнтське КЕП-підписування для реєстрації в ЄРПН (#146).
 
-        Валідує чернетку/XML/конфіг і відкриває універсальний діалог підпису
-        (l10n_ua.sign.mixin). Статус 'registered' — лише після квитанції ДПС.
+        Тонка обгортка над спільним action_kep_submit (l10n_ua.dps.submit.mixin):
+        валідує чернетку/XML/конфіг і відкриває універсальний діалог підпису.
+        Статус 'registered' — лише після квитанції ДПС.
         """
+        return self.action_kep_submit()
+
+    # --- перевизначення контракту l10n_ua.dps.submit.mixin ---
+
+    def _dps_check_can_submit(self):
+        for rec in self:
+            if rec.state != 'draft':
+                raise UserError(_('Можна реєструвати тільки чернетки.'))
+
+    def _dps_ensure_xml(self):
         self.ensure_one()
-        if self.state != 'draft':
-            raise UserError(_('Можна реєструвати тільки чернетки.'))
         if not self.file_xml:
             self.action_generate_xml()
-        self._get_cabinet_config()  # валідація: інакше чіткий UserError
-        return self.action_kep_sign()
 
-    # --- контракт l10n_ua.sign.mixin ---
+    def _dps_document_b64(self):
+        self._dps_ensure_xml()
+        xml = self.file_xml or b''
+        return xml.decode() if isinstance(xml, bytes) else xml
 
-    def kep_prepare_signing(self):
-        self.ensure_one()
-        if self.state != 'draft':
-            raise UserError(_('Можна реєструвати тільки чернетки.'))
-        if not self.file_xml:
-            self.action_generate_xml()
-        config = self._get_cabinet_config()
-        # Сертифікат шифрування ДПС потрібен лише для конверта. Недоступність
-        # (напр. застарілий URL → 404) не блокує підпис — логуємо й ідемо далі.
-        dps_cert = None
-        try:
-            dps_cert = config._get_dps_encrypt_certificate()
-        except Exception as e:
-            _logger.warning('DPS cert недоступний (%s) — підпис без конверта.', e)
-        xml_b64 = (self.file_xml or b'').decode() \
-            if isinstance(self.file_xml, bytes) else (self.file_xml or '')
-        return {
-            'auth_subject': config.taxpayer_code or '',
-            'submit_label': _('Зареєструвати в ЄРПН'),
-            'documents': [{
-                'name': 'pn',
-                'data_b64': xml_b64,
-                'format': 'envelope',
-                'filename': self._generate_xml_filename(),
-                'recipient_cert_b64': base64.b64encode(dps_cert).decode()
-                if dps_cert else '',
-            }],
-        }
+    def _dps_filename(self):
+        return self._generate_xml_filename()
 
-    def kep_submit_signed(self, signed, auth_signature=None):
-        self.ensure_one()
-        if self.state != 'draft':
-            raise UserError(_('Можна реєструвати тільки чернетки.'))
-        config = self._get_cabinet_config()
-        envelope_b64 = signed.get('pn')
-        if not envelope_b64:
-            raise UserError(_('Не отримано підпис податкової накладної.'))
-        result = config._api_submit_document_presigned(
-            envelope_b64, self._generate_xml_filename(), auth_signature)
-        receipt = result.get('message') if isinstance(result, dict) else str(result)
+    def _dps_submit_label(self):
+        return _('Зареєструвати в ЄРПН')
+
+    def _dps_on_submitted(self, receipt):
         self.write({
             'state': 'registered',
             'erpn_date': fields.Datetime.now(),
             'erpn_receipt': receipt,
         })
-        self.message_post(body=_('Зареєстровано в ЄРПН. Квитанція: %s') % (receipt or '—'))
-        return {'state': 'registered', 'receipt': receipt}
+        self.message_post(
+            body=_('Зареєстровано в ЄРПН. Квитанція: %s') % (receipt or '—'))
 
     def action_cancel(self):
         self.write({'state': 'cancelled'})

@@ -179,7 +179,7 @@ class TestReport4DF(TransactionCase):
             'year': 2025, 'quarter': '1',
         })
         rec.action_generate()
-        rec.action_submit()
+        rec._dps_on_submitted('ok')  # симуляція успішної подачі (повний КЕП-потік — у тестах ЄРПН)
         self.assertEqual(rec.state, 'submitted')
         self.assertTrue(rec.submission_date)
 
@@ -198,7 +198,7 @@ class TestReport4DF(TransactionCase):
             'year': 2025, 'quarter': '1',
         })
         rec.action_generate()
-        rec.action_submit()
+        rec._dps_on_submitted('ok')  # симуляція успішної подачі (повний КЕП-потік — у тестах ЄРПН)
         rec.action_draft()
         self.assertEqual(rec.state, 'draft')
         self.assertFalse(rec.submission_date)
@@ -211,7 +211,7 @@ class TestReport4DF(TransactionCase):
             'year': 2025, 'quarter': '1',
         })
         rec.action_generate()
-        rec.action_submit()
+        rec._dps_on_submitted('ok')  # симуляція успішної подачі (повний КЕП-потік — у тестах ЄРПН)
         with self.assertRaises(UserError):
             rec.action_generate()
 

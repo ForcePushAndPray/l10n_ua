@@ -114,7 +114,10 @@ class TestFopDeclaration(TransactionCase):
         decl = self._create_declaration('year', 2025)
         decl.action_calculate()
         self.assertEqual(decl.state, 'calculated')
-        decl.action_submit()
+        # action_submit тепер відкриває КЕП-підпис (l10n_ua.dps.submit.mixin);
+        # 'submitted' виставляє _dps_on_submitted за квитанцією. Повний КЕП-потік
+        # покрито тестами ЄРПН; тут перевіряємо лише машину станів.
+        decl._dps_on_submitted('ok')
         self.assertEqual(decl.state, 'submitted')
         decl.action_accept()
         self.assertEqual(decl.state, 'accepted')

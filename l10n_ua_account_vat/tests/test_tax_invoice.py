@@ -109,7 +109,7 @@ class TestTaxInvoice(TransactionCase):
         # Підписаний у браузері конверт подано → квитанція → registered.
         with patch(_CONFIG_PATH + '._api_submit_document_presigned',
                    return_value={'message': 'прийнято'}):
-            ti.kep_submit_signed({'pn': 'ENV=='}, 'AUTH==')
+            ti.kep_submit_signed({'doc': 'ENV=='}, 'AUTH==')
         self.assertEqual(ti.state, 'registered')
 
         ti.action_cancel()

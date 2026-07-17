@@ -30,7 +30,7 @@ D1_ZO_CATEGORY = {
 class HrReportD5(models.Model):
     _name = 'hr.report.d5'
     _description = 'D5 ESV Report'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'l10n_ua.dps.submit.mixin']
     _order = 'year desc, month desc'
 
     name = fields.Char(
@@ -165,10 +165,30 @@ class HrReportD5(models.Model):
         return True
 
     def action_submit(self):
+        """Відкрити КЕП-підпис і подання Д5/Додатка 1 (ЄСВ) до ДПС."""
+        return self.action_kep_submit()
+
+    # --- контракт l10n_ua.dps.submit.mixin ---
+
+    def _dps_check_can_submit(self):
+        for rec in self:
+            if rec.state == 'draft':
+                raise UserError(_('Спочатку згенеруйте звіт (кнопка «Generate»).'))
+
+    def _dps_ensure_xml(self):
+        self.ensure_one()
+        if not self.xml_file:
+            self.action_export_xml()
+
+    def _dps_submit_label(self):
+        return _('Подати Д5 (ЄСВ) до ДПС')
+
+    def _dps_on_submitted(self, receipt):
         self.write({
             'state': 'submitted',
             'submission_date': fields.Date.today(),
         })
+        self.message_post(body=_('Подано до ДПС. Квитанція: %s') % (receipt or '—'))
 
     def action_draft(self):
         self.write({'state': 'draft'})

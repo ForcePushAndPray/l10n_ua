@@ -98,7 +98,7 @@ class TestErpnRegister(TransactionCase):
         self.assertEqual(data['auth_subject'], '12345678')
         self.assertEqual(len(data['documents']), 1)
         doc = data['documents'][0]
-        self.assertEqual(doc['name'], 'pn')
+        self.assertEqual(doc['name'], 'doc')
         self.assertEqual(doc['format'], 'envelope')
         self.assertTrue(doc['data_b64'])
         self.assertTrue(doc['recipient_cert_b64'])
@@ -116,7 +116,7 @@ class TestErpnRegister(TransactionCase):
         inv.action_generate_xml()  # щоб _generate_xml_filename був детермінований
         with patch(CONFIG_PATH + '._api_submit_document_presigned',
                    return_value={'message': 'Квитанція №1: прийнято'}) as m:
-            res = inv.kep_submit_signed({'pn': 'ENVELOPE=='}, 'AUTHSIG==')
+            res = inv.kep_submit_signed({'doc': 'ENVELOPE=='}, 'AUTHSIG==')
         # Релей: (конверт, ім'я файлу, auth-підпис). Ім'я рахує сервер.
         args = m.call_args.args
         self.assertEqual(args[0], 'ENVELOPE==')
@@ -125,7 +125,7 @@ class TestErpnRegister(TransactionCase):
         self.assertEqual(inv.state, 'registered')
         self.assertIn('прийнято', inv.erpn_receipt)
         self.assertTrue(inv.erpn_date)
-        self.assertEqual(res['state'], 'registered')
+        self.assertEqual(res['receipt'], 'Квитанція №1: прийнято')
 
     def test_submit_signed_failure_keeps_draft(self):
         self._config()
@@ -133,7 +133,7 @@ class TestErpnRegister(TransactionCase):
         with patch(CONFIG_PATH + '._api_submit_document_presigned',
                    side_effect=UserError('Відхилено ДПС')):
             with self.assertRaises(UserError):
-                inv.kep_submit_signed({'pn': 'ENVELOPE=='}, 'AUTHSIG==')
+                inv.kep_submit_signed({'doc': 'ENVELOPE=='}, 'AUTHSIG==')
         self.assertEqual(inv.state, 'draft')  # не зареєстровано на помилці
 
     def test_submit_signed_non_draft_raises(self):
@@ -141,13 +141,13 @@ class TestErpnRegister(TransactionCase):
         inv = self._invoice()
         inv.state = 'cancelled'
         with self.assertRaises(UserError):
-            inv.kep_submit_signed({'pn': 'E'}, 'A')
+            inv.kep_submit_signed({'doc': 'E'}, 'A')
 
     def test_submit_signed_missing_signature_raises(self):
         self._config()
         inv = self._invoice()
         with self.assertRaises(UserError):
-            inv.kep_submit_signed({}, 'AUTHSIG==')  # немає підпису 'pn'
+            inv.kep_submit_signed({}, 'AUTHSIG==')  # немає підпису 'doc'
 
 
 @tagged('post_install', '-at_install')

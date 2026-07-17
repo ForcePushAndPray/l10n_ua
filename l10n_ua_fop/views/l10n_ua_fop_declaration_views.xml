@@ -11,7 +11,7 @@
                             class="btn-primary" invisible="state != 'draft'"/>
                     <button name="action_generate_xml" string="Сформувати XML" type="object"
                             invisible="state not in ('calculated', 'submitted')"/>
-                    <button name="action_submit" string="Подано" type="object"
+                    <button name="action_submit" string="Підписати і подати" type="object"
                             class="btn-primary" invisible="state != 'calculated'"/>
                     <button name="action_accept" string="Прийнято" type="object"
                             class="btn-success" invisible="state != 'submitted'"/>

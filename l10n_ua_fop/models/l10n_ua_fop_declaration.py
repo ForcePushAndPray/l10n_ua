@@ -1,6 +1,6 @@
 import base64
 
-from odoo import api, fields, models
+from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 
 
@@ -34,7 +34,7 @@ PERIOD_MONTHS = {
 class L10nUaFopDeclaration(models.Model):
     _name = 'l10n_ua.fop.declaration'
     _description = 'Декларація платника єдиного податку'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'l10n_ua.dps.submit.mixin']
     _order = 'year desc, period desc'
 
     name = fields.Char(
@@ -303,10 +303,31 @@ class L10nUaFopDeclaration(models.Model):
                 }
 
     def action_submit(self):
+        """Відкрити КЕП-підпис і подання декларації ЄП до ДПС."""
+        return self.action_kep_submit()
+
+    # --- контракт l10n_ua.dps.submit.mixin ---
+
+    def _dps_check_can_submit(self):
+        for rec in self:
+            if rec.state == 'draft':
+                raise UserError(_(
+                    'Спершу розрахуйте декларацію (кнопка «Розрахувати»).'))
+
+    def _dps_ensure_xml(self):
+        self.ensure_one()
+        if not self.xml_file:
+            self.action_generate_xml()
+
+    def _dps_submit_label(self):
+        return _('Подати декларацію ЄП до ДПС')
+
+    def _dps_on_submitted(self, receipt):
         self.write({
             'state': 'submitted',
             'submission_date': fields.Date.context_today(self),
         })
+        self.message_post(body=_('Подано до ДПС. Квитанція: %s') % (receipt or '—'))
 
     def action_accept(self):
         self.write({'state': 'accepted'})

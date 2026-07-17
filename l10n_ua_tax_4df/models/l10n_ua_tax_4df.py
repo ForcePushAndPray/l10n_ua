@@ -30,7 +30,7 @@ D4_SOFTWARE = 'Odoo l10n_ua'
 class L10nUaTax4DF(models.Model):
     _name = 'l10n_ua.tax.4df'
     _description = '4ДФ — об\'єднана звітність ПДФО/ВЗ/ЄСВ'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'l10n_ua.dps.submit.mixin']
     _order = 'year desc, quarter desc'
 
     name = fields.Char(
@@ -284,14 +284,30 @@ class L10nUaTax4DF(models.Model):
     # --- Стан ---
 
     def action_submit(self):
+        """Відкрити КЕП-підпис і подання 4ДФ до ДПС (l10n_ua.dps.submit.mixin)."""
+        return self.action_kep_submit()
+
+    # --- контракт l10n_ua.dps.submit.mixin ---
+
+    def _dps_check_can_submit(self):
         for rec in self:
             if rec.state != 'generated':
                 raise UserError(_('Подати можна лише згенерований звіт.'))
-            rec.write({
-                'state': 'submitted',
-                'submission_date': fields.Date.today(),
-            })
-        return True
+
+    def _dps_ensure_xml(self):
+        self.ensure_one()
+        if not self.xml_file:
+            self.action_generate_xml()
+
+    def _dps_submit_label(self):
+        return _('Подати 4ДФ до ДПС')
+
+    def _dps_on_submitted(self, receipt):
+        self.write({
+            'state': 'submitted',
+            'submission_date': fields.Date.today(),
+        })
+        self.message_post(body=_('Подано до ДПС. Квитанція: %s') % (receipt or '—'))
 
     def action_draft(self):
         for rec in self:
