@@ -20,4 +20,33 @@
 зосереджені в `_signInBrowser()` у `static/src/js/erpn_sign_action.js` —
 за потреби підлаштуйте їх під версію API вашого пакета IIT.
 
-Джерело: https://iit.com.ua/ (розділ «Бібліотека підпису»).
+## Де взяти файли (перевірено 2026-07)
+
+Нам потрібен саме **JavaScript/WASM** варіант (без браузерного розширення):
+
+1. **Офіційна сторінка завантажень IIT** — https://www.iit.com.ua/downloads
+   - «Бібліотека підпису (java-скрипт, опис та настанови програмістам)» →
+     `EUSignJavaScriptD.doc` (документація API + де брати самі файли):
+     https://iit.com.ua/download/productfiles/EUSignJavaScriptD.doc
+2. **Офіційний живий демо-майданчик** (віддає готові euscp*.js + WASM, доступний
+   з України): http://js.sign.eu.iit.com.ua/  (та вибір режимів:
+   http://sign.eu.iit.com.ua/). Файли можна взяти зі сторінки демо.
+3. **Готова npm-дистрибуція** (бандлить `euscp.worker.js` + WASM):
+   `@it-enterprise/digital-signature` — `npm i @it-enterprise/digital-signature`.
+4. **Публічний приклад-дзеркало** (euscp.js/euscpm.js/euscpt.js/euutils.js/
+   manager.js, без worker/wasm): github.com/gorserg/sign_sample →
+   `public/js/lib/eu/`.
+
+Мінімальний набір для pure-WASM режиму: `euscp.js`, `euscpm.js`,
+`euscp.worker.js` + WASM-модулі (`*.wasm` / каталог `Modules/`). Файли
+`euscpt.js` (транспорт для розширення) для WASM-режиму не потрібні.
+
+**Ліцензія/застереження:** бібліотека IIT пропрієтарна. Використання для
+підпису КЕП безкоштовне, але перед комітом файлів у публічний репозиторій
+звірте умови розповсюдження IIT — можливо, тримати їх лише локально/приватно.
+
+## Web-розширення (альтернатива, якщо оберете інший режим)
+Інсталятори хост-агента: `EUSignWebInstall.exe/.msi/.pkg`, `euswi.deb/.rpm`
+з тієї ж сторінки https://www.iit.com.ua/downloads + браузерне розширення
+«ІІТ Користувач ЦСК-1. Бібліотека підпису (web-розширення)» з Chrome Web Store.
+Цей режим змінює виклики у `_signInBrowser()` (інтерфейс `EUSignCPWebSign`).
