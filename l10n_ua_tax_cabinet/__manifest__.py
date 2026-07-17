@@ -47,6 +47,13 @@ Extends l10n_ua.tax.document with cabinet-specific fields and actions.
             'l10n_ua_tax_cabinet/static/src/css/xml_viewer.css',
             'l10n_ua_tax_cabinet/static/src/js/xml_viewer_field.js',
             'l10n_ua_tax_cabinet/static/src/xml/xml_viewer_field.xml',
+            # ЄРПН: клієнтське КЕП-підписування (#146).
+            # Бібліотека IIT euscp (постачає власник) — glob безпечний, коли
+            # каталог ще порожній; завантажується ПЕРЕД віджетом.
+            'l10n_ua_tax_cabinet/static/src/lib/euscp/**/*.js',
+            'l10n_ua_tax_cabinet/static/src/css/erpn_sign.css',
+            'l10n_ua_tax_cabinet/static/src/js/erpn_sign_action.js',
+            'l10n_ua_tax_cabinet/static/src/xml/erpn_sign_action.xml',
         ],
     },
     'images': ['static/description/icon.png'],

@@ -45,6 +45,8 @@
                             <field name="move_id"/>
                             <field name="erpn_number"/>
                             <field name="erpn_date"/>
+                            <field name="erpn_receipt" readonly="1"
+                                   invisible="not erpn_receipt"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                     </group>

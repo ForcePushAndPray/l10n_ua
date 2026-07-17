@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<templates xml:space="preserve">
+
+    <t t-name="l10n_ua_tax_cabinet.ErpnSignAction">
+        <div class="o_erpn_sign container-fluid p-4">
+            <div class="o_erpn_sign_card mx-auto">
+                <h3 class="mb-3">Реєстрація в ЄРПН — підпис КЕП</h3>
+
+                <t t-if="state.phase === 'loading'">
+                    <div class="text-muted">
+                        <i class="fa fa-spinner fa-spin me-2"/>Підготовка даних…
+                    </div>
+                </t>
+
+                <t t-elif="state.phase === 'error'">
+                    <div class="alert alert-danger" role="alert">
+                        <t t-esc="state.error"/>
+                    </div>
+                    <button class="btn btn-secondary" t-on-click="onClose">Назад</button>
+                </t>
+
+                <t t-elif="state.phase === 'done'">
+                    <div class="alert alert-success" role="alert">
+                        <div><strong>Зареєстровано в ЄРПН.</strong></div>
+                        <div class="mt-1"><small t-esc="state.receipt"/></div>
+                    </div>
+                    <button class="btn btn-primary" t-on-click="onClose">До накладної</button>
+                </t>
+
+                <t t-else="">
+                    <t t-if="!state.libAvailable">
+                        <div class="alert alert-warning" role="alert">
+                            Бібліотеку підпису IIT (euscp) не встановлено. Додайте файли
+                            бібліотеки у <code>static/src/lib/euscp</code> та оновіть модуль,
+                            щоб підписувати ключем у браузері.
+                        </div>
+                    </t>
+
+                    <p class="text-muted">
+                        Ключ і пароль обробляються лише у вашому браузері й не передаються
+                        на сервер. До ДПС іде тільки підписаний конверт.
+                    </p>
+
+                    <div class="mb-3">
+                        <label class="form-label">Файл-ключ (.dat / .jks)</label>
+                        <input type="file" class="form-control"
+                               accept=".dat,.jks,.pfx,.pk8,.zs2"
+                               t-on-change="onKeyFileChange"/>
+                        <small t-if="state.keyFileName" class="text-muted"
+                               t-esc="state.keyFileName"/>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Пароль до ключа</label>
+                        <input type="password" class="form-control"
+                               t-att-value="state.password"
+                               t-on-input="onPasswordInput"/>
+                    </div>
+
+                    <t t-if="state.error">
+                        <div class="alert alert-danger" role="alert" t-esc="state.error"/>
+                    </t>
+
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-primary" t-on-click="onSign"
+                                t-att-disabled="state.phase === 'signing' or !state.libAvailable">
+                            <t t-if="state.phase === 'signing'">
+                                <i class="fa fa-spinner fa-spin me-2"/>Підписання…
+                            </t>
+                            <t t-else="">Підписати і подати</t>
+                        </button>
+                        <button class="btn btn-secondary" t-on-click="onClose">Скасувати</button>
+                    </div>
+                </t>
+            </div>
+        </div>
+    </t>
+
+</templates>

@@ -9,7 +9,13 @@ Tests cover:
 """
 
 from datetime import date
+from unittest.mock import patch
+
 from odoo.tests import TransactionCase, tagged
+
+_CONFIG = 'l10n_ua.tax.cabinet.config'
+_CONFIG_PATH = ('odoo.addons.l10n_ua_tax_cabinet.models.'
+                'l10n_ua_tax_cabinet_config.L10nUaTaxCabinetConfig')
 
 
 @tagged('post_install', '-at_install')
@@ -77,11 +83,37 @@ class TestTaxInvoice(TransactionCase):
                         'Registration deadline should be computed')
 
     def test_tax_invoice_issued_state_workflow(self):
-        """Issued invoice: draft → registered → cancelled."""
+        """Issued invoice: draft → registered (через підписаний конверт) → cancelled.
+
+        Реєстрація тепер — реальний релей у ЄРПН (#146): action_register_erpn
+        лише відкриває браузерний підпис, а статус 'registered' виставляє
+        erpn_submit_signed за квитанцією ДПС (тут API замокано).
+        """
+        # Конфіг кабінету (upsert через UNIQUE(company_id)).
+        cfg = self.env[_CONFIG].with_context(active_test=False).search(
+            [('company_id', '=', self.company.id)], limit=1)
+        cfg_vals = {'name': 'Кабінет', 'taxpayer_code': '12345678', 'active': True}
+        if cfg:
+            cfg.write(cfg_vals)
+        else:
+            self.env[_CONFIG].create({**cfg_vals, 'company_id': self.company.id})
+
         ti = self._create_tax_invoice('issued')
         self.assertEqual(ti.state, 'draft')
-        ti.action_register_erpn()
+
+        # Кнопка відкриває віджет підпису, статус ще не змінюється.
+        action = ti.action_register_erpn()
+        self.assertEqual(action['tag'], 'l10n_ua_tax_cabinet.erpn_sign')
+        self.assertEqual(ti.state, 'draft')
+
+        # Підписаний у браузері конверт подано → квитанція → registered.
+        with patch(_CONFIG_PATH + '._api_submit_document_presigned',
+                   return_value={'message': 'прийнято'}):
+            ti.erpn_submit_signed('AUTH==', 'ENV==', 'F1201.xml')
         self.assertEqual(ti.state, 'registered')
+
+        ti.action_cancel()
+        self.assertEqual(ti.state, 'cancelled')
 
     def test_tax_invoice_received_state_workflow(self):
         """Received invoice: received_status tracks expected → received → erpn_verified."""

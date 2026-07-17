@@ -540,11 +540,43 @@ class L10nUaTaxCabinetConfig(models.Model):
             )
 
         # Use the exchange/report endpoint for document submission
-        url = f"{base_url}/cabinet/public/api/exchange/report"
         headers = self._get_auth_headers(password=password)
+        return self._post_report(signed_content, filename, headers)
+
+    def _api_submit_document_presigned(self, signed_content, filename, auth_signature):
+        """Релей уже підписаного документа (клієнтське КЕП-підписування, #146).
+
+        Ключ і пароль лишаються в браузері: сюди приходять готові
+        ``signed_content`` (base64 sign+encrypt конверта на сертифікат ДПС) і
+        ``auth_signature`` (base64 підпис taxpayer_code для заголовка
+        Authorization). Сервер лише пересилає — жодного виклику ``_sign_with_kep``.
+        """
+        self.ensure_one()
+        auth_header = auth_signature if isinstance(auth_signature, str) \
+            else auth_signature.decode('utf-8')
+        headers = {
+            'Authorization': auth_header,
+            'Accept': 'application/json, */*',
+            'Lang': 'uk',
+        }
+        return self._post_report(signed_content, filename, headers)
+
+    def _post_report(self, signed_content, filename, headers):
+        """Спільний HTTP-релей подачі звіту в кабінет ДПС.
+
+        Приймає готові ``headers`` (з Authorization) — байдуже, серверний
+        підпис це чи клієнтський. POST на exchange/report завжди у продакшн.
+        """
+        self.ensure_one()
+
+        # IMPORTANT: Test environment (port 9443) only supports PRRO operations.
+        # Report submission must use production endpoint.
+        base_url = TAX_CABINET_BASE_URL
+
+        url = f"{base_url}/cabinet/public/api/exchange/report"
         # Don't set Content-Type explicitly - let requests library handle it
         # when using json= parameter (it will set application/json automatically)
-        # Remove any pre-set Content-Type that might conflict
+        headers = dict(headers)
         headers.pop('Content-Type', None)
         headers['Accept'] = 'application/json, */*'
 
