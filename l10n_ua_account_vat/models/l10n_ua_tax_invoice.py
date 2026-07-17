@@ -21,7 +21,7 @@ VAT_RATE_SELECTION = [
 class L10nUaTaxInvoice(models.Model):
     _name = 'l10n_ua.tax.invoice'
     _description = 'Tax Invoice (Податкова накладна)'
-    _inherit = ['mail.thread', 'mail.activity.mixin']
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'l10n_ua.sign.mixin']
     _order = 'date desc, number desc'
 
     name = fields.Char(
@@ -283,11 +283,10 @@ class L10nUaTaxInvoice(models.Model):
         return config
 
     def action_register_erpn(self):
-        """Відкрити клієнтське КЕП-підписування для реальної реєстрації в ЄРПН (#146).
+        """Відкрити клієнтське КЕП-підписування для реєстрації в ЄРПН (#146).
 
-        Більше не фейковий фліп статусу: гарантує наявність XML і конфігурації
-        кабінету, а далі відкриває браузерний віджет підпису. Статус
-        'registered' виставляється лише після квитанції ДПС у erpn_submit_signed.
+        Валідує чернетку/XML/конфіг і відкриває універсальний діалог підпису
+        (l10n_ua.sign.mixin). Статус 'registered' — лише після квитанції ДПС.
         """
         self.ensure_one()
         if self.state != 'draft':
@@ -295,53 +294,49 @@ class L10nUaTaxInvoice(models.Model):
         if not self.file_xml:
             self.action_generate_xml()
         self._get_cabinet_config()  # валідація: інакше чіткий UserError
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'l10n_ua_tax_cabinet.erpn_sign',
-            'params': {'model': self._name, 'res_id': self.id},
-        }
+        return self.action_kep_sign()
 
-    def erpn_prepare_signing(self):
-        """Дані для браузерного підпису: XML, taxpayer_code, сертифікат ДПС, ім'я файлу.
+    # --- контракт l10n_ua.sign.mixin ---
 
-        Викликається OWL-віджетом через ORM. Приватний ключ/пароль тут не
-        фігурують — підпис робиться в браузері.
-        """
+    def kep_prepare_signing(self):
         self.ensure_one()
+        if self.state != 'draft':
+            raise UserError(_('Можна реєструвати тільки чернетки.'))
         if not self.file_xml:
             self.action_generate_xml()
         config = self._get_cabinet_config()
-        # Сертифікат шифрування ДПС потрібен лише для конверта (envelope).
-        # Поточний клієнтський потік підписує (SignData) без шифрування, тож
-        # недоступність cert (напр. застарілий URL → 404) не має блокувати
-        # підпис — повертаємо порожньо й логуємо.
+        # Сертифікат шифрування ДПС потрібен лише для конверта. Недоступність
+        # (напр. застарілий URL → 404) не блокує підпис — логуємо й ідемо далі.
         dps_cert = None
         try:
             dps_cert = config._get_dps_encrypt_certificate()
         except Exception as e:
-            _logger.warning(
-                'DPS cert недоступний (%s) — підпис без конверта.', e)
+            _logger.warning('DPS cert недоступний (%s) — підпис без конверта.', e)
+        xml_b64 = (self.file_xml or b'').decode() \
+            if isinstance(self.file_xml, bytes) else (self.file_xml or '')
         return {
-            'xml_b64': (self.file_xml or b'').decode()
-            if isinstance(self.file_xml, bytes) else (self.file_xml or ''),
-            'taxpayer_code': config.taxpayer_code or '',
-            'dps_cert_b64': base64.b64encode(dps_cert).decode() if dps_cert else '',
-            'filename': self._generate_xml_filename(),
+            'auth_subject': config.taxpayer_code or '',
+            'submit_label': _('Зареєструвати в ЄРПН'),
+            'documents': [{
+                'name': 'pn',
+                'data_b64': xml_b64,
+                'format': 'envelope',
+                'filename': self._generate_xml_filename(),
+                'recipient_cert_b64': base64.b64encode(dps_cert).decode()
+                if dps_cert else '',
+            }],
         }
 
-    def erpn_submit_signed(self, auth_signature_b64, envelope_b64, filename):
-        """Релей підписаного в браузері конверта до ЄРПН і фіксація результату.
-
-        auth_signature_b64 — підпис taxpayer_code (заголовок Authorization),
-        envelope_b64 — sign+encrypt конверт на сертифікат ДПС. Обидва створені
-        в браузері. Статус 'registered' — лише за успішною квитанцією.
-        """
+    def kep_submit_signed(self, signed, auth_signature=None):
         self.ensure_one()
         if self.state != 'draft':
             raise UserError(_('Можна реєструвати тільки чернетки.'))
         config = self._get_cabinet_config()
+        envelope_b64 = signed.get('pn')
+        if not envelope_b64:
+            raise UserError(_('Не отримано підпис податкової накладної.'))
         result = config._api_submit_document_presigned(
-            envelope_b64, filename, auth_signature_b64)
+            envelope_b64, self._generate_xml_filename(), auth_signature)
         receipt = result.get('message') if isinstance(result, dict) else str(result)
         self.write({
             'state': 'registered',

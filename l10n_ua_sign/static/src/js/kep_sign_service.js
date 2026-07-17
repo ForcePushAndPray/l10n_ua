@@ -118,30 +118,60 @@ async function signOneDocument(eu, doc) {
 }
 
 /**
- * Підписати набір документів одним ключем.
- * @param {{auth_subject?: string, documents: Array}} spec — з kep_prepare_signing.
- * @param {Uint8Array} keyBuffer — вміст файл-ключа (не покидає браузер).
- * @param {string} password — пароль до ключа (не покидає браузер).
- * @returns {{auth_signature: (string|null), signed: Object}} base64-підписи.
+ * Стейтфул-підписувач: тримає зчитаний приватний ключ між кроками
+ * (зчитати → підписати → відправити). Ключ і пароль не покидають браузер.
+ *
+ * Використання:
+ *   const signer = createSigner();
+ *   const { owner, certs } = await signer.readKey(keyBuffer, password);
+ *   const { auth_signature, signed } = await signer.sign(spec);
  */
-export async function signDocuments(spec, keyBuffer, password) {
-    const Lib = await ensureEuscpLoaded();
-    if (!keyBuffer) {
-        throw new Error(_t("Виберіть файл-ключ (.dat/.jks)."));
-    }
-    if (!password) {
-        throw new Error(_t("Введіть пароль до ключа."));
-    }
-    const eu = Lib.EndUser ? new Lib.EndUser() : new Lib();
-    await eu.ReadPrivateKeyBinary(keyBuffer, password, null, null);
-
-    let authSignature = null;
-    if (spec.auth_subject) {
-        authSignature = await eu.SignDataInternal(true, spec.auth_subject, true);
-    }
-    const signed = {};
-    for (const doc of spec.documents || []) {
-        signed[doc.name] = await signOneDocument(eu, doc);
-    }
-    return { auth_signature: authSignature, signed };
+export function createSigner() {
+    let eu = null;
+    return {
+        get ready() {
+            return !!eu;
+        },
+        /**
+         * Крок 1 — зчитати ключ і повернути дані власника (для підтвердження).
+         * @returns {{owner: Object, certs: Array}}
+         */
+        async readKey(keyBuffer, password) {
+            if (!keyBuffer) {
+                throw new Error(_t("Виберіть файл-ключ (.dat/.jks)."));
+            }
+            if (!password) {
+                throw new Error(_t("Введіть пароль до ключа."));
+            }
+            const Lib = await ensureEuscpLoaded();
+            eu = Lib.EndUser ? new Lib.EndUser() : new Lib();
+            const owner = await eu.ReadPrivateKeyBinary(keyBuffer, password, null, null);
+            let certs = [];
+            try {
+                certs = await eu.GetOwnCertificates();
+            } catch (e) {
+                certs = [];
+            }
+            return { owner, certs };
+        },
+        /**
+         * Крок 2 — підписати документи вже зчитаним ключем.
+         * @param {{auth_subject?: string, documents: Array}} spec
+         * @returns {{auth_signature: (string|null), signed: Object}}
+         */
+        async sign(spec) {
+            if (!eu) {
+                throw new Error(_t("Спершу зчитайте ключ."));
+            }
+            let authSignature = null;
+            if (spec.auth_subject) {
+                authSignature = await eu.SignDataInternal(true, spec.auth_subject, true);
+            }
+            const signed = {};
+            for (const doc of spec.documents || []) {
+                signed[doc.name] = await signOneDocument(eu, doc);
+            }
+            return { auth_signature: authSignature, signed };
+        },
+    };
 }

@@ -29,6 +29,7 @@ Extends l10n_ua.tax.document with cabinet-specific fields and actions.
     },
     'depends': [
         'l10n_ua_tax',
+        'l10n_ua_sign',
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -47,14 +48,7 @@ Extends l10n_ua.tax.document with cabinet-specific fields and actions.
             'l10n_ua_tax_cabinet/static/src/css/xml_viewer.css',
             'l10n_ua_tax_cabinet/static/src/js/xml_viewer_field.js',
             'l10n_ua_tax_cabinet/static/src/xml/xml_viewer_field.xml',
-            # ЄРПН: клієнтське КЕП-підписування (#146).
-            # УВАГА: файли бібліотеки IIT euscp (euscp.worker.js ~16МБ,
-            # euscp.js ~5МБ) НЕ бандляться сюди — worker вантажиться за URL, а
-            # 21МБ на кожній сторінці неприпустимі. Віджет підвантажує їх
-            # ліниво при кліку «Підписати» (див. _ensureEuscpLoaded).
-            'l10n_ua_tax_cabinet/static/src/css/erpn_sign.css',
-            'l10n_ua_tax_cabinet/static/src/js/erpn_sign_action.js',
-            'l10n_ua_tax_cabinet/static/src/xml/erpn_sign_action.xml',
+            # КЕП-підпис ЄРПН переїхав у модуль l10n_ua_sign (переюзабельний).
         ],
     },
     'images': ['static/description/icon.png'],

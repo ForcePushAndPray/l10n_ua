@@ -74,7 +74,7 @@ class TestErpnRegister(TransactionCase):
         inv = self._invoice()
         action = inv.action_register_erpn()
         self.assertEqual(action['type'], 'ir.actions.client')
-        self.assertEqual(action['tag'], 'l10n_ua_tax_cabinet.erpn_sign')
+        self.assertEqual(action['tag'], 'l10n_ua_sign.kep_sign')
         self.assertEqual(action['params'], {
             'model': 'l10n_ua.tax.invoice', 'res_id': inv.id})
         self.assertEqual(inv.state, 'draft')  # ще не зареєстровано
@@ -87,21 +87,25 @@ class TestErpnRegister(TransactionCase):
         with self.assertRaises(UserError):
             inv.action_register_erpn()
 
-    # --- Підготовка даних для браузера ---
+    # --- Підготовка даних для браузера (контракт sign.mixin) ---
 
     def test_prepare_signing_payload(self):
         self._config()
         inv = self._invoice()
         with patch(CONFIG_PATH + '._get_dps_encrypt_certificate',
                    return_value=b'FAKE-DPS-CERT'):
-            data = inv.erpn_prepare_signing()
-        self.assertEqual(data['taxpayer_code'], '12345678')
-        self.assertTrue(data['xml_b64'])
-        self.assertTrue(data['dps_cert_b64'])
-        self.assertTrue(data['filename'].endswith('.xml'))
-        # xml_b64 має декодуватись у валідний XML податкової накладної.
+            data = inv.kep_prepare_signing()
+        self.assertEqual(data['auth_subject'], '12345678')
+        self.assertEqual(len(data['documents']), 1)
+        doc = data['documents'][0]
+        self.assertEqual(doc['name'], 'pn')
+        self.assertEqual(doc['format'], 'envelope')
+        self.assertTrue(doc['data_b64'])
+        self.assertTrue(doc['recipient_cert_b64'])
+        self.assertTrue(doc['filename'].endswith('.xml'))
+        # data_b64 має декодуватись у валідний XML податкової накладної.
         import base64
-        xml = base64.b64decode(data['xml_b64']).decode('windows-1251')
+        xml = base64.b64decode(doc['data_b64']).decode('windows-1251')
         self.assertIn('<?xml', xml)
 
     # --- Релей підписаного конверта ---
@@ -109,10 +113,15 @@ class TestErpnRegister(TransactionCase):
     def test_submit_signed_success(self):
         self._config()
         inv = self._invoice()
+        inv.action_generate_xml()  # щоб _generate_xml_filename був детермінований
         with patch(CONFIG_PATH + '._api_submit_document_presigned',
                    return_value={'message': 'Квитанція №1: прийнято'}) as m:
-            res = inv.erpn_submit_signed('AUTHSIG==', 'ENVELOPE==', 'F1201.xml')
-        m.assert_called_once_with('ENVELOPE==', 'F1201.xml', 'AUTHSIG==')
+            res = inv.kep_submit_signed({'pn': 'ENVELOPE=='}, 'AUTHSIG==')
+        # Релей: (конверт, ім'я файлу, auth-підпис). Ім'я рахує сервер.
+        args = m.call_args.args
+        self.assertEqual(args[0], 'ENVELOPE==')
+        self.assertEqual(args[2], 'AUTHSIG==')
+        self.assertTrue(args[1].endswith('.xml'))
         self.assertEqual(inv.state, 'registered')
         self.assertIn('прийнято', inv.erpn_receipt)
         self.assertTrue(inv.erpn_date)
@@ -124,7 +133,7 @@ class TestErpnRegister(TransactionCase):
         with patch(CONFIG_PATH + '._api_submit_document_presigned',
                    side_effect=UserError('Відхилено ДПС')):
             with self.assertRaises(UserError):
-                inv.erpn_submit_signed('AUTHSIG==', 'ENVELOPE==', 'F1201.xml')
+                inv.kep_submit_signed({'pn': 'ENVELOPE=='}, 'AUTHSIG==')
         self.assertEqual(inv.state, 'draft')  # не зареєстровано на помилці
 
     def test_submit_signed_non_draft_raises(self):
@@ -132,7 +141,13 @@ class TestErpnRegister(TransactionCase):
         inv = self._invoice()
         inv.state = 'cancelled'
         with self.assertRaises(UserError):
-            inv.erpn_submit_signed('A', 'E', 'f.xml')
+            inv.kep_submit_signed({'pn': 'E'}, 'A')
+
+    def test_submit_signed_missing_signature_raises(self):
+        self._config()
+        inv = self._invoice()
+        with self.assertRaises(UserError):
+            inv.kep_submit_signed({}, 'AUTHSIG==')  # немає підпису 'pn'
 
 
 @tagged('post_install', '-at_install')

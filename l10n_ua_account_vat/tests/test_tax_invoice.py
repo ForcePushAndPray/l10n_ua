@@ -103,13 +103,13 @@ class TestTaxInvoice(TransactionCase):
 
         # Кнопка відкриває віджет підпису, статус ще не змінюється.
         action = ti.action_register_erpn()
-        self.assertEqual(action['tag'], 'l10n_ua_tax_cabinet.erpn_sign')
+        self.assertEqual(action['tag'], 'l10n_ua_sign.kep_sign')
         self.assertEqual(ti.state, 'draft')
 
         # Підписаний у браузері конверт подано → квитанція → registered.
         with patch(_CONFIG_PATH + '._api_submit_document_presigned',
                    return_value={'message': 'прийнято'}):
-            ti.erpn_submit_signed('AUTH==', 'ENV==', 'F1201.xml')
+            ti.kep_submit_signed({'pn': 'ENV=='}, 'AUTH==')
         self.assertEqual(ti.state, 'registered')
 
         ti.action_cancel()
