@@ -38,6 +38,8 @@
             <xpath expr="//separator[@name='schedule']" position="before">
                 <field name="work_rate"/>
                 <field name="working_hours_week"/>
+                <field name="scheduled_hours_week"/>
+                <field name="scheduled_hours_day"/>
             </xpath>
             <!-- Add consolidated Ukrainian contract page -->
             <xpath expr="//page[@name='hr_settings']" position="before">

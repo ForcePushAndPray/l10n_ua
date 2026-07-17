@@ -57,6 +57,14 @@ class HrJobCombining(models.Model):
         string='Combined Department',
         tracking=True
     )
+    combined_rate = fields.Float(
+        string='Частка ставки',
+        default=0.5,
+        tracking=True,
+        help='Частка штатної одиниці суміщуваної посади, яку займає '
+             'працівник (0.5 = півставки). Споживається у штатному розписі '
+             'нарівні з основними працівниками.'
+    )
 
     date_from = fields.Date(
         string='Date From',
@@ -141,6 +149,34 @@ class HrJobCombining(models.Model):
             if record.date_to and record.date_from > record.date_to:
                 raise ValidationError('End date must be after start date!')
 
+    @api.constrains('combined_rate')
+    def _check_combined_rate(self):
+        for record in self:
+            if record.combined_rate <= 0 or record.combined_rate > 1:
+                raise ValidationError(
+                    'Частка ставки суміщення має бути в межах (0; 1].')
+
+    def _recompute_staffing(self):
+        """Перерахувати заповнення штатних одиниць суміщуваних посад.
+
+        filled_units штатного розпису шукає працівників динамічно (не через
+        збережений зв'язок), тож зміну стану суміщення треба явно
+        відобразити на відповідних рядках розпису.
+        """
+        Staffing = self.env.get('hr.staffing.table')
+        if Staffing is None:
+            return
+        for record in self:
+            if not (record.combined_department_id and record.combined_job_id):
+                continue
+            lines = Staffing.search([
+                ('department_id', '=', record.combined_department_id.id),
+                ('job_id', '=', record.combined_job_id.id),
+            ])
+            if lines:
+                lines._compute_filled_units()
+                lines._compute_vacant_units()
+
     @api.onchange('employee_id')
     def _onchange_employee_id(self):
         if self.employee_id:
@@ -189,6 +225,7 @@ class HrJobCombining(models.Model):
                 record.allowance_id = allowance.id
 
             record.state = 'active'
+            record._recompute_staffing()
 
     def action_cancel(self):
         """Cancel job combining and deactivate allowance"""
@@ -201,6 +238,7 @@ class HrJobCombining(models.Model):
                 record.allowance_id.date_to = fields.Date.today()
 
             record.state = 'cancelled'
+            record._recompute_staffing()
 
     def action_draft(self):
         """Reset to draft"""

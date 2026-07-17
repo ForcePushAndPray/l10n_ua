@@ -99,6 +99,17 @@ class HrStaffingTable(models.Model):
                         total_rate += version.work_rate
                     else:
                         total_rate += 1.0  # Default full-time
+                # Суміщення (сумісництво) споживає свою частку штатної одиниці
+                # цієї посади нарівні з основними працівниками (#149).
+                Combining = self.env.get('hr.job.combining')
+                if Combining is not None:
+                    combinings = Combining.search([
+                        ('combined_department_id', '=', record.department_id.id),
+                        ('combined_job_id', '=', record.job_id.id),
+                        ('state', '=', 'active'),
+                    ])
+                    total_rate += sum(
+                        c.combined_rate or 0.0 for c in combinings)
                 record.filled_units = total_rate
             else:
                 record.filled_units = 0.0

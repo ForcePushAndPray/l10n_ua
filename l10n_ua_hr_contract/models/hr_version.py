@@ -57,6 +57,22 @@ class HrVersion(models.Model):
         help='1.0 = full rate, 0.5 = half rate, etc.',
         groups="hr.group_hr_user"
     )
+    scheduled_hours_week = fields.Float(
+        string='Норма годин/тиждень',
+        compute='_compute_scheduled_norm',
+        store=True,
+        groups="hr.group_hr_user",
+        help='Норма робочого часу на тиждень з урахуванням ставки зайнятості '
+             '(work_rate): 0.5 ставки → 20 год при 40-годинному тижні.'
+    )
+    scheduled_hours_day = fields.Float(
+        string='Норма годин/день',
+        compute='_compute_scheduled_norm',
+        store=True,
+        groups="hr.group_hr_user",
+        help='Норма робочого часу на день з урахуванням ставки зайнятості '
+             '(work_rate): 0.5 ставки → 4 год при 8-годинному дні.'
+    )
 
     # === Probation ===
     probation_period_days = fields.Integer(
@@ -206,6 +222,30 @@ class HrVersion(models.Model):
     def _compute_total_wage(self):
         for version in self:
             version.total_wage = version.wage + version.total_allowances
+
+    @api.depends('work_rate', 'working_hours_week',
+                 'work_schedule_ua_id.hours_per_week',
+                 'work_schedule_ua_id.hours_per_day',
+                 'work_schedule_ua_id.working_days_per_week')
+    def _compute_scheduled_norm(self):
+        """Норма годин пропорційна ставці зайнятості (work_rate).
+
+        Базова норма береться з графіка роботи (work_schedule_ua_id), а за
+        його відсутності — з тижневої норми версії (working_hours_week,
+        типово 40 год, 5-денний тиждень).
+        """
+        for version in self:
+            rate = version.work_rate if version.work_rate else 1.0
+            sched = version.work_schedule_ua_id
+            if sched and sched.hours_per_week:
+                week = sched.hours_per_week
+                days = sched.working_days_per_week or 5
+                day = sched.hours_per_day or (week / days)
+            else:
+                week = version.working_hours_week or 40.0
+                day = week / 5.0
+            version.scheduled_hours_week = week * rate
+            version.scheduled_hours_day = day * rate
 
     @api.depends('work_conditions', 'work_conditions_class')
     def _compute_additional_vacation_days(self):

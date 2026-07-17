@@ -506,25 +506,43 @@ class HrPayslip(models.Model):
         
         return True
 
+    def _daily_hour_norm(self):
+        """Денна норма годин з урахуванням ставки зайнятості (work_rate).
+
+        0.5 ставки → 4 год/день при 8-годинному дні. Базова денна норма —
+        з графіка/тижневої норми версії, помножена на work_rate. Так табель
+        неповного робочого часу відображає пропорційно зменшену норму, а не
+        фіксовані 8 год (#149).
+        """
+        self.ensure_one()
+        version = self.version_id
+        if version and getattr(version, 'scheduled_hours_day', 0.0):
+            return version.scheduled_hours_day
+        base = 8.0
+        if version:
+            base *= (version.work_rate or 1.0)
+        return base
+
     def _compute_working_days(self):
         """Calculate scheduled and worked days"""
         self.ensure_one()
         if not self.date_from or not self.date_to:
             return
-        
+
         # Simple calculation - count weekdays
         month_start = self.date_to.replace(day=1)
         month_end = month_start + relativedelta(months=1, days=-1)
-        
+
         total_scheduled = 0
         curr = month_start
         while curr <= month_end:
             if curr.weekday() < 5:  # Monday to Friday
                 total_scheduled += 1
             curr += relativedelta(days=1)
-        
+
+        daily_norm = self._daily_hour_norm()
         self.scheduled_days = total_scheduled
-        self.scheduled_hours = total_scheduled * 8.0
+        self.scheduled_hours = total_scheduled * daily_norm
         
         # get amount of working days from timesheet
         if 'hr.timesheet.line' in self.env:
@@ -541,7 +559,7 @@ class HrPayslip(models.Model):
                 # in case if there is multiplier in timesheets 
                 if ts_line.scheduled_days:
                     self.scheduled_days = ts_line.scheduled_days
-                    self.scheduled_hours = ts_line.scheduled_days * 8.0
+                    self.scheduled_hours = ts_line.scheduled_days * daily_norm
                 return
 
         # default if there is no timesheets
@@ -552,7 +570,7 @@ class HrPayslip(models.Model):
                 worked += 1
             curr += relativedelta(days=1)
         self.worked_days = worked
-        self.worked_hours = worked * 8.0
+        self.worked_hours = worked * daily_norm
 
 
     def _get_effective_wage(self, version):
