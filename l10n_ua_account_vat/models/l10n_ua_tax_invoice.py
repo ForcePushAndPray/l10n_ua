@@ -1,10 +1,13 @@
 import base64
 import calendar
 import io
+import logging
 from datetime import timedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 VAT_RATE_SELECTION = [
     ('20', '20%'),
@@ -308,7 +311,16 @@ class L10nUaTaxInvoice(models.Model):
         if not self.file_xml:
             self.action_generate_xml()
         config = self._get_cabinet_config()
-        dps_cert = config._get_dps_encrypt_certificate()
+        # Сертифікат шифрування ДПС потрібен лише для конверта (envelope).
+        # Поточний клієнтський потік підписує (SignData) без шифрування, тож
+        # недоступність cert (напр. застарілий URL → 404) не має блокувати
+        # підпис — повертаємо порожньо й логуємо.
+        dps_cert = None
+        try:
+            dps_cert = config._get_dps_encrypt_certificate()
+        except Exception as e:
+            _logger.warning(
+                'DPS cert недоступний (%s) — підпис без конверта.', e)
         return {
             'xml_b64': (self.file_xml or b'').decode()
             if isinstance(self.file_xml, bytes) else (self.file_xml or ''),
