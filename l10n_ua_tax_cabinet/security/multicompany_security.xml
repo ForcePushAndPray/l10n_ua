@@ -25,5 +25,14 @@
             </field>
         </record>
 
+        <record id="l10n_ua_tax_request_company_rule" model="ir.rule">
+            <field name="name">Інформаційний запит до ДПС: multi-company</field>
+            <field name="model_id" ref="model_l10n_ua_tax_request"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">
+                ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
+            </field>
+        </record>
+
     </data>
 </odoo>

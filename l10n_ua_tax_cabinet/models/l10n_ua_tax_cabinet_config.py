@@ -19,8 +19,13 @@ TAX_CABINET_API_PATH = "/ws/public_api"
 
 # DPS Server certificates for encryption
 # Updated August 2025, see: https://tax.gov.ua/media-tsentr/novini/920738.html
-DPS_ENCRYPT_CERT_URL = "https://cabinet.tax.gov.ua/cabinet/resources/js/sign/data/EK_C_NEW.cer"
-DPS_SIGN_CERT_URL = "https://cabinet.tax.gov.ua/cabinet/resources/js/sign/data/EK_S_NEW.cer"
+# Старий шлях /cabinet/resources/js/sign/data/ дає 404. Крипто-дані кабінету
+# тепер під /ws/api/crypto/public_sign/data/ (звідти login-сторінка тягне
+# CACertificates.p7b / CAs.json). Точне ім'я cert шифрування уточнюється
+# живою перевіркою; завантаження некритичне (порожній cert → підпис без
+# конверта), тож помилковий URL не блокує підпис.
+DPS_ENCRYPT_CERT_URL = "https://cabinet.tax.gov.ua/ws/api/crypto/public_sign/data/EK_C_NEW.cer"
+DPS_SIGN_CERT_URL = "https://cabinet.tax.gov.ua/ws/api/crypto/public_sign/data/EK_S_NEW.cer"
 
 # Default IIT library paths
 DEFAULT_IIT_LIB_PATH = '/opt/iit/eu/sw'

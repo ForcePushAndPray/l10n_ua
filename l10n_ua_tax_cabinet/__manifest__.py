@@ -41,6 +41,7 @@ Extends l10n_ua.tax.document with cabinet-specific fields and actions.
         'views/l10n_ua_tax_cabinet_document_views.xml',
         'views/l10n_ua_tax_cabinet_config_views.xml',
         'views/menu_views.xml',
+        'views/l10n_ua_tax_request_views.xml',
     ],
     'demo': [],
     'assets': {
