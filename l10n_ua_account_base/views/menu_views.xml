@@ -62,6 +62,12 @@
               action="l10n_ua_general_ledger_action"
               sequence="37"/>
 
+    <menuitem id="menu_l10n_ua_chess_sheet"
+              name="Chess Sheet"
+              parent="menu_l10n_ua_accounting"
+              action="l10n_ua_chess_sheet_action"
+              sequence="39"/>
+
     <!-- Subconto Configuration -->
     <menuitem id="menu_l10n_ua_subconto_types"
               name="Subconto Types"

@@ -12,4 +12,5 @@ from . import l10n_ua_osv
 from . import l10n_ua_account_card
 from . import l10n_ua_account_analysis
 from . import l10n_ua_general_ledger
+from . import l10n_ua_chess_sheet
 from . import l10n_ua_subconto

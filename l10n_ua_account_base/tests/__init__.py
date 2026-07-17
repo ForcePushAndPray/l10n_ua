@@ -6,4 +6,5 @@ from . import test_journal_order
 from . import test_account_card
 from . import test_account_analysis
 from . import test_general_ledger
+from . import test_chess_sheet
 from . import test_multicompany
