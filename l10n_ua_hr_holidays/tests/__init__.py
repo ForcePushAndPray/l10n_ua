@@ -5,4 +5,4 @@ from . import test_hr_sick_leave
 from . import test_hr_leave_order_sync
 from . import test_period_type
 from . import test_multicompany
-
+from . import test_vacation_period_balance

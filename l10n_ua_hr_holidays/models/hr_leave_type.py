@@ -1,4 +1,4 @@
-from odoo import models, fields
+from odoo import models, fields, api, _
 
 
 class HrLeaveType(models.Model):
@@ -87,3 +87,38 @@ class HrLeaveType(models.Model):
         default=False,
         help='Automatically create a vacation order (form П-3) when a leave of this type is created',
     )
+    ua_is_default = fields.Boolean(
+        string='Show by Default',
+        copy=False,
+        help='Preselect this leave type by default. Only one leave type per '
+             'company may be the default at a time.',
+    )
+
+    ua_auto_calc_balance = fields.Boolean(
+        string='Auto-calculate Balance',
+        default=False,
+        help='When enabled, the "Recalculate" action in Vacation Balances '
+             'generates and maintains the accounting periods for this leave '
+             'type. Off by default — only types with this ticked are '
+             'recalculated.',
+    )
+
+    def _default_conflicts(self):
+        """Other leave types of the same company already flagged as default."""
+        self.ensure_one()
+        return self.search([
+            ('id', '!=', self.id),
+            ('company_id', '=', self.company_id.id),
+            ('ua_is_default', '=', True),
+        ])
+
+    def write(self, vals):
+        """Handle ua_is_default checkbox: when set to True, clear other
+        defaults in the same company."""
+        res = super().write(vals)
+        if 'ua_is_default' in vals and vals['ua_is_default']:
+            for record in self:
+                conflicts = record._default_conflicts()
+                if conflicts:
+                    conflicts.write({'ua_is_default': False})
+        return res

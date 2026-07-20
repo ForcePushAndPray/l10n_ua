@@ -221,15 +221,20 @@ class HrOrder(models.Model):
             for idx, leave in zip(leave_indices, leaves):
                 vals_list[idx]['leave_id'] = leave.id
 
-        # Add _sync_order_leave context to prevent duplicate orders on inverse related fields write
-        orders = super(HrOrder, self.with_context(_sync_order_leave=True)).create(vals_list)
+        # Add _sync_order_leave context to prevent duplicate orders on inverse
+        # related fields write. leave_skip_state_check lets the order write to
+        # its own linked leave (e.g. the related holiday_status_id inverse)
+        # without hr_holidays raising "modification not allowed in the current
+        # state" when the leave is past draft/confirm.
+        orders = super(HrOrder, self.with_context(
+            _sync_order_leave=True, leave_skip_state_check=True)).create(vals_list)
 
         # Back-link leaves → orders in a single write per leave
         for order in orders:
             if order.leave_id and not order.leave_id.order_id:
-                order.leave_id.with_context(_sync_order_leave=True).write(
-                    {'order_id': order.id}
-                )
+                order.leave_id.with_context(
+                    _sync_order_leave=True, leave_skip_state_check=True
+                ).write({'order_id': order.id})        
         orders._sync_hiring_to_employee()
         return orders
 
@@ -238,11 +243,16 @@ class HrOrder(models.Model):
         if not self.env.context.get('_sync_order_leave'):
             if {'vacation_date_from', 'vacation_date_to'} & vals.keys():
                 for order in self.filtered(
-                    lambda o: o.order_type == 'vacation' 
+                    lambda o: o.order_type == 'vacation'
                     and o.leave_id
-                    and o.leave_id.state not in ('validate', 'validate1')
+                    # Only push dates onto a still-editable leave; an approved,
+                    # refused or cancelled leave must not be silently rewritten
+                    # (and hr_holidays would block it anyway).
+                    and o.leave_id.state in ('draft', 'confirm')
                 ):
-                    order.leave_id.with_context(_sync_order_leave=True).write({
+                    order.leave_id.with_context(
+                        _sync_order_leave=True, leave_skip_state_check=True
+                    ).write({
                         'date_from': fields.Datetime.from_string(str(order.vacation_date_from)) if order.vacation_date_from else False,
                         'date_to': fields.Datetime.from_string(str(order.vacation_date_to)) if order.vacation_date_to else False,
                     })

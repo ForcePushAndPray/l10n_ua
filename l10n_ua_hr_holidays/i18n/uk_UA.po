@@ -300,6 +300,7 @@ msgstr "ID електронного лікарняного з системи П�
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__employee_id
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__employee_id
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__employee_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_search
 msgid "Employee"
 msgstr "Співробітник"
 
@@ -463,6 +464,7 @@ msgstr "Оновлено"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__leave_type_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_search
 msgid "Leave Type"
 msgstr "Тип відпустки"
 
@@ -1028,6 +1030,7 @@ msgstr "Робочі дні"
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_employee_vacation_summary_report__year
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__year
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__year
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_search
 msgid "Year"
 msgstr "Рік"
 
@@ -1177,6 +1180,7 @@ msgstr ""
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__period_type
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__period_type
 msgid "Accounting Period"
 msgstr "Обліковий період"
 
@@ -1198,3 +1202,203 @@ msgid ""
 msgstr ""
 "Календарний рік: 1 січня – 31 грудня. Робочий рік: 12-місячний період від "
 "дати прийняття працівника на роботу (згідно зі ст. 6, 7, 8, 10 ЗУ «Про відпустки»)."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__period_start
+msgid "Period Start"
+msgstr "Початок періоду"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__period_end
+msgid "Period End"
+msgstr "Кінець періоду"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__period_index
+msgid "Period #"
+msgstr "№ періоду"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__period_label
+msgid "Period"
+msgstr "Період"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_balance__period_index
+msgid ""
+"Calendar year for calendar periods; sequential work-year number from hire "
+"date for work periods."
+msgstr ""
+"Календарний рік для календарних періодів; порядковий номер робочого року "
+"від дати прийняття на роботу для робочих періодів."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__vacation_balance_id
+msgid "Vacation Period"
+msgstr "Обліковий період відпустки"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave__vacation_balance_id
+msgid ""
+"Accounting period (vacation balance) this leave is charged against: a work "
+"year for annual leaves, a calendar year for social and other leaves."
+msgstr ""
+"Обліковий період (баланс відпустки), за рахунок якого надається ця "
+"відпустка: робочий рік для щорічних відпусток, календарний рік для "
+"соціальних та інших."
+
+#. module: l10n_ua_hr_holidays
+#. odoo-python
+#: code:addons/l10n_ua_hr_holidays/models/hr_vacation_balance.py:0
+msgid "Period start must be before period end."
+msgstr "Початок періоду має бути раніше за його кінець."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.constraint,message:l10n_ua_hr_holidays.constraint_hr_vacation_balance_unique_employee_id_leave_type_id_period_start
+msgid "Balance for this employee, leave type and period already exists!"
+msgstr "Баланс для цього працівника, типу відпустки та періоду вже існує!"
+
+#. module: l10n_ua_hr_holidays
+#. odoo-python
+#: code:addons/l10n_ua_hr_holidays/models/hr_vacation_balance.py:0
+msgid ""
+"Employee %(employee)s has unused vacation days from period %(period)s or earlier. "
+"According to Ukrainian law, vacation must be used within %(max_years)s years."
+msgstr ""
+"У працівника %(employee)s є невикористані дні відпустки за період %(period)s або раніше. "
+"Згідно з українським законодавством, відпустку треба використати протягом %(max_years)s років."
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_search
+msgid "Current Period"
+msgstr "Поточний період"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_search
+msgid "Current Year"
+msgstr "Поточний рік"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_search
+msgid "Work Periods"
+msgstr "Робочі періоди"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_search
+msgid "Calendar Periods"
+msgstr "Календарні періоди"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_leave_view_form_ua
+msgid "Create"
+msgstr "Створити"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__show_create_vacation_period
+msgid "Can Create Vacation Period"
+msgstr "Можна створити обліковий період"
+
+#. module: l10n_ua_hr_holidays
+#. odoo-python
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid ""
+"Cannot determine the accounting period. For work-year leave types, set the "
+"employee's hire date first."
+msgstr ""
+"Не вдається визначити обліковий період. Для типів відпусток з робочим "
+"періодом спершу вкажіть дату прийняття працівника на роботу."
+
+#. module: l10n_ua_hr_holidays
+#. odoo-python
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid "The vacation period does not belong to this employee and leave type."
+msgstr "Обліковий період не належить цьому працівникові та типу відпустки."
+
+#. module: l10n_ua_hr_holidays
+#. odoo-python
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid ""
+"The leave start date %(date)s is outside the selected vacation period "
+"(%(period)s). Pick or create the matching period."
+msgstr ""
+"Дата початку відпустки %(date)s поза межами обраного облікового періоду "
+"(%(period)s). Оберіть або створіть відповідний період."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__ua_is_default
+msgid "Show by Default"
+msgstr "Показувати за замовчуванням"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave_type__ua_is_default
+msgid ""
+"Preselect this leave type by default. Only one leave type per company may be "
+"the default at a time."
+msgstr ""
+"Попередньо обирати цей тип відпустки за замовчуванням. Лише один тип "
+"відпустки на компанію може бути за замовчуванням."
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_leave_type_view_form_ua
+msgid "Set as Default"
+msgstr "Зробити за замовчуванням"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_leave_type_view_form_ua
+msgid "Unset Default"
+msgstr "Прибрати за замовчуванням"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__carryover_warning
+msgid "Carry-over Warning"
+msgstr "Попередження про перенесення"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave__carryover_warning
+msgid ""
+"Non-blocking notice shown when unused days from the previous period cannot "
+"be fully carried over under this leave type's transfer rules (Transferable / "
+"Max Transfer Days)."
+msgstr ""
+"Необов'язкове попередження, що з'являється, коли невикористані дні "
+"попереднього періоду не можуть бути повністю перенесені за правилами цього "
+"типу відпустки (Переноситься / Макс. днів для перенесення)."
+
+#. module: l10n_ua_hr_holidays
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid "Vacation carry-over"
+msgstr "Перенесення відпустки"
+
+#. module: l10n_ua_hr_holidays
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid ""
+"Leave type \"%(type)s\" does not allow carrying days over: %(lost).1f unused "
+"day(s) from the previous period (%(period)s) will be forfeited."
+msgstr ""
+"Тип відпустки \"%(type)s\" не дозволяє перенесення днів: %(lost).1f "
+"невикористаних дн(ів) з попереднього періоду (%(period)s) буде втрачено."
+
+#. module: l10n_ua_hr_holidays
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid ""
+"Only %(max)s day(s) may be carried over for \"%(type)s\": %(lost).1f day(s) "
+"from the previous period (%(period)s) exceed the limit and will be forfeited."
+msgstr ""
+"Для \"%(type)s\" можна перенести лише %(max)s дн(ів): %(lost).1f дн(ів) з "
+"попереднього періоду (%(period)s) перевищують ліміт і будуть втрачені."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__ua_auto_calc_balance
+msgid "Auto-calculate Balance"
+msgstr "Автоматично розраховувати залишок"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave_type__ua_auto_calc_balance
+msgid ""
+"When enabled, the \"Recalculate\" action in Vacation Balances generates and "
+"maintains the accounting periods for this leave type. Off by default — only "
+"types with this ticked are recalculated."
+msgstr ""
+"Якщо увімкнено, дія «Перерахувати» у «Залишках відпусток» створює та "
+"підтримує облікові періоди для цього типу відпустки. За замовчуванням "
+"вимкнено — перераховуються лише типи з увімкненою позначкою."

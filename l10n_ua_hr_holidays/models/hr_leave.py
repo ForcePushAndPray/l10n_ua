@@ -1,5 +1,5 @@
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from dateutil.relativedelta import relativedelta
 from odoo.addons.hr_holidays.models.hr_leave import HOURS_PER_DAY
 from datetime import datetime, time as dt_time
@@ -56,18 +56,228 @@ class HrLeave(models.Model):
     
     vacation_year = fields.Integer(
         string='Vacation Year',
-        help='Year for which vacation is taken',
+        help='Year of the leave start date. Computed automatically and '
+        'read-only.',
         compute='_compute_vacation_year',
         store=True,
-        readonly=False,
-        precompute=True,
+        readonly=True,
     )
+
+    vacation_balance_id = fields.Many2one(
+        'hr.vacation.balance',
+        string='Vacation Period',
+        compute='_compute_vacation_balance',
+        store=True,
+        readonly=False,
+        index=True,
+        domain="[('employee_id', '=', employee_id),"
+               " ('leave_type_id', '=', holiday_status_id)]",
+        help='Accounting period (vacation balance) this leave is charged '
+             'against: a work year for annual leaves, a calendar year for '
+             'social and other leaves.'
+    )
+
+    carryover_warning = fields.Char(
+        string='Carry-over Warning',
+        compute='_compute_carryover_warning',
+        help='Non-blocking notice shown when unused days from the previous '
+             'period cannot be fully carried over under this leave type\'s '
+             'transfer rules (Transferable / Max Transfer Days).'
+    )
+
+    @api.depends('holiday_status_id', 'request_date_from', 'employee_id',
+                 'vacation_balance_id')
+    def _compute_carryover_warning(self):
+        for leave in self:
+            leave.carryover_warning = leave._carryover_warning_message()
+
+    def _carryover_warning_message(self):
+        """Return a human-readable warning when the previous period leaves
+        unused days that this leave type's transfer rules cannot carry over
+        (they would be forfeited), or False when nothing is at risk. Purely
+        advisory — never blocks saving."""
+        self.ensure_one()
+        lt = self.holiday_status_id
+        emp = self.employee_id
+        if not lt or not emp or not self.request_date_from:
+            return False
+        Balance = self.env['hr.vacation.balance']
+        _start, _end, index = self._resolve_leave_period()
+        if not index:
+            return False
+        prev = Balance.search([
+            ('employee_id', '=', emp.id),
+            ('leave_type_id', '=', lt.id),
+            ('period_index', '<', index),
+        ], order='period_index desc', limit=1)
+        if not prev or prev.remaining_days <= 0:
+            return False
+        allowed = Balance._allowed_carryover(lt, prev.remaining_days)
+        lost = prev.remaining_days - allowed
+        if lost <= 0:
+            return False
+        if not lt.is_transferable:
+            return _(
+                'Leave type "%(type)s" does not allow carrying days over: '
+                '%(lost).1f unused day(s) from the previous period '
+                '(%(period)s) will be forfeited.',
+                type=lt.name, lost=lost, period=prev.period_label)
+        return _(
+            'Only %(max)s day(s) may be carried over for "%(type)s": '
+            '%(lost).1f day(s) from the previous period (%(period)s) '
+            'exceed the limit and will be forfeited.',
+            max=lt.max_transfer_days, type=lt.name, lost=lost,
+            period=prev.period_label)
+
+    @api.onchange('holiday_status_id', 'request_date_from', 'request_date_to',
+                  'employee_id')
+    def _onchange_carryover_warning(self):
+        """Pop a non-blocking warning on the form as soon as the chosen type
+        and dates would forfeit carried-over days."""
+        message = self._carryover_warning_message()
+        if message:
+            return {'warning': {
+                'title': _('Vacation carry-over'),
+                'message': message,
+            }}
+
+    def _compute_display_name(self):
+        # Base hr_holidays builds the label as "<person> on <type>: ...".
+        # The English " on " separator is left untranslated in the UA UI, so
+        # swap it for " - " (first occurrence only — that is the separator).
+        super()._compute_display_name()
+        for leave in self:
+            if leave.display_name and ' on ' in leave.display_name:
+                leave.display_name = leave.display_name.replace(' on ', ' - ', 1)
 
     @api.depends('request_date_from')
     def _compute_vacation_year(self):
+        # The vacation year always follows the leave's start date.
         for leave in self:
-            if leave.request_date_from:
-                leave.vacation_year = leave.request_date_from.year
+            leave.vacation_year = (
+                leave.request_date_from.year if leave.request_date_from else 0)
+
+    @api.depends('employee_id', 'holiday_status_id', 'request_date_from')
+    def _compute_vacation_balance(self):
+        Balance = self.env['hr.vacation.balance']
+        for leave in self:
+            if not leave.employee_id or not leave.holiday_status_id or not leave.request_date_from:
+                leave.vacation_balance_id = False
+                continue
+            # The period containing the leave's start date — works for both
+            # calendar and work periods.
+            leave.vacation_balance_id = Balance.search([
+                ('employee_id', '=', leave.employee_id.id),
+                ('leave_type_id', '=', leave.holiday_status_id.id),
+                ('period_start', '<=', leave.request_date_from),
+                ('period_end', '>=', leave.request_date_from),
+            ], limit=1)
+
+    show_create_vacation_period = fields.Boolean(
+        string='Can Create Vacation Period',
+        compute='_compute_show_create_vacation_period',
+        help='Technical: drives the "Create" button next to the Vacation '
+             'Period field — true when the leave has no linked period yet '
+             'but one can be resolved for its type and year.'
+    )
+
+    @api.depends('employee_id', 'holiday_status_id',
+                 'request_date_from', 'vacation_balance_id')
+    def _compute_show_create_vacation_period(self):
+        # Offered for any leave type available to the employee, as long as
+        # the accounting period can be resolved (a hire anchor is needed
+        # for work-year types; calendar types always resolve).
+        for leave in self:
+            show = False
+            if (not leave.vacation_balance_id and leave.employee_id
+                    and leave.holiday_status_id):
+                start, _end, _index = leave._resolve_leave_period()
+                show = bool(start)
+            leave.show_create_vacation_period = show
+
+    def _resolve_leave_period(self):
+        """Return (period_start, period_end, period_index) of the accounting
+        period this leave belongs to — the one containing its start date.
+        Works for both calendar and work years and keeps this method in step
+        with _compute_vacation_balance. Returns (False, False, 0) when it
+        cannot be resolved (e.g. a work-year type without a hire anchor)."""
+        self.ensure_one()
+        Balance = self.env['hr.vacation.balance']
+        lt = self.holiday_status_id
+        emp = self.employee_id
+        if not lt or not emp or not self.request_date_from:
+            return (False, False, 0)
+        return Balance._get_period_for(emp, lt, self.request_date_from)
+
+    def action_create_vacation_period(self):
+        """Create (or reuse) the hr.vacation.balance for this leave's
+        resolved period and link it. Periods are normally created
+        automatically on save; this stays as an explicit fallback."""
+        self.ensure_one()
+        balance = self.env['hr.vacation.balance'].sudo()._get_or_create_period(
+            self.employee_id, self.holiday_status_id, self.request_date_from)
+        if not balance:
+            raise UserError(_(
+                'Cannot determine the accounting period. For work-year leave '
+                'types, set the employee\'s hire date first.'))
+        self.vacation_balance_id = balance.id
+        return True
+
+    @api.constrains('vacation_balance_id', 'request_date_from',
+                    'holiday_status_id', 'employee_id')
+    def _check_vacation_balance_period(self):
+        """Block saving when the linked vacation period does not belong to the
+        leave's employee/type, or when the leave's start date falls outside
+        the linked period's bounds.
+
+        The check uses date containment (period_start <= start <= period_end)
+        — the same rule _compute_vacation_balance links by — rather than
+        comparing against a freshly recomputed canonical period. That keeps
+        a leave valid whenever it truly sits inside its linked period, even
+        if that period's stored bounds differ from the hire-anchored canonical
+        ones (e.g. a migrated/back-filled balance), so balance recalculation
+        does not spuriously fail while re-linking related leaves."""
+        for leave in self:
+            bal = leave.vacation_balance_id
+            if not bal:
+                continue
+            if (bal.employee_id != leave.employee_id
+                    or bal.leave_type_id != leave.holiday_status_id):
+                raise ValidationError(_(
+                    'The vacation period does not belong to this employee '
+                    'and leave type.'))
+            if (leave.request_date_from and bal.period_start and bal.period_end
+                    and not (bal.period_start <= leave.request_date_from
+                             <= bal.period_end)):
+                raise ValidationError(_(
+                    'The leave start date %(date)s is outside the selected '
+                    'vacation period (%(period)s). Pick or create the '
+                    'matching period.',
+                    date=leave.request_date_from.strftime('%d.%m.%Y'),
+                    period=bal.period_label,
+                ))
+
+    @api.constrains('request_date_from', 'employee_id', 'holiday_status_id')
+    def _check_leave_after_hire(self):
+        """A UA-managed leave cannot start before the employee was hired —
+        neither the leave nor its accounting period may predate the hire
+        date."""
+        Balance = self.env['hr.vacation.balance']
+        for leave in self:
+            lt = leave.holiday_status_id
+            if (not lt or not lt.ua_leave_category
+                    or not leave.employee_id or not leave.request_date_from):
+                continue
+            hire = Balance._employee_hire_anchor(leave.employee_id)
+            if hire and leave.request_date_from < hire:
+                raise ValidationError(_(
+                    'Cannot record a "%(type)s" leave starting %(date)s for '
+                    '%(employee)s, before the hire date (%(hire)s).',
+                    type=lt.name,
+                    date=leave.request_date_from.strftime('%d.%m.%Y'),
+                    employee=leave.employee_id.name,
+                    hire=hire.strftime('%d.%m.%Y'),
+                ))
 
     @api.onchange('order_id')
     def _onchange_order_id(self):
@@ -85,8 +295,58 @@ class HrLeave(models.Model):
             'target': 'current',
         }
 
+    @api.model
+    def default_get(self, fields_list):
+        """Pre-fill the leave type on the new-leave form with the company's
+        default (ua_is_default) type, so it shows up before the record is
+        saved. hr_holidays' own default_get picks an arbitrary first type;
+        we override it with the UA company default unless the caller passed
+        an explicit default_holiday_status_id via context."""
+        res = super().default_get(fields_list)
+        if ('holiday_status_id' in fields_list
+                and not self.env.context.get('default_holiday_status_id')):
+            company_id = res.get('company_id') or self.env.company.id
+            default_lt = self.env['hr.leave.type'].search([
+                ('ua_is_default', '=', True),
+                ('company_id', '=', company_id),
+            ], limit=1)
+            if default_lt:
+                res['holiday_status_id'] = default_lt.id
+        return res
+
     @api.model_create_multi
     def create(self, vals_list):
+        # Preselect default leave type if not provided
+        for vals in vals_list:
+            if not vals.get('holiday_status_id'):
+                company_id = vals.get('company_id') or self.env.company.id
+                default_lt = self.env['hr.leave.type'].search([
+                    ('ua_is_default', '=', True),
+                    ('company_id', '=', company_id),
+                ], limit=1)
+                if default_lt:
+                    vals['holiday_status_id'] = default_lt.id
+
+        # Link the vacation period for the leave's dates, creating it when it
+        # does not exist yet, so every saved leave lands in a period (and the
+        # period shows up in the Vacation Balances report). Skipped only when
+        # the caller set the period explicitly or the period is unresolvable.
+        Balance = self.env['hr.vacation.balance']
+        for vals in vals_list:
+            emp_id = vals.get('employee_id')
+            lt_id = vals.get('holiday_status_id')
+            date_from = vals.get('date_from') or vals.get('request_date_from')
+
+            if emp_id and lt_id and date_from and not vals.get('vacation_balance_id'):
+                ref_date = fields.Date.to_date(date_from)
+                period = Balance._get_or_create_period(
+                    self.env['hr.employee'].browse(emp_id),
+                    self.env['hr.leave.type'].browse(lt_id),
+                    ref_date,
+                )
+                if period:
+                    vals['vacation_balance_id'] = period.id
+
         # Resolve which leaves should auto-create an order
         type_ids = {v.get('holiday_status_id') for v in vals_list if v.get('holiday_status_id')}
         types_with_order = set()
@@ -139,6 +399,22 @@ class HrLeave(models.Model):
         leaves._recompute_balances_for_keys(leaves._balance_keys())               
         return leaves
 
+    def _ensure_vacation_period(self):
+        """Link (creating if needed) the accounting period for each leave's
+        current dates. The stored compute re-links to an existing period; this
+        creates one when none exists yet. Runs after dates are written, so the
+        period matches request_date_from and the period constraint is happy."""
+        Balance = self.env['hr.vacation.balance']
+        for leave in self:
+            if (leave.vacation_balance_id or not leave.request_date_from
+                    or not leave.employee_id or not leave.holiday_status_id):
+                continue
+            period = Balance._get_or_create_period(
+                leave.employee_id, leave.holiday_status_id,
+                leave.request_date_from)
+            if period:
+                leave.vacation_balance_id = period.id
+
     def write(self, vals):
         # Capture balance keys BEFORE the write so we also refresh rows
         # we move away from (e.g. employee_id or vacation_year changed).
@@ -146,8 +422,17 @@ class HrLeave(models.Model):
             self._balance_keys()
             if self._BALANCE_TRIGGER_FIELDS & vals.keys()
             else set()
-        )        
+        )
         result = super().write(vals)
+        # After the dates are written (so request_date_from is up to date),
+        # make sure each leave has its accounting period, creating it when
+        # none exists yet. The stored compute already re-links to an existing
+        # period; this only fills the gap. Skipped when the caller sets the
+        # period explicitly in the same write.
+        if ({'request_date_from', 'request_date_to', 'date_from', 'date_to',
+             'employee_id', 'holiday_status_id'} & vals.keys()
+                and 'vacation_balance_id' not in vals):
+            self._ensure_vacation_period()
         # Add a check for _creating_leave_from_order to avoid order duplication
         if not self.env.context.get('_sync_order_leave') and not self.env.context.get('_creating_leave_from_order'):
             if {'date_from', 'date_to'} & vals.keys():
@@ -206,14 +491,14 @@ class HrLeave(models.Model):
         leaves_to_recompute = self.env['hr.leave']
         for leave in self:
             if leave.employee_id and leave.holiday_status_id and leave.request_date_from:
-                year = leave.vacation_year or leave.request_date_from.year
+                period_domain = leave._period_domain()
+                if period_domain is None:
+                    continue
                 leaves_to_recompute |= self.env['hr.leave'].search([
                     ('employee_id', '=', leave.employee_id.id),
                     ('holiday_status_id', '=', leave.holiday_status_id.id),
                     ('request_date_from', '>', leave.request_date_from),
-                    '|', ('vacation_year', '=', year),
-                         '&', ('request_date_from', '>=', f'{year}-01-01'),
-                              ('request_date_from', '<=', f'{year}-12-31'),
+                    *period_domain,
                     ('id', 'not in', self.ids)
                 ])
         orders_to_delete = self.filtered(
@@ -369,53 +654,61 @@ class HrLeave(models.Model):
             else:
                 leave.vacation_pay_amount = 0.0
 
-    @api.depends('employee_id', 'holiday_status_id', 'vacation_year', 'request_date_from')
+    @api.depends('employee_id', 'holiday_status_id', 'vacation_balance_id',
+                 'vacation_year', 'request_date_from')
     def _compute_remaining_before(self):
         """Computes the balance before the start of a specific leave in chronological order."""
         for leave in self:
-            if not leave.employee_id or not leave.holiday_status_id:    
+            if not leave.employee_id or not leave.holiday_status_id:
                 leave.remaining_days_before = 0
                 continue
 
-            # Resolve year from vacation_year first, then fall back to
-            # request_date_from. Without either, we cannot compute.
-            year = leave.vacation_year or (
-                leave.request_date_from.year if leave.request_date_from else False
-            )
-            if not year:
-                leave.remaining_days_before = 0
-                continue
-             
-            # Get the initial total balance for the year (Entitled + Carried Over)
-            balance = self.env['hr.vacation.balance'].search([
-                ('employee_id', '=', leave.employee_id.id),
-                ('leave_type_id', '=', leave.holiday_status_id.id),
-                ('year', '=', year),
-            ], limit=1)
-        
-            total_available = balance.total_available if balance else (leave.holiday_status_id.annual_days or 0)
+            balance = leave.vacation_balance_id
+            if balance:
+                # Linked accounting period is the single source of truth:
+                # its bounds work for both calendar and work years.
+                total_available = balance.total_available
+                period_start = balance.period_start
+                period_end = balance.period_end
+                period_domain = [
+                    '|', ('vacation_balance_id', '=', balance.id),
+                         '&', ('vacation_balance_id', '=', False),
+                              '&', ('request_date_from', '>=', period_start),
+                                   ('request_date_from', '<=', period_end),
+                ]
+            else:
+                # No balance row yet — legacy year-based fallback.
+                year = leave.vacation_year or (
+                    leave.request_date_from.year if leave.request_date_from else False
+                )
+                if not year:
+                    leave.remaining_days_before = 0
+                    continue
+                total_available = leave.holiday_status_id.annual_days or 0
+                period_start = fields.Date.from_string(f'{year}-01-01')
+                period_domain = [
+                    '|', ('vacation_year', '=', year),
+                         '&', ('request_date_from', '>=', f'{year}-01-01'),
+                              ('request_date_from', '<=', f'{year}-12-31'),
+                ]
 
-            # Find leaves of the same year. Chronological mode (request_date_from
-            # set on the leave): only earlier-starting leaves. Year-aggregate
-            # fallback (no request_date_from yet — e.g. a draft in the form
-            # with only vacation_year): all year's leaves so the value reflects
-            # "annual_days − already used/planned this year".
+            # Find leaves of the same period. Chronological mode
+            # (request_date_from set on the leave): only earlier-starting
+            # leaves. Period-aggregate fallback (no request_date_from yet —
+            # e.g. a draft in the form): all period's leaves so the value
+            # reflects "available − already used/planned this period".
             domain = [
                 ('employee_id', '=', leave.employee_id.id),
                 ('holiday_status_id', '=', leave.holiday_status_id.id),
                 ('state', 'not in', ['cancel', 'refuse']), # Count both planned and approved leaves
-                '|', ('vacation_year', '=', year),
-                     '&', ('request_date_from', '>=', f'{year}-01-01'),
-                          ('request_date_from', '<=', f'{year}-12-31'),
-            ]
+            ] + period_domain
             # Apply the chronological "earlier than this leave" filter ONLY
-            # when the leave's start date falls within (or after) the year
+            # when the leave's start date falls within (or after) the period
             # we are computing. For a brand-new draft, Odoo's hr.leave fills
             # request_date_from with today() by default — applying the
-            # filter in that case would exclude future-year leaves and break
-            # the year-aggregate fallback.
-            year_start = fields.Date.from_string(f'{year}-01-01')
-            if leave.request_date_from and leave.request_date_from >= year_start:
+            # filter in that case would exclude future-period leaves and
+            # break the aggregate fallback.
+            if leave.request_date_from and leave.request_date_from >= period_start:
                 domain.append(('request_date_from', '<', leave.request_date_from))
 
             # If this is an existing record (not a new one in the form), exclude it
@@ -423,7 +716,7 @@ class HrLeave(models.Model):
                 domain.append(('id', '!=', leave._origin.id))
 
             previous_leaves = self.env['hr.leave'].search(domain)
-        
+
             # Sum the CALENDAR days of previous leaves
             used_before = sum(previous_leaves.mapped('calendar_days'))
 
@@ -451,41 +744,65 @@ class HrLeave(models.Model):
         'state', 'employee_id', 'holiday_status_id',
         'date_from', 'date_to',
         'request_date_from', 'request_date_to',
-        'vacation_year',
+        'vacation_year', 'vacation_balance_id',
     })
 
+    def _period_domain(self):
+        """Return the search domain matching leaves of the same accounting
+        period as this leave: the linked balance's period when available,
+        the legacy calendar year otherwise."""
+        self.ensure_one()
+        balance = self.vacation_balance_id
+        if balance:
+            return [
+                '|', ('vacation_balance_id', '=', balance.id),
+                     '&', ('vacation_balance_id', '=', False),
+                          '&', ('request_date_from', '>=', balance.period_start),
+                               ('request_date_from', '<=', balance.period_end),
+            ]
+        year = self.vacation_year or (
+            self.request_date_from.year if self.request_date_from else False)
+        if not year:
+            return None
+        return [
+            '|', ('vacation_year', '=', year),
+                 '&', ('request_date_from', '>=', f'{year}-01-01'),
+                      ('request_date_from', '<=', f'{year}-12-31'),
+        ]
+
     def _balance_keys(self):
-        """Return (employee_id, leave_type_id, year) tuples identifying
-        the hr.vacation.balance rows touched by leaves in self."""
-        keys = set()
+        """Return ids of the hr.vacation.balance rows touched by leaves in
+        self: the linked balance plus any balance whose period overlaps the
+        leave dates (covers unlinked legacy leaves and period moves)."""
+        Balance = self.env['hr.vacation.balance'].sudo()
+        balance_ids = set()
         for leave in self:
+            if leave.vacation_balance_id:
+                balance_ids.add(leave.vacation_balance_id.id)
             emp = leave.employee_id.id
             ltype = leave.holiday_status_id.id
             if not emp or not ltype:
                 continue
-            years = set()
+            base_domain = [
+                ('employee_id', '=', emp),
+                ('leave_type_id', '=', ltype),
+            ]
+            if leave.request_date_from and leave.request_date_to:
+                balance_ids.update(Balance.search(base_domain + [
+                    ('period_start', '<=', leave.request_date_to),
+                    ('period_end', '>=', leave.request_date_from),
+                ]).ids)
             if leave.vacation_year:
-                years.add(leave.vacation_year)
-            if leave.request_date_from:
-                years.add(leave.request_date_from.year)
-            if leave.request_date_to:
-                years.add(leave.request_date_to.year)
-            for y in years:
-                keys.add((emp, ltype, y))
-        return keys
+                balance_ids.update(Balance.search(base_domain + [
+                    ('year', '=', leave.vacation_year),
+                ]).ids)
+        return balance_ids
 
     @api.model
     def _recompute_balances_for_keys(self, keys):
         if not keys:
             return
-        Balance = self.env['hr.vacation.balance'].sudo()
-        balances = Balance.browse()
-        for emp, ltype, y in keys:
-            balances |= Balance.search([
-                ('employee_id', '=', emp),
-                ('leave_type_id', '=', ltype),
-                ('year', '=', y),
-            ])
+        balances = self.env['hr.vacation.balance'].sudo().browse(keys).exists()
         if balances:
             balances.invalidate_recordset([
                 'used_days', 'planned_days',
@@ -493,22 +810,25 @@ class HrLeave(models.Model):
             ])
             balances._compute_used_days()
             balances._compute_totals()
+            # A change in used days shifts remaining days, which the next
+            # period carries over — propagate it forward.
+            balances._recompute_carryover_chain()
 
     def _recompute_subsequent_leaves(self):
         """Helper method: forcibly updates the balance for leaves that come AFTER the current one."""
         for leave in self:
             if not leave.employee_id or not leave.holiday_status_id or not leave.request_date_from:
                 continue
-            year = leave.vacation_year or leave.request_date_from.year
-           
+            period_domain = leave._period_domain()
+            if period_domain is None:
+                continue
+ 
             # Find all leaves with a date greater than the date of the changed leave
             subsequent_leaves = self.env['hr.leave'].search([
                 ('employee_id', '=', leave.employee_id.id),
                 ('holiday_status_id', '=', leave.holiday_status_id.id),
                 ('request_date_from', '>', leave.request_date_from),
-                '|', ('vacation_year', '=', year),
-                     '&', ('request_date_from', '>=', f'{year}-01-01'),
-                          ('request_date_from', '<=', f'{year}-12-31'),
+                *period_domain,
                 ('id', '!=', leave.id)
             ])
             if subsequent_leaves:

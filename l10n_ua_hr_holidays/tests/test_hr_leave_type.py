@@ -69,3 +69,34 @@ class TestHrLeaveType(TransactionCase):
                 'payment_source': source,
             })
             self.assertEqual(leave_type.payment_source, source)
+
+    def test_default_leave_type_single_no_conflict(self):
+        """Setting a default with no existing default via checkbox."""
+        company = self.env.company
+        lt = self.env['hr.leave.type'].create({
+            'name': 'Default A', 'company_id': company.id})
+        lt.write({'ua_is_default': True})
+        self.assertTrue(lt.ua_is_default)
+
+    def test_default_leave_type_conflict_auto_resolves(self):
+        """Setting a second default automatically clears the previous one."""
+        company = self.env.company
+        lt_a = self.env['hr.leave.type'].create({
+            'name': 'Default A', 'company_id': company.id})
+        lt_b = self.env['hr.leave.type'].create({
+            'name': 'Default B', 'company_id': company.id})
+        lt_a.write({'ua_is_default': True})
+        self.assertTrue(lt_a.ua_is_default)
+        # Setting lt_b as default automatically clears lt_a
+        lt_b.write({'ua_is_default': True})
+        self.assertTrue(lt_b.ua_is_default)
+        self.assertFalse(lt_a.ua_is_default)
+
+    def test_default_leave_type_unset(self):
+        """Unsetting a default via checkbox."""
+        company = self.env.company
+        lt = self.env['hr.leave.type'].create({
+            'name': 'Default A', 'company_id': company.id})
+        lt.write({'ua_is_default': True})
+        lt.write({'ua_is_default': False})
+        self.assertFalse(lt.ua_is_default)

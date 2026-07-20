@@ -21,6 +21,7 @@ class ResCompany(models.Model):
                 'annual_days': 24,
                 'is_calendar_days': True,
                 'is_transferable': True,
+                'ua_auto_calc_balance': True,
                 'requires_experience': True,
                 'min_experience_months': 6,
                 'is_paid': True,
@@ -188,6 +189,9 @@ class ResCompany(models.Model):
             
             if not existing:
                 data['company_id'] = self.id
+                # UA leave entitlement is tracked via hr.vacation.balance,
+                # not core allocations — don't demand an allocation record.
+                data.setdefault('requires_allocation', False)
                 LeaveType.create(data)
                 created_count += 1
 

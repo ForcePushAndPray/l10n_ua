@@ -9,10 +9,18 @@
 
             <xpath expr="//sheet" position="inside">
                 <group string="Ukrainian Specifics" name="ua_details">
+                    <div class="alert alert-warning" role="alert" colspan="2"
+                         invisible="not carryover_warning">
+                        <field name="carryover_warning" readonly="1" nolabel="1"/>
+                    </div>
                     <group>
                         <field name="calendar_days"/>
                         <field name="working_days"/>
-                        <field name="vacation_year"/>
+                        <field name="vacation_year" readonly="1"/>
+                        <!-- The accounting period is created automatically on
+                             save; shown read-only for reference. -->
+                        <field name="vacation_balance_id" readonly="1"
+                               options="{'no_create': True}"/>			
                     </group>
                     <group>
                         <field name="average_daily_salary"/>

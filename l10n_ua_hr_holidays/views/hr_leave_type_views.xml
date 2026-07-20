@@ -26,6 +26,10 @@
                         <field name="payment_source" invisible="not is_paid"/>
        		    	<field name="create_order"/>
                     </group>
+                    <group>
+                        <field name="ua_is_default"/>
+                        <field name="ua_auto_calc_balance"/>
+                    </group>
                 </group>
             </xpath>
         </field>

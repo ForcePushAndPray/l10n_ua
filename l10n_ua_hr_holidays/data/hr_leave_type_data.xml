@@ -9,6 +9,7 @@
             <field name="is_calendar_days">True</field>
             <field name="period_type">work</field>
             <field name="is_transferable">True</field>
+            <field name="ua_auto_calc_balance">True</field>
             <field name="requires_experience">True</field>
             <field name="min_experience_months">6</field>
             <field name="is_paid">True</field>
@@ -16,6 +17,7 @@
             <field name="min_continuous_days">14</field>
             <field name="request_unit">day</field>
             <field name="leave_validation_type">hr</field>
+            <field name="requires_allocation" eval="False"/>
         </record>
         
         <record id="leave_type_annual_additional" model="hr.leave.type">
@@ -29,6 +31,7 @@
             <field name="payment_source">employer</field>
             <field name="request_unit">day</field>
             <field name="leave_validation_type">hr</field>
+            <field name="requires_allocation" eval="False"/>
         </record>
         
         <record id="leave_type_educational" model="hr.leave.type">
@@ -41,6 +44,7 @@
             <field name="payment_source">employer</field>
             <field name="request_unit">day</field>
             <field name="leave_validation_type">hr</field>
+            <field name="requires_allocation" eval="False"/>
         </record>
         
         <record id="leave_type_creative" model="hr.leave.type">
@@ -53,6 +57,7 @@
             <field name="payment_source">employer</field>
             <field name="request_unit">day</field>
             <field name="leave_validation_type">hr</field>
+            <field name="requires_allocation" eval="False"/>
         </record>
         
         <record id="leave_type_social_children" model="hr.leave.type">
@@ -66,6 +71,7 @@
             <field name="payment_source">employer</field>
             <field name="request_unit">day</field>
             <field name="leave_validation_type">hr</field>
+            <field name="requires_allocation" eval="False"/>
         </record>
         
         <record id="leave_type_unpaid" model="hr.leave.type">
@@ -77,6 +83,7 @@
             <field name="is_paid">False</field>
             <field name="request_unit">day</field>
             <field name="leave_validation_type">hr</field>
+            <field name="requires_allocation" eval="False"/>
         </record>
         
         <record id="leave_type_unpaid_family" model="hr.leave.type">
@@ -89,6 +96,7 @@
             <field name="is_paid">False</field>
             <field name="request_unit">day</field>
             <field name="leave_validation_type">hr</field>
+            <field name="requires_allocation" eval="False"/>
         </record>
         
         <record id="leave_type_maternity" model="hr.leave.type">
@@ -102,6 +110,7 @@
             <field name="payment_source">fss</field>
             <field name="request_unit">day</field>
             <field name="leave_validation_type">hr</field>
+            <field name="requires_allocation" eval="False"/>
         </record>
         
         <record id="leave_type_childcare" model="hr.leave.type">
@@ -113,6 +122,7 @@
             <field name="is_paid">False</field>
             <field name="request_unit">day</field>
             <field name="leave_validation_type">hr</field>
+            <field name="requires_allocation" eval="False"/>
         </record>
         
         <record id="leave_type_sick" model="hr.leave.type">
@@ -125,6 +135,7 @@
             <field name="payment_source">mixed</field>
             <field name="request_unit">day</field>
             <field name="leave_validation_type">hr</field>
+            <field name="requires_allocation" eval="False"/>
         </record>
 
         <!-- Additional leave types according to Ukrainian law -->
@@ -141,6 +152,7 @@
             <field name="payment_source">employer</field>
             <field name="request_unit">day</field>
             <field name="leave_validation_type">hr</field>
+            <field name="requires_allocation" eval="False"/>
         </record>
 
         <record id="leave_type_additional_irregular" model="hr.leave.type">
@@ -155,6 +167,7 @@
             <field name="payment_source">employer</field>
             <field name="request_unit">day</field>
             <field name="leave_validation_type">hr</field>
+            <field name="requires_allocation" eval="False"/>
         </record>
 
         <record id="leave_type_additional_special_work" model="hr.leave.type">
@@ -169,6 +182,7 @@
             <field name="payment_source">employer</field>
             <field name="request_unit">day</field>
             <field name="leave_validation_type">hr</field>
+            <field name="requires_allocation" eval="False"/>
         </record>
 
         <record id="leave_type_chornobyl" model="hr.leave.type">
@@ -182,6 +196,7 @@
             <field name="payment_source">employer</field>
             <field name="request_unit">day</field>
             <field name="leave_validation_type">hr</field>
+            <field name="requires_allocation" eval="False"/>
         </record>
 
         <record id="leave_type_veteran" model="hr.leave.type">
@@ -195,6 +210,7 @@
             <field name="payment_source">employer</field>
             <field name="request_unit">day</field>
             <field name="leave_validation_type">hr</field>
+            <field name="requires_allocation" eval="False"/>
         </record>
 
     </data>
