@@ -81,6 +81,7 @@ PRRO (Cash Registers)
         'l10n_ua_bank_sync',
         'l10n_ua_bank_privat',
         'l10n_ua_bank_mono',
+        'l10n_ua_bank_vst',
         'l10n_ua_bank_currency_sync',
         # Delivery
         'l10n_ua_delivery_novaposhta',

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="l10n_ua_bank_vst_import_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.vst.import.form</field>
+        <field name="model">l10n_ua.bank.vst.import</field>
+        <field name="arch" type="xml">
+            <form string="Імпорт виписки iBank 2 UA (VST Bank)">
+                <group>
+                    <field name="config_id"/>
+                    <field name="statement_file" filename="file_name"/>
+                    <field name="file_name" invisible="1"/>
+                    <field name="date_from"/>
+                    <field name="date_to"/>
+                </group>
+                <div class="text-muted">
+                    Завантажте CSV-виписку, експортовану з iBank 2 UA
+                    («Виписки по поточним рахункам», windows-1251).
+                </div>
+                <footer>
+                    <button name="action_import" string="Імпортувати"
+                            type="object" class="btn-primary"/>
+                    <button string="Скасувати" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_l10n_ua_bank_vst_import" model="ir.actions.act_window">
+        <field name="name">Імпорт виписки iBank 2 UA</field>
+        <field name="res_model">l10n_ua.bank.vst.import</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>
