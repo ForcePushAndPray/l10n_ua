@@ -39,6 +39,9 @@
                             <field name="overtime_multiplier"/>
                             <field name="holiday_multiplier"/>
                         </group>
+                        <group string="Індексація">
+                            <field name="indexation_threshold"/>
+                        </group>
                     </group>
                 </sheet>
             </form>

@@ -699,6 +699,58 @@ class HrPayslip(models.Model):
         # Авто-доплати за відхилення в табелі (нічні/понаднормові/святкові) — #143.
         self._generate_time_surcharges(version, params)
 
+        # Індексація заробітної плати — #138.
+        self._generate_indexation(version, params)
+
+    def _generate_indexation(self, version, params):
+        """Створити авто-нарахування «Індексація» (Закон про індексацію, Порядок №1078).
+
+        Індексується дохід у межах прожиткового мінімуму для працездатних осіб
+        на величину приросту наростаючого індексу споживчих цін від базового
+        місяця (останнього підвищення зарплати). За неповний місяць — пропорційно
+        відпрацьованому часу.
+        """
+        self.ensure_one()
+        if not params:
+            return
+        if not getattr(version, 'indexation_enabled', False):
+            return
+        base_month = getattr(version, 'indexation_base_month', False)
+        if not base_month:
+            return
+        acc_type = self.env['hr.accrual.type'].search(
+            [('code', '=', 'INDEXATION')], limit=1)
+        if not acc_type:
+            return
+        threshold = params.indexation_threshold or 101.0
+        percent = self.env['hr.cpi.index'].get_indexation_percent(
+            base_month, self.date_to, threshold, self.company_id.id)
+        if percent <= 0:
+            return
+        subsistence = params.subsistence_minimum or 0.0
+        if subsistence <= 0:
+            return
+        # База індексації — дохід у межах ПМ працездатних осіб.
+        monthly_wage = self._get_effective_wage(version) * (version.work_rate or 1.0)
+        base_amount = min(monthly_wage, subsistence) if monthly_wage else subsistence
+        full = base_amount * percent / 100.0
+        # Пропорція за фактично відпрацьований час (неповний місяць).
+        if self.scheduled_days and self.worked_days < self.scheduled_days:
+            full = full * self.worked_days / self.scheduled_days
+        amount = round(full, 2)
+        if amount <= 0:
+            return
+        self.env['hr.payslip.accrual'].create({
+            'payslip_id': self.id,
+            'accrual_type_id': acc_type.id,
+            'quantity': 1,
+            'rate': percent,
+            'amount': amount,
+            'is_auto_generated': True,
+            'notes': _('Індексація %.1f%% (баз. міс. %s)') % (
+                percent, base_month.strftime('%m.%Y')),
+        })
+
     def _base_hourly_rate(self, version, params):
         """Базова годинна ставка для доплат.
 

@@ -47,6 +47,8 @@ to avoid naming conflicts with existing modules on Odoo Apps.
         'views/hr_accrual_type_views.xml',
         'views/hr_deduction_type_views.xml',
         'views/hr_psp_parameters_views.xml',
+        'views/hr_cpi_index_views.xml',
+        'views/hr_version_views.xml',
         'views/hr_execution_document_views.xml',
         'views/hr_salary_advance_views.xml',
         'views/hr_salary_advance_run_views.xml',

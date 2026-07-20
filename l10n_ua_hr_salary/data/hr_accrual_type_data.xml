@@ -160,6 +160,19 @@
             <field name="sequence">95</field>
         </record>
         
+        <record id="accrual_type_indexation" model="hr.accrual.type">
+            <field name="name">Індексація</field>
+            <field name="code">INDEXATION</field>
+            <field name="category">allowance</field>
+            <field name="calculation_method">percent</field>
+            <field name="is_basic_salary">True</field>
+            <field name="is_taxable_pdfo">True</field>
+            <field name="is_military_tax">True</field>
+            <field name="is_esv_base">True</field>
+            <field name="d4_income_type">101</field>
+            <field name="sequence">85</field>
+        </record>
+
         <record id="accrual_type_material_aid" model="hr.accrual.type">
             <field name="name">Матеріальна допомога</field>
             <field name="code">MAT_AID</field>

@@ -94,6 +94,14 @@ class HrPspParameters(models.Model):
              '(ст. 107 КЗпП — подвійний розмір).'
     )
 
+    # --- Індексація ЗП (#138) ---
+    indexation_threshold = fields.Float(
+        string='Поріг індексації (%)',
+        default=101.0,
+        help='Поріг наростаючого індексу споживчих цін, при перевищенні '
+             'якого проводиться індексація (Порядок №1078 — 101%).'
+    )
+
     active = fields.Boolean(string='Active', default=True)
     company_id = fields.Many2one(
         'res.company',

@@ -77,4 +77,11 @@
               sequence="30"
               groups="l10n_ua_hr_base.group_hr_ua_manager"/>
 
+    <menuitem id="menu_hr_cpi_index"
+              name="Consumer Price Index"
+              parent="menu_hr_payroll_config"
+              action="action_hr_cpi_index"
+              sequence="40"
+              groups="l10n_ua_hr_base.group_hr_ua_manager"/>
+
 </odoo>
