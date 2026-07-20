@@ -33,4 +33,10 @@
         <field name="target">new</field>
     </record>
 
+    <menuitem id="menu_l10n_ua_bank_vst_import"
+              name="Імпорт виписки iBank 2 UA (VST)"
+              parent="l10n_ua_bank_sync.menu_ua_bank_statements_root"
+              action="action_l10n_ua_bank_vst_import"
+              sequence="40"/>
+
 </odoo>

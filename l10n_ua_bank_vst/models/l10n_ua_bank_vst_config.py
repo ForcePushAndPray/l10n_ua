@@ -36,6 +36,18 @@ class L10nUaBankSyncConfig(models.Model):
             'VST Bank (iBank 2 UA) — файловий провайдер. Використайте майстер '
             '«Імпорт виписки iBank 2 UA», щоб завантажити CSV-файл виписки.'))
 
+    def action_vst_open_import(self):
+        """Відкрити майстер імпорту CSV-виписки iBank 2 UA для цього конфігу."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Імпорт виписки iBank 2 UA'),
+            'res_model': 'l10n_ua.bank.vst.import',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_config_id': self.id},
+        }
+
     @staticmethod
     def _vst_amount(text):
         text = (text or '').strip().replace(' ', '').replace(',', '.')
