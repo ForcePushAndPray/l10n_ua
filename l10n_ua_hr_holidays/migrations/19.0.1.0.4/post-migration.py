@@ -38,7 +38,13 @@ def migrate(cr, version):
     for balance in work_balances:
         balance._reanchor_period()
 
-    # 2a. Link leaves with an explicit vacation_year to that year's balance
+    # 2a. Link leaves with an explicit vacation_year to that year's balance.
+    #     The date-containment guard is required: for work-year balances the
+    #     bounds were re-anchored to the hire anniversary in step 1, so a
+    #     leave's vacation_year (a plain calendar year) may match vb.year while
+    #     its start date falls into a *different* work-year window. Without the
+    #     guard such a leave would be mis-linked to a period it is not inside,
+    #     and _check_vacation_balance_period would later reject any edit.
     cr.execute("""
         UPDATE hr_leave l
            SET vacation_balance_id = vb.id
@@ -49,6 +55,8 @@ def migrate(cr, version):
            AND l.vacation_year IS NOT NULL
            AND l.vacation_year != 0
            AND l.vacation_year = vb.year
+           AND l.request_date_from IS NOT NULL
+           AND l.request_date_from BETWEEN vb.period_start AND vb.period_end
     """)
 
     # 2b. Link remaining leaves by date containment

@@ -94,11 +94,11 @@
                         domain="[('period_type', '=', 'calendar')]"/>
                 <group>
                     <filter string="Employee" name="groupby_employee"
-                            context="{'group_by': 'employee_id'}"/>
+                            domain="[]" context="{'group_by': 'employee_id'}"/>
                     <filter string="Leave Type" name="groupby_leave_type"
-                            context="{'group_by': 'leave_type_id'}"/>
+                            domain="[]" context="{'group_by': 'leave_type_id'}"/>
                     <filter string="Year" name="groupby_year"
-                            context="{'group_by': 'year'}"/>
+                            domain="[]" context="{'group_by': 'year'}"/>
                 </group>
             </search>
         </field>
