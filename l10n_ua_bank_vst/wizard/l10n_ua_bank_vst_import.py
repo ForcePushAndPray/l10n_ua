@@ -36,6 +36,8 @@ class L10nUaBankVstImport(models.TransientModel):
             'date_to': self.date_to,
             'raw_payload': json.dumps({'csv': content}, ensure_ascii=False),
             'payload_fetched_at': fields.Datetime.now(),
+            'source_type': 'file',
+            'source_ref': self.file_name or 'iBank2.csv',
             'state': 'fetched',
         })
         job.action_process()

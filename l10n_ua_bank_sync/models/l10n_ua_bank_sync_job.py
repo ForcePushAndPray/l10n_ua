@@ -72,6 +72,20 @@ class L10nUaBankSyncJob(models.Model):
         string='Payload Fetched At',
     )
 
+    # Import source metadata (Фаза 1: виписка-при-імпорті)
+    source_type = fields.Selection([
+        ('file', 'File import'),
+        ('api', 'API'),
+        ('manual', 'Manual'),
+    ], string='Source Type')
+    source_ref = fields.Char(
+        string='Source Reference',
+        help='Назва файлу або провайдер/endpoint API.')
+    bank_statement_id = fields.Many2one(
+        'account.bank.statement', string='Bank Statement', readonly=True,
+        ondelete='set null',
+        help='Native-виписка, сформована цим завданням.')
+
     # Processing results
     transactions_count = fields.Integer(
         string='Transactions Found',
@@ -224,6 +238,8 @@ class L10nUaBankSyncJob(models.Model):
             self.write({
                 'raw_payload': json.dumps(raw_data, ensure_ascii=False, default=str),
                 'payload_fetched_at': fields.Datetime.now(),
+                'source_type': self.source_type or self.config_id._source_type(),
+                'source_ref': self.source_ref or self.provider,
                 'state': 'fetched',
             })
             self._log(f"Fetch completed, payload stored", data={'size': len(self.raw_payload)})
@@ -263,29 +279,17 @@ class L10nUaBankSyncJob(models.Model):
             self.transactions_count = len(transactions)
             self._log(f"Parsed {len(transactions)} transactions")
 
-            # Process transactions
-            imported = 0
-            updated = 0
-            errors = 0
-
-            for trans in transactions:
-                try:
-                    result = self._process_transaction(trans)
-                    if result == 'imported':
-                        imported += 1
-                    elif result == 'updated':
-                        updated += 1
-                except Exception as e:
-                    errors += 1
-                    self._log(f"Error processing transaction: {str(e)}", level='error', data=trans)
-
-            # Update dates from actual statement lines
-            self._update_dates_from_lines()
+            # Фаза 1: виписка формується при імпорті як native-сутність.
+            opening, closing = self.config_id._extract_balances(raw_data)
+            statement = self._create_native_statement(
+                transactions, opening, closing)
+            imported = len(statement.line_ids) if statement else 0
 
             self.write({
+                'bank_statement_id': statement.id if statement else False,
                 'imported_count': imported,
-                'updated_count': updated,
-                'error_count': errors,
+                'updated_count': 0,
+                'error_count': 0,
                 'state': 'done',
             })
 
@@ -294,7 +298,8 @@ class L10nUaBankSyncJob(models.Model):
                 'last_sync_date': fields.Datetime.now(),
             })
 
-            self._log(f"Processing completed: {imported} imported, {updated} updated, {errors} errors")
+            self._log(f"Processing completed: {imported} statement line(s) "
+                      f"imported into {statement.name if statement else '-'}")
 
         except Exception as e:
             self._log(f"Processing error: {str(e)}", level='error')
@@ -338,6 +343,101 @@ class L10nUaBankSyncJob(models.Model):
         })
         # Delete related logs
         self.log_ids.unlink()
+
+    @staticmethod
+    def _trans_uid(trans):
+        return str(trans.get('id') or trans.get('ref') or '').strip()
+
+    @staticmethod
+    def _trans_amount(trans):
+        amount = trans.get('amount', 0)
+        if isinstance(amount, str):
+            amount = amount.replace(' ', '').replace(',', '.')
+            try:
+                amount = float(amount)
+            except ValueError:
+                amount = 0.0
+        return float(amount or 0.0)
+
+    def _trans_date(self, trans):
+        d = trans.get('date')
+        if isinstance(d, str):
+            for fmt in ('%Y-%m-%d', '%d-%m-%Y', '%d.%m.%Y'):
+                try:
+                    return datetime.strptime(d[:10], fmt).date()
+                except ValueError:
+                    continue
+            return self.date_to or fields.Date.today()
+        return d or self.date_to or fields.Date.today()
+
+    def _create_native_statement(self, transactions, opening=None, closing=None):
+        """Сформувати native-виписку (account.bank.statement) при імпорті.
+
+        Виписка — унікальна сутність із метаданими джерела; володіє рядками
+        (account.bank.statement.line з unique_import_id для дедупу). Баланси
+        беруться з джерела (opening/closing); якщо їх немає — кінцевий баланс
+        виводиться з рухів і виписка позначається як не звірена за балансом.
+        """
+        self.ensure_one()
+        Statement = self.env['account.bank.statement']
+        Line = self.env['account.bank.statement.line']
+        journal = self.journal_id
+
+        uids = [self._trans_uid(t) for t in transactions]
+        seen = set()
+        if any(uids):
+            # Дедуп по вже імпортованих рухах у цьому журналі.
+            Line.flush_model(['l10n_ua_import_uid', 'journal_id'])
+            seen = set(Line.search([
+                ('journal_id', '=', journal.id),
+                ('l10n_ua_import_uid', 'in', [u for u in uids if u]),
+            ]).mapped('l10n_ua_import_uid'))
+
+        line_cmds = []
+        total = 0.0
+        for trans in transactions:
+            uid = self._trans_uid(trans)
+            if uid and uid in seen:
+                continue
+            if uid:
+                seen.add(uid)
+            amount = self._trans_amount(trans)
+            line_cmds.append((0, 0, {
+                'journal_id': journal.id,
+                'date': self._trans_date(trans),
+                'payment_ref': (trans.get('description')
+                                or trans.get('purpose') or '/')[:2000] or '/',
+                'amount': amount,
+                'partner_name': trans.get('partner_name') or '',
+                'account_number': trans.get('partner_iban') or '',
+                'l10n_ua_import_uid': uid or False,
+            }))
+            total += amount
+
+        if not line_cmds:
+            return Statement.browse()
+
+        verified = opening is not None and closing is not None
+        bstart = opening if verified else 0.0
+        bend = closing if verified else round(bstart + total, 2)
+        statement = Statement.create({
+            'name': self.name or _('Statement'),
+            'journal_id': journal.id,
+            'date': self.date_to or fields.Date.today(),
+            'line_ids': line_cmds,
+            'balance_start': bstart,
+            'balance_end_real': bend,
+            'l10n_ua_source_type': self.source_type or self.config_id._source_type(),
+            'l10n_ua_source_ref': self.source_ref or self.provider or '',
+            'l10n_ua_import_date': fields.Datetime.now(),
+            'l10n_ua_sync_job_id': self.id,
+            'l10n_ua_balance_verified': verified,
+        })
+        if verified and not statement.l10n_ua_balance_ok:
+            self._log('Balance continuity mismatch: opening + Σ != closing '
+                      '(%.2f + %.2f != %.2f)' % (bstart, total, bend),
+                      level='warning')
+        return statement
 
     def _process_transaction(self, trans):
         """

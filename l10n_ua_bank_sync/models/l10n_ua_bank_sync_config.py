@@ -173,6 +173,21 @@ class L10nUaBankSyncConfig(models.Model):
             _("Provider '%s' does not implement _parse_transactions method") % self.provider
         )
 
+    def _extract_balances(self, raw_data):
+        """Витягти (opening, closing) баланси рахунку з даних джерела.
+
+        Перевизначає провайдер, чиє джерело несе баланси (файл виписки з
+        opening/closing, або API-endpoint балансу). Повертає (None, None),
+        якщо баланси недоступні — тоді native-виписка формується з виведеним
+        (недостовірним) кінцевим балансом (`l10n_ua_balance_verified = False`).
+        """
+        return (None, None)
+
+    def _source_type(self):
+        """Тип джерела імпорту (file / api / manual). Перевизначає провайдер."""
+        self.ensure_one()
+        return 'manual' if self.provider == 'manual' else 'api'
+
     def _is_sync_due(self, now=None):
         """Whether this config should sync now, per its ``sync_interval_hours``.
 
