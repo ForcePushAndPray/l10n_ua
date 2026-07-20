@@ -36,6 +36,7 @@ Wizard для переведення співробітника з однієї 
         'hr',
         'mail',
         'l10n_ua_hr_base',
+        'l10n_ua_hr_contract',
         'l10n_ua_hr_documents',
     ],
     'data': [

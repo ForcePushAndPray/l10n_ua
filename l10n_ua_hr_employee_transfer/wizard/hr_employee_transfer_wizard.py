@@ -72,6 +72,16 @@ class HrEmployeeTransferWizard(models.TransientModel):
         domain="[('company_id', '=', target_company_id)]",
     )
 
+    copy_wage = fields.Boolean(
+        string='Перенести умови оплати з джерела', default=True,
+        help='Скопіювати оклад та умови (тип договору, режим, ставку) з '
+             'поточної версії контракту працівника. За згодою сторін.')
+    new_wage = fields.Monetary(
+        string='Оклад (target)', compute='_compute_new_wage',
+        store=True, readonly=False, currency_field='currency_id')
+    currency_id = fields.Many2one(
+        'res.currency', related='target_company_id.currency_id')
+
     copy_bank_accounts = fields.Boolean(string='Копіювати банківські рахунки', default=True)
     copy_documents = fields.Boolean(string='Копіювати особові документи', default=True)
     copy_family_data = fields.Boolean(string='Копіювати сімейні дані (діти, подружжя)', default=True)
@@ -90,6 +100,13 @@ class HrEmployeeTransferWizard(models.TransientModel):
     def _compute_hire_date(self):
         for wiz in self:
             wiz.hire_date = (wiz.dismissal_date + timedelta(days=1)) if wiz.dismissal_date else False
+
+    @api.depends('source_employee_id', 'copy_wage')
+    def _compute_new_wage(self):
+        for wiz in self:
+            src_version = wiz.source_employee_id.current_version_id
+            wiz.new_wage = (src_version.wage or 0.0) if (
+                wiz.copy_wage and src_version) else 0.0
 
     @api.constrains('target_company_id', 'source_company_id')
     def _check_different_company(self):
@@ -156,6 +173,44 @@ class HrEmployeeTransferWizard(models.TransientModel):
             copy_vals['company_id'] = self.target_company_id.id
             self.env['res.partner.bank'].sudo().create(copy_vals)
 
+    def _create_new_version(self, new_employee):
+        """Налаштувати версію трудового договору для прийнятого працівника.
+
+        Нова картка `hr.employee` вже має авто-створену версію — оновлюємо ЇЇ
+        (дата = дата прийняття, оплата й умови), щоб не плодити дублікатів і
+        щоб вона стала поточною. Дата версії = дата прийняття, тож наказ
+        прийняття (його sync) знайде саме її за ``date_version``. Умови оплати
+        переносяться з джерела за згодою сторін.
+        """
+        self.ensure_one()
+        Version = self.env['hr.version']
+        src = self.source_employee_id.current_version_id
+        vals = {
+            'company_id': self.target_company_id.id,
+            'contract_date_start': self.hire_date,
+            'date_version': self.hire_date,
+            'wage': self.new_wage or 0.0,
+        }
+        if self.new_job_id and 'job_id' in Version._fields:
+            vals['job_id'] = self.new_job_id.id
+        if self.new_department_id and 'department_id' in Version._fields:
+            vals['department_id'] = self.new_department_id.id
+        # Перенести умови (тип договору, режим, ставку) з джерела за згодою.
+        if self.copy_wage and src:
+            for fname in ('contract_type_ua', 'work_mode', 'work_rate'):
+                if fname in src._fields and fname in Version._fields and src[fname]:
+                    vals[fname] = src[fname]
+
+        version = new_employee.current_version_id or new_employee.with_context(
+            active_test=False).version_ids[:1]
+        if version:
+            version.sudo().write(vals)
+        else:
+            vals['employee_id'] = new_employee.id
+            version = Version.sudo().create(vals)
+        new_employee.sudo().write({'current_version_id': version.id})
+        return version
+
     def _create_dismissal_order(self):
         return self.env['hr.order'].with_company(self.source_company_id).sudo().create({
             'order_type': 'dismissal',
@@ -166,9 +221,10 @@ class HrEmployeeTransferWizard(models.TransientModel):
             'date': self.dismissal_date,
             'date_dismissal': self.dismissal_date,
             'dismissal_reason': self.dismissal_reason,
+            'personnel_form': 'p4',
         })
 
-    def _create_hiring_order(self, new_employee):
+    def _create_hiring_order(self, new_employee, new_version):
         return self.env['hr.order'].with_company(self.target_company_id).sudo().create({
             'order_type': 'hiring',
             'subject': 'Про прийняття на роботу (переведенням)',
@@ -177,6 +233,8 @@ class HrEmployeeTransferWizard(models.TransientModel):
             'job_id': self.new_job_id.id,
             'date': self.hire_date,
             'date_start': self.hire_date,
+            'personnel_form': 'p7',
+            'new_version_id': new_version.id,
         })
 
     def _transfer_vacation_balance(self, new_employee):
@@ -223,8 +281,10 @@ class HrEmployeeTransferWizard(models.TransientModel):
         self._copy_children(new_employee)
         self._copy_bank_accounts(new_employee)
 
+        new_version = self._create_new_version(new_employee)
+
         dismissal_order = self._create_dismissal_order()
-        hiring_order = self._create_hiring_order(new_employee)
+        hiring_order = self._create_hiring_order(new_employee, new_version)
 
         self._transfer_vacation_balance(new_employee)
 

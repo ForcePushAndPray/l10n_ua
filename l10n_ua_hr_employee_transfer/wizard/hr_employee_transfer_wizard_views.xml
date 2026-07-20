@@ -24,6 +24,9 @@
                             <field name="hire_date"/>
                             <field name="new_department_id" options="{'no_create': True}"/>
                             <field name="new_job_id" options="{'no_create': True}"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="copy_wage"/>
+                            <field name="new_wage"/>
                         </group>
                     </group>
                     <group string="Що копіювати">

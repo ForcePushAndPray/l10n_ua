@@ -137,3 +137,73 @@ class TestEmployeeTransfer(TransactionCase):
         wizard.action_transfer()
         new_employee = self.source_employee.next_employee_id
         self.assertFalse(new_employee.passport_id)
+
+    # --- #154: авто-версія контракту + форма П-7 ---
+
+    def _source_with_version(self):
+        """Дати джерелу поточну версію контракту з окладом та умовами."""
+        version = self.env['hr.version'].create({
+            'employee_id': self.source_employee.id,
+            'company_id': self.company_a.id,
+            'contract_date_start': date(2020, 1, 10),
+            'date_version': date(2020, 1, 10),
+            'wage': 25000.0,
+        })
+        if 'contract_type_ua' in version._fields:
+            version.contract_type_ua = 'permanent'
+        if 'work_mode' in version._fields:
+            version.work_mode = 'full_time'
+        self.source_employee.current_version_id = version.id
+        return version
+
+    def test_transfer_creates_new_version(self):
+        self._source_with_version()
+        wizard = self._make_wizard()
+        wizard.action_transfer()
+        new_employee = self.source_employee.next_employee_id
+        version = new_employee.current_version_id
+        self.assertTrue(version)
+        self.assertEqual(version.employee_id, new_employee)
+        self.assertEqual(version.company_id, self.company_b)
+        self.assertEqual(version.contract_date_start, date(2026, 5, 1))
+        # Оклад перенесено з джерела за згодою.
+        self.assertAlmostEqual(version.wage, 25000.0, places=2)
+
+    def test_hiring_order_marked_p7_and_linked(self):
+        self._source_with_version()
+        wizard = self._make_wizard()
+        wizard.action_transfer()
+        new_employee = self.source_employee.next_employee_id
+        hiring = self.env['hr.order'].search([
+            ('employee_id', '=', new_employee.id),
+            ('order_type', '=', 'hiring'),
+        ], limit=1)
+        self.assertEqual(hiring.personnel_form, 'p7')
+        self.assertEqual(hiring.new_version_id, new_employee.current_version_id)
+
+    def test_dismissal_order_marked_p4(self):
+        wizard = self._make_wizard()
+        wizard.action_transfer()
+        dismissal = self.env['hr.order'].search([
+            ('employee_id', '=', self.source_employee.id),
+            ('order_type', '=', 'dismissal'),
+        ], limit=1)
+        self.assertEqual(dismissal.personnel_form, 'p4')
+
+    def test_wage_not_copied_when_flag_off(self):
+        self._source_with_version()
+        wizard = self._make_wizard(copy_wage=False, new_wage=18000.0)
+        wizard.action_transfer()
+        new_employee = self.source_employee.next_employee_id
+        self.assertAlmostEqual(new_employee.current_version_id.wage, 18000.0, places=2)
+
+    def test_no_duplicate_version(self):
+        self._source_with_version()
+        wizard = self._make_wizard()
+        wizard.action_transfer()
+        new_employee = self.source_employee.next_employee_id
+        versions = self.env['hr.version'].with_context(active_test=False).search([
+            ('employee_id', '=', new_employee.id),
+        ])
+        # Наказ прийняття доповнює створену версію, а не дублює її.
+        self.assertEqual(len(versions), 1)
