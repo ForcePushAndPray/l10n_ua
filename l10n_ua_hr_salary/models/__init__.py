@@ -12,3 +12,4 @@ from . import hr_payslip_retro
 from . import hr_payslip_run
 from . import hr_salary_advance
 from . import hr_salary_advance_run
+from . import hr_salary_deposit

@@ -22,9 +22,13 @@
                     <button name="action_retro_recalculate" string="Перерахувати (ретро)"
                             type="object" invisible="state != 'done'"
                             help="Перерахувати період з поточними даними і перенести різницю в поточний листок"/>
+                    <button name="action_deposit_unpaid" string="Депонувати"
+                            type="object" invisible="state != 'done' or deposit_ids"
+                            help="Депонувати невиплачену суму (net) як депонент"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,verify,done"/>
                 </header>
                 <sheet>
+                    <field name="deposit_ids" invisible="1"/>
                     <div class="oe_title">
                         <label for="name"/>
                         <h1>

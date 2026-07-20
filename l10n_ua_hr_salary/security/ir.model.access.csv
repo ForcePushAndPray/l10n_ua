@@ -23,6 +23,12 @@ access_hr_payslip_retro_user,hr.payslip.retro.user,model_hr_payslip_retro,hr.gro
 access_hr_payslip_retro_officer,hr.payslip.retro.officer,model_hr_payslip_retro,l10n_ua_hr_base.group_hr_ua_officer,1,1,1,0
 access_hr_payslip_retro_manager,hr.payslip.retro.manager,model_hr_payslip_retro,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
 access_hr_payslip_bank_export_officer,hr.payslip.bank.export.officer,model_hr_payslip_bank_export,l10n_ua_hr_base.group_hr_ua_officer,1,1,1,1
+access_hr_salary_deposit_user,hr.salary.deposit.user,model_hr_salary_deposit,hr.group_hr_user,1,0,0,0
+access_hr_salary_deposit_officer,hr.salary.deposit.officer,model_hr_salary_deposit,l10n_ua_hr_base.group_hr_ua_officer,1,1,1,0
+access_hr_salary_deposit_manager,hr.salary.deposit.manager,model_hr_salary_deposit,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
+access_hr_salary_deposit_payment_user,hr.salary.deposit.payment.user,model_hr_salary_deposit_payment,hr.group_hr_user,1,0,0,0
+access_hr_salary_deposit_payment_officer,hr.salary.deposit.payment.officer,model_hr_salary_deposit_payment,l10n_ua_hr_base.group_hr_ua_officer,1,1,1,1
+access_hr_salary_deposit_payment_manager,hr.salary.deposit.payment.manager,model_hr_salary_deposit_payment,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
 access_hr_execution_document_user,hr.execution.document.user,model_hr_execution_document,hr.group_hr_user,1,0,0,0
 access_hr_execution_document_officer,hr.execution.document.officer,model_hr_execution_document,l10n_ua_hr_base.group_hr_ua_officer,1,1,1,0
 access_hr_execution_document_manager,hr.execution.document.manager,model_hr_execution_document,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
