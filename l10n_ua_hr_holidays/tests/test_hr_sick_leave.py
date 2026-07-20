@@ -107,13 +107,18 @@ class TestHrSickLeave(TransactionCase):
         self.assertEqual(sick_leave.fss_days, 2)
 
     def test_short_sick_leave_employer_only(self):
-        """Test short sick leave (<=5 days) paid only by employer"""
+        """Test short sick leave (<=5 days) paid only by employer.
+
+        Межа: рівно 5 календарних днів (15–19 січня) → усі 5 оплачує
+        роботодавець, ФСС — 0 (employer_days = min(5, calendar_days)).
+        """
         sick_leave = self.env['hr.sick.leave'].create({
             'employee_id': self.employee.id,
             'date_from': date(2026, 1, 15),
-            'date_to': date(2026, 1, 18),
+            'date_to': date(2026, 1, 19),
             'sick_leave_type': 'illness',
         })
+        self.assertEqual(sick_leave.calendar_days, 5)
         self.assertEqual(sick_leave.employer_days, 5)
         self.assertEqual(sick_leave.fss_days, 0)
 
