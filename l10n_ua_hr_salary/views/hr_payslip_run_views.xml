@@ -17,6 +17,8 @@
                             class="btn-primary" invisible="state != 'verify'"/>
                     <button name="action_draft" string="Set to Draft" type="object"
                             invisible="state == 'draft'"/>
+                    <button name="action_bank_export" string="Файл у банк" type="object"
+                            invisible="state == 'draft'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,verify,close"/>
                 </header>
                 <sheet>

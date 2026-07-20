@@ -52,7 +52,9 @@ to avoid naming conflicts with existing modules on Odoo Apps.
         'views/hr_execution_document_views.xml',
         'views/hr_salary_advance_views.xml',
         'views/hr_salary_advance_run_views.xml',
+        'views/res_company_views.xml',
         'views/menu_views.xml',
+        'wizard/hr_payslip_bank_export_views.xml',
         'report/hr_payslip_report.xml',
     ],
     'demo': [

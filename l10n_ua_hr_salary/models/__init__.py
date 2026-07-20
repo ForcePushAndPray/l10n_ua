@@ -1,3 +1,4 @@
+from . import res_company
 from . import hr_psp_parameters
 from . import hr_cpi_index
 from . import hr_version

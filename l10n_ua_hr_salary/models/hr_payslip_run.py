@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from dateutil.relativedelta import relativedelta
 
 
@@ -151,6 +151,18 @@ class HrPayslipRun(models.Model):
     def action_draft(self):
         self.slip_ids.write({'state': 'draft'})
         self.write({'state': 'draft'})
+
+    def action_bank_export(self):
+        """Відкрити майстер формування зарплатного файлу для клієнт-банку (#152)."""
+        self.ensure_one()
+        return {
+            'name': _('Зарплатний файл у банк'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.payslip.bank.export',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_payslip_run_id': self.id},
+        }
 
     def action_open_payslips(self):
         return {
