@@ -57,13 +57,6 @@ if records:
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_view_transactions" type="object" class="oe_stat_button" icon="fa-exchange">
-                            <field name="transaction_count" widget="statinfo" string="Transactions"/>
-                        </button>
-                        <button name="action_view_statements" type="object" class="oe_stat_button" icon="fa-list-alt"
-                                invisible="not statement_ids" groups="base.group_no_one">
-                            <field name="statement_count" widget="statinfo" string="Statements"/>
-                        </button>
                         <button name="action_view_logs" type="object" class="oe_stat_button" icon="fa-file-text-o"
                                 invisible="not log_ids">
                             <div class="o_stat_info">
@@ -86,11 +79,16 @@ if records:
                             <field name="date_to"/>
                             <field name="payload_fetched_at" invisible="not payload_fetched_at"/>
                         </group>
+                        <group string="Source">
+                            <field name="source_type"/>
+                            <field name="source_ref"/>
+                        </group>
                     </group>
                     <group string="Results" invisible="state in ('draft', 'fetching')">
                         <group>
                             <field name="transactions_count"/>
                             <field name="imported_count"/>
+                            <field name="bank_statement_id"/>
                         </group>
                         <group>
                             <field name="updated_count"/>
@@ -130,7 +128,6 @@ if records:
                 <field name="journal_id"/>
                 <field name="date_from"/>
                 <field name="date_to"/>
-                <field name="transaction_count" string="Trans"/>
                 <field name="imported_count" string="New"/>
                 <field name="updated_count" string="Upd"/>
                 <field name="error_count" optional="hide"/>

@@ -31,7 +31,7 @@ class AccountJournal(models.Model):
 
     def _compute_ua_bank_dashboard(self):
         """Compute dashboard data. No @api.depends - always recompute on access."""
-        Transaction = self.env['l10n_ua.bank.transaction']
+        Line = self.env['account.bank.statement.line']
 
         for journal in self:
             if journal.type != 'bank':
@@ -41,8 +41,8 @@ class AccountJournal(models.Model):
                 journal.ua_bank_last_sync = False
                 continue
 
-            # Get transactions for this journal
-            transactions = Transaction.search([
+            # Get native bank statement lines for this journal
+            transactions = Line.search([
                 ('journal_id', '=', journal.id),
             ], order='date desc, id desc')
 
@@ -141,24 +141,24 @@ class AccountJournal(models.Model):
         }]
 
     def action_open_transactions(self):
-        """Open transactions for this journal."""
+        """Open native bank statement lines for this journal."""
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
             'name': _('Transactions'),
-            'res_model': 'l10n_ua.bank.transaction',
+            'res_model': 'account.bank.statement.line',
             'view_mode': 'list,form',
             'domain': [('journal_id', '=', self.id)],
             'context': {'default_journal_id': self.id},
         }
 
     def action_open_bank_statements(self):
-        """Open bank statements for this journal (legacy)."""
+        """Open native bank statements for this journal."""
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
             'name': _('Bank Statements'),
-            'res_model': 'l10n_ua.bank.statement',
+            'res_model': 'account.bank.statement',
             'view_mode': 'list,form',
             'domain': [('journal_id', '=', self.id)],
             'context': {'default_journal_id': self.id},

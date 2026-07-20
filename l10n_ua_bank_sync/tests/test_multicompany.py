@@ -61,13 +61,10 @@ class TestBankSyncMultiCompany(TransactionCase):
         self.assertIn(cfg, visible)
 
     def test_rules_exist_and_global(self):
-        """All five bank-sync models must have a global multi-company rule."""
+        """Remaining bank-sync models must have a global multi-company rule."""
         for xmlid in (
             'l10n_ua_bank_sync_config_company_rule',
-            'l10n_ua_bank_statement_company_rule',
-            'l10n_ua_bank_match_rule_company_rule',
             'l10n_ua_bank_sync_job_company_rule',
-            'l10n_ua_bank_transaction_company_rule',
         ):
             rule = self.env.ref('l10n_ua_bank_sync.%s' % xmlid)
             self.assertTrue(rule['global'], '%s must be global' % xmlid)

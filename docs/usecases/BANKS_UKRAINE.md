@@ -9,9 +9,19 @@ monobank у `res.currency.rate`) та формування платіжних п
 (Закон «Про бухгалтерський облік та фінансову звітність в Україні» № 996-XIV) та відображати валютні
 операції за офіційним курсом НБУ (П(С)БО 21).
 
-Модулі: `l10n_ua_bank_sync` (база: конфіг, завдання, виписки, транзакції, правила), `l10n_ua_bank_privat`
-(ПриватБанк), `l10n_ua_bank_mono` (monobank), `l10n_ua_bank_currency_sync` (курси валют),
-`l10n_ua_payment_link` (QR / еквайринг).
+Модулі: `l10n_ua_bank_sync` (база: конфіг, завдання, native-виписки), `l10n_ua_bank_privat`
+(ПриватБанк), `l10n_ua_bank_mono` (monobank), `l10n_ua_bank_vst` (VST/Банк Восток, iBank 2 UA файл),
+`l10n_ua_bank_openbanking` (PSD2), `l10n_ua_bank_payment` (платіжки з КЕП),
+`l10n_ua_bank_currency_sync` (курси валют), `l10n_ua_payment_link` (QR / еквайринг).
+
+> **Рефактор на native-виписки (актуальна архітектура).** Виписка формується **в процесі імпорту** як
+> рідна `account.bank.statement` (метадані джерела: дата, тип file/api, назва файлу/провайдер; баланси
+> з джерела з контролем повноти) і володіє рідними рядками `account.bank.statement.line` (дедуп по
+> `l10n_ua_import_uid`, контрагент — за ЄДРПОУ/IBAN при імпорті). Звірка та проводки — **рідним
+> механізмом Odoo** (`account.reconcile.model` + reconcile). Це **замінює** попередні кроки BANK-5
+> (кастомний розбір у `l10n_ua.bank.transaction`), BANK-6 (кастомні match-rules), BANK-7 (`action_create_move`),
+> BANK-11 (XLSX-експорт кастомної виписки) та «Generate Statement» — усі відповідні кастомні моделі й
+> постфактумне формування виписки **видалені**. Flows нижче з BANK-5…BANK-11 описують історичний потік.
 
 Flow BANK-1 — Налаштування підключення ПриватБанку (Автоклієнт). Головбух створює конфігурацію
 `l10n_ua.bank.sync.config` з `provider = 'privat'`, прив'язує банківський журнал (`journal_id`, тип `bank`)
