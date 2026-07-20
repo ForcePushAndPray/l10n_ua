@@ -173,6 +173,20 @@
             <field name="sequence">85</field>
         </record>
 
+        <record id="accrual_type_in_kind" model="hr.accrual.type">
+            <field name="name">Дохід у натуральній формі</field>
+            <field name="code">INKIND</field>
+            <field name="category">other</field>
+            <field name="calculation_method">fixed</field>
+            <field name="is_basic_salary">False</field>
+            <field name="is_taxable_pdfo">True</field>
+            <field name="is_military_tax">True</field>
+            <field name="is_esv_base">True</field>
+            <field name="is_in_kind">True</field>
+            <field name="d4_income_type">126</field>
+            <field name="sequence">98</field>
+        </record>
+
         <record id="accrual_type_material_aid" model="hr.accrual.type">
             <field name="name">Матеріальна допомога</field>
             <field name="code">MAT_AID</field>

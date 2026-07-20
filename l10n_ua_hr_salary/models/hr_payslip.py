@@ -432,9 +432,19 @@ class HrPayslip(models.Model):
             if payslip.is_disability and not payslip.is_diia_city:
                 esv_rate = 8.41
 
+            # Натуральний коефіцієнт (п. 164.5 ПКУ) для гросс-апу негрошового
+            # доходу: К = 100 / (100 − ставка ПДФО). Дохід у натуральній формі
+            # приводиться до "брутто" перед оподаткуванням ПДФО/ВЗ (#153).
+            params = self.env['hr.psp.parameters'].get_parameters(payslip.date_to)
+            natural_coef = 100.0 / (100.0 - pdfo_rate) if pdfo_rate < 100 else 1.0
+            mil_natural = (params.natural_coef_for_military
+                           if params else True)
+            mil_coef = natural_coef if mil_natural else 1.0
+
             # PDFO base and amount
             pdfo_taxable = sum(
-                a.amount for a in payslip.accrual_ids
+                (a.amount * natural_coef if a.is_in_kind else a.amount)
+                for a in payslip.accrual_ids
                 if a.is_taxable_pdfo
             )
             payslip.pdfo_base = max(0, pdfo_taxable - payslip.psp_amount)
@@ -442,14 +452,14 @@ class HrPayslip(models.Model):
 
             # Military tax
             military_taxable = sum(
-                a.amount for a in payslip.accrual_ids
+                (a.amount * mil_coef if a.is_in_kind else a.amount)
+                for a in payslip.accrual_ids
                 if a.is_military_tax
             )
             payslip.military_tax_base = military_taxable
             payslip.military_tax_amount = round(military_taxable * military_rate / 100, 2)
 
-            # ESV (employer contribution)
-            params = self.env['hr.psp.parameters'].get_parameters(payslip.date_to)
+            # ESV (employer contribution) — на звичайну вартість, без гросс-апу
             esv_taxable = sum(
                 a.amount for a in payslip.accrual_ids
                 if a.is_esv_base

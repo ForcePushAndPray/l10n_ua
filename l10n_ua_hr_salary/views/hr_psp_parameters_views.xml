@@ -42,6 +42,9 @@
                         <group string="Індексація">
                             <field name="indexation_threshold"/>
                         </group>
+                        <group string="Натуральний дохід">
+                            <field name="natural_coef_for_military"/>
+                        </group>
                     </group>
                 </sheet>
             </form>

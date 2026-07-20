@@ -45,7 +45,12 @@ class HrAccrualType(models.Model):
         string='ESV Base',
         default=True
     )
-    
+    is_in_kind = fields.Boolean(
+        string='In-Kind Income',
+        help='Дохід у натуральній (негрошовій) формі. До бази ПДФО (та ВЗ) '
+             'застосовується натуральний коефіцієнт для гросс-апу (п. 164.5 ПКУ).'
+    )
+
     d4_income_type = fields.Char(
         string='4DF Income Type Code',
         help='Income type code for 4DF report'

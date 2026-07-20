@@ -9,3 +9,4 @@ from . import test_salary_advance
 from . import test_multicompany
 from . import test_time_surcharges
 from . import test_indexation
+from . import test_in_kind

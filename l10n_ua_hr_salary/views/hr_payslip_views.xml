@@ -68,6 +68,7 @@
                                     <field name="amount" sum="Total"/>
                                     <field name="is_taxable_pdfo"/>
                                     <field name="is_esv_base"/>
+                                    <field name="is_in_kind" optional="hide"/>
                                     <field name="notes"/>
                                 </list>
                             </field>

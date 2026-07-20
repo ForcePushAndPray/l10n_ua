@@ -26,6 +26,7 @@
                             <field name="is_taxable_pdfo"/>
                             <field name="is_military_tax"/>
                             <field name="is_esv_base"/>
+                            <field name="is_in_kind"/>
                             <field name="d4_income_type"/>
                         </group>
                     </group>

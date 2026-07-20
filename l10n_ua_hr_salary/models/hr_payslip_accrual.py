@@ -53,7 +53,11 @@ class HrPayslipAccrual(models.Model):
         string='ESV Base',
         related='accrual_type_id.is_esv_base'
     )
-    
+    is_in_kind = fields.Boolean(
+        string='In-Kind Income',
+        related='accrual_type_id.is_in_kind'
+    )
+
     d4_income_type = fields.Char(
         string='4DF Income Type',
         related='accrual_type_id.d4_income_type'
