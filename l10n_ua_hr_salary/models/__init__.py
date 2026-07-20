@@ -7,6 +7,7 @@ from . import hr_execution_document
 from . import hr_payslip_accrual
 from . import hr_payslip_deduction
 from . import hr_payslip
+from . import hr_payslip_retro
 from . import hr_payslip_run
 from . import hr_salary_advance
 from . import hr_salary_advance_run

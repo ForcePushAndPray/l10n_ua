@@ -19,6 +19,9 @@
                             invisible="state != 'cancel'"/>
                     <button name="action_print_payslip" string="Print" type="object"
                             invisible="state == 'draft'"/>
+                    <button name="action_retro_recalculate" string="Перерахувати (ретро)"
+                            type="object" invisible="state != 'done'"
+                            help="Перерахувати період з поточними даними і перенести різницю в поточний листок"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,verify,done"/>
                 </header>
                 <sheet>
@@ -131,6 +134,18 @@
                                 <field name="esv_amount" string="ESV (Employer Cost)"/>
                             </group>
                         </page>
+                        <page string="Ретро-перерахунки" name="retro"
+                              invisible="not retro_incoming_ids">
+                            <field name="retro_incoming_ids" readonly="1">
+                                <list>
+                                    <field name="source_date_to" string="Період"/>
+                                    <field name="old_gross"/>
+                                    <field name="new_gross"/>
+                                    <field name="gross_delta"/>
+                                    <field name="source_payslip_id"/>
+                                </list>
+                            </field>
+                        </page>
                         <page string="Notes" name="notes">
                             <field name="notes"/>
                         </page>
@@ -198,7 +213,16 @@
         </field>
     </record>
 
-<record id="action_hr_payslip" model="ir.actions.act_window">
+    <record id="action_hr_payslip_retro_batch" model="ir.actions.server">
+        <field name="name">Ретро-перерахунок</field>
+        <field name="model_id" ref="model_hr_payslip"/>
+        <field name="binding_model_id" ref="model_hr_payslip"/>
+        <field name="binding_view_types">list</field>
+        <field name="state">code</field>
+        <field name="code">action = records.action_retro_recalculate()</field>
+    </record>
+
+    <record id="action_hr_payslip" model="ir.actions.act_window">
         <field name="name">Payslips</field>
         <field name="res_model">hr.payslip</field>
         <field name="view_mode">list,form</field>

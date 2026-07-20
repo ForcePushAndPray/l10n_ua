@@ -10,3 +10,4 @@ from . import test_multicompany
 from . import test_time_surcharges
 from . import test_indexation
 from . import test_in_kind
+from . import test_retro

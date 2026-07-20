@@ -1,5 +1,5 @@
 from odoo import models, fields, api, _
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from dateutil.relativedelta import relativedelta
 import calendar
 
@@ -237,6 +237,15 @@ class HrPayslip(models.Model):
     ], string='Status', default='draft', tracking=True)
     
     notes = fields.Text(string='Notes')
+
+    # Ретро-перерахунки (#151): різниці, перенесені В цей (поточний) листок,
+    # та перерахунки, ДЖЕРЕЛОМ яких був цей (закритий) листок.
+    retro_incoming_ids = fields.One2many(
+        'hr.payslip.retro', 'target_payslip_id', string='Retro Adjustments',
+        copy=False)
+    retro_source_ids = fields.One2many(
+        'hr.payslip.retro', 'source_payslip_id', string='Retro (as source)',
+        copy=False)
 
     @api.depends('employee_id')
     def _compute_employee_benefits(self):
@@ -959,3 +968,119 @@ class HrPayslip(models.Model):
 
     def action_print_payslip(self):
         return self.env.ref('l10n_ua_hr_salary.action_report_payslip').report_action(self)
+
+    # ------------------------------------------------------------------
+    # Ретро-перерахунки за закриті періоди (#151)
+    # ------------------------------------------------------------------
+    def _recompute_period_gross(self):
+        """Перерахувати валовий дохід періоду з ПОТОЧНИМИ даними.
+
+        Створює тимчасову копію листка (зберігаючи введені вручну нарахування —
+        напр. премії), оновлює відпрацьований час із чинного табеля, регенерує
+        авто-нарахування за чинними окладом/версією і повертає новий gross.
+        Тимчасовий листок одразу видаляється — self не змінюється.
+        """
+        self.ensure_one()
+        temp = self.copy({
+            'state': 'draft',
+            'payslip_run_id': False,
+            'name': _('%s (перерахунок)') % (self.name or ''),
+        })
+        try:
+            temp._compute_working_days()
+            temp._generate_accruals()
+            # gross_salary — stored compute; читаємо після флашу.
+            temp.flush_recordset()
+            return temp.gross_salary
+        finally:
+            temp.unlink()
+
+    def _find_current_draft_payslip(self):
+        """Знайти поточний відкритий листок працівника для перенесення дельти."""
+        self.ensure_one()
+        return self.search([
+            ('employee_id', '=', self.employee_id.id),
+            ('company_id', '=', self.company_id.id),
+            ('state', 'in', ('draft', 'verify')),
+            ('date_to', '>', self.date_to),
+        ], order='date_to desc', limit=1)
+
+    def action_retro_recalculate(self):
+        """Перерахувати закриті періоди й перенести різницю в поточний листок.
+
+        Для кожного обраного закритого (done) листка рахує дельту валового
+        доходу відносно сплаченого і, якщо вона ненульова, створює у поточному
+        чернетковому листку окремий рядок «Перерахунок за <міс>». ПДФО/ВЗ/ЄСВ
+        на дельту перераховуються автоматично в поточному листку. Повторний
+        запуск ідемпотентний — попередній ретро-рядок від того ж джерела
+        замінюється.
+        """
+        Retro = self.env['hr.payslip.retro']
+        RetroType = self.env['hr.accrual.type'].search(
+            [('code', '=', 'RETRO')], limit=1)
+        if not RetroType:
+            raise UserError(_('Не знайдено тип нарахування «Перерахунок» (RETRO).'))
+
+        changed = 0
+        for slip in self:
+            if slip.state != 'done':
+                raise UserError(_(
+                    'Ретро-перерахунок можливий лише для закритих (Done) '
+                    'листків. Листок «%s» у стані «%s».') % (slip.name, slip.state))
+
+            target = slip._find_current_draft_payslip()
+            if not target:
+                raise UserError(_(
+                    'Немає поточного відкритого листка для працівника «%s», '
+                    'куди перенести різницю. Створіть листок поточного періоду.'
+                ) % slip.employee_id.name)
+
+            new_gross = slip._recompute_period_gross()
+            delta = round(new_gross - slip.gross_salary, 2)
+
+            # Ідемпотентність: прибрати попередній ретро від цього ж джерела.
+            prior = Retro.search([
+                ('source_payslip_id', '=', slip.id),
+                ('target_payslip_id', '=', target.id),
+            ])
+            prior.accrual_line_id.unlink()
+            prior.unlink()
+
+            if abs(delta) < 0.01:
+                continue
+
+            period = slip.date_to.strftime('%m.%Y')
+            sign = _('донарахування') if delta > 0 else _('сторнування')
+            note = _('Перерахунок за %s (%s): було %.2f, стало %.2f') % (
+                period, sign, slip.gross_salary, new_gross)
+            line = self.env['hr.payslip.accrual'].create({
+                'payslip_id': target.id,
+                'accrual_type_id': RetroType.id,
+                'quantity': 1,
+                'amount': delta,
+                'notes': note,
+            })
+            Retro.create({
+                'source_payslip_id': slip.id,
+                'target_payslip_id': target.id,
+                'accrual_line_id': line.id,
+                'old_gross': slip.gross_salary,
+                'new_gross': new_gross,
+                'gross_delta': delta,
+            })
+            target.message_post(body=_(
+                'Перенесено ретро-різницю %+.2f за період %s (з листка %s).'
+            ) % (delta, period, slip.name))
+            slip.message_post(body=_(
+                'Ретро-перерахунок: різницю %+.2f перенесено в листок %s.'
+            ) % (delta, target.name))
+            changed += 1
+
+        msg = (_('Перенесено перерахунків: %d.') % changed if changed
+               else _('Змін не виявлено — перерахунок не потрібен.'))
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {'title': _('Ретро-перерахунок'), 'message': msg,
+                       'type': 'success' if changed else 'info', 'sticky': False},
+        }

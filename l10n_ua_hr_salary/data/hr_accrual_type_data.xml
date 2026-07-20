@@ -173,6 +173,19 @@
             <field name="sequence">85</field>
         </record>
 
+        <record id="accrual_type_retro" model="hr.accrual.type">
+            <field name="name">Перерахунок за минулий період</field>
+            <field name="code">RETRO</field>
+            <field name="category">other</field>
+            <field name="calculation_method">fixed</field>
+            <field name="is_basic_salary">False</field>
+            <field name="is_taxable_pdfo">True</field>
+            <field name="is_military_tax">True</field>
+            <field name="is_esv_base">True</field>
+            <field name="d4_income_type">101</field>
+            <field name="sequence">96</field>
+        </record>
+
         <record id="accrual_type_in_kind" model="hr.accrual.type">
             <field name="name">Дохід у натуральній формі</field>
             <field name="code">INKIND</field>
