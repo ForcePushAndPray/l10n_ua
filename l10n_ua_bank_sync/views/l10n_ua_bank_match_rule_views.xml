@@ -7,7 +7,16 @@
         <field name="model">l10n_ua.bank.match.rule</field>
         <field name="arch" type="xml">
             <form string="Matching Rule">
+                <header>
+                    <button name="action_convert_to_reconcile_model" type="object"
+                            string="Convert to Reconcile Model" class="btn-primary"/>
+                </header>
                 <sheet>
+                    <div class="alert alert-warning" role="alert">
+                        Застаріле (Фаза 2): цей рушій заміщується рідним
+                        <b>account.reconcile.model</b>. Перенесіть правило кнопкою
+                        «Convert to Reconcile Model».
+                    </div>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_matched_transactions" type="object"
                                 class="oe_stat_button" icon="fa-exchange"

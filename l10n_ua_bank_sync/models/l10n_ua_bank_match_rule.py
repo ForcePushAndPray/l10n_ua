@@ -1,6 +1,12 @@
-"""Bank transaction auto-matching rules."""
+"""Bank transaction auto-matching rules.
 
-from odoo import api, fields, models
+DEPRECATED (Фаза 2 рефактора): цей кастомний рушій правил заміщується
+рідним ``account.reconcile.model``. Native-виписки (Фаза 1) звіряються
+рідним механізмом Odoo. Використайте ``action_convert_to_reconcile_model``,
+щоб перенести правила у native; сам рушій лишиться до Фази 3 (чистка).
+"""
+
+from odoo import _, api, fields, models
 
 
 class L10nUaBankMatchRule(models.Model):
@@ -9,6 +15,8 @@ class L10nUaBankMatchRule(models.Model):
     When a bank transaction matches a rule, the rule's counterpart account
     is used instead of the suspense account when creating journal entries.
     Rules are evaluated in sequence order; the first match wins.
+
+    DEPRECATED: замінюється рідним ``account.reconcile.model`` (Фаза 2).
     """
     _name = 'l10n_ua.bank.match.rule'
     _description = 'Bank Transaction Matching Rule'
@@ -106,6 +114,68 @@ class L10nUaBankMatchRule(models.Model):
         string='Matches',
         compute='_compute_match_count',
     )
+
+    def _to_reconcile_model_vals(self):
+        """Мапінг кастомного правила у vals рідного account.reconcile.model.
+
+        Обмеження: напрям (match_direction) не має прямого відповідника в
+        Odoo 19 reconcile-моделі й не переноситься; текстовий критерій
+        мапиться як 'contains'.
+        """
+        self.ensure_one()
+        vals = {
+            'name': self.name or _('Rule'),
+            'sequence': self.sequence,
+            'company_id': self.company_id.id or self.env.company.id,
+            'active': self.active,
+            'trigger': 'auto_reconcile' if self.auto_post else 'manual',
+        }
+        if self.journal_id:
+            vals['match_journal_ids'] = [(6, 0, [self.journal_id.id])]
+        if self.match_text:
+            vals['match_label'] = 'contains'
+            vals['match_label_param'] = self.match_text
+        if self.match_amount_min and self.match_amount_max:
+            vals['match_amount'] = 'between'
+            vals['match_amount_min'] = self.match_amount_min
+            vals['match_amount_max'] = self.match_amount_max
+        elif self.match_amount_min:
+            vals['match_amount'] = 'greater'
+            vals['match_amount_min'] = self.match_amount_min
+        elif self.match_amount_max:
+            vals['match_amount'] = 'lower'
+            vals['match_amount_max'] = self.match_amount_max
+        partners = self.match_partner_id
+        if self.match_partner_edrpou:
+            found = self.env['res.partner'].search(
+                [('edrpou', '=', self.match_partner_edrpou)], limit=1)
+            partners |= found
+        if partners:
+            vals['match_partner_ids'] = [(6, 0, partners.ids)]
+        if self.account_id:
+            # «Встановити контрагента» переноситься на контрагента рядка-контрпари.
+            vals['line_ids'] = [(0, 0, {
+                'account_id': self.account_id.id,
+                'partner_id': self.set_partner_id.id or False,
+                'amount_type': 'percentage',
+                'amount_string': '100',
+                'label': self.label or self.name or '',
+            })]
+        return vals
+
+    def action_convert_to_reconcile_model(self):
+        """Створити рідні account.reconcile.model з обраних правил (Фаза 2)."""
+        Model = self.env['account.reconcile.model']
+        created = Model
+        for rule in self:
+            created |= Model.create(rule._to_reconcile_model_vals())
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Reconciliation Models'),
+            'res_model': 'account.reconcile.model',
+            'view_mode': 'list,form',
+            'domain': [('id', 'in', created.ids)],
+        }
 
     def action_view_matched_transactions(self):
         """Open transactions matched by this rule."""

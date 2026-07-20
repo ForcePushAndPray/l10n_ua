@@ -402,12 +402,14 @@ class L10nUaBankSyncJob(models.Model):
             if uid:
                 seen.add(uid)
             amount = self._trans_amount(trans)
+            partner = self._match_partner(trans)
             line_cmds.append((0, 0, {
                 'journal_id': journal.id,
                 'date': self._trans_date(trans),
                 'payment_ref': (trans.get('description')
                                 or trans.get('purpose') or '/')[:2000] or '/',
                 'amount': amount,
+                'partner_id': partner.id if partner else False,
                 'partner_name': trans.get('partner_name') or '',
                 'account_number': trans.get('partner_iban') or '',
                 'l10n_ua_import_uid': uid or False,

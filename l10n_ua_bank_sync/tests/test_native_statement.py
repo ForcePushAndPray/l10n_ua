@@ -92,3 +92,60 @@ class TestNativeStatement(TransactionCase):
         self.assertEqual(line.payment_ref, 'списання')
         self.assertEqual(line.account_number, 'UA222')
         self.assertEqual(line.l10n_ua_import_uid, 't2')
+
+    def test_partner_matched_on_line(self):
+        # Контрагент підбирається за IBAN і ставиться на native-рядок.
+        partner = self.env['res.partner'].create({'name': 'ТОВ Контрагент'})
+        self.env['res.partner.bank'].create({
+            'acc_number': '26007654321098', 'partner_id': partner.id})
+        job = self._job()
+        stmt = job._create_native_statement([{
+            'id': 'p1', 'date': '2018-06-01', 'amount': 500.0,
+            'description': 'оплата', 'partner_name': 'ТОВ Контрагент',
+            'partner_iban': '26007654321098'}])
+        self.assertEqual(stmt.line_ids.partner_id, partner)
+
+
+@tagged('post_install', '-at_install')
+class TestMatchRuleConversion(TransactionCase):
+    """Конвертер кастомних правил у рідні account.reconcile.model (Фаза 2)."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.company = cls.env.company
+        cls.journal = cls.env['account.journal'].create({
+            'name': 'RM Bank', 'type': 'bank', 'code': 'RMBK',
+            'company_id': cls.company.id})
+        cls.account = cls.env['account.account'].search(
+            [('company_ids', 'in', cls.company.id)], limit=1)
+        cls.p_match = cls.env['res.partner'].create({'name': 'Match'})
+        cls.p_set = cls.env['res.partner'].create({'name': 'Set'})
+
+    def test_convert_rule_to_reconcile_model(self):
+        rule = self.env['l10n_ua.bank.match.rule'].create({
+            'name': 'Комісія банку',
+            'sequence': 5,
+            'journal_id': self.journal.id,
+            'match_text': 'КОМІСІЯ',
+            'match_amount_min': 10.0,
+            'match_amount_max': 500.0,
+            'match_partner_id': self.p_match.id,
+            'set_partner_id': self.p_set.id,
+            'account_id': self.account.id,
+            'auto_post': True,
+        })
+        action = rule.action_convert_to_reconcile_model()
+        model = self.env['account.reconcile.model'].browse(
+            action['domain'][0][2])
+        self.assertEqual(model.name, 'Комісія банку')
+        self.assertEqual(model.trigger, 'auto_reconcile')
+        self.assertEqual(model.match_label, 'contains')
+        self.assertEqual(model.match_label_param, 'КОМІСІЯ')
+        self.assertEqual(model.match_amount, 'between')
+        self.assertAlmostEqual(model.match_amount_min, 10.0, places=2)
+        self.assertIn(self.p_match, model.match_partner_ids)
+        self.assertEqual(len(model.line_ids), 1)
+        self.assertEqual(model.line_ids.account_id, self.account)
+        self.assertEqual(model.line_ids.partner_id, self.p_set)
+        self.assertEqual(model.match_journal_ids, self.journal)
