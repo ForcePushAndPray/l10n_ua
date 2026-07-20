@@ -56,6 +56,7 @@ to avoid naming conflicts with existing modules on Odoo Apps.
         'views/res_company_views.xml',
         'views/menu_views.xml',
         'wizard/hr_payslip_bank_export_views.xml',
+        'wizard/hr_ifobs_employee_export_views.xml',
         'report/hr_payslip_report.xml',
     ],
     'demo': [
