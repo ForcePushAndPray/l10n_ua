@@ -1,4 +1,6 @@
 import base64
+import io
+import zipfile
 
 from lxml import etree
 
@@ -26,11 +28,25 @@ class HrPayslipBankExport(models.TransientModel):
     date_from = fields.Date(string='Date From')
     date_to = fields.Date(string='Date To')
     file_format = fields.Selection(
-        [('xml', 'XML'), ('dbf', 'DBF')], string='Format', required=True,
+        [('xml', 'XML'), ('dbf', 'DBF'),
+         ('ifobs', 'iFOBS (Укргазбанк та ін.)'),
+         ('ibank2', 'iBank 2 UA (VST Bank та ін.)')],
+        string='Format', required=True,
         default=lambda self: self.env.company.payroll_bank_file_format or 'xml')
     payer_account_id = fields.Many2one(
         'res.partner.bank', string='Payer Account',
         default=lambda self: self.env.company.payroll_bank_account_id)
+    transit_account_id = fields.Many2one(
+        'res.partner.bank', string='Transit Account',
+        default=lambda self: self.env.company.payroll_transit_account_id,
+        help='Транзитний рахунок зарплатного проєкту (iFOBS).')
+    salary_project_code = fields.Char(
+        string='Salary Project Code (ЗКП)',
+        default=lambda self: self.env.company.payroll_salary_project_code)
+    accrual_name = fields.Char(
+        string='Accrual Type',
+        default=lambda self: self.env.company.payroll_accrual_name
+        or 'Заробітна плата')
     payment_purpose = fields.Char(
         string='Payment Purpose',
         default=lambda self: self.env.company.payroll_payment_purpose
@@ -142,21 +158,131 @@ class HrPayslipBankExport(models.TransientModel):
             })
         return build_dbf(field_defs, dbf_rows)
 
+    # --- Реквізити платника для банк-специфічних форматів ---
+    def _company_edrpou(self):
+        company = self.company_id
+        return (getattr(company, 'company_registry', False)
+                or (company.vat or '').replace('UA', '').strip() or '')
+
+    def _payer_mfo(self):
+        bank = self.payer_account_id.bank_id
+        return getattr(bank, 'ua_mfo', False) or ''
+
+    @staticmethod
+    def _split_name(full_name):
+        """Розбити ПІБ на прізвище / ім'я / по батькові (best-effort)."""
+        parts = (full_name or '').split()
+        last = parts[0] if parts else ''
+        first = parts[1] if len(parts) > 1 else ''
+        middle = ' '.join(parts[2:]) if len(parts) > 2 else ''
+        return last, first, middle
+
+    def _render_ifobs(self, rows):
+        """iFOBS.eSalary — ZIP з ScheduleInfo.dbf (1 запис) + Amounts.dbf.
+
+        Структура полів за офіційним описом форматів iFOBS.eSalary
+        (windows-1251). Набір полів може відрізнятися залежно від банку —
+        звірте з документом «Опис форматів» вашого банку.
+        """
+        total = sum(r['amount'] for r in rows)
+        transit = (self.transit_account_id.acc_number or '').replace(' ', '')
+        debit = (self.payer_account_id.acc_number or '').replace(' ', '')
+        sched_fields = [
+            ('SHED_DATE', 'D', 8, 0), ('SCHED_NO', 'C', 10, 0),
+            ('CLIENTNAME', 'C', 100, 0), ('BANK_MFO', 'N', 6, 0),
+            ('BANK_NAME', 'C', 30, 0), ('BANK_ACCNO', 'C', 14, 0),
+            ('TRACCIBAN', 'C', 29, 0), ('ACCOUNTNO', 'C', 14, 0),
+            ('IBAN', 'C', 29, 0), ('SCHED_SUM', 'N', 19, 2),
+            ('ISEXTACC', 'N', 1, 0), ('CODEZKP', 'N', 10, 0),
+            ('COMMENTS', 'C', 180, 0), ('FLOWTYPE', 'C', 100, 0),
+        ]
+        sched_row = [{
+            'SHED_DATE': fields.Date.context_today(self),
+            'SCHED_NO': '1',
+            'CLIENTNAME': self.company_id.name or '',
+            'BANK_MFO': self._payer_mfo() or 0,
+            'BANK_NAME': self.payer_account_id.bank_id.name or '',
+            'BANK_ACCNO': '',
+            'TRACCIBAN': transit,
+            'ACCOUNTNO': '',
+            'IBAN': debit,
+            'SCHED_SUM': total,
+            'ISEXTACC': 0,
+            'CODEZKP': self.salary_project_code or 0,
+            'COMMENTS': (self.payment_purpose or '').format(
+                period=self._period_label(), employee='', rnokpp='')[:180],
+            'FLOWTYPE': self.accrual_name or '',
+        }]
+        amt_fields = [
+            ('IDCODE', 'C', 10, 0), ('ACCOUNTNO', 'C', 19, 0),
+            ('SALACCIBAN', 'C', 29, 0), ('LASTNAME', 'C', 38, 0),
+            ('FIRSTNAME', 'C', 38, 0), ('MIDDLENAME', 'C', 38, 0),
+            ('AMOUNT', 'N', 19, 2),
+        ]
+        amt_rows = []
+        for r in rows:
+            last, first, middle = self._split_name(r['name'])
+            amt_rows.append({
+                'IDCODE': r['rnokpp'], 'ACCOUNTNO': '',
+                'SALACCIBAN': r['account'], 'LASTNAME': last,
+                'FIRSTNAME': first, 'MIDDLENAME': middle,
+                'AMOUNT': r['amount'],
+            })
+        buf = io.BytesIO()
+        with zipfile.ZipFile(buf, 'w', zipfile.ZIP_DEFLATED) as zf:
+            zf.writestr('ScheduleInfo.dbf', build_dbf(sched_fields, sched_row))
+            zf.writestr('Amounts.dbf', build_dbf(amt_fields, amt_rows))
+        return buf.getvalue()
+
+    def _render_ibank2(self, rows):
+        """iBank 2 UA — текстовий файл doc/pay_sheet (КЛЮЧ=значення), cp1251."""
+        today = fields.Date.context_today(self)
+        period = (self.date_to or today).strftime('%m,%Y')
+        lines = [
+            'Content-Type=doc/pay_sheet',
+            'DATE_DOC=%s' % today.strftime('%d.%m.%Y'),
+            'NUM_DOC=1',
+            'CLN_OKPO=%s' % self._company_edrpou(),
+            'PAYER_ACCOUNT=%s' % (
+                self.payer_account_id.acc_number or '').replace(' ', ''),
+            'ONFLOW_TYPE=%s' % (self.accrual_name or 'Заробітна плата'),
+            'AMOUNT=',
+            'VALUE_DATE=',
+            'PERIOD=%s' % period,
+        ]
+        for i, r in enumerate(rows):
+            lines += [
+                'CARD_HOLDERS.%d.CARD_NUM=%s' % (i, r['account']),
+                'CARD_HOLDERS.%d.CARD_HOLDER=%s' % (i, r['name']),
+                'CARD_HOLDERS.%d.CARD_HOLDER_INN=%s' % (i, r['rnokpp']),
+                'CARD_HOLDERS.%d.AMOUNT=%.2f' % (i, r['amount']),
+            ]
+        return ('\r\n'.join(lines) + '\r\n').encode('cp1251', 'replace')
+
+    _FORMAT_REGISTRY = {
+        'xml': ('_render_xml', 'xml'),
+        'dbf': ('_render_dbf', 'dbf'),
+        'ifobs': ('_render_ifobs', 'zip'),
+        'ibank2': ('_render_ibank2', 'txt'),
+    }
+
     def action_generate(self):
         self.ensure_one()
         slips = self._get_payslips()
         if not slips:
             raise UserError(_('Немає закритих (Done) листків за вибором.'))
         rows, _skipped = self._build_rows(slips)
-        if self.file_format == 'dbf':
-            content = self._render_dbf(rows)
-            ext = 'dbf'
-        else:
-            content = self._render_xml(rows)
-            ext = 'xml'
+        renderer, ext = self._FORMAT_REGISTRY.get(
+            self.file_format, self._FORMAT_REGISTRY['xml'])
+        if self.file_format in ('ifobs',) and not self.transit_account_id:
+            raise UserError(_(
+                'Для формату iFOBS вкажіть транзитний рахунок зарплатного '
+                'проєкту.'))
+        content = getattr(self, renderer)(rows)
         self.file_data = base64.b64encode(content)
-        self.file_name = 'salary_%s.%s' % (
-            self._period_label().replace('.', '_') or 'export', ext)
+        self.file_name = 'salary_%s_%s.%s' % (
+            self.file_format, self._period_label().replace('.', '_') or 'export',
+            ext)
         self.state = 'done'
         return {
             'type': 'ir.actions.act_window',

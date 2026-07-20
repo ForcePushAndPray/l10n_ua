@@ -12,6 +12,12 @@
                     <field name="payroll_bank_account_id"/>
                     <field name="payroll_bank_file_format"/>
                     <field name="payroll_payment_purpose"/>
+                    <field name="payroll_transit_account_id"
+                           invisible="payroll_bank_file_format not in ('ifobs',)"/>
+                    <field name="payroll_salary_project_code"
+                           invisible="payroll_bank_file_format not in ('ifobs',)"/>
+                    <field name="payroll_accrual_name"
+                           invisible="payroll_bank_file_format not in ('ifobs', 'ibank2')"/>
                 </group>
             </xpath>
         </field>

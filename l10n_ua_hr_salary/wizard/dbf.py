@@ -11,7 +11,7 @@ def build_dbf(field_defs, rows, encoding='cp1251', language_driver=0xC9):
     """Побудувати байти .dbf.
 
     :param field_defs: список кортежів (name, type, length, decimals):
-        type 'C' — символьне, 'N' — числове.
+        type 'C' — символьне, 'N' — числове, 'D' — дата (8 симв. YYYYMMDD).
     :param rows: список dict {field_name: value}.
     :param encoding: кодування тексту (cp1251 за замовчуванням).
     :return: bytes готового .dbf-файлу.
@@ -54,6 +54,12 @@ def build_dbf(field_defs, rows, encoding='cp1251', language_driver=0xC9):
                 else:
                     text = str(int(value or 0))
                 text = text[:length].rjust(length)
+            elif ftype == 'D':
+                if hasattr(value, 'strftime'):
+                    text = value.strftime('%Y%m%d')
+                else:
+                    text = (str(value or '')[:8]).ljust(8)
+                text = text[:length].ljust(length)
             else:
                 text = '' if value is None else str(value)
                 encoded = text.encode(encoding, 'replace')[:length]
