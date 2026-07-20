@@ -34,6 +34,11 @@
                             <field name="military_tax_rate"/>
                             <field name="esv_rate"/>
                         </group>
+                        <group string="Множники доплат (табель)">
+                            <field name="night_surcharge_rate"/>
+                            <field name="overtime_multiplier"/>
+                            <field name="holiday_multiplier"/>
+                        </group>
                     </group>
                 </sheet>
             </form>

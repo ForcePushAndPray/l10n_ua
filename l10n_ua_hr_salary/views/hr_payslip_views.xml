@@ -53,6 +53,9 @@
                                 <group string="Worked">
                                     <field name="worked_days"/>
                                     <field name="worked_hours"/>
+                                    <field name="night_hours"/>
+                                    <field name="overtime_hours"/>
+                                    <field name="holiday_hours"/>
                                 </group>
                             </group>
                         </page>

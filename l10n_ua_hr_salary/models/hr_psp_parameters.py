@@ -74,7 +74,26 @@ class HrPspParameters(models.Model):
         default=22.0,
         help='Ставка єдиного соціального внеску'
     )
-    
+
+    # --- Множники доплат за відхилення в табелі (#143) ---
+    night_surcharge_rate = fields.Float(
+        string='Night Surcharge (%)',
+        default=20.0,
+        help='Доплата за роботу в нічний час, % годинної ставки '
+             '(ст. 108 КЗпП — не нижче 20%).'
+    )
+    overtime_multiplier = fields.Float(
+        string='Overtime Multiplier',
+        default=2.0,
+        help='Множник оплати понаднормових годин (ст. 106 КЗпП — подвійний розмір).'
+    )
+    holiday_multiplier = fields.Float(
+        string='Holiday Multiplier',
+        default=2.0,
+        help='Множник оплати роботи у святкові/неробочі дні '
+             '(ст. 107 КЗпП — подвійний розмір).'
+    )
+
     active = fields.Boolean(string='Active', default=True)
     company_id = fields.Many2one(
         'res.company',

@@ -1,4 +1,4 @@
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
 import calendar
@@ -90,7 +90,11 @@ class HrPayslip(models.Model):
         string='Worked Hours',
         default=0.0
     )
-    
+    # Відхилення в табелі для авто-доплат (#143).
+    night_hours = fields.Float(string='Night Hours', default=0.0)
+    overtime_hours = fields.Float(string='Overtime Hours', default=0.0)
+    holiday_hours = fields.Float(string='Holiday Hours', default=0.0)
+
     # Accruals
     accrual_ids = fields.One2many(
         'hr.payslip.accrual',
@@ -556,7 +560,11 @@ class HrPayslip(models.Model):
             if ts_line:
                 self.worked_days = ts_line.worked_days
                 self.worked_hours = ts_line.worked_hours
-                # in case if there is multiplier in timesheets 
+                # Відхилення для авто-доплат (нічні/понаднормові/святкові).
+                self.night_hours = ts_line.night_hours
+                self.overtime_hours = ts_line.overtime_hours
+                self.holiday_hours = getattr(ts_line, 'holiday_hours', 0.0)
+                # in case if there is multiplier in timesheets
                 if ts_line.scheduled_days:
                     self.scheduled_days = ts_line.scheduled_days
                     self.scheduled_hours = ts_line.scheduled_days * daily_norm
@@ -687,6 +695,79 @@ class HrPayslip(models.Model):
                     'notes': allowance.allowance_type_id.name,
                     'is_auto_generated': True,
                 })
+
+        # Авто-доплати за відхилення в табелі (нічні/понаднормові/святкові) — #143.
+        self._generate_time_surcharges(version, params)
+
+    def _base_hourly_rate(self, version, params):
+        """Базова годинна ставка для доплат.
+
+        Тарифна сітка — погодинна ставка × коефіцієнт; інакше — місячний
+        (з урахуванням work_rate) оклад, поділений на норму годин періоду.
+        Не нижче законодавчої мінімальної годинної ставки.
+        """
+        self.ensure_one()
+        min_hourly = (params.min_hourly_wage if params else 0.0) or 0.0
+        tariff = getattr(version, 'tariff_grade_id', False)
+        if tariff:
+            coef = tariff.coefficient or 1.0
+            if tariff.hourly_rate:
+                rate = tariff.hourly_rate * coef
+            elif tariff.min_salary and self.scheduled_hours > 0:
+                rate = (tariff.min_salary * coef) / self.scheduled_hours
+            else:
+                rate = 0.0
+        elif self.scheduled_hours > 0:
+            monthly = self._get_effective_wage(version) * (version.work_rate or 1.0)
+            rate = monthly / self.scheduled_hours
+        else:
+            rate = 0.0
+        return max(rate, min_hourly)
+
+    def _generate_time_surcharges(self, version, params):
+        """Створити авто-доплати за нічні/понаднормові/святкові години.
+
+        Доплати рахуються ЗВЕРХУ базового окладу (модель «доплата»):
+        - нічні — % годинної ставки (ст. 108 КЗпП, типово 20%);
+        - понаднормові — надлишок до подвійного розміру (ст. 106);
+        - святкові — надлишок до подвійного розміру (ст. 107).
+        """
+        self.ensure_one()
+        hourly = self._base_hourly_rate(version, params)
+        if hourly <= 0:
+            return
+        Accrual = self.env['hr.payslip.accrual']
+        AccrualType = self.env['hr.accrual.type']
+        night_rate = (params.night_surcharge_rate if params else 20.0) or 0.0
+        ot_mult = (params.overtime_multiplier if params else 2.0) or 0.0
+        hol_mult = (params.holiday_multiplier if params else 2.0) or 0.0
+
+        surcharges = [
+            ('NIGHT', self.night_hours, hourly * night_rate / 100.0,
+             _('Доплата за нічні (%.0f%%)') % night_rate),
+            ('OVERTIME', self.overtime_hours, hourly * max(ot_mult - 1.0, 0.0),
+             _('Понаднормові (×%.2g)') % ot_mult),
+            ('HOLIDAY', self.holiday_hours, hourly * max(hol_mult - 1.0, 0.0),
+             _('Святкові/неробочі (×%.2g)') % hol_mult),
+        ]
+        for code, hours, per_hour, note in surcharges:
+            if hours <= 0 or per_hour <= 0:
+                continue
+            acc_type = AccrualType.search([('code', '=', code)], limit=1)
+            if not acc_type:
+                continue
+            amount = round(per_hour * hours, 2)
+            if not amount:
+                continue
+            Accrual.create({
+                'payslip_id': self.id,
+                'accrual_type_id': acc_type.id,
+                'quantity': hours,
+                'rate': round(per_hour, 4),
+                'amount': amount,
+                'is_auto_generated': True,
+                'notes': note,
+            })
 
     def _generate_deductions(self):
         """Generate deduction lines.

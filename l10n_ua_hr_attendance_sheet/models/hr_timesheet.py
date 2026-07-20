@@ -196,6 +196,12 @@ class HrTimesheetLine(models.Model):
         compute='_compute_totals',
         store=True
     )
+    holiday_hours = fields.Float(
+        string='Holiday Hours',
+        compute='_compute_totals',
+        store=True,
+        help='Години роботи у святкові/неробочі дні (для доплати ×2).'
+    )
     absence_days = fields.Integer(
         string='Absence Days',
         compute='_compute_totals',
@@ -221,6 +227,8 @@ class HrTimesheetLine(models.Model):
             line.worked_hours = sum(days.mapped('hours'))
             line.overtime_hours = sum(days.mapped('overtime_hours'))
             line.night_hours = sum(days.mapped('night_hours'))
+            line.holiday_hours = sum(
+                days.filtered(lambda d: d.code_id.code_type == 'holiday').mapped('hours'))
             line.absence_days = len(days.filtered(lambda d: d.code_id.code_type == 'absence'))
             line.vacation_days = len(days.filtered(lambda d: d.code_id.code_type == 'leave'))
             line.sick_days = len(days.filtered(lambda d: d.code_id.code_type == 'sick'))
