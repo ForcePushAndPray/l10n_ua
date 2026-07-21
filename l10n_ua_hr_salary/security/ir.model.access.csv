@@ -41,3 +41,10 @@ access_hr_salary_advance_run_officer,hr.salary.advance.run.officer,model_hr_sala
 access_hr_salary_advance_run_manager,hr.salary.advance.run.manager,model_hr_salary_advance_run,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
 
 
+access_hr_seniority_scale_user,hr.seniority.scale.user,model_hr_seniority_scale,hr.group_hr_user,1,0,0,0
+access_hr_seniority_scale_manager,hr.seniority.scale.manager,model_hr_seniority_scale,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
+access_hr_seniority_scale_line_user,hr.seniority.scale.line.user,model_hr_seniority_scale_line,hr.group_hr_user,1,0,0,0
+access_hr_seniority_scale_line_manager,hr.seniority.scale.line.manager,model_hr_seniority_scale_line,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
+access_hr_piece_work_entry_user,hr.piece.work.entry.user,model_hr_piece_work_entry,hr.group_hr_user,1,0,0,0
+access_hr_piece_work_entry_officer,hr.piece.work.entry.officer,model_hr_piece_work_entry,l10n_ua_hr_base.group_hr_ua_officer,1,1,1,0
+access_hr_piece_work_entry_manager,hr.piece.work.entry.manager,model_hr_piece_work_entry,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1

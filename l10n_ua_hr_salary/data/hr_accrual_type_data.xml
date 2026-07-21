@@ -212,6 +212,32 @@
             <field name="d4_income_type">126</field>
             <field name="sequence">100</field>
         </record>
-        
+
+        <record id="accrual_type_seniority" model="hr.accrual.type">
+            <field name="name">Надбавка за вислугу років</field>
+            <field name="code">SENIORITY</field>
+            <field name="category">allowance</field>
+            <field name="calculation_method">percent</field>
+            <field name="is_basic_salary">False</field>
+            <field name="is_taxable_pdfo">True</field>
+            <field name="is_military_tax">True</field>
+            <field name="is_esv_base">True</field>
+            <field name="d4_income_type">101</field>
+            <field name="sequence">85</field>
+        </record>
+
+        <record id="accrual_type_piece" model="hr.accrual.type">
+            <field name="name">Відрядна оплата</field>
+            <field name="code">PIECE</field>
+            <field name="category">wage</field>
+            <field name="calculation_method">fixed</field>
+            <field name="is_basic_salary">True</field>
+            <field name="is_taxable_pdfo">True</field>
+            <field name="is_military_tax">True</field>
+            <field name="is_esv_base">True</field>
+            <field name="d4_income_type">101</field>
+            <field name="sequence">99</field>
+        </record>
+
     </data>
 </odoo>

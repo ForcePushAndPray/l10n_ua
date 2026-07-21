@@ -2,6 +2,8 @@ from . import res_company
 from . import hr_psp_parameters
 from . import hr_cpi_index
 from . import hr_version
+from . import hr_seniority_scale
+from . import hr_piece_work_entry
 from . import hr_accrual_type
 from . import hr_deduction_type
 from . import hr_execution_document

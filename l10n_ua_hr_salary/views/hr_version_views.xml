@@ -10,6 +10,9 @@
             <xpath expr="//field[@name='diia_city_employee']" position="after">
                 <field name="indexation_enabled"/>
                 <field name="indexation_base_month" invisible="not indexation_enabled"/>
+                <field name="salary_form"/>
+                <field name="seniority_enabled"/>
+                <field name="seniority_scale_id" invisible="not seniority_enabled"/>
             </xpath>
         </field>
     </record>

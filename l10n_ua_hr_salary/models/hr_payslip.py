@@ -637,6 +637,9 @@ class HrPayslip(models.Model):
         salary_type = self.env['hr.accrual.type'].search([('code', '=', 'SALARY')], limit=1)
         params = self.env['hr.psp.parameters'].get_parameters(self.date_to)
 
+        # Форма оплати праці: відрядна замінює окладну/тарифну (#143).
+        is_piece = getattr(version, 'salary_form', 'time') == 'piece'
+
         # If the user already entered a base-wage accrual by hand, don't add the
         # version-based one on top — that would double-count the salary.
         has_manual_salary = salary_type and any(
@@ -644,7 +647,7 @@ class HrPayslip(models.Model):
             for a in self.accrual_ids
         )
 
-        if salary_type and not has_manual_salary:
+        if salary_type and not has_manual_salary and not is_piece:
             # tariff grade calculations
             if hasattr(version, 'tariff_grade_id') and version.tariff_grade_id:
 
@@ -702,6 +705,10 @@ class HrPayslip(models.Model):
                         'is_auto_generated': True,
                     })
 
+        # Відрядна оплата — замість окладу (#143).
+        if is_piece:
+            self._generate_piece_work(version, params)
+
         # Version allowances
         allowance_type = self.env['hr.accrual.type'].search([('code', '=', 'ALLOWANCE')], limit=1)
         if allowance_type and hasattr(version, 'allowance_ids'):
@@ -720,6 +727,85 @@ class HrPayslip(models.Model):
 
         # Індексація заробітної плати — #138.
         self._generate_indexation(version, params)
+
+        # Надбавка за вислугу років — #143.
+        self._generate_seniority(version, params)
+
+    def _generate_piece_work(self, version, params):
+        """Створити авто-нарахування «Відрядна оплата» за нарядами періоду.
+
+        Підсумовує наряди відрядної оплати (hr.piece.work.entry) працівника,
+        дата яких потрапляє в період нарахування, у єдине нарахування PIECE.
+        """
+        self.ensure_one()
+        acc_type = self.env['hr.accrual.type'].search(
+            [('code', '=', 'PIECE')], limit=1)
+        if not acc_type:
+            return
+        entries = self.env['hr.piece.work.entry'].search([
+            ('employee_id', '=', self.employee_id.id),
+            ('date', '>=', self.date_from),
+            ('date', '<=', self.date_to),
+            ('company_id', '=', self.company_id.id),
+        ])
+        if not entries:
+            return
+        total_qty = sum(entries.mapped('quantity'))
+        total_amount = round(sum(entries.mapped('amount')), 2)
+        if total_amount <= 0:
+            return
+        self.env['hr.payslip.accrual'].create({
+            'payslip_id': self.id,
+            'accrual_type_id': acc_type.id,
+            'quantity': total_qty,
+            'amount': total_amount,
+            'is_auto_generated': True,
+            'notes': _('Відрядна оплата: %d наряд(ів)') % len(entries),
+        })
+
+    def _generate_seniority(self, version, params):
+        """Створити авто-надбавку «За вислугу років» на основі стажу.
+
+        Відсоток надбавки береться зі ступінчастої шкали (hr.seniority.scale)
+        за стажем роботи в компанії. База — посадовий оклад (з урахуванням
+        ставки зайнятості), пропорційно відпрацьованому часу.
+        """
+        self.ensure_one()
+        if not getattr(version, 'seniority_enabled', False):
+            return
+        acc_type = self.env['hr.accrual.type'].search(
+            [('code', '=', 'SENIORITY')], limit=1)
+        if not acc_type:
+            return
+        scale = version.seniority_scale_id
+        if not scale:
+            scale = self.env['hr.seniority.scale'].search(
+                [('company_id', 'in', (self.company_id.id, False))], limit=1)
+        if not scale:
+            return
+        years = self.employee_id.work_experience_company or 0.0
+        percent = scale.get_percent(years)
+        if percent <= 0:
+            return
+        monthly_wage = self._get_effective_wage(version) * (version.work_rate or 1.0)
+        if monthly_wage <= 0:
+            return
+        full = monthly_wage * percent / 100.0
+        # Пропорція за фактично відпрацьований час (неповний місяць).
+        if self.scheduled_days and self.worked_days < self.scheduled_days:
+            full = full * self.worked_days / self.scheduled_days
+        amount = round(full, 2)
+        if amount <= 0:
+            return
+        self.env['hr.payslip.accrual'].create({
+            'payslip_id': self.id,
+            'accrual_type_id': acc_type.id,
+            'quantity': 1,
+            'rate': percent,
+            'amount': amount,
+            'is_auto_generated': True,
+            'notes': _('Вислуга %.1f р. — %.0f%%') % (years, percent),
+        })
 
     def _generate_indexation(self, version, params):
         """Створити авто-нарахування «Індексація» (Закон про індексацію, Порядок №1078).
@@ -804,6 +890,10 @@ class HrPayslip(models.Model):
         - святкові — надлишок до подвійного розміру (ст. 107).
         """
         self.ensure_one()
+        # Для відрядної форми доплати рахуються за середнім заробітком — поза
+        # обсягом авто-розрахунку; не нараховуємо з окладної ставки.
+        if getattr(version, 'salary_form', 'time') == 'piece':
+            return
         hourly = self._base_hourly_rate(version, params)
         if hourly <= 0:
             return

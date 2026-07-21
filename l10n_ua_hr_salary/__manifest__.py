@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - HR Salary',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Human Resources/Localization',
     'summary': 'Ukrainian salary calculation',
     'description': """
@@ -42,12 +42,15 @@ to avoid naming conflicts with existing modules on Odoo Apps.
         'data/hr_accrual_type_data.xml',
         'data/hr_deduction_type_data.xml',
         'data/hr_psp_parameters_data.xml',
+        'data/hr_seniority_scale_data.xml',
         'views/hr_payslip_views.xml',
         'views/hr_payslip_run_views.xml',
         'views/hr_accrual_type_views.xml',
         'views/hr_deduction_type_views.xml',
         'views/hr_psp_parameters_views.xml',
         'views/hr_cpi_index_views.xml',
+        'views/hr_seniority_scale_views.xml',
+        'views/hr_piece_work_entry_views.xml',
         'views/hr_version_views.xml',
         'views/hr_execution_document_views.xml',
         'views/hr_salary_advance_views.xml',
