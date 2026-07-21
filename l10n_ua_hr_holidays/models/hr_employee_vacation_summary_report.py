@@ -78,10 +78,21 @@ class HrEmployeeVacationSummaryReport(models.Model):
         Balance = self.env['hr.vacation.balance']
         for rec in self:
             Balance.sudo().generate_balances(rec.year)
+            year_start = fields.Date.from_string(f'{rec.year}-01-01')
+            year_end = fields.Date.from_string(f'{rec.year}-12-31')
+            # Two accounting periods coexist:
+            #  * calendar-year balances match the report year directly;
+            #  * work-year balances are anchored to hire dates, so any work
+            #    year that overlaps the report's calendar year is included.
             balances = Balance.search(
                 [
-                    ('year', '=', rec.year),
                     ('employee_id.company_id', '=', rec.company_id.id),
+                    '|',
+                        '&', ('period_type', '=', 'calendar'),
+                             ('year', '=', rec.year),
+                        '&', '&', ('period_type', '=', 'work'),
+                                  ('period_start', '<=', year_end),
+                                  ('period_end', '>=', year_start),
                 ],
                 order='employee_id, leave_type_id',
             )

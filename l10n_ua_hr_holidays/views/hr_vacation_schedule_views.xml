@@ -26,7 +26,8 @@
                     <group>
                         <group>
                             <field name="year"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" groups="base.group_multi_company"
+                                   domain="[('id', 'in', allowed_company_ids)]"/>
                         </group>
                         <group>
                             <field name="approval_date" invisible="state != 'approved'"/>
@@ -36,22 +37,17 @@
                     <notebook>
                         <page string="Schedule Lines" name="lines">
                             <field name="line_ids">
-                                <list editable="bottom">
-                                    <field name="employee_id"/>
-                                    <field name="department_id"/>
-                                    <field name="planned_days"/>
-                                    <field name="period_1_start"/>
-                                    <field name="period_1_end"/>
-                                    <field name="period_1_days"/>
-                                    <field name="period_2_start" optional="show"/>
-                                    <field name="period_2_end" optional="show"/>
-                                    <field name="period_2_days" optional="show"/>
-                                    <field name="period_3_start" optional="hide"/>
-                                    <field name="period_3_end" optional="hide"/>
-                                    <field name="period_3_days" optional="hide"/>
-                                    <field name="total_planned"/>
-                                    <field name="actual_days"/>
-                                    <field name="notes"/>
+                                <list editable="bottom" default_order="employee_id" create="false">
+                                    <field name="employee_id" readonly="1"/>
+                                    <field name="department_id" readonly="1" optional="hide"/>
+                                    <field name="job_id" readonly="1" optional="show"/>
+                                    <field name="leave_type_id" readonly="1" optional="show"/>
+                                    <field name="planned_days" string="Number of Calendar Days" readonly="1" optional="show"/>
+                                    <field name="vacation_balance_id" string="Period the Leave Is Granted For" readonly="1" optional="show"/>
+                                    <field name="vacation_period_display" string="Vacation Month or Period" readonly="1" optional="show"/>
+                                    <field name="total_planned" readonly="1" optional="hide"/>
+                                    <field name="actual_days" readonly="1" optional="hide"/>
+                                    <field name="notes" optional="hide"/>
                                 </list>
                             </field>
                         </page>
@@ -100,15 +96,16 @@
         <field name="name">hr.vacation.schedule.line.tree</field>
         <field name="model">hr.vacation.schedule.line</field>
         <field name="arch" type="xml">
-            <list string="Schedule Lines">
+            <list string="Schedule Lines" default_order="employee_id">
                 <field name="employee_id"/>
-                <field name="department_id"/>
-                <field name="planned_days"/>
-                <field name="period_1_start"/>
-                <field name="period_1_end"/>
-                <field name="period_1_days"/>
-                <field name="total_planned"/>
-                <field name="actual_days"/>
+                <field name="department_id" optional="hide"/>
+                <field name="job_id" optional="show"/>
+                <field name="leave_type_id" optional="show"/>
+                <field name="planned_days" string="Number of Calendar Days" optional="show"/>
+                <field name="vacation_balance_id" string="Period the Leave Is Granted For" optional="show"/>
+                <field name="vacation_period_display" string="Vacation Month or Period" optional="show"/>
+                <field name="total_planned" optional="hide"/>
+                <field name="actual_days" optional="hide"/>
             </list>
         </field>
     </record>
@@ -123,34 +120,25 @@
                     <group>
                         <group>
                             <field name="employee_id"/>
+                            <field name="job_id"/>
                             <field name="department_id"/>
-                            <field name="planned_days"/>
+                            <field name="leave_id"/>
+                            <field name="leave_type_id"/>
                         </group>
                         <group>
+                            <field name="vacation_balance_id"/>
+                            <field name="vacation_period_display"/>
+                            <field name="planned_days"/>
                             <field name="total_planned"/>
                             <field name="actual_days"/>
                         </group>
                     </group>
                     <notebook>
-                        <page string="Period 1" name="period1">
+                        <page string="Planned Period" name="period1">
                             <group>
                                 <field name="period_1_start"/>
                                 <field name="period_1_end"/>
                                 <field name="period_1_days"/>
-                            </group>
-                        </page>
-                        <page string="Period 2" name="period2">
-                            <group>
-                                <field name="period_2_start"/>
-                                <field name="period_2_end"/>
-                                <field name="period_2_days"/>
-                            </group>
-                        </page>
-                        <page string="Period 3" name="period3">
-                            <group>
-                                <field name="period_3_start"/>
-                                <field name="period_3_end"/>
-                                <field name="period_3_days"/>
                             </group>
                         </page>
                     </notebook>
@@ -167,6 +155,8 @@
         <field name="arch" type="xml">
             <search string="Schedule Lines">
                 <field name="employee_id"/>
+                <field name="job_id"/>
+                <field name="leave_type_id"/>
                 <field name="department_id"/>
             </search>
         </field>
@@ -202,3 +192,4 @@
     </record>
 
 </odoo>
+

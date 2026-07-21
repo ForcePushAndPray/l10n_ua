@@ -6,3 +6,4 @@ from . import test_hr_leave_order_sync
 from . import test_period_type
 from . import test_multicompany
 from . import test_vacation_period_balance
+from . import test_vacation_schedule_report

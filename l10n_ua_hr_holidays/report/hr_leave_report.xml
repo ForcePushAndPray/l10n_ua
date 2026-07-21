@@ -51,7 +51,12 @@
                     по <strong><t t-esc="leave.date_to.strftime('%d.%m.%Y')"/></strong>.
                 </p>
                 
-                <t t-if="leave.vacation_year">
+                <t t-if="leave.vacation_balance_id">
+                    <p style="text-indent: 30px;">
+                        За обліковий період: <t t-esc="leave.vacation_balance_id.period_label"/>
+                    </p>
+                </t>
+                <t t-elif="leave.vacation_year">
                     <p style="text-indent: 30px;">
                         За робочий рік: <t t-esc="leave.vacation_year"/>
                     </p>

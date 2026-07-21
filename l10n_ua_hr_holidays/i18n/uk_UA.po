@@ -464,7 +464,9 @@ msgstr "Оновлено"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_balance__leave_type_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__leave_type_id
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_schedule_line_view_search
 msgid "Leave Type"
 msgstr "Тип відпустки"
 
@@ -1234,6 +1236,7 @@ msgstr ""
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__vacation_balance_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__vacation_balance_id
 msgid "Vacation Period"
 msgstr "Обліковий період відпустки"
 
@@ -1402,3 +1405,46 @@ msgstr ""
 "Якщо увімкнено, дія «Перерахувати» у «Залишках відпусток» створює та "
 "підтримує облікові періоди для цього типу відпустки. За замовчуванням "
 "вимкнено — перераховуються лише типи з увімкненою позначкою."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__job_id
+msgid "Job Position"
+msgstr "Посада"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__vacation_period_display
+msgid "Vacation Dates"
+msgstr "Дати відпустки"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_schedule_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_schedule_line_view_tree
+msgid "Number of Calendar Days"
+msgstr "Кількість календарних днів"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_schedule_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_schedule_line_view_tree
+msgid "Period the Leave Is Granted For"
+msgstr "Період, за який надається відпустка"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_schedule_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_schedule_line_view_tree
+msgid "Vacation Month or Period"
+msgstr "Місяць, або період відпустки"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_schedule_line_view_form
+msgid "Planned Period"
+msgstr "Період відпустки"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__leave_id
+msgid "Leave"
+msgstr "Відпустка"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.actions.report,name:l10n_ua_hr_holidays.action_report_hr_vacation_schedule
+msgid "Print"
+msgstr "Друкувати"
