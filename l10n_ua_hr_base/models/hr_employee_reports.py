@@ -1,6 +1,9 @@
+import base64
+import csv
+import io
 from datetime import date
 
-from odoo import models, fields, api
+from odoo import models, fields, api, _
 
 def _was_employed_on(employee, as_of):
     """Return True if employee (active or archived) was employed on as_of date.
@@ -219,6 +222,134 @@ class HrEmployeeMilitaryReport(models.Model):
         return self.env.ref(
             'l10n_ua_hr_base.action_report_hr_employee_military'
         ).report_action(self)
+
+    # --- Експорт списку персонального військового обліку для ТЦК (#156) ---
+    export_data = fields.Binary(string='Export File', readonly=True, copy=False)
+    export_filename = fields.Char(string='Export File Name', readonly=True, copy=False)
+
+    def action_export_csv(self):
+        """Сформувати CSV-список персонального військового обліку для ТЦК.
+
+        Склад даних — за Постановою КМУ № 1487 (персональний облік): РНОКПП,
+        ПІБ, дата народження, категорія обліку, ВОС, звання, ТЦК, документ,
+        бронювання. Файл — windows-1251 (для держсистем/Excel UA).
+        """
+        self.ensure_one()
+        buf = io.StringIO()
+        writer = csv.writer(buf, delimiter=';')
+        writer.writerow([
+            'РНОКПП', 'ПІБ', 'Дата народження', 'Категорія обліку',
+            'ВОС', 'Звання', 'ТЦК та СП', 'Військовий документ',
+            'Заброньований', 'Бронювання до'])
+        for emp in self.with_context(active_test=False).employee_ids:
+            writer.writerow([
+                emp.rnokpp or '',
+                emp.name or '',
+                emp.birthday.strftime('%d.%m.%Y') if emp.birthday else '',
+                dict(emp._fields['military_register_category'].selection).get(
+                    emp.military_register_category, ''),
+                emp.military_specialty or '',
+                emp.military_rank_id.name or '',
+                emp.military_tcc_id.name or '',
+                emp.military_document_number or '',
+                'так' if emp.military_reservation else 'ні',
+                emp.military_reservation_until.strftime('%d.%m.%Y')
+                if emp.military_reservation_until else '',
+            ])
+        content = buf.getvalue().encode('cp1251', 'replace')
+        self.export_data = base64.b64encode(content)
+        self.export_filename = 'vijskovyj_oblik_%s.csv' % (
+            self.date.strftime('%Y_%m_%d') if self.date else 'list')
+        return True
+
+
+class HrMilitaryNotification(models.Model):
+    """Повідомлення до ТЦК та СП про зміни у військовозобов'язаних (#156).
+
+    Аудит-журнал повідомлень про прийняття / звільнення / зміну облікових
+    даних (Постанова КМУ № 1487). На підтвердженні знімає snapshot ключових
+    реквізитів і формує CSV-файл повідомлення для подання.
+    """
+    _name = 'hr.military.notification'
+    _description = 'Military Notification to TCC'
+    _inherit = ['mail.thread']
+    _order = 'event_date desc, id desc'
+
+    name = fields.Char(string='Reference', default='New', copy=False)
+    notification_type = fields.Selection([
+        ('hire', 'Прийняття на роботу'),
+        ('dismissal', 'Звільнення'),
+        ('data_change', 'Зміна облікових даних'),
+    ], string='Type', required=True, default='hire', tracking=True)
+    employee_id = fields.Many2one(
+        'hr.employee', string='Employee', required=True, tracking=True)
+    company_id = fields.Many2one(
+        'res.company', default=lambda self: self.env.company, required=True)
+    event_date = fields.Date(
+        string='Event Date', required=True,
+        default=fields.Date.context_today, tracking=True)
+    military_tcc_id = fields.Many2one(
+        'hr.military.tcc', related='employee_id.military_tcc_id',
+        string='TCC', store=True)
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('submitted', 'Submitted'),
+    ], string='Status', default='draft', tracking=True)
+    submitted_date = fields.Date(string='Submitted On', readonly=True)
+    # Snapshot реквізитів на момент подання (аудит).
+    snapshot_rnokpp = fields.Char(string='RNOKPP (snapshot)', readonly=True)
+    snapshot_data = fields.Text(string='Data (snapshot)', readonly=True)
+    export_data = fields.Binary(string='Notification File', readonly=True, copy=False)
+    export_filename = fields.Char(readonly=True, copy=False)
+    notes = fields.Text()
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = self.env['ir.sequence'].next_by_code(
+                    'hr.military.notification') or 'New'
+        return super().create(vals_list)
+
+    def action_submit(self):
+        for rec in self:
+            emp = rec.employee_id
+            rec.snapshot_rnokpp = emp.rnokpp or ''
+            rec.snapshot_data = (
+                '%s; %s; ВОС %s; ТЦК %s; док. %s' % (
+                    emp.name or '',
+                    emp.birthday.strftime('%d.%m.%Y') if emp.birthday else '',
+                    emp.military_specialty or '',
+                    emp.military_tcc_id.name or '',
+                    emp.military_document_number or ''))
+            rec._build_export()
+            rec.write({
+                'state': 'submitted',
+                'submitted_date': fields.Date.context_today(rec),
+            })
+        return True
+
+    def _build_export(self):
+        self.ensure_one()
+        emp = self.employee_id
+        buf = io.StringIO()
+        writer = csv.writer(buf, delimiter=';')
+        type_label = dict(self._fields['notification_type'].selection).get(
+            self.notification_type, '')
+        writer.writerow(['Тип повідомлення', 'РНОКПП', 'ПІБ',
+                         'Дата народження', 'ВОС', 'ТЦК та СП',
+                         'Військовий документ', 'Дата події'])
+        writer.writerow([
+            type_label, emp.rnokpp or '', emp.name or '',
+            emp.birthday.strftime('%d.%m.%Y') if emp.birthday else '',
+            emp.military_specialty or '', emp.military_tcc_id.name or '',
+            emp.military_document_number or '',
+            self.event_date.strftime('%d.%m.%Y') if self.event_date else '',
+        ])
+        content = buf.getvalue().encode('cp1251', 'replace')
+        self.export_data = base64.b64encode(content)
+        self.export_filename = 'tcc_notification_%s.csv' % (self.name or '').replace(
+            '/', '_')
 
 
 class HrEmployeeMilitaryOperationalReport(models.Model):

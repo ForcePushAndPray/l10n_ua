@@ -77,5 +77,13 @@
             <field name="company_id" eval="False"/>
         </record>
 
+        <record id="seq_hr_military_notification" model="ir.sequence">
+            <field name="name">Military Notification (TCC)</field>
+            <field name="code">hr.military.notification</field>
+            <field name="prefix">ТЦК/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+
     </data>
 </odoo>
