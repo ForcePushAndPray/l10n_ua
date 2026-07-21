@@ -41,6 +41,7 @@ from this module and implement bank-specific API calls.
         'views/account_bank_statement_views.xml',
         'views/account_journal_views.xml',
         'views/menu_views.xml',
+        'wizard/l10n_ua_bank_statement_import_views.xml',
     ],
     'demo': [],
     'images': ['static/description/icon.png'],

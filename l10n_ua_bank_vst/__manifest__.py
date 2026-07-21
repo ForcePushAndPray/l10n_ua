@@ -11,7 +11,6 @@
     'data': [
         'security/ir.model.access.csv',
         'views/l10n_ua_bank_vst_config_views.xml',
-        'wizard/l10n_ua_bank_vst_import_views.xml',
     ],
     'installable': True,
     'application': False,

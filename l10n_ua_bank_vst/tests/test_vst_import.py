@@ -82,14 +82,23 @@ class TestVstImport(TransactionCase):
         # VST — файловий обмін (керує видимістю кнопок).
         self.assertEqual(self.config.exchange_type, 'file')
 
-    def test_import_wizard_creates_job(self):
+    def test_generic_import_wizard_creates_statement(self):
+        # Узагальнений файловий майстер + VST _file_to_payload → native-виписка.
         data = base64.b64encode(SAMPLE_CSV.encode('cp1251'))
-        wiz = self.env['l10n_ua.bank.vst.import'].create({
+        wiz = self.env['l10n_ua.bank.statement.import'].create({
             'config_id': self.config.id,
             'statement_file': data,
             'file_name': 'vst.csv',
         })
         action = wiz.action_import()
-        job = self.env['l10n_ua.bank.sync.job'].browse(action['res_id'])
-        self.assertEqual(job.config_id, self.config)
-        self.assertEqual(job.transactions_count, 2)
+        self.assertEqual(action['res_model'], 'account.bank.statement')
+        statement = self.env['account.bank.statement'].browse(action['res_id'])
+        self.assertEqual(len(statement.line_ids), 2)
+        self.assertEqual(statement.l10n_ua_source_type, 'file')
+        self.assertEqual(statement.l10n_ua_source_ref, 'vst.csv')
+
+    def test_file_to_payload(self):
+        content = SAMPLE_CSV.encode('cp1251')
+        payload = self.config._file_to_payload(content, 'vst.csv')
+        self.assertIn('csv', payload)
+        self.assertIn('ЄДРПОУ', payload['csv'])

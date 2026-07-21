@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 from babel.dates import format_date
 
 from odoo import api, fields, models, _
+from odoo.exceptions import UserError
 from odoo.tools.misc import get_lang
 
 
@@ -28,6 +29,18 @@ class AccountJournal(models.Model):
         string='Last Sync',
         compute='_compute_ua_bank_dashboard',
     )
+    ua_bank_has_online_config = fields.Boolean(
+        compute='_compute_ua_bank_configs')
+    ua_bank_has_file_config = fields.Boolean(
+        compute='_compute_ua_bank_configs')
+
+    def _compute_ua_bank_configs(self):
+        Config = self.env['l10n_ua.bank.sync.config']
+        for journal in self:
+            configs = Config.search([('journal_id', '=', journal.id)])
+            types = set(configs.mapped('exchange_type'))
+            journal.ua_bank_has_online_config = 'online' in types
+            journal.ua_bank_has_file_config = 'file' in types
 
     def _compute_ua_bank_dashboard(self):
         """Compute dashboard data. No @api.depends - always recompute on access."""
@@ -164,11 +177,33 @@ class AccountJournal(models.Model):
             'context': {'default_journal_id': self.id},
         }
 
-    def action_new_sync_job(self):
-        """Create new sync job for this journal."""
+    def action_import_bank_file(self):
+        """Відкрити майстер імпорту виписки з файлу для файлового конфігу журналу."""
         self.ensure_one()
         config = self.env['l10n_ua.bank.sync.config'].search([
             ('journal_id', '=', self.id),
+            ('exchange_type', '=', 'file'),
+        ], limit=1)
+        if not config:
+            raise UserError(_(
+                'Для журналу «%s» немає файлової конфігурації обміну. '
+                'Створіть конфіг із файловим провайдером (напр. VST Bank).'
+            ) % self.name)
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Імпорт виписки з файлу'),
+            'res_model': 'l10n_ua.bank.statement.import',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_config_id': config.id},
+        }
+
+    def action_new_sync_job(self):
+        """Create new sync job for this journal (online providers only)."""
+        self.ensure_one()
+        config = self.env['l10n_ua.bank.sync.config'].search([
+            ('journal_id', '=', self.id),
+            ('exchange_type', '=', 'online'),
         ], limit=1)
 
         if not config:

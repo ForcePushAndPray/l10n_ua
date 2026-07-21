@@ -41,13 +41,18 @@ class L10nUaBankSyncConfig(models.Model):
             return 'file'
         return super()._source_type()
 
+    def _file_to_payload(self, content, filename=None):
+        if self.provider == 'vst':
+            return {'csv': content.decode('cp1251', 'replace')}
+        return super()._file_to_payload(content, filename)
+
     def action_vst_open_import(self):
-        """Відкрити майстер імпорту CSV-виписки iBank 2 UA для цього конфігу."""
+        """Відкрити узагальнений майстер імпорту виписки для цього конфігу."""
         self.ensure_one()
         return {
             'type': 'ir.actions.act_window',
-            'name': _('Імпорт виписки iBank 2 UA'),
-            'res_model': 'l10n_ua.bank.vst.import',
+            'name': _('Імпорт виписки з файлу'),
+            'res_model': 'l10n_ua.bank.statement.import',
             'view_mode': 'form',
             'target': 'new',
             'context': {'default_config_id': self.id},

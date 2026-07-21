@@ -16,6 +16,8 @@
                 <field name="ua_bank_balance_graph"/>
                 <field name="ua_bank_statement_count"/>
                 <field name="ua_bank_last_sync"/>
+                <field name="ua_bank_has_online_config"/>
+                <field name="ua_bank_has_file_config"/>
                 <templates>
                     <t t-name="menu">
                         <div class="container">
@@ -77,11 +79,23 @@
                         <div class="row mt-3">
                             <field name="ua_bank_balance_graph" graph_type="line" widget="dashboard_graph"/>
                         </div>
-                        <!-- Sync Button at bottom -->
+                        <!-- Дії: онлайн-синхронізація та/або імпорт з файлу -->
                         <div class="row mt-3">
-                            <div class="col">
+                            <div class="col" t-if="record.ua_bank_has_online_config.raw_value">
                                 <button name="action_new_sync_job" type="object" class="btn btn-primary w-100">
                                     <i class="fa fa-refresh me-1"/> Sync
+                                </button>
+                            </div>
+                            <div class="col" t-if="record.ua_bank_has_file_config.raw_value">
+                                <button name="action_import_bank_file" type="object" class="btn btn-secondary w-100">
+                                    <i class="fa fa-upload me-1"/> Import File
+                                </button>
+                            </div>
+                        </div>
+                        <div class="row mt-2" t-if="!record.ua_bank_has_online_config.raw_value and !record.ua_bank_has_file_config.raw_value">
+                            <div class="col">
+                                <button name="action_new_sync_job" type="object" class="btn btn-link w-100">
+                                    <i class="fa fa-cog me-1"/> Configure Bank Sync
                                 </button>
                             </div>
                         </div>

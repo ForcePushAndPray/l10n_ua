@@ -54,9 +54,9 @@ class L10nUaBankSyncConfig(models.Model):
         ('online', 'Online (API)'),
         ('file', 'File exchange'),
         ('manual', 'Manual'),
-    ], string='Exchange Type', compute='_compute_exchange_type',
+    ], string='Exchange Type', compute='_compute_exchange_type', store=True,
         help='Онлайн-провайдери синхронізуються через API; файлові — імпортом '
-             'виписки з файлу. Не зберігається (обчислюється з провайдера).')
+             'виписки з файлу.')
 
     @api.depends('provider')
     def _compute_exchange_type(self):
@@ -205,6 +205,16 @@ class L10nUaBankSyncConfig(models.Model):
         """Тип джерела імпорту (file / api / manual). Перевизначає провайдер."""
         self.ensure_one()
         return 'manual' if self.provider == 'manual' else 'api'
+
+    def _file_to_payload(self, content, filename=None):
+        """Перетворити байти файлу виписки на raw_payload для _parse_transactions.
+
+        Перевизначає файловий провайдер (VST: cp1251 CSV → {'csv': text}).
+        Дозволяє єдиному майстру імпорту працювати з будь-яким файловим
+        провайдером без знання його формату.
+        """
+        raise UserError(_(
+            "Провайдер '%s' не підтримує імпорт з файлу.") % self.provider)
 
     def _is_sync_due(self, now=None):
         """Whether this config should sync now, per its ``sync_interval_hours``.
