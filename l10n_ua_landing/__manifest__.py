@@ -14,7 +14,9 @@
     'depends': ['website'],
     'data': [
         'views/landing_templates.xml',
+        'views/website_templates.xml',
     ],
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
 }
