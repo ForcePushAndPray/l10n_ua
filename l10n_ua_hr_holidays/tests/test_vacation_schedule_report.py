@@ -10,7 +10,7 @@ class TestVacationScheduleReport(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.employee = cls.env['hr.employee'].create({
-            'name': 'Тестовий Працівник Графіка',
+            'name': 'Schedule Test Employee',
             'hire_date': date(2024, 7, 15),
         })
         # annual_basic and annual_additional accrue on a WORK year;
@@ -115,7 +115,6 @@ class TestVacationScheduleReport(TransactionCase):
             self.additional_type, date(2025, 8, 1), date(2025, 8, 3))
         # additional stays in a planning state (not approved)
 
-
         schedule = self.env['hr.vacation.schedule'].create({
             'year': 2025,
             'company_id': self.employee.company_id.id,
@@ -154,13 +153,11 @@ class TestVacationScheduleReport(TransactionCase):
         self.assertEqual(lines.planned_days, 30)
         self.assertEqual(lines.vacation_period_display, '')
 
-    def test_schedule_shows_past_unused_periods(self):
-        """A past accounting period that still has unused days appears as its
-        own row (leave-less, showing the past period and the unused count) so
-        outstanding vacation is visible in the schedule."""
-        # Work year 2024-07-15 .. 2025-07-14: ended before the 2027 schedule
-        # year and has 24 unused days.
-        past = self.env['hr.vacation.balance'].create({
+    def test_schedule_hides_untouched_past_period(self):
+        """A past period with NO leaves taken (used = 0) is not listed, even
+        though its whole entitlement is technically unused - only partially
+        used past periods are shown."""
+        untouched = self.env['hr.vacation.balance'].create({
             'employee_id': self.employee.id,
             'leave_type_id': self.annual_type.id,
             'period_start': date(2024, 7, 15),
@@ -168,7 +165,7 @@ class TestVacationScheduleReport(TransactionCase):
             'period_index': 1,
             'entitled_days': 24,
         })
-        self.assertEqual(past.remaining_days, 24)
+        self.assertEqual(untouched.used_days, 0)
 
         schedule = self.env['hr.vacation.schedule'].create({
             'year': 2027,
@@ -178,14 +175,122 @@ class TestVacationScheduleReport(TransactionCase):
 
         lines = schedule.line_ids.filtered(
             lambda l: l.employee_id == self.employee)
-        past_line = lines.filtered(lambda l: l.vacation_balance_id == past)
-        self.assertEqual(len(past_line), 1)
-        self.assertFalse(past_line.leave_id)
-        self.assertEqual(past_line.leave_type_id, self.annual_type)
-        self.assertEqual(past_line.planned_days, 24)
+        self.assertFalse(
+            lines.filtered(lambda l: l.vacation_balance_id == untouched))
+
+    def test_schedule_shows_prior_period_ending_within_year(self):
+        """A previous work year that STARTED before the schedule year but ends
+        inside it (Jun-May work year for a 2026 schedule) still counts as a
+        past period and is listed with its own unused days (entitled - used)."""
+        emp = self.env['hr.employee'].create({
+            'name': 'June Hire',
+            'hire_date': date(2024, 6, 1),
+        })
+        # Work year 2025-06-01 .. 2026-05-31: ends inside 2026 but started in
+        # 2025, so it is a previous period relative to the 2026 schedule.
+        prior = self.env['hr.vacation.balance'].create({
+            'employee_id': emp.id,
+            'leave_type_id': self.annual_type.id,
+            'period_start': date(2025, 6, 1),
+            'period_end': date(2026, 5, 31),
+            'period_index': 2,
+            'entitled_days': 24,
+        })
+        # Use part of that period's entitlement (a 2025 leave, not in the 2026
+        # schedule year) so unused = entitled - used > 0.
+        leave = self.env['hr.leave'].create({
+            'name': 'Prior-year leave',
+            'employee_id': emp.id,
+            'holiday_status_id': self.annual_type.id,
+            'request_date_from': date(2025, 9, 1),
+            'request_date_to': date(2025, 9, 10),
+        })
+        leave.action_approve()
+        self.assertTrue(prior.used_days > 0)
+        expected_unused = int(round(prior.entitled_days - prior.used_days))
+
+        schedule = self.env['hr.vacation.schedule'].create({
+            'year': 2026,
+            'company_id': emp.company_id.id,
+        })
+        schedule.action_generate_lines()
+
+        lines = schedule.line_ids.filtered(lambda l: l.employee_id == emp)
+        prior_line = lines.filtered(lambda l: l.vacation_balance_id == prior)
+        self.assertEqual(len(prior_line), 1)
+        self.assertFalse(prior_line.leave_id)
+        self.assertEqual(prior_line.planned_days, expected_unused)
+
+    def test_schedule_includes_non_annual_balance_types(self):
+        """A leave of any tracked type (e.g. Chornobyl additional leave, which
+        is neither annual_basic nor annual_additional) appears in the schedule,
+        matching what is shown in Vacation Balances."""
+        chornobyl = self.env.ref('l10n_ua_hr_holidays.leave_type_chornobyl')
+        leave = self.env['hr.leave'].create({
+            'name': 'Chornobyl leave',
+            'employee_id': self.employee.id,
+            'holiday_status_id': chornobyl.id,
+            'request_date_from': date(2025, 4, 1),
+            'request_date_to': date(2025, 4, 4),
+        })
+        leave.action_approve()
+
+        schedule = self.env['hr.vacation.schedule'].create({
+            'year': 2025,
+            'company_id': self.employee.company_id.id,
+        })
+        schedule.action_generate_lines()
+
+        lines = schedule.line_ids.filtered(
+            lambda l: l.employee_id == self.employee)
+        chorn_line = lines.filtered(lambda l: l.leave_id == leave)
+        self.assertEqual(len(chorn_line), 1)
+        self.assertEqual(chorn_line.leave_type_id, chornobyl)
+
+    def test_schedule_shows_current_period_without_leave(self):
+        """A current-year period the employee has a balance for (the annual
+        basic period) is listed even when the only planned leave is of another
+        type, so the entitlement is not hidden."""
+        chornobyl = self.env.ref('l10n_ua_hr_holidays.leave_type_chornobyl')
+        # Hired Jan 1 -> the annual basic work year is the calendar year 2026.
+        emp = self.env['hr.employee'].create({
+            'name': 'January Hire',
+            'hire_date': date(2026, 1, 1),
+        })
+        basic_bal = self.env['hr.vacation.balance'].create({
+            'employee_id': emp.id,
+            'leave_type_id': self.annual_type.id,
+            'period_start': date(2026, 1, 1),
+            'period_end': date(2026, 12, 31),
+            'period_index': 1,
+            'entitled_days': 24,
+        })
+        # A leave of a DIFFERENT type (Chornobyl) in 2026.
+        self.env['hr.leave'].create({
+            'name': 'Chornobyl 2026',
+            'employee_id': emp.id,
+            'holiday_status_id': chornobyl.id,
+            'request_date_from': date(2026, 4, 1),
+            'request_date_to': date(2026, 4, 4),
+        }).action_approve()
+
+        schedule = self.env['hr.vacation.schedule'].create({
+            'year': 2026,
+            'company_id': emp.company_id.id,
+        })
+        schedule.action_generate_lines()
+
+        lines = schedule.line_ids.filtered(lambda l: l.employee_id == emp)
+        # The Chornobyl leave shows, AND the annual basic period (no leave)
+        # still gets its own row.
+        self.assertTrue(lines.filtered(lambda l: l.leave_type_id == chornobyl))
+        basic_line = lines.filtered(lambda l: l.vacation_balance_id == basic_bal)
+        self.assertEqual(len(basic_line), 1)
+        self.assertFalse(basic_line.leave_id)
+        self.assertEqual(basic_line.leave_type_id, self.annual_type)
 
     def test_report_lines_grouped_by_employee(self):
-        """The PDF report helper groups an employee's leave rows so the name/№/
+        """The PDF report helper groups an employee's leave rows so the name/No/
         job cells rowspan across all of them, and leaves of different types are
         separate type-groups (separate "Leave Type" cells)."""
         self._create_leave(
@@ -204,7 +309,7 @@ class TestVacationScheduleReport(TransactionCase):
         self.assertEqual(len(emp_group), 1)
         grp = emp_group[0]
         self.assertEqual(grp['total'], 2)
-        # Two different types → two type-groups, one line each.
+        # Two different types -> two type-groups, one line each.
         self.assertEqual(len(grp['type_groups']), 2)
         self.assertEqual(len(grp['type_groups'][0]['lines']), 1)
 
@@ -225,7 +330,7 @@ class TestVacationScheduleReport(TransactionCase):
         grp = [g for g in schedule._report_lines_grouped()
                if g['employee'] == self.employee][0]
         self.assertEqual(grp['total'], 2)
-        # Same type → a single type-group covering both rows.
+        # Same type -> a single type-group covering both rows.
         self.assertEqual(len(grp['type_groups']), 1)
         self.assertEqual(grp['type_groups'][0]['leave_type'], self.annual_type)
         self.assertEqual(len(grp['type_groups'][0]['lines']), 2)

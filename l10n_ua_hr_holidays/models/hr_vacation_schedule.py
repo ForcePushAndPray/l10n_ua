@@ -60,92 +60,84 @@ class HrVacationSchedule(models.Model):
         
         employees = self.env['hr.employee'].search(domain)
        
-        # Annual vacation types the schedule plans for. Each may accrue on a
-        # work year or a calendar year, so its balance is resolved per
-        # period_type (see _find_period_balance).
-        annual_types = self.env['hr.leave.type'].search([
-            ('ua_leave_category', 'in', ['annual_basic', 'annual_additional']),
+        # Every leave type tracked with an accounting period (i.e. everything
+        # shown in "Vacation Balances") is planned in the schedule — annual,
+        # additional, Chornobyl, veteran, social, etc. Each may accrue on a
+        # work year or a calendar year (resolved per period_type in
+        # _find_period_balance).
+        vacation_types = self.env['hr.leave.type'].search([
+            ('ua_leave_category', '!=', False),
             ('company_id', 'in', [self.company_id.id, False]),
         ])
-        default_type = annual_types.filtered(
+        # Used only for the placeholder row of an employee with no balances at
+        # all (core annual basic entitlement).
+        default_type = vacation_types.filtered(
             lambda t: t.ua_leave_category == 'annual_basic')[:1]
-        annual_category = ['annual_basic', 'annual_additional']
 
         year_start = fields.Date.from_string(f'{self.year}-01-01')
         year_end = fields.Date.from_string(f'{self.year}-12-31')
 
         Line = self.env['hr.vacation.schedule.line']
         for employee in employees:
-            # One row per planned annual leave that STARTS in the schedule's
-            # calendar year, so an employee with several vacations shows up on
-            # several rows (each with its own type, period and dates).
+            # Balances already represented by a row — never list them twice.
+            shown_balance_ids = set()
+            has_row = False
+
+            # 1. One row per planned leave (any tracked type) that STARTS in the
+            #    schedule's calendar year — each with its own type, period,
+            #    dates.
             leaves = self.env['hr.leave'].search([
                 ('employee_id', '=', employee.id),
                 ('state', 'not in', ('cancel', 'refuse')),
-                ('holiday_status_id.ua_leave_category', 'in', annual_category),
+                ('holiday_status_id.ua_leave_category', '!=', False),
                 ('request_date_from', '>=', year_start),
                 ('request_date_from', '<=', year_end),
             ], order='request_date_from')
-
-            # Balances already represented by a leave row (or the entitlement
-            # row) — never re-list them as a "past unused" period below.
-            shown_balance_ids = set()
-
-            if leaves:
-                for leave in leaves:
-                    Line.create({
-                        'schedule_id': self.id,
-                        'employee_id': employee.id,
-                        'department_id': employee.department_id.id,
-                        'leave_id': leave.id,
-                        'leave_type_id': leave.holiday_status_id.id,
-                        'vacation_balance_id': leave.vacation_balance_id.id,
-                        'planned_days': leave.calendar_days,
-                    })
-                    if leave.vacation_balance_id:
-                        shown_balance_ids.add(leave.vacation_balance_id.id)
-            else:
-                # No planned leave yet: keep the employee on the schedule with a
-                # single row carrying the entitlement so the gap is visible.
-                balances = self.env['hr.vacation.balance']
-                for leave_type in annual_types:
-                    balances |= self._find_period_balance(employee, leave_type)
-                if balances:
-                    days = sum(balances.mapped('total_available'))
-                else:
-                    days = default_type.annual_days if default_type else 24
-                main_balance = (self._find_period_balance(employee, default_type)
-                                if default_type
-                                else self.env['hr.vacation.balance'])
+            for leave in leaves:
                 Line.create({
                     'schedule_id': self.id,
                     'employee_id': employee.id,
                     'department_id': employee.department_id.id,
-                    'leave_type_id': default_type.id if default_type else False,
-                    'vacation_balance_id': main_balance.id if main_balance else False,
-                    'planned_days': days,
+                    'leave_id': leave.id,
+                    'leave_type_id': leave.holiday_status_id.id,
+                    'vacation_balance_id': leave.vacation_balance_id.id,
+                    'planned_days': leave.calendar_days,
                 })
-                shown_balance_ids.update(balances.ids)
-                if main_balance:
-                    shown_balance_ids.add(main_balance.id)
+                has_row = True
+                if leave.vacation_balance_id:
+                    shown_balance_ids.add(leave.vacation_balance_id.id)
 
-            # Past accounting periods that still have unused days: one row each,
-            # so outstanding vacation carried from previous periods is visible
-            # in the schedule. "Past" = the period STARTED before the schedule
-            # year began (a Jun–May work year that ends inside the schedule
-            # year still counts as a previous period). Skip any period already
-            # shown as a leave/entitlement row above.
+            # 2. One row per current-year accounting period the employee has a
+            #    balance for (any tracked type) that no leave above already
+            #    covers — so entitlements/periods with no leave planned yet
+            #    (e.g. the annual basic period) still appear.
+            for leave_type in vacation_types:
+                bal = self._find_period_balance(employee, leave_type)
+                if bal and bal.id not in shown_balance_ids:
+                    Line.create({
+                        'schedule_id': self.id,
+                        'employee_id': employee.id,
+                        'department_id': employee.department_id.id,
+                        'leave_type_id': leave_type.id,
+                        'vacation_balance_id': bal.id,
+                        'planned_days': int(round(bal.total_available)),
+                    })
+
+            # 3. Past accounting periods that were PARTIALLY used — some days
+            #    taken, some left unused. "Past" = the period STARTED before the
+            #    schedule year began (a Jun–May work year that ends inside the
+            #    schedule year still counts). A past period with no leaves taken
+            #    (used = 0) or fully used (unused = 0) is not listed. Shows the
+            #    period's OWN unused days (entitled − used, excluding carry-over)
+            #    so periods are not double-counted.
             past_balances = self.env['hr.vacation.balance'].search([
                 ('employee_id', '=', employee.id),
-                ('leave_type_id', 'in', annual_types.ids),
+                ('leave_type_id', 'in', vacation_types.ids),
                 ('period_start', '<', year_start),
-                ('remaining_days', '>', 0),
+                ('used_days', '>', 0),
                 ('id', 'not in', list(shown_balance_ids)),
             ], order='period_start')
             for bal in past_balances:
-                # Days that period's OWN entitlement left unused (entitled minus
-                # used, excluding carry-over) so periods are not double-counted.
-                # Only list a period that actually has unused days.
                 unused = (bal.entitled_days or 0) - (bal.used_days or 0)
                 if unused <= 0:
                     continue
@@ -155,7 +147,20 @@ class HrVacationSchedule(models.Model):
                     'department_id': employee.department_id.id,
                     'leave_type_id': bal.leave_type_id.id,
                     'vacation_balance_id': bal.id,
-                    'planned_days': int(round(bal.remaining_days)),
+                    'planned_days': int(round(unused)),
+                })
+                has_row = True
+            # 4. Employee with no leaves and no balances at all: keep them on
+            #    the schedule with a single core-entitlement placeholder row.
+            if not has_row:
+                Line.create({
+                    'schedule_id': self.id,
+                    'employee_id': employee.id,
+                    'department_id': employee.department_id.id,
+                    'leave_type_id': default_type.id if default_type else False,
+                    'vacation_balance_id': False,
+                    'planned_days': (default_type.annual_days
+                                     if default_type else 24),
                 })
 
         return True
@@ -363,7 +368,6 @@ class HrVacationScheduleLine(models.Model):
                 line.display_name = "Новий запис"
 
     @api.depends('period_1_start', 'period_1_end')
-
     def _compute_period_days(self):
         for line in self:
             days1 = 0
