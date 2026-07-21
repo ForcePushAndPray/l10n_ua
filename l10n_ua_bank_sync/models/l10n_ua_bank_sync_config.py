@@ -54,9 +54,9 @@ class L10nUaBankSyncConfig(models.Model):
         ('online', 'Online (API)'),
         ('file', 'File exchange'),
         ('manual', 'Manual'),
-    ], string='Exchange Type', compute='_compute_exchange_type', store=True,
+    ], string='Exchange Type', compute='_compute_exchange_type',
         help='Онлайн-провайдери синхронізуються через API; файлові — імпортом '
-             'виписки з файлу.')
+             'виписки з файлу. Не зберігається (обчислюється з провайдера).')
 
     @api.depends('provider')
     def _compute_exchange_type(self):
