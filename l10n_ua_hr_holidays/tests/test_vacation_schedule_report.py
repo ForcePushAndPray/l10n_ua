@@ -83,7 +83,10 @@ class TestVacationScheduleReport(TransactionCase):
 
         lines = schedule.line_ids.filtered(
             lambda l: l.employee_id == self.employee)
-        self.assertEqual(len(lines), 2)
+        # Exactly one row per planned leave (past-period rows, if any, are
+        # counted separately and are not leave-linked).
+        leaf_lines = lines.filtered(lambda l: l.leave_id)
+        self.assertEqual(len(leaf_lines), 2)
 
         basic_line = lines.filtered(lambda l: l.leave_id == basic)
         add_line = lines.filtered(lambda l: l.leave_id == additional)

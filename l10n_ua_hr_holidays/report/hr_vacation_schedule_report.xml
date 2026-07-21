@@ -26,8 +26,19 @@
             <t t-set="company" t-value="report_doc.company_id or env.company"/>
             <div class="page" style="font-family: 'Times New Roman', serif; font-size: 11pt;">
 
+                <div style="margin-bottom: 20px; font-size: 10pt; overflow: hidden;">
+                    <div style="width: 50%; float: left; text-align: left;">
+                        <strong t-esc="company.name"/>
+                    </div>
+                    <div style="width: 50%; float: right; text-align: left;">
+                        <div><strong>ЗАТВЕРДЖУЮ</strong></div>
+                        <div>Директор <t t-esc="company.name"/></div>
+                        <div>____________________ <t t-esc="company.director_id.name or ''"/></div>
+                        <div><t t-esc="report_doc._report_generation_date()"/></div>
+                    </div>
+                </div>
+
                 <div style="text-align: center; margin-bottom: 20px;">
-                    <strong t-esc="company.name"/>
                     <h3 style="margin: 10px 0;">ГРАФІК ВІДПУСТОК</h3>
                     <p style="font-size: 10pt;">на <span t-esc="report_doc.year"/> рік</p>
                 </div>
@@ -91,20 +102,20 @@
                         </t>
                     </tbody>
                 </table>
-
-                <div style="margin-top: 30px;">
-                    <table style="width: 100%;">
-                        <tr>
-                            <td style="width: 40%;">Керівник кадрової служби</td>
-                            <td style="width: 30%; text-align: center; border-bottom: 1px solid #000;"></td>
-                            <td style="width: 30%; text-align: center; border-bottom: 1px solid #000;"></td>
-                        </tr>
-                        <tr>
-                            <td></td>
-                            <td style="text-align: center; font-size: 9pt;">(підпис)</td>
-                            <td style="text-align: center; font-size: 9pt;">(П.І.Б.)</td>
-                        </tr>
-                    </table>
+                <div style="margin-top: 30px; overflow: hidden;">
+                    <div style="width: 40%; float: left; padding-top: 16px;">
+                        <t t-esc="company.hr_manager_id.job_id.name or 'Керівник кадрової служби'"/>
+                    </div>
+                    <div style="width: 30%; float: left; text-align: center;">
+                        <div style="border-bottom: 1px solid #000; height: 16px;"></div>
+                        <div style="font-size: 9pt;">(підпис)</div>
+                    </div>
+                    <div style="width: 30%; float: left; text-align: center;">
+                        <div style="border-bottom: 1px solid #000; height: 16px;">
+                            <t t-esc="company.hr_manager_id.name or ''"/>
+                        </div>
+                        <div style="font-size: 9pt;">(П.І.Б.)</div>
+                    </div>
                 </div>
 
             </div>

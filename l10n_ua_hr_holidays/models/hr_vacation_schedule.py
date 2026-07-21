@@ -87,6 +87,10 @@ class HrVacationSchedule(models.Model):
                 ('request_date_from', '<=', year_end),
             ], order='request_date_from')
 
+            # Balances already represented by a leave row (or the entitlement
+            # row) — never re-list them as a "past unused" period below.
+            shown_balance_ids = set()
+
             if leaves:
                 for leave in leaves:
                     Line.create({
@@ -98,7 +102,9 @@ class HrVacationSchedule(models.Model):
                         'vacation_balance_id': leave.vacation_balance_id.id,
                         'planned_days': leave.calendar_days,
                     })
-
+                    if leave.vacation_balance_id:
+                        shown_balance_ids.add(leave.vacation_balance_id.id)
+            else:
                 # No planned leave yet: keep the employee on the schedule with a
                 # single row carrying the entitlement so the gap is visible.
                 balances = self.env['hr.vacation.balance']
@@ -119,18 +125,30 @@ class HrVacationSchedule(models.Model):
                     'vacation_balance_id': main_balance.id if main_balance else False,
                     'planned_days': days,
                 })
+                shown_balance_ids.update(balances.ids)
+                if main_balance:
+                    shown_balance_ids.add(main_balance.id)
 
             # Past accounting periods that still have unused days: one row each,
             # so outstanding vacation carried from previous periods is visible
-            # in the schedule. "Past" = the period ended before the schedule
-            # year began.
+            # in the schedule. "Past" = the period STARTED before the schedule
+            # year began (a Jun–May work year that ends inside the schedule
+            # year still counts as a previous period). Skip any period already
+            # shown as a leave/entitlement row above.
             past_balances = self.env['hr.vacation.balance'].search([
                 ('employee_id', '=', employee.id),
                 ('leave_type_id', 'in', annual_types.ids),
-                ('period_end', '<', year_start),
+                ('period_start', '<', year_start),
                 ('remaining_days', '>', 0),
+                ('id', 'not in', list(shown_balance_ids)),
             ], order='period_start')
             for bal in past_balances:
+                # Days that period's OWN entitlement left unused (entitled minus
+                # used, excluding carry-over) so periods are not double-counted.
+                # Only list a period that actually has unused days.
+                unused = (bal.entitled_days or 0) - (bal.used_days or 0)
+                if unused <= 0:
+                    continue
                 Line.create({
                     'schedule_id': self.id,
                     'employee_id': employee.id,
@@ -183,6 +201,13 @@ class HrVacationSchedule(models.Model):
 
     def action_draft(self):
         self.write({'state': 'draft'})
+
+    def _report_generation_date(self):
+        """Today's date for the PDF in Ukrainian long form (e.g.
+        '"21" липня 2026 р.'), reusing the l10n_ua_hr_documents formatter so no
+        extra module dependency is needed."""
+        return self.env['hr.order.template.wizard']._format_date_ua(
+            fields.Date.context_today(self))
 
     def _report_lines_grouped(self):
         """Group the schedule lines for the PDF report so the QWeb table can
