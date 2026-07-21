@@ -67,6 +67,7 @@ PRRO (Cash Registers)
         'l10n_ua_hr_documents',
         'l10n_ua_hr_documents_certificates',
         'l10n_ua_hr_holidays',
+        'l10n_ua_hr_fss',
         'l10n_ua_hr_attendance_sheet',
         # Accounting & Tax
         'l10n_ua_accounting',
