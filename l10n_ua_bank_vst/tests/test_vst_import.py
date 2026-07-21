@@ -78,6 +78,10 @@ class TestVstImport(TransactionCase):
         with self.assertRaises(NotImplementedError):
             other._parse_transactions({'csv': SAMPLE_CSV})
 
+    def test_exchange_type_file(self):
+        # VST — файловий обмін (керує видимістю кнопок).
+        self.assertEqual(self.config.exchange_type, 'file')
+
     def test_import_wizard_creates_job(self):
         data = base64.b64encode(SAMPLE_CSV.encode('cp1251'))
         wiz = self.env['l10n_ua.bank.vst.import'].create({

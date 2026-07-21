@@ -49,6 +49,24 @@ class L10nUaBankSyncConfig(models.Model):
         tracking=True,
     )
 
+    # Тип обміну (керує видимістю кнопок: онлайн-синхронізація vs імпорт файлу)
+    exchange_type = fields.Selection([
+        ('online', 'Online (API)'),
+        ('file', 'File exchange'),
+        ('manual', 'Manual'),
+    ], string='Exchange Type', compute='_compute_exchange_type', store=True,
+        help='Онлайн-провайдери синхронізуються через API; файлові — імпортом '
+             'виписки з файлу.')
+
+    @api.depends('provider')
+    def _compute_exchange_type(self):
+        for rec in self:
+            st = rec._source_type()
+            rec.exchange_type = (
+                'file' if st == 'file'
+                else 'manual' if st == 'manual'
+                else 'online')
+
     # Sync settings
     auto_sync = fields.Boolean(
         string='Auto Sync',

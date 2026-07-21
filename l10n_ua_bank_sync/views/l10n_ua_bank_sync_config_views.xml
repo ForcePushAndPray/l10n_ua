@@ -7,10 +7,13 @@
         <field name="arch" type="xml">
             <form string="Bank Sync Configuration">
                 <header>
-                    <button name="action_sync_now" string="Sync Now" type="object" class="btn-primary"/>
-                    <button name="action_open_sync_wizard" string="Custom Period..." type="object"/>
+                    <button name="action_sync_now" string="Sync Now" type="object" class="btn-primary"
+                            invisible="exchange_type != 'online'"/>
+                    <button name="action_open_sync_wizard" string="Custom Period..." type="object"
+                            invisible="exchange_type != 'online'"/>
                 </header>
                 <sheet>
+                    <field name="exchange_type" invisible="1"/>
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_jobs" type="object" class="oe_stat_button" icon="fa-tasks">
                             <field name="job_count" widget="statinfo" string="Jobs"/>
@@ -28,7 +31,8 @@
                             <field name="journal_id" context="{'default_type': 'bank', 'default_company_id': company_id}"/>
                             <field name="bank_account_id"/>
                         </group>
-                        <group string="Sync Settings" name="sync_settings_group">
+                        <group string="Sync Settings" name="sync_settings_group"
+                               invisible="exchange_type != 'online'">
                             <field name="auto_sync"/>
                             <field name="sync_interval_hours" invisible="not auto_sync"/>
                             <field name="default_days_back"/>

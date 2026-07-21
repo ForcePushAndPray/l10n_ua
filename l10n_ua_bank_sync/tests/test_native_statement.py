@@ -39,6 +39,9 @@ class TestNativeStatement(TransactionCase):
              'partner_iban': 'UA222'},
         ]
 
+    def test_exchange_type_manual(self):
+        self.assertEqual(self.config.exchange_type, 'manual')
+
     def test_statement_created_at_import_with_metadata(self):
         job = self._job()
         stmt = job._create_native_statement(self._txs())
