@@ -20,3 +20,4 @@ access_aging_report_line_manager,l10n_ua.aging.report.line.manager,model_l10n_ua
 access_inventory_act_wizard_user,l10n_ua.inventory.act.wizard.user,model_l10n_ua_inventory_act_wizard,account.group_account_user,1,1,1,1
 access_currency_revaluation_user,l10n_ua.currency.revaluation.user,model_l10n_ua_currency_revaluation,account.group_account_user,1,1,1,1
 access_currency_revaluation_line_user,l10n_ua.currency.revaluation.line.user,model_l10n_ua_currency_revaluation_line,account.group_account_user,1,1,1,1
+access_currency_exchange_user,l10n_ua.currency.exchange.user,model_l10n_ua_currency_exchange,account.group_account_user,1,1,1,1

@@ -7,5 +7,6 @@ from . import l10n_ua_balance_report
 from . import l10n_ua_pnl_report
 from . import l10n_ua_period_closing
 from . import l10n_ua_currency_revaluation
+from . import l10n_ua_currency_exchange
 from . import l10n_ua_aging_report
 from . import l10n_ua_tax_period

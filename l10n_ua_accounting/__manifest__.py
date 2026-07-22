@@ -71,6 +71,7 @@ Dependencies:
         # Data
         'data/period_closing_data.xml',
         'data/cash_limit_cron.xml',
+        'data/currency_exchange_data.xml',
         # Views
         'views/res_company_views.xml',
         'views/account_payment_views.xml',
@@ -81,6 +82,7 @@ Dependencies:
         'views/l10n_ua_pnl_report_views.xml',
         'views/l10n_ua_period_closing_views.xml',
         'views/l10n_ua_currency_revaluation_views.xml',
+        'views/l10n_ua_currency_exchange_views.xml',
         'views/l10n_ua_aging_report_views.xml',
         # Wizards
         'wizard/cash_book_wizard_views.xml',
