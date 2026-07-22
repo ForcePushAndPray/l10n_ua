@@ -15,3 +15,4 @@ from . import test_bank_export
 from . import test_deposit
 from . import test_ifobs_employee
 from . import test_seniority_piece
+from . import test_salary_currency

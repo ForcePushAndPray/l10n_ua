@@ -11,6 +11,7 @@
                 <field name="indexation_enabled"/>
                 <field name="indexation_base_month" invisible="not indexation_enabled"/>
                 <field name="salary_form"/>
+                <field name="salary_currency_id"/>
                 <field name="seniority_enabled"/>
                 <field name="seniority_scale_id" invisible="not seniority_enabled"/>
             </xpath>

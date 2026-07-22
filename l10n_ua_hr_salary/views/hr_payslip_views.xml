@@ -48,6 +48,9 @@
                             <field name="date_to"/>
                             <field name="payslip_run_id"/>
                             <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="salary_currency_id" invisible="1"/>
+                            <field name="salary_rate"
+                                   invisible="salary_currency_id == currency_id"/>
                         </group>
                     </group>
                     <notebook>

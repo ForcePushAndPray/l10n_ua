@@ -51,7 +51,27 @@ class HrPayslip(models.Model):
         'res.currency',
         related='company_id.currency_id'
     )
-    
+
+    # --- Валютне нарахування (#206) ---
+    salary_currency_id = fields.Many2one(
+        'res.currency',
+        string='Валюта окладу',
+        compute='_compute_salary_currency',
+        store=True,
+        help='Валюта нарахування окладу (з версії/договору). Якщо відрізняється '
+             'від валюти компанії — оклад перераховується у гривню за курсом.',
+    )
+    salary_rate = fields.Float(
+        string='Курс окладу',
+        digits=(16, 6),
+        compute='_compute_salary_rate',
+        store=True,
+        readonly=False,
+        help='Курс валюти окладу до гривні на дату розрахунку (грн за одиницю). '
+             'Підставляється з довідника курсів; можна відкоригувати вручну.',
+    )
+
+
     payslip_run_id = fields.Many2one(
         'hr.payslip.run',
         string='Payslip Batch'
@@ -600,24 +620,55 @@ class HrPayslip(models.Model):
         self.worked_hours = worked * daily_norm
 
 
+    @api.depends('version_id', 'version_id.salary_currency_id')
+    def _compute_salary_currency(self):
+        for slip in self:
+            version_cur = slip.version_id.salary_currency_id \
+                if slip.version_id else False
+            slip.salary_currency_id = version_cur or slip.company_id.currency_id
+
+    @api.depends('salary_currency_id', 'date_to', 'company_id')
+    def _compute_salary_rate(self):
+        for slip in self:
+            cur = slip.salary_currency_id
+            comp_cur = slip.company_id.currency_id
+            if cur and comp_cur and cur != comp_cur and slip.date_to:
+                slip.salary_rate = cur._convert(
+                    1.0, comp_cur, slip.company_id, slip.date_to)
+            else:
+                slip.salary_rate = 1.0
+
+    def _convert_salary_to_company(self, amount):
+        """Перерахувати суму окладу з валюти окладу у валюту компанії."""
+        self.ensure_one()
+        if not amount:
+            return amount
+        cur = self.salary_currency_id
+        comp_cur = self.company_id.currency_id
+        if cur and comp_cur and cur != comp_cur:
+            return amount * (self.salary_rate or 1.0)
+        return amount
+
     def _get_effective_wage(self, version):
-        """Get effective wage considering staffing table fallback"""
+        """Get effective wage (in company currency) considering staffing table.
+
+        Оклад може бути встановлений в іноземній валюті (#206) — тут він
+        перераховується у валюту компанії за курсом розрахункового листка,
+        тож усі похідні розрахунки (оклад, доплати, індексація) — у гривні.
+        """
         wage = version.wage or 0.0
 
-        if wage > 0:
-            return wage
+        if wage <= 0:
+            # Check company setting for staffing table fallback
+            setting = self.company_id.wage_from_staffing \
+                if hasattr(self.company_id, 'wage_from_staffing') else 'both'
+            if setting in ('fallback', 'both'):
+                if hasattr(version, 'staffing_line_id') and version.staffing_line_id:
+                    staffing = version.staffing_line_id
+                    if staffing.salary:
+                        wage = staffing.salary
 
-        # Check company setting for staffing table fallback
-        setting = self.company_id.wage_from_staffing if hasattr(self.company_id, 'wage_from_staffing') else 'both'
-
-        if setting in ('fallback', 'both'):
-            # Try to get wage from staffing table
-            if hasattr(version, 'staffing_line_id') and version.staffing_line_id:
-                staffing = version.staffing_line_id
-                if staffing.salary:
-                    return staffing.salary
-
-        return wage
+        return self._convert_salary_to_company(wage)
 
     def _generate_accruals(self):
         """Generate accrual lines based on employee version.
