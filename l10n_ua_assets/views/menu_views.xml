@@ -52,6 +52,18 @@
               action="l10n_ua_mnma_action"
               sequence="10"/>
 
+    <menuitem id="menu_l10n_ua_mshp"
+              name="МШП (рах. 22)"
+              parent="menu_l10n_ua_assets"
+              action="l10n_ua_mshp_action"
+              sequence="11"/>
+
+    <menuitem id="menu_l10n_ua_mshp_register"
+              name="Реєстр МШП в експлуатації"
+              parent="menu_l10n_ua_assets"
+              action="l10n_ua_mshp_register_action"
+              sequence="12"/>
+
     <menuitem id="menu_l10n_ua_asset_revaluation"
               name="Asset Revaluations"
               parent="menu_l10n_ua_assets"
