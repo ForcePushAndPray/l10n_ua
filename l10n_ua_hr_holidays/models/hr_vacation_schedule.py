@@ -1,4 +1,5 @@
 from datetime import date
+
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
@@ -59,7 +60,7 @@ class HrVacationSchedule(models.Model):
             domain.append(('contract_id.state', '=', 'open'))
         
         employees = self.env['hr.employee'].search(domain)
-       
+
         # Every leave type tracked with an accounting period (i.e. everything
         # shown in "Vacation Balances") is planned in the schedule — annual,
         # additional, Chornobyl, veteran, social, etc. Each may accrue on a
@@ -122,6 +123,8 @@ class HrVacationSchedule(models.Model):
                         'vacation_balance_id': bal.id,
                         'planned_days': int(round(bal.total_available)),
                     })
+                    has_row = True
+                    shown_balance_ids.add(bal.id)
 
             # 3. Past accounting periods that were PARTIALLY used — some days
             #    taken, some left unused. "Past" = the period STARTED before the
@@ -150,6 +153,7 @@ class HrVacationSchedule(models.Model):
                     'planned_days': int(round(unused)),
                 })
                 has_row = True
+
             # 4. Employee with no leaves and no balances at all: keep them on
             #    the schedule with a single core-entitlement placeholder row.
             if not has_row:
@@ -192,7 +196,6 @@ class HrVacationSchedule(models.Model):
             ('leave_type_id', '=', leave_type.id),
             ('year', '=', self.year),
         ], limit=1)
-
 
     def action_confirm(self):
         self.write({'state': 'confirmed'})
@@ -303,6 +306,7 @@ class HrVacationScheduleLine(models.Model):
         store=True,
         readonly=False
     )
+    
     job_id = fields.Many2one(
         'hr.job',
         string='Job Position',
@@ -344,7 +348,7 @@ class HrVacationScheduleLine(models.Model):
         compute='_compute_period_days',
         store=True
     )
-    
+
     total_planned = fields.Integer(
         string='Total Planned',
         compute='_compute_period_days',
@@ -371,12 +375,10 @@ class HrVacationScheduleLine(models.Model):
     def _compute_period_days(self):
         for line in self:
             days1 = 0
-            
             if line.period_1_start and line.period_1_end:
                 days1 = (line.period_1_end - line.period_1_start).days + 1
-            
             line.period_1_days = days1
-            line.total_planned = days1 
+            line.total_planned = days1
 
     @api.depends('leave_id', 'leave_id.request_date_from',
                  'leave_id.request_date_to')
@@ -409,3 +411,4 @@ class HrVacationScheduleLine(models.Model):
         for line in self:
             if line.period_1_start and line.period_1_end and line.period_1_start > line.period_1_end:
                 raise ValidationError('Period 1: Start date must be before end date.')
+

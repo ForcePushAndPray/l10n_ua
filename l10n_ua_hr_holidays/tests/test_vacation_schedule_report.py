@@ -58,9 +58,11 @@ class TestVacationScheduleReport(TransactionCase):
         })
         schedule.action_generate_lines()
 
+        # One current-period row per balance; check the one for this balance.
         line = schedule.line_ids.filtered(
-            lambda l: l.employee_id == self.employee)
-        self.assertTrue(line)
+            lambda l: l.employee_id == self.employee
+            and l.vacation_balance_id == balance)
+        self.assertEqual(len(line), 1)
         self.assertEqual(line.planned_days, 30)
 
     # ------------------------------------------------------------------
@@ -129,9 +131,10 @@ class TestVacationScheduleReport(TransactionCase):
         self.assertEqual(add_line.actual_days, 0)
 
     def test_schedule_no_leave_falls_back_to_entitlement(self):
-        """An employee with no planned leave still gets a single row carrying
-        the entitlement, with no linked leave and empty dates."""
-        self.env['hr.vacation.balance'].create({
+        """A current-year period the employee has a balance for is listed even
+        with no planned leave — as its own row, no linked leave, empty dates,
+        planned days = the period's total available."""
+        bal = self.env['hr.vacation.balance'].create({
             'employee_id': self.employee.id,
             'leave_type_id': self.annual_type.id,
             'period_start': date(2024, 7, 15),
@@ -146,12 +149,13 @@ class TestVacationScheduleReport(TransactionCase):
         })
         schedule.action_generate_lines()
 
-        lines = schedule.line_ids.filtered(
-            lambda l: l.employee_id == self.employee)
-        self.assertEqual(len(lines), 1)
-        self.assertFalse(lines.leave_id)
-        self.assertEqual(lines.planned_days, 30)
-        self.assertEqual(lines.vacation_period_display, '')
+        line = schedule.line_ids.filtered(
+            lambda l: l.employee_id == self.employee
+            and l.vacation_balance_id == bal)
+        self.assertEqual(len(line), 1)
+        self.assertFalse(line.leave_id)
+        self.assertEqual(line.planned_days, 30)
+        self.assertEqual(line.vacation_period_display, '')
 
     def test_schedule_hides_untouched_past_period(self):
         """A past period with NO leaves taken (used = 0) is not listed, even
@@ -370,4 +374,3 @@ class TestVacationScheduleReport(TransactionCase):
             lambda b: b.period_type == 'work'
             and b.employee_id == self.employee)
         self.assertTrue(work)
-
