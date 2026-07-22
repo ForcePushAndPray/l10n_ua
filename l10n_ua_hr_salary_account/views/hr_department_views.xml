@@ -8,6 +8,9 @@
         <field name="arch" type="xml">
             <xpath expr="//field[@name='company_id']" position="after">
                 <field name="salary_expense_account_id"/>
+                <field name="salary_analytic_distribution"
+                       widget="analytic_distribution"
+                       groups="analytic.group_analytic_accounting"/>
             </xpath>
         </field>
     </record>

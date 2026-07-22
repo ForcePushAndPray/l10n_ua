@@ -90,11 +90,26 @@ class HrPayslip(models.Model):
             % (dept.name if dept else '—')
         )
 
+    def _get_salary_analytic_distribution(self):
+        """Analytic distribution for expense lines.
+
+        Resolution: version (contract) override → department default → none.
+        Returns a distribution dict ({analytic_account_id: percentage}) or False.
+        """
+        self.ensure_one()
+        version = self.version_id
+        dist = version.salary_analytic_distribution if version else False
+        if not dist:
+            dept = self.department_id
+            dist = dept.salary_analytic_distribution if dept else False
+        return dist or False
+
     def _prepare_move_lines(self, config):
         """Build list of account.move.line dicts for this payslip."""
         self.ensure_one()
         lines = []
         expense_account = self._get_expense_account(config)
+        analytic = self._get_salary_analytic_distribution()
         emp_name = self.employee_id.name
 
         # 1. Salary accrual: Дт expense / Кт 661
@@ -104,6 +119,7 @@ class HrPayslip(models.Model):
                 'account_id': expense_account.id,
                 'debit': round(self.gross_salary, 2),
                 'credit': 0.0,
+                'analytic_distribution': analytic or False,
             })
             lines.append({
                 'name': 'Нарахування ЗП: %s' % emp_name,
@@ -119,6 +135,7 @@ class HrPayslip(models.Model):
                 'account_id': expense_account.id,
                 'debit': round(self.esv_amount, 2),
                 'credit': 0.0,
+                'analytic_distribution': analytic or False,
             })
             lines.append({
                 'name': 'ЄСВ: %s' % emp_name,
