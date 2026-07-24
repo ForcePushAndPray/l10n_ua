@@ -569,6 +569,7 @@ msgstr "Залишків відпусток не знайдено"
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule__notes
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__notes
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_schedule_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_employee_vacation_summary_report_view_form
 msgid "Notes"
 msgstr "Примітки"
 
@@ -960,6 +961,7 @@ msgstr "Залишок відпустки"
 #: model:ir.actions.act_window,name:l10n_ua_hr_holidays.action_hr_vacation_balance
 #: model:ir.ui.menu,name:l10n_ua_hr_holidays.menu_hr_vacation_balance
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_tree
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_employee_vacation_summary_report_view_form
 msgid "Vacation Balances"
 msgstr "Залишки відпусток"
 
@@ -1063,6 +1065,7 @@ msgstr "Календар відпусток"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__create_order
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_leave_view_form_ua
 msgid "Create Order"
 msgstr "Створювати наказ"
 
@@ -1446,6 +1449,7 @@ msgstr "Відпустка"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.actions.report,name:l10n_ua_hr_holidays.action_report_hr_vacation_schedule
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_employee_vacation_summary_report_view_form
 msgid "Print"
 msgstr "Друкувати"
 

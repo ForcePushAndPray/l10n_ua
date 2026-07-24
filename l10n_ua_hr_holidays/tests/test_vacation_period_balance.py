@@ -30,6 +30,7 @@ class TestVacationPeriodBalance(TransactionCase):
             })
         # These tests place leaves shortly after hire and do not exercise the
         # 6-month first-annual-leave experience rule (which the open contract
+        # above would otherwise activate) — relax it for the annual type used.
         cls.annual_type.requires_experience = False
 
     def _create_leave(self, leave_type, date_from, date_to, **extra):

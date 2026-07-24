@@ -10,7 +10,7 @@ class HrEmployee(models.Model):
         string='HR Orders'
     )
     orders_count = fields.Integer(
-        string='Orders Count',
+        string='Orders',
         compute='_compute_orders_count'
     )
 

@@ -123,7 +123,7 @@ class HrOrder(models.Model):
         index=True,
     )
     leave_count = fields.Integer(
-        string='Leaves',
+        string='Time Off',
         compute='_compute_leave_count',
         help='Number of time off records for this employee. Drives the '
              '"Time Off" smart button on vacation orders.'

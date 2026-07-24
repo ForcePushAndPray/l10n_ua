@@ -26,8 +26,7 @@
                     <button name="action_view_orders" type="object"
                             class="oe_stat_button" icon="fa-file-text-o"
                             invisible="not leave_type_create_order">
-                        <field name="order_count" widget="statinfo"
-                               string="Orders"/>
+                        <field name="order_count" widget="statinfo"/>
                     </button>
                 </div>
             </xpath>

@@ -37,8 +37,7 @@
                         <button name="action_view_leaves" type="object"
                                 class="oe_stat_button" icon="fa-plane"
                                 invisible="order_type != 'vacation'">
-                            <field name="leave_count" widget="statinfo"
-                                   string="Time Off"/>
+                            <field name="leave_count" widget="statinfo"/>
                         </button>
                     </div>
                     <group>
