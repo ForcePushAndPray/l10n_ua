@@ -9,8 +9,9 @@ Tests cover:
 """
 
 from datetime import date
+from psycopg2 import IntegrityError
 from odoo.tests import TransactionCase, tagged
-
+from odoo.tools import mute_logger
 
 @tagged('post_install', '-at_install')
 class TestPersonalFile(TransactionCase):
@@ -51,8 +52,16 @@ class TestPersonalFile(TransactionCase):
         """One employee can have only one personal file."""
         emp = self._create_employee()
         self._create_personal_file(emp)
-        with self.assertRaises(Exception):
+        # The unique(employee_id) is a database constraint: it fires at flush
+        # and aborts the transaction. Wrap the failing insert in a savepoint
+        # (so the transaction stays usable for teardown) and flush inside the
+        # block so the IntegrityError is raised where assertRaises can catch
+        # it. mute_logger silences the expected "bad query" error line.
+        with self.assertRaises(IntegrityError), \
+                mute_logger('odoo.sql_db'), \
+                self.env.cr.savepoint():
             self._create_personal_file(emp)
+            self.env.flush_all()
 
     def test_personal_file_family_members(self):
         """Should be able to add family members."""

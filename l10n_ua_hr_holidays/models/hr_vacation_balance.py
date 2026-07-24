@@ -158,13 +158,45 @@ class HrVacationBalance(models.Model):
         })
 
     @api.model
+    def _ensure_periods_up_to(self, employee, leave_type, up_to_date,
+                              select_date=None):
+        """Create every missing accounting period for (employee, leave_type)
+        from the employee's hire anchor up to up_to_date, refresh the carry-over
+        chain, and return the period that contains select_date (default:
+        up_to_date). Empty recordset when it cannot be resolved (e.g. a
+        work-year type without a hire anchor).
+
+        Callers backfill up to max(today, leave_start) — so every past period
+        keeps a record — while selecting the period the leave's FIRST DAY falls
+        into, which may be a future period when a vacation is planned ahead."""
+        if not employee or not leave_type:
+            return self.browse()
+        self._generate_period_chain(employee, leave_type, up_to_date)
+        chain = self.search([
+            ('employee_id', '=', employee.id),
+            ('leave_type_id', '=', leave_type.id),
+        ])
+        if chain:
+            chain._recompute_carryover_chain()
+        return self._get_or_create_period(
+            employee, leave_type, select_date or up_to_date)
+
+    @api.model
     def _allowed_carryover(self, leave_type, prev_remaining):
-        """Days that may actually be carried into the next period given the
-        leave type's transfer rules: non-transferable types carry nothing,
-        and `max_transfer_days` caps the rest. Returns the carried amount
-        (never negative). Days above the cap are forfeited — surfaced to the
-        user as a non-blocking warning on the leave, not enforced here."""
-        if prev_remaining <= 0 or not leave_type.is_transferable:
+        """Days carried into the next period.
+
+        A NEGATIVE balance — more days taken than were available (e.g. 26 days
+        used against a 24-day entitlement, leaving -2) — is ALWAYS carried
+        forward in full: an over-use debt cannot be forfeited and must reduce
+        the next period's Total Available (24 + (-2) = 22).
+
+        Transfer rules govern only POSITIVE unused days: non-transferable types
+        carry nothing, `max_transfer_days` caps the rest, and days above the cap
+        are forfeited (surfaced as a non-blocking warning on the leave, not
+        enforced here)."""
+        if prev_remaining < 0:
+            return prev_remaining
+        if prev_remaining == 0 or not leave_type.is_transferable:
             return 0
         if leave_type.max_transfer_days:
             return min(prev_remaining, leave_type.max_transfer_days)
@@ -342,21 +374,14 @@ class HrVacationBalance(models.Model):
                 rec.planned_days = 0
                 continue
 
-            # A leave belongs to the single period whose bounds contain its
-            # START date, so count by date containment regardless of the
-            # leave's vacation_balance_id link. Auto-linking can point a leave
-            # at a differently-bounded (migrated/duplicate) row covering the
-            # same span; matching on the link alone would then drop it from
-            # the displayed period's rollup (used days shown as 0). Date
-            # containment stays correct for work years too — Feb-2026 belongs
-            # to the 2025/26 work year, not 2026/27 — because periods never
-            # overlap, so each leave falls in exactly one period.
-            base_domain = [
-                ('employee_id', '=', rec.employee_id.id),
-                ('holiday_status_id', '=', rec.leave_type_id.id),
-                ('request_date_from', '>=', rec.period_start),
-                ('request_date_from', '<=', rec.period_end),
-            ]
+            # A leave is charged to the period it is EXPLICITLY linked to
+            # (vacation_balance_id), chosen manually on the leave/order form.
+            # Used/planned days are the calendar days of the leaves assigned to
+            # this period — regardless of whether the leave dates fall inside
+            # the period bounds (HR may record a past-period leave with current
+            # dates). The days counted are exactly those entered on the leave
+            # (calendar_days).
+            base_domain = [('vacation_balance_id', '=', rec.id)]
 
             used_leaves = HrLeave.search(base_domain + [('state', '=', 'validate')])
             rec.used_days = sum(used_leaves.mapped('calendar_days'))
@@ -498,8 +523,10 @@ class HrVacationBalance(models.Model):
                 ('request_date_from', '<=', balance.period_end),
             ])
             if leaves:
-                leaves._compute_vacation_balance()
-                leaves.flush_recordset(['vacation_balance_id'])
+                # Attach only leaves that still have no period (legacy/migrated)
+                # to this newly created period; leaves keep a manually chosen
+                # period once set.
+                leaves.vacation_balance_id = balance.id
 
     def _recompute_carryover_chain(self):
         """Propagate carry-over across each (employee, leave_type) period

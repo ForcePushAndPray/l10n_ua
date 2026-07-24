@@ -7,6 +7,31 @@
         <field name="inherit_id" ref="hr_holidays.hr_leave_view_form"/>
         <field name="arch" type="xml">
 
+            <!-- "Create Order" — HR can issue the vacation order (as a draft)
+                 before the leave is approved. Hidden once an order exists or
+                 for leave types that do not issue orders. -->
+            <xpath expr="//header" position="inside">
+                <button string="Створити наказ" name="action_create_order"
+                        type="object" class="oe_highlight"
+                        invisible="not can_create_order or not id"/>
+            </xpath>
+
+            <!-- Orders smart button — count of vacation orders for this
+                 employee; opens the list of those orders. -->
+            <xpath expr="//field[@name='dashboard_warning_message']"
+                   position="before">
+                <field name="can_create_order" invisible="1"/>
+                <field name="leave_type_create_order" invisible="1"/>
+                <div class="oe_button_box" name="button_box">
+                    <button name="action_view_orders" type="object"
+                            class="oe_stat_button" icon="fa-file-text-o"
+                            invisible="not leave_type_create_order">
+                        <field name="order_count" widget="statinfo"
+                               string="Накази"/>
+                    </button>
+                </div>
+            </xpath>
+
             <xpath expr="//sheet" position="inside">
                 <group string="Ukrainian Specifics" name="ua_details">
                     <div class="alert alert-warning" role="alert" colspan="2"
@@ -17,10 +42,11 @@
                         <field name="calendar_days"/>
                         <field name="working_days"/>
                         <field name="vacation_year" readonly="1"/>
-                        <!-- The accounting period is created automatically on
-                             save; shown read-only for reference. -->
-                        <field name="vacation_balance_id" readonly="1"
-                               options="{'no_create': True}"/>			
+                        <!-- HR picks the accounting period. On leave-type
+                             selection all periods up to today are backfilled
+                             and the one containing today is preselected. -->
+                        <field name="vacation_balance_id"
+                               options="{'no_create': True}"/>
                     </group>
                     <group>
                         <field name="average_daily_salary"/>
@@ -32,9 +58,30 @@
                     </group>
                     <group>
 			<field name="order_id"/>
-			<field name="order_date" invisible="bool(order_id)"/>
                     </group>
                 </group>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Management > Time Off list.
+         The standard list shows date_from / date_to, which are *datetime*
+         fields stored in UTC and rendered in the user's timezone. For a
+         whole-day leave that makes the edges land on the neighbouring day
+         (e.g. 22 Sep 23:00 -> 25 Sep 22:59 in Europe/Kyiv) and no longer
+         match the leave form. request_date_from / request_date_to are plain
+         Date fields (no time, no timezone), so they always read the same as
+         the form. Swap the datetime columns for the Date ones. -->
+    <record id="hr_leave_view_tree_ua" model="ir.ui.view">
+        <field name="name">hr.leave.tree.ua</field>
+        <field name="model">hr.leave</field>
+        <field name="inherit_id" ref="hr_holidays.hr_leave_view_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='date_from']" position="replace">
+                <field name="request_date_from" string="Start Date"/>
+            </xpath>
+            <xpath expr="//field[@name='date_to']" position="replace">
+                <field name="request_date_to" string="End Date"/>
             </xpath>
         </field>
     </record>

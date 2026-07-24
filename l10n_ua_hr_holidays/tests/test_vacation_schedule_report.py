@@ -22,48 +22,79 @@ class TestVacationScheduleReport(TransactionCase):
         cls.social_type = cls.env.ref(
             'l10n_ua_hr_holidays.leave_type_social_children')
 
-    def _create_leave(self, leave_type, date_from, date_to):
-        return self.env['hr.leave'].create({
+    def _create_leave(self, leave_type, date_from, date_to, **extra):
+        vals = {
             'name': 'Test leave',
             'employee_id': self.employee.id,
             'holiday_status_id': leave_type.id,
             'request_date_from': date_from,
             'request_date_to': date_to,
-        })
+        }
+        vals.update(extra)
+        return self.env['hr.leave'].create(vals)
+
+    def _work_period(self, leave_type, start, end, index, employee=None,
+                     **extra):
+        """Create a work-year accounting period for the given employee/type."""
+        vals = {
+            'employee_id': (employee or self.employee).id,
+            'leave_type_id': leave_type.id,
+            'period_start': start,
+            'period_end': end,
+            'period_index': index,
+            'entitled_days': 24,
+        }
+        vals.update(extra)
+        return self.env['hr.vacation.balance'].create(vals)
 
     # ------------------------------------------------------------------
     # Schedule: planned days pulled from the right period
     # ------------------------------------------------------------------
 
-    def test_schedule_generate_work_period(self):
-        """action_generate_lines resolves a work-year leave type by the work
-        year that overlaps Jul 1 of the schedule year and pulls its
-        total_available (entitled + carried over)."""
-        # Work year containing 2025-07-01 for a 2024-07-15 hire:
-        # 2024-07-15 .. 2025-07-14 (index 1).
-        balance = self.env['hr.vacation.balance'].create({
-            'employee_id': self.employee.id,
-            'leave_type_id': self.annual_type.id,
-            'period_start': date(2024, 7, 15),
-            'period_end': date(2025, 7, 14),
-            'period_index': 1,
-            'entitled_days': 24,
-            'carried_over': 6,
-        })
-        self.assertEqual(balance.total_available, 30)
+    def test_schedule_leaf_shows_its_charged_period(self):
+        """A leave is picked by its START DATE (in the schedule year) and its
+        row shows the accounting period it is charged to, even when the leave
+        dates fall outside that period — e.g. a March 2026 leave taken against
+        the 2024/25 period appears in the 2026 schedule with that period."""
+        past_period = self._work_period(
+            self.annual_type, date(2024, 7, 15), date(2025, 7, 14), 1)
+        # Leave dated March 2026, charged to the past period (dates outside it).
+        leave = self._create_leave(
+            self.annual_type, date(2026, 3, 2), date(2026, 3, 6),
+            vacation_balance_id=past_period.id)
 
         schedule = self.env['hr.vacation.schedule'].create({
-            'year': 2025,
+            'year': 2026,
             'company_id': self.employee.company_id.id,
         })
         schedule.action_generate_lines()
 
-        # One current-period row per balance; check the one for this balance.
         line = schedule.line_ids.filtered(
-            lambda l: l.employee_id == self.employee
-            and l.vacation_balance_id == balance)
+            lambda l: l.employee_id == self.employee and l.leave_id == leave)
         self.assertEqual(len(line), 1)
-        self.assertEqual(line.planned_days, 30)
+        # The row shows the charged period...
+        self.assertEqual(line.vacation_balance_id, past_period)
+        # ...and its "Month / vacation period" cell is never empty.
+        self.assertTrue(line.vacation_period_display)
+
+    def test_schedule_leaf_outside_year_not_shown(self):
+        """A leave whose start date is NOT in the schedule year is not listed,
+        even if its charged period would otherwise match."""
+        period = self._work_period(
+            self.annual_type, date(2024, 7, 15), date(2025, 7, 14), 1)
+        leave = self._create_leave(
+            self.annual_type, date(2025, 9, 1), date(2025, 9, 5),
+            vacation_balance_id=period.id)
+
+        schedule = self.env['hr.vacation.schedule'].create({
+            'year': 2026,
+            'company_id': self.employee.company_id.id,
+        })
+        schedule.action_generate_lines()
+
+        lines = schedule.line_ids.filtered(
+            lambda l: l.employee_id == self.employee)
+        self.assertFalse(lines.filtered(lambda l: l.leave_id == leave))
 
     # ------------------------------------------------------------------
     # Schedule: one row per leave, actual days per leave
@@ -130,10 +161,9 @@ class TestVacationScheduleReport(TransactionCase):
         self.assertEqual(basic_line.actual_days, basic.calendar_days)
         self.assertEqual(add_line.actual_days, 0)
 
-    def test_schedule_no_leave_falls_back_to_entitlement(self):
-        """A current-year period the employee has a balance for is listed even
-        with no planned leave — as its own row, no linked leave, empty dates,
-        planned days = the period's total available."""
+    def test_schedule_empty_period_not_shown(self):
+        """A period with NO leave charged to it is NOT listed, even when it has
+        full entitlement available — only periods with linked leaves appear."""
         bal = self.env['hr.vacation.balance'].create({
             'employee_id': self.employee.id,
             'leave_type_id': self.annual_type.id,
@@ -149,13 +179,10 @@ class TestVacationScheduleReport(TransactionCase):
         })
         schedule.action_generate_lines()
 
-        line = schedule.line_ids.filtered(
-            lambda l: l.employee_id == self.employee
-            and l.vacation_balance_id == bal)
-        self.assertEqual(len(line), 1)
-        self.assertFalse(line.leave_id)
-        self.assertEqual(line.planned_days, 30)
-        self.assertEqual(line.vacation_period_display, '')
+        lines = schedule.line_ids.filtered(
+            lambda l: l.employee_id == self.employee)
+        self.assertFalse(
+            lines.filtered(lambda l: l.vacation_balance_id == bal))
 
     def test_schedule_hides_untouched_past_period(self):
         """A past period with NO leaves taken (used = 0) is not listed, even
@@ -182,17 +209,15 @@ class TestVacationScheduleReport(TransactionCase):
         self.assertFalse(
             lines.filtered(lambda l: l.vacation_balance_id == untouched))
 
-    def test_schedule_shows_prior_period_ending_within_year(self):
-        """A previous work year that STARTED before the schedule year but ends
-        inside it (Jun-May work year for a 2026 schedule) still counts as a
-        past period and is listed with its own unused days (entitled - used)."""
+    def test_schedule_no_rows_when_no_leaves(self):
+        """An employee with no leave starting in the schedule year gets NO rows
+        at all — there is no placeholder, so the report never has empty date
+        cells. (A balance with unused days but no leave does not add a row.)"""
         emp = self.env['hr.employee'].create({
-            'name': 'June Hire',
+            'name': 'No Leaves',
             'hire_date': date(2024, 6, 1),
         })
-        # Work year 2025-06-01 .. 2026-05-31: ends inside 2026 but started in
-        # 2025, so it is a previous period relative to the 2026 schedule.
-        prior = self.env['hr.vacation.balance'].create({
+        self.env['hr.vacation.balance'].create({
             'employee_id': emp.id,
             'leave_type_id': self.annual_type.id,
             'period_start': date(2025, 6, 1),
@@ -200,18 +225,6 @@ class TestVacationScheduleReport(TransactionCase):
             'period_index': 2,
             'entitled_days': 24,
         })
-        # Use part of that period's entitlement (a 2025 leave, not in the 2026
-        # schedule year) so unused = entitled - used > 0.
-        leave = self.env['hr.leave'].create({
-            'name': 'Prior-year leave',
-            'employee_id': emp.id,
-            'holiday_status_id': self.annual_type.id,
-            'request_date_from': date(2025, 9, 1),
-            'request_date_to': date(2025, 9, 10),
-        })
-        leave.action_approve()
-        self.assertTrue(prior.used_days > 0)
-        expected_unused = int(round(prior.entitled_days - prior.used_days))
 
         schedule = self.env['hr.vacation.schedule'].create({
             'year': 2026,
@@ -219,11 +232,8 @@ class TestVacationScheduleReport(TransactionCase):
         })
         schedule.action_generate_lines()
 
-        lines = schedule.line_ids.filtered(lambda l: l.employee_id == emp)
-        prior_line = lines.filtered(lambda l: l.vacation_balance_id == prior)
-        self.assertEqual(len(prior_line), 1)
-        self.assertFalse(prior_line.leave_id)
-        self.assertEqual(prior_line.planned_days, expected_unused)
+        self.assertFalse(
+            schedule.line_ids.filtered(lambda l: l.employee_id == emp))
 
     def test_schedule_includes_non_annual_balance_types(self):
         """A leave of any tracked type (e.g. Chornobyl additional leave, which
@@ -251,10 +261,10 @@ class TestVacationScheduleReport(TransactionCase):
         self.assertEqual(len(chorn_line), 1)
         self.assertEqual(chorn_line.leave_type_id, chornobyl)
 
-    def test_schedule_shows_current_period_without_leave(self):
-        """A current-year period the employee has a balance for (the annual
-        basic period) is listed even when the only planned leave is of another
-        type, so the entitlement is not hidden."""
+    def test_schedule_period_without_leave_hidden_other_type_shown(self):
+        """A period with NO leave charged to it is not listed, but a leave of
+        another type still shows: the empty annual basic period is hidden while
+        the Chornobyl leave appears."""
         chornobyl = self.env.ref('l10n_ua_hr_holidays.leave_type_chornobyl')
         # Hired Jan 1 -> the annual basic work year is the calendar year 2026.
         emp = self.env['hr.employee'].create({
@@ -269,7 +279,8 @@ class TestVacationScheduleReport(TransactionCase):
             'period_index': 1,
             'entitled_days': 24,
         })
-        # A leave of a DIFFERENT type (Chornobyl) in 2026.
+        # A leave of a DIFFERENT type (Chornobyl) in 2026 — the annual basic
+        # period stays leaveless.
         self.env['hr.leave'].create({
             'name': 'Chornobyl 2026',
             'employee_id': emp.id,
@@ -285,22 +296,29 @@ class TestVacationScheduleReport(TransactionCase):
         schedule.action_generate_lines()
 
         lines = schedule.line_ids.filtered(lambda l: l.employee_id == emp)
-        # The Chornobyl leave shows, AND the annual basic period (no leave)
-        # still gets its own row.
+        # The Chornobyl leave shows...
         self.assertTrue(lines.filtered(lambda l: l.leave_type_id == chornobyl))
-        basic_line = lines.filtered(lambda l: l.vacation_balance_id == basic_bal)
-        self.assertEqual(len(basic_line), 1)
-        self.assertFalse(basic_line.leave_id)
-        self.assertEqual(basic_line.leave_type_id, self.annual_type)
+        # ...but the annual basic period (no leave charged) is NOT listed.
+        self.assertFalse(
+            lines.filtered(lambda l: l.vacation_balance_id == basic_bal))
 
     def test_report_lines_grouped_by_employee(self):
         """The PDF report helper groups an employee's leave rows so the name/No/
         job cells rowspan across all of them, and leaves of different types are
         separate type-groups (separate "Leave Type" cells)."""
+        # Link each leave to the schedule year's own work period so the
+        # schedule lists exactly one row per leave (no extra current-period row
+        # for a period the leaf leaves uncovered).
+        annual_bal = self._work_period(
+            self.annual_type, date(2024, 7, 15), date(2025, 7, 14), 1)
+        add_bal = self._work_period(
+            self.additional_type, date(2024, 7, 15), date(2025, 7, 14), 1)
         self._create_leave(
-            self.annual_type, date(2025, 2, 10), date(2025, 2, 14))
+            self.annual_type, date(2025, 2, 10), date(2025, 2, 14),
+            vacation_balance_id=annual_bal.id)
         self._create_leave(
-            self.additional_type, date(2025, 8, 1), date(2025, 8, 3))
+            self.additional_type, date(2025, 8, 1), date(2025, 8, 3),
+            vacation_balance_id=add_bal.id)
 
         schedule = self.env['hr.vacation.schedule'].create({
             'year': 2025,
@@ -320,10 +338,17 @@ class TestVacationScheduleReport(TransactionCase):
     def test_report_merges_same_leave_type(self):
         """Two leaves of the SAME type merge into one type-group, so the
         "Leave Type" cell rowspans both rows."""
+        # Both leaves charged to the same schedule-year work period, so the
+        # schedule lists exactly the two leaf rows (no extra current-period
+        # row).
+        annual_bal = self._work_period(
+            self.annual_type, date(2024, 7, 15), date(2025, 7, 14), 1)
         self._create_leave(
-            self.annual_type, date(2025, 2, 10), date(2025, 2, 14))
+            self.annual_type, date(2025, 2, 10), date(2025, 2, 14),
+            vacation_balance_id=annual_bal.id)
         self._create_leave(
-            self.annual_type, date(2025, 6, 2), date(2025, 6, 6))
+            self.annual_type, date(2025, 6, 2), date(2025, 6, 6),
+            vacation_balance_id=annual_bal.id)
 
         schedule = self.env['hr.vacation.schedule'].create({
             'year': 2025,

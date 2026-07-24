@@ -1,5 +1,3 @@
-from datetime import date
-
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
@@ -61,32 +59,19 @@ class HrVacationSchedule(models.Model):
         
         employees = self.env['hr.employee'].search(domain)
 
-        # Every leave type tracked with an accounting period (i.e. everything
-        # shown in "Vacation Balances") is planned in the schedule — annual,
-        # additional, Chornobyl, veteran, social, etc. Each may accrue on a
-        # work year or a calendar year (resolved per period_type in
-        # _find_period_balance).
-        vacation_types = self.env['hr.leave.type'].search([
-            ('ua_leave_category', '!=', False),
-            ('company_id', 'in', [self.company_id.id, False]),
-        ])
-        # Used only for the placeholder row of an employee with no balances at
-        # all (core annual basic entitlement).
-        default_type = vacation_types.filtered(
-            lambda t: t.ua_leave_category == 'annual_basic')[:1]
-
         year_start = fields.Date.from_string(f'{self.year}-01-01')
         year_end = fields.Date.from_string(f'{self.year}-12-31')
 
         Line = self.env['hr.vacation.schedule.line']
         for employee in employees:
-            # Balances already represented by a row — never list them twice.
-            shown_balance_ids = set()
-            has_row = False
-
-            # 1. One row per planned leave (any tracked type) that STARTS in the
-            #    schedule's calendar year — each with its own type, period,
-            #    dates.
+            # One row per leave (any tracked type, any state except cancelled or
+            # refused — planned, approved or already taken) whose START DATE
+            # falls in the schedule year. Each row shows the accounting period
+            # the leave is charged to, which may belong to a different year
+            # (a March 2026 leave taken against the 2025 period appears in the
+            # 2026 schedule together with its 2025 period). Only leaves are
+            # listed — a period with unused days but no leave is not — so the
+            # "Month / vacation period" column never has an empty cell.
             leaves = self.env['hr.leave'].search([
                 ('employee_id', '=', employee.id),
                 ('state', 'not in', ('cancel', 'refuse')),
@@ -104,98 +89,8 @@ class HrVacationSchedule(models.Model):
                     'vacation_balance_id': leave.vacation_balance_id.id,
                     'planned_days': leave.calendar_days,
                 })
-                has_row = True
-                if leave.vacation_balance_id:
-                    shown_balance_ids.add(leave.vacation_balance_id.id)
-
-            # 2. One row per current-year accounting period the employee has a
-            #    balance for (any tracked type) that no leave above already
-            #    covers — so entitlements/periods with no leave planned yet
-            #    (e.g. the annual basic period) still appear.
-            for leave_type in vacation_types:
-                bal = self._find_period_balance(employee, leave_type)
-                if bal and bal.id not in shown_balance_ids:
-                    Line.create({
-                        'schedule_id': self.id,
-                        'employee_id': employee.id,
-                        'department_id': employee.department_id.id,
-                        'leave_type_id': leave_type.id,
-                        'vacation_balance_id': bal.id,
-                        'planned_days': int(round(bal.total_available)),
-                    })
-                    has_row = True
-                    shown_balance_ids.add(bal.id)
-
-            # 3. Past accounting periods that were PARTIALLY used — some days
-            #    taken, some left unused. "Past" = the period STARTED before the
-            #    schedule year began (a Jun–May work year that ends inside the
-            #    schedule year still counts). A past period with no leaves taken
-            #    (used = 0) or fully used (unused = 0) is not listed. Shows the
-            #    period's OWN unused days (entitled − used, excluding carry-over)
-            #    so periods are not double-counted.
-            past_balances = self.env['hr.vacation.balance'].search([
-                ('employee_id', '=', employee.id),
-                ('leave_type_id', 'in', vacation_types.ids),
-                ('period_start', '<', year_start),
-                ('used_days', '>', 0),
-                ('id', 'not in', list(shown_balance_ids)),
-            ], order='period_start')
-            for bal in past_balances:
-                unused = (bal.entitled_days or 0) - (bal.used_days or 0)
-                if unused <= 0:
-                    continue
-                Line.create({
-                    'schedule_id': self.id,
-                    'employee_id': employee.id,
-                    'department_id': employee.department_id.id,
-                    'leave_type_id': bal.leave_type_id.id,
-                    'vacation_balance_id': bal.id,
-                    'planned_days': int(round(unused)),
-                })
-                has_row = True
-
-            # 4. Employee with no leaves and no balances at all: keep them on
-            #    the schedule with a single core-entitlement placeholder row.
-            if not has_row:
-                Line.create({
-                    'schedule_id': self.id,
-                    'employee_id': employee.id,
-                    'department_id': employee.department_id.id,
-                    'leave_type_id': default_type.id if default_type else False,
-                    'vacation_balance_id': False,
-                    'planned_days': (default_type.annual_days
-                                     if default_type else 24),
-                })
 
         return True
-
-    def _find_period_balance(self, employee, leave_type):
-        """Return the vacation balance matching this schedule's year for the
-        given leave type, resolved by its accounting period, or an empty
-        recordset when none exists.
-
-        * work year: the period is anchored to the employee's hire date, so
-          mid-year (Jul 1) of the schedule year is used to pick the work year
-          that overlaps it, then matched by period_start.
-        * calendar year: matched directly by the balance's year.
-        """
-        self.ensure_one()
-        Balance = self.env['hr.vacation.balance']
-        if leave_type.period_type == 'work':
-            start, _end, _index = employee._get_work_year_for_date(
-                date(self.year, 7, 1))
-            if not start:
-                return Balance.browse()
-            return Balance.search([
-                ('employee_id', '=', employee.id),
-                ('leave_type_id', '=', leave_type.id),
-                ('period_start', '=', start),
-            ], limit=1)
-        return Balance.search([
-            ('employee_id', '=', employee.id),
-            ('leave_type_id', '=', leave_type.id),
-            ('year', '=', self.year),
-        ], limit=1)
 
     def action_confirm(self):
         self.write({'state': 'confirmed'})
