@@ -317,14 +317,14 @@
     		        <tr>
         		    <td style="border: 1px solid #000; padding: 3px;">
             			<t t-esc="leave.holiday_status_id.name or ''"/>
-                            </td>
+        		    </td>
         		    <td style="border: 1px solid #000; padding: 3px;">
-                                <t t-if="'vacation_balance_id' in leave._fields and leave.vacation_balance_id">
-                                    <t t-esc="leave.vacation_balance_id.period_start.strftime('%d.%m.%Y')"/>-<t t-esc="leave.vacation_balance_id.period_end.strftime('%d.%m.%Y')"/>
-                                </t>
-                                <t t-else="">
-                                    <t t-esc="leave.vacation_year or (leave.date_from.year if leave.date_from else '')"/>
-                                </t>
+            			<t t-if="'vacation_balance_id' in leave._fields and leave.vacation_balance_id">
+                		    <t t-esc="leave.vacation_balance_id.period_start.strftime('%d.%m.%Y')"/>-<t t-esc="leave.vacation_balance_id.period_end.strftime('%d.%m.%Y')"/>
+            			</t>
+            			<t t-else="">
+                		    <t t-esc="leave.vacation_year or (leave.date_from.year if leave.date_from else '')"/>
+            			</t>
         		    </td>
         		    <td style="border: 1px solid #000; padding: 3px;">
             			<t t-if="leave.date_from"><t t-esc="leave.date_from.strftime('%d.%m.%Y')"/></t>

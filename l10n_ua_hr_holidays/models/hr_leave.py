@@ -18,6 +18,7 @@ class HrLeave(models.Model):
         compute='_compute_working_days',
         store=True
     )
+
     average_daily_salary = fields.Float(
         string='Average Daily Salary',
         digits=(16, 2)
@@ -40,6 +41,7 @@ class HrLeave(models.Model):
         index=True,
         domain=[('order_type', '=', 'vacation')],
     )
+
     order_count = fields.Integer(
         string='Orders',
         compute='_compute_order_count',
@@ -87,6 +89,7 @@ class HrLeave(models.Model):
         compute='_compute_remaining_after',
         store=True
     )
+
     vacation_year = fields.Integer(
         string='Vacation Year',
         help='Year of the leave start date. Computed automatically and '
@@ -95,6 +98,7 @@ class HrLeave(models.Model):
         store=True,
         readonly=True,
     )
+
     vacation_balance_id = fields.Many2one(
         'hr.vacation.balance',
         string='Vacation Period',
@@ -500,7 +504,7 @@ class HrLeave(models.Model):
             self._recompute_subsequent_leaves()
         # Rollup fields on hr.vacation.balance.
         if self._BALANCE_TRIGGER_FIELDS & vals.keys():
-            self._recompute_balances_for_keys(old_balance_keys | self._balance_keys())                   
+            self._recompute_balances_for_keys(old_balance_keys | self._balance_keys())
         return result
 
     def _action_validate(self, *args, **kwargs):

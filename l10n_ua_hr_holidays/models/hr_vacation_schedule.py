@@ -25,11 +25,13 @@ class HrVacationSchedule(models.Model):
         default=lambda self: self.env.company,
         required=True
     )
+
     line_ids = fields.One2many(
         'hr.vacation.schedule.line',
         'schedule_id',
         string='Schedule Lines'
     )
+
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
@@ -199,6 +201,7 @@ class HrVacationScheduleLine(models.Model):
         store=True,
         readonly=False
     )
+
     job_id = fields.Many2one(
         'hr.job',
         string='Job Position',
@@ -240,11 +243,13 @@ class HrVacationScheduleLine(models.Model):
         compute='_compute_period_days',
         store=True
     )
+
     total_planned = fields.Integer(
         string='Total Planned',
         compute='_compute_period_days',
         store=True
     )
+
     actual_days = fields.Integer(
         string='Actual Days',
         compute='_compute_actual_days',
