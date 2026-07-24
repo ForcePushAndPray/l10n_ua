@@ -33,6 +33,21 @@ class TestVacationScheduleReport(TransactionCase):
         vals.update(extra)
         return self.env['hr.leave'].create(vals)
 
+    def _new_schedule(self, year, company=None):
+        """Create a vacation schedule for (year, company), first removing any
+        existing one for that pair. unique(year, company_id) is a global DB
+        constraint, so a row left over from another test or a previous run on a
+        persistent DB would otherwise make the create clash."""
+        company = company or self.employee.company_id
+        self.env['hr.vacation.schedule'].search([
+            ('year', '=', year),
+            ('company_id', '=', company.id),
+        ]).unlink()
+        return self.env['hr.vacation.schedule'].create({
+            'year': year,
+            'company_id': company.id,
+        })
+
     def _work_period(self, leave_type, start, end, index, employee=None,
                      **extra):
         """Create a work-year accounting period for the given employee/type."""
@@ -63,10 +78,7 @@ class TestVacationScheduleReport(TransactionCase):
             self.annual_type, date(2026, 3, 2), date(2026, 3, 6),
             vacation_balance_id=past_period.id)
 
-        schedule = self.env['hr.vacation.schedule'].create({
-            'year': 2026,
-            'company_id': self.employee.company_id.id,
-        })
+        schedule = self._new_schedule(2026, self.employee.company_id)
         schedule.action_generate_lines()
 
         line = schedule.line_ids.filtered(
@@ -86,10 +98,7 @@ class TestVacationScheduleReport(TransactionCase):
             self.annual_type, date(2025, 9, 1), date(2025, 9, 5),
             vacation_balance_id=period.id)
 
-        schedule = self.env['hr.vacation.schedule'].create({
-            'year': 2026,
-            'company_id': self.employee.company_id.id,
-        })
+        schedule = self._new_schedule(2026, self.employee.company_id)
         schedule.action_generate_lines()
 
         lines = schedule.line_ids.filtered(
@@ -108,10 +117,7 @@ class TestVacationScheduleReport(TransactionCase):
         additional = self._create_leave(
             self.additional_type, date(2025, 8, 1), date(2025, 8, 3))
 
-        schedule = self.env['hr.vacation.schedule'].create({
-            'year': 2025,
-            'company_id': self.employee.company_id.id,
-        })
+        schedule = self._new_schedule(2025, self.employee.company_id)
         schedule.action_generate_lines()
 
         lines = schedule.line_ids.filtered(
@@ -148,10 +154,7 @@ class TestVacationScheduleReport(TransactionCase):
             self.additional_type, date(2025, 8, 1), date(2025, 8, 3))
         # additional stays in a planning state (not approved)
 
-        schedule = self.env['hr.vacation.schedule'].create({
-            'year': 2025,
-            'company_id': self.employee.company_id.id,
-        })
+        schedule = self._new_schedule(2025, self.employee.company_id)
         schedule.action_generate_lines()
 
         lines = schedule.line_ids.filtered(
@@ -173,10 +176,7 @@ class TestVacationScheduleReport(TransactionCase):
             'entitled_days': 24,
             'carried_over': 6,
         })
-        schedule = self.env['hr.vacation.schedule'].create({
-            'year': 2025,
-            'company_id': self.employee.company_id.id,
-        })
+        schedule = self._new_schedule(2025, self.employee.company_id)
         schedule.action_generate_lines()
 
         lines = schedule.line_ids.filtered(
@@ -198,10 +198,7 @@ class TestVacationScheduleReport(TransactionCase):
         })
         self.assertEqual(untouched.used_days, 0)
 
-        schedule = self.env['hr.vacation.schedule'].create({
-            'year': 2027,
-            'company_id': self.employee.company_id.id,
-        })
+        schedule = self._new_schedule(2027, self.employee.company_id)
         schedule.action_generate_lines()
 
         lines = schedule.line_ids.filtered(
@@ -226,10 +223,7 @@ class TestVacationScheduleReport(TransactionCase):
             'entitled_days': 24,
         })
 
-        schedule = self.env['hr.vacation.schedule'].create({
-            'year': 2026,
-            'company_id': emp.company_id.id,
-        })
+        schedule = self._new_schedule(2026, emp.company_id)
         schedule.action_generate_lines()
 
         self.assertFalse(
@@ -249,10 +243,7 @@ class TestVacationScheduleReport(TransactionCase):
         })
         leave.action_approve()
 
-        schedule = self.env['hr.vacation.schedule'].create({
-            'year': 2025,
-            'company_id': self.employee.company_id.id,
-        })
+        schedule = self._new_schedule(2025, self.employee.company_id)
         schedule.action_generate_lines()
 
         lines = schedule.line_ids.filtered(
@@ -289,10 +280,7 @@ class TestVacationScheduleReport(TransactionCase):
             'request_date_to': date(2026, 4, 4),
         }).action_approve()
 
-        schedule = self.env['hr.vacation.schedule'].create({
-            'year': 2026,
-            'company_id': emp.company_id.id,
-        })
+        schedule = self._new_schedule(2026, emp.company_id)
         schedule.action_generate_lines()
 
         lines = schedule.line_ids.filtered(lambda l: l.employee_id == emp)
@@ -320,10 +308,7 @@ class TestVacationScheduleReport(TransactionCase):
             self.additional_type, date(2025, 8, 1), date(2025, 8, 3),
             vacation_balance_id=add_bal.id)
 
-        schedule = self.env['hr.vacation.schedule'].create({
-            'year': 2025,
-            'company_id': self.employee.company_id.id,
-        })
+        schedule = self._new_schedule(2025, self.employee.company_id)
         schedule.action_generate_lines()
 
         groups = schedule._report_lines_grouped()
@@ -350,10 +335,7 @@ class TestVacationScheduleReport(TransactionCase):
             self.annual_type, date(2025, 6, 2), date(2025, 6, 6),
             vacation_balance_id=annual_bal.id)
 
-        schedule = self.env['hr.vacation.schedule'].create({
-            'year': 2025,
-            'company_id': self.employee.company_id.id,
-        })
+        schedule = self._new_schedule(2025, self.employee.company_id)
         schedule.action_generate_lines()
 
         grp = [g for g in schedule._report_lines_grouped()

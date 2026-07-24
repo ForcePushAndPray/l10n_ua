@@ -11,7 +11,7 @@
                  before the leave is approved. Hidden once an order exists or
                  for leave types that do not issue orders. -->
             <xpath expr="//header" position="inside">
-                <button string="Створити наказ" name="action_create_order"
+                <button string="Create Order" name="action_create_order"
                         type="object" class="oe_highlight"
                         invisible="not can_create_order or not id"/>
             </xpath>
@@ -27,7 +27,7 @@
                             class="oe_stat_button" icon="fa-file-text-o"
                             invisible="not leave_type_create_order">
                         <field name="order_count" widget="statinfo"
-                               string="Накази"/>
+                               string="Orders"/>
                     </button>
                 </div>
             </xpath>

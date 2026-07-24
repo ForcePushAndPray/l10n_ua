@@ -14,7 +14,7 @@ class HrEmployeeVacationSummaryReport(models.Model):
 
     name = fields.Char(compute='_compute_name', store=True)
     report_date = fields.Date(
-        string='На дату',
+        string='As of Date',
         required=True,
         default=fields.Date.context_today,
         tracking=True,
@@ -81,22 +81,20 @@ class HrEmployeeVacationSummaryReport(models.Model):
         Balance = self.env['hr.vacation.balance']
         for rec in self:
             ref_date = rec.report_date or fields.Date.context_today(rec)
+            # Make sure every employee/auto-calc leave type has the period the
+            # selected date falls into. generate_balances backfills the whole
+            # chain up to that date, so a missing period (including one past the
+            # last existing period) is created and then picked up below.
             Balance.sudo().generate_balances(up_to_date=ref_date)
-            year_start = fields.Date.from_string(f'{rec.year}-01-01')
-            year_end = fields.Date.from_string(f'{rec.year}-12-31')
-            # Two accounting periods coexist:
-            #  * calendar-year balances match the report year directly;
-            #  * work-year balances are anchored to hire dates, so any work
-            #    year that overlaps the report's calendar year is included.
+            # Select the period each employee/leave type is in on that date —
+            # period_start <= date <= period_end — exactly like the Vacation
+            # Balances (Залишки відпусток) report. remaining_days is the same
+            # field, so the figures agree.
             balances = Balance.search(
                 [
                     ('employee_id.company_id', '=', rec.company_id.id),
-                    '|',
-                        '&', ('period_type', '=', 'calendar'),
-                             ('year', '=', rec.year),
-                        '&', '&', ('period_type', '=', 'work'),
-                                  ('period_start', '<=', year_end),
-                                  ('period_end', '>=', year_start),
+                    ('period_start', '<=', ref_date),
+                    ('period_end', '>=', ref_date),
                 ],
                 order='employee_id, leave_type_id',
             )

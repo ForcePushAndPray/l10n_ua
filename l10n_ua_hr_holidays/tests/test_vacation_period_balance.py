@@ -18,6 +18,19 @@ class TestVacationPeriodBalance(TransactionCase):
             'l10n_ua_hr_holidays.leave_type_annual_basic')
         cls.social_type = cls.env.ref(
             'l10n_ua_hr_holidays.leave_type_social_children')
+        # generate_balances filters employees on contract_id.state == 'open'.
+        # Odoo 19 keeps the contract period on the employee's version, so open
+        # one (start set, no end) — otherwise the employee is skipped and no
+        # balances are generated for it.
+        version = cls.employee.with_context(active_test=False).version_ids[:1]
+        if version:
+            version.write({
+                'contract_date_start': date(2024, 7, 15),
+                'contract_date_end': False,
+            })
+        # These tests place leaves shortly after hire and do not exercise the
+        # 6-month first-annual-leave experience rule (which the open contract
+        cls.annual_type.requires_experience = False
 
     def _create_leave(self, leave_type, date_from, date_to, **extra):
         vals = {
@@ -80,6 +93,10 @@ class TestVacationPeriodBalance(TransactionCase):
         """The accounting period is a manual choice: changing the leave dates
         does NOT re-point the leave at a different period. vacation_year still
         follows the start date and is read-only."""
+        # Keep the leave editable regardless of the type's stored validation
+        # config: a 'no_validation' type (as a persistent DB may have) would
+        # auto-validate on create and then block the date change below.
+        self.annual_type.leave_validation_type = 'hr'
         b1 = self.env['hr.vacation.balance'].create({
             'employee_id': self.employee.id,
             'leave_type_id': self.annual_type.id,
@@ -530,6 +547,11 @@ class TestVacationPeriodBalance(TransactionCase):
         """generate_balances (no explicit types) processes only leave types
         flagged with ua_auto_calc_balance."""
         Balance = self.env['hr.vacation.balance']
+        # Make sure the type otherwise qualifies for the default selection
+        # (transferable and day-accruing) so this test isolates the
+        # ua_auto_calc_balance flag regardless of the type's stored config on
+        # the database (which a persistent test DB may have altered).
+        self.annual_type.write({'is_transferable': True, 'annual_days': 24})
         # Flag OFF -> nothing generated for this type (annual_basic ships
         # with the flag on, so turn it off explicitly for this assertion).
         self.annual_type.ua_auto_calc_balance = False

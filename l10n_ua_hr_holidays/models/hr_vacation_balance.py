@@ -458,7 +458,8 @@ class HrVacationBalance(models.Model):
         The reference date is `up_to_date` when given (used by the "as of a
         date" summary report), otherwise the reference date of `year`, or today.
         """
-        up_to_date = self._ref_date_for_year(year) if year else fields.Date.today()
+        if up_to_date is None:
+            up_to_date = self._ref_date_for_year(year) if year else fields.Date.today()
  
         domain = []
         if 'contract_id' in self.env['hr.employee']._fields:

@@ -164,31 +164,33 @@ class TestHrEmployeeComputedFields(TestHrUaBase):
         self.assertEqual(employee.children_count, 2)
 
     def test_dependents_count(self):
-        """Test dependents_count computed field."""
+        """dependents_count counts children who are minors (<18), full-time
+        students or disabled — the age/student/disability logic per PSP rules.
+        The is_dependent flag is a manual marker only and does NOT affect it."""
         employee = self._create_employee()
 
-        # Add dependent child
-        child1 = self.env['hr.employee.child'].create({
+        # Minor child -> counts as a dependent (age < 18).
+        self.env['hr.employee.child'].create({
             'employee_id': employee.id,
-            'name': 'Dependent Child',
+            'name': 'Minor Child',
             'birthday': date.today() - relativedelta(years=10),
-            'is_dependent': True,
         })
         employee.invalidate_recordset(['dependents_count'])
         self.assertEqual(employee.dependents_count, 1)
 
-        # Add non-dependent child (adult)
+        # Adult, non-student, non-disabled child -> NOT a dependent, even with
+        # the manual is_dependent flag set.
         child2 = self.env['hr.employee.child'].create({
             'employee_id': employee.id,
             'name': 'Adult Child',
             'birthday': date.today() - relativedelta(years=25),
-            'is_dependent': False,
+            'is_dependent': True,
         })
         employee.invalidate_recordset(['dependents_count'])
         self.assertEqual(employee.dependents_count, 1)  # Still 1
 
-        # Make adult child dependent
-        child2.is_dependent = True
+        # Marking the adult as a full-time student makes them a dependent.
+        child2.is_student = True
         employee.invalidate_recordset(['dependents_count'])
         self.assertEqual(employee.dependents_count, 2)
 

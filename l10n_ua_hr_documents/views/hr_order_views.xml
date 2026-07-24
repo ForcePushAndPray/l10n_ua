@@ -38,7 +38,7 @@
                                 class="oe_stat_button" icon="fa-plane"
                                 invisible="order_type != 'vacation'">
                             <field name="leave_count" widget="statinfo"
-                                   string="Відпустки"/>
+                                   string="Time Off"/>
                         </button>
                     </div>
                     <group>

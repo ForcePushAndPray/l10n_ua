@@ -31,7 +31,6 @@
                     <strong t-esc="company.name"/>
                     <h3 style="margin: 10px 0;">ПІДСУМОК ВІДПУСТОК</h3>
                     <p style="font-size: 10pt;">
-                        за <span t-esc="report_doc.year"/> рік
                         на <span t-esc="report_doc.report_date and report_doc.report_date.strftime('%d.%m.%Y')"/>
                     </p>
                 </div>

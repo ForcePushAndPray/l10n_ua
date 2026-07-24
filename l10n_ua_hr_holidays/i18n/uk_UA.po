@@ -1448,3 +1448,39 @@ msgstr "Відпустка"
 #: model:ir.actions.report,name:l10n_ua_hr_holidays.action_report_hr_vacation_schedule
 msgid "Print"
 msgstr "Друкувати"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_employee_vacation_summary_report__report_date
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_employee_vacation_summary_report_view_search
+msgid "As of Date"
+msgstr "На дату"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_employee_vacation_summary_report_view_form
+msgid "Generate"
+msgstr "Сформувати"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_employee_vacation_summary_report_view_form
+msgid "Edit"
+msgstr "Редагувати"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_employee_vacation_summary_report_view_form
+msgid "Parameters"
+msgstr "Параметри"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_employee_vacation_summary_report_view_form
+msgid "Result"
+msgstr "Результат"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__order_count
+msgid "Orders"
+msgstr "Накази"
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_employee_vacation_summary_report_view_form
+msgid "Additional notes..."
+msgstr "Додаткові нотатки..."
