@@ -36,12 +36,6 @@
               action="l10n_ua_bank_transaction_action"
               sequence="20"/>
 
-    <menuitem id="menu_ua_bank_generate_statement"
-              name="Generate Statement"
-              parent="menu_ua_bank_statements_root"
-              action="l10n_ua_bank_statement_wizard_action"
-              sequence="30"/>
-
     <!-- Sync Jobs submenu -->
     <menuitem id="menu_ua_bank_sync_root"
               name="Sync Jobs"
@@ -66,10 +60,10 @@
               action="l10n_ua_bank_sync_config_action"
               sequence="10"/>
 
-    <menuitem id="menu_ua_bank_match_rules"
-              name="Matching Rules"
+    <menuitem id="menu_ua_bank_reconcile_models"
+              name="Reconciliation Models"
               parent="menu_ua_bank_config"
-              action="l10n_ua_bank_match_rule_action"
+              action="account.action_account_reconcile_model"
               sequence="20"/>
 
 </odoo>

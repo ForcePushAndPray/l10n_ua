@@ -49,4 +49,16 @@
         <field name="country" ref="base.ua"/>
     </record>
 
+    <record id="bank_ukrgasbank" model="res.bank">
+        <field name="name">Укргазбанк</field>
+        <field name="ua_mfo">320478</field>
+        <field name="country" ref="base.ua"/>
+    </record>
+
+    <record id="bank_vostok" model="res.bank">
+        <field name="name">VST Bank (Банк Восток)</field>
+        <field name="ua_mfo">307123</field>
+        <field name="country" ref="base.ua"/>
+    </record>
+
 </odoo>

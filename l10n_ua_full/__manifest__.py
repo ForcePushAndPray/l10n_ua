@@ -67,6 +67,7 @@ PRRO (Cash Registers)
         'l10n_ua_hr_documents',
         'l10n_ua_hr_documents_certificates',
         'l10n_ua_hr_holidays',
+        'l10n_ua_hr_fss',
         'l10n_ua_hr_attendance_sheet',
         # Accounting & Tax
         'l10n_ua_accounting',
@@ -81,6 +82,10 @@ PRRO (Cash Registers)
         'l10n_ua_bank_sync',
         'l10n_ua_bank_privat',
         'l10n_ua_bank_mono',
+        'l10n_ua_bank_vst',
+        'l10n_ua_bank_payment',
+        'l10n_ua_bank_openbanking',
+        'l10n_ua_bank_text',
         'l10n_ua_bank_currency_sync',
         # Delivery
         'l10n_ua_delivery_novaposhta',

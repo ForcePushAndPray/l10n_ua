@@ -72,6 +72,20 @@ class L10nUaBankSyncJob(models.Model):
         string='Payload Fetched At',
     )
 
+    # Import source metadata (Фаза 1: виписка-при-імпорті)
+    source_type = fields.Selection([
+        ('file', 'File import'),
+        ('api', 'API'),
+        ('manual', 'Manual'),
+    ], string='Source Type')
+    source_ref = fields.Char(
+        string='Source Reference',
+        help='Назва файлу або провайдер/endpoint API.')
+    bank_statement_id = fields.Many2one(
+        'account.bank.statement', string='Bank Statement', readonly=True,
+        ondelete='set null',
+        help='Native-виписка, сформована цим завданням.')
+
     # Processing results
     transactions_count = fields.Integer(
         string='Transactions Found',
@@ -88,28 +102,6 @@ class L10nUaBankSyncJob(models.Model):
     error_count = fields.Integer(
         string='Errors',
         readonly=True,
-    )
-
-    # Related transactions
-    transaction_ids = fields.One2many(
-        'l10n_ua.bank.transaction',
-        'sync_job_id',
-        string='Transactions',
-    )
-    transaction_count = fields.Integer(
-        string='Transaction Count',
-        compute='_compute_transaction_count',
-    )
-
-    # Related statements (legacy)
-    statement_ids = fields.One2many(
-        'l10n_ua.bank.statement',
-        'sync_job_id',
-        string='Created Statements',
-    )
-    statement_count = fields.Integer(
-        string='Statement Count',
-        compute='_compute_statement_count',
     )
 
     # Logs
@@ -152,41 +144,6 @@ class L10nUaBankSyncJob(models.Model):
             self.date_from = fields.Date.today() - timedelta(days=7)
             self.date_to = fields.Date.today()
 
-    @api.depends('transaction_ids')
-    def _compute_transaction_count(self):
-        for rec in self:
-            rec.transaction_count = len(rec.transaction_ids)
-
-    @api.depends('statement_ids')
-    def _compute_statement_count(self):
-        for rec in self:
-            rec.statement_count = len(rec.statement_ids)
-
-    def _update_dates_from_lines(self):
-        """Update date_from and date_to based on actual transaction dates."""
-        self.ensure_one()
-
-        # Get all transactions for this job
-        transactions = self.env['l10n_ua.bank.transaction'].search([
-            ('sync_job_id', '=', self.id),
-        ])
-
-        if not transactions:
-            return
-
-        dates = transactions.mapped('date')
-        dates = [d for d in dates if d]  # Filter out False/None
-
-        if dates:
-            min_date = min(dates)
-            max_date = max(dates)
-
-            self.write({
-                'date_from': min_date,
-                'date_to': max_date,
-            })
-            self._log(f"Updated dates from transactions: {min_date} - {max_date}")
-
     def _log(self, message, level='info', data=None):
         """Add log entry."""
         self.ensure_one()
@@ -224,6 +181,8 @@ class L10nUaBankSyncJob(models.Model):
             self.write({
                 'raw_payload': json.dumps(raw_data, ensure_ascii=False, default=str),
                 'payload_fetched_at': fields.Datetime.now(),
+                'source_type': self.source_type or self.config_id._source_type(),
+                'source_ref': self.source_ref or self.provider,
                 'state': 'fetched',
             })
             self._log(f"Fetch completed, payload stored", data={'size': len(self.raw_payload)})
@@ -263,29 +222,17 @@ class L10nUaBankSyncJob(models.Model):
             self.transactions_count = len(transactions)
             self._log(f"Parsed {len(transactions)} transactions")
 
-            # Process transactions
-            imported = 0
-            updated = 0
-            errors = 0
-
-            for trans in transactions:
-                try:
-                    result = self._process_transaction(trans)
-                    if result == 'imported':
-                        imported += 1
-                    elif result == 'updated':
-                        updated += 1
-                except Exception as e:
-                    errors += 1
-                    self._log(f"Error processing transaction: {str(e)}", level='error', data=trans)
-
-            # Update dates from actual statement lines
-            self._update_dates_from_lines()
+            # Фаза 1: виписка формується при імпорті як native-сутність.
+            opening, closing = self.config_id._extract_balances(raw_data)
+            statement = self._create_native_statement(
+                transactions, opening, closing)
+            imported = len(statement.line_ids) if statement else 0
 
             self.write({
+                'bank_statement_id': statement.id if statement else False,
                 'imported_count': imported,
-                'updated_count': updated,
-                'error_count': errors,
+                'updated_count': 0,
+                'error_count': 0,
                 'state': 'done',
             })
 
@@ -294,7 +241,8 @@ class L10nUaBankSyncJob(models.Model):
                 'last_sync_date': fields.Datetime.now(),
             })
 
-            self._log(f"Processing completed: {imported} imported, {updated} updated, {errors} errors")
+            self._log(f"Processing completed: {imported} statement line(s) "
+                      f"imported into {statement.name if statement else '-'}")
 
         except Exception as e:
             self._log(f"Processing error: {str(e)}", level='error')
@@ -339,108 +287,101 @@ class L10nUaBankSyncJob(models.Model):
         # Delete related logs
         self.log_ids.unlink()
 
-    def _process_transaction(self, trans):
-        """
-        Process single transaction - create or update in l10n_ua.bank.transaction.
+    @staticmethod
+    def _trans_uid(trans):
+        return str(trans.get('id') or trans.get('ref') or '').strip()
 
-        Args:
-            trans: dict with transaction data:
-                - id: unique transaction ID
-                - date: transaction date
-                - amount: signed amount (positive=incoming)
-                - description: payment description
-                - partner_name: counterparty name
-                - partner_iban: counterparty IBAN
-                - partner_edrpou: counterparty EDRPOU
-
-        Returns:
-            'imported' or 'updated'
-        """
-        Transaction = self.env['l10n_ua.bank.transaction']
-
-        trans_id = trans.get('id') or trans.get('ref') or ''
-        if not trans_id:
-            raise UserError(_("Transaction has no ID"))
-
-        # Parse transaction date
-        trans_date = trans.get('date')
-        if isinstance(trans_date, str):
-            # Try to parse date string
-            for fmt in ['%Y-%m-%d', '%d-%m-%Y', '%d.%m.%Y']:
-                try:
-                    trans_date = datetime.strptime(trans_date[:10], fmt).date()
-                    break
-                except ValueError:
-                    continue
-            else:
-                trans_date = fields.Date.today()
-
-        # Find partner
-        partner = self._match_partner(trans)
-
-        # Parse amount
+    @staticmethod
+    def _trans_amount(trans):
         amount = trans.get('amount', 0)
         if isinstance(amount, str):
-            amount = float(amount.replace(' ', '').replace(',', '.'))
+            amount = amount.replace(' ', '').replace(',', '.')
+            try:
+                amount = float(amount)
+            except ValueError:
+                amount = 0.0
+        return float(amount or 0.0)
 
-        # Prepare transaction values
-        trans_vals = {
-            'date': trans_date,
-            'payment_ref': trans_id,
-            'description': trans.get('description') or trans.get('purpose') or '',
-            'amount': amount,
-            'partner_id': partner.id if partner else False,
-            'partner_name': trans.get('partner_name') or trans.get('CNTR_NAME') or '',
-            'partner_iban': trans.get('partner_iban') or trans.get('CNTR_ACC') or '',
-            'partner_edrpou': trans.get('partner_edrpou') or trans.get('CNTR_CRF') or '',
-            'sync_job_id': self.id,
-        }
+    def _trans_date(self, trans):
+        d = trans.get('date')
+        if isinstance(d, str):
+            for fmt in ('%Y-%m-%d', '%d-%m-%Y', '%d.%m.%Y'):
+                try:
+                    return datetime.strptime(d[:10], fmt).date()
+                except ValueError:
+                    continue
+            return self.date_to or fields.Date.today()
+        return d or self.date_to or fields.Date.today()
 
-        # Check if already exists by external_id (unique constraint: external_id + journal_id)
-        existing = Transaction.search([
-            ('external_id', '=', trans_id),
-            ('journal_id', '=', self.journal_id.id),
-        ], limit=1)
+    def _create_native_statement(self, transactions, opening=None, closing=None):
+        """Сформувати native-виписку (account.bank.statement) при імпорті.
 
-        if existing:
-            # Update existing record (but keep original sync_job_id and external_id)
-            trans_vals.pop('sync_job_id')
-            existing.write(trans_vals)
-            self._log(f"Updated transaction by external_id: {trans_id}", level='debug')
-            return 'updated'
+        Виписка — унікальна сутність із метаданими джерела; володіє рядками
+        (account.bank.statement.line з unique_import_id для дедупу). Баланси
+        беруться з джерела (opening/closing); якщо їх немає — кінцевий баланс
+        виводиться з рухів і виписка позначається як не звірена за балансом.
+        """
+        self.ensure_one()
+        Statement = self.env['account.bank.statement']
+        Line = self.env['account.bank.statement.line']
+        journal = self.journal_id
 
-        # Create new transaction (no date+amount matching - allows duplicates)
-        trans_vals.update({
-            'external_id': trans_id,
-            'journal_id': self.journal_id.id,
+        uids = [self._trans_uid(t) for t in transactions]
+        seen = set()
+        if any(uids):
+            # Дедуп по вже імпортованих рухах у цьому журналі.
+            Line.flush_model(['l10n_ua_import_uid', 'journal_id'])
+            seen = set(Line.search([
+                ('journal_id', '=', journal.id),
+                ('l10n_ua_import_uid', 'in', [u for u in uids if u]),
+            ]).mapped('l10n_ua_import_uid'))
+
+        line_cmds = []
+        total = 0.0
+        for trans in transactions:
+            uid = self._trans_uid(trans)
+            if uid and uid in seen:
+                continue
+            if uid:
+                seen.add(uid)
+            amount = self._trans_amount(trans)
+            partner = self._match_partner(trans)
+            line_cmds.append((0, 0, {
+                'journal_id': journal.id,
+                'date': self._trans_date(trans),
+                'payment_ref': (trans.get('description')
+                                or trans.get('purpose') or '/')[:2000] or '/',
+                'amount': amount,
+                'partner_id': partner.id if partner else False,
+                'partner_name': trans.get('partner_name') or '',
+                'account_number': trans.get('partner_iban') or '',
+                'l10n_ua_import_uid': uid or False,
+            }))
+            total += amount
+
+        if not line_cmds:
+            return Statement.browse()
+
+        verified = opening is not None and closing is not None
+        bstart = opening if verified else 0.0
+        bend = closing if verified else round(bstart + total, 2)
+        statement = Statement.create({
+            'name': self.name or _('Statement'),
+            'journal_id': journal.id,
+            'date': self.date_to or fields.Date.today(),
+            'line_ids': line_cmds,
+            'balance_start': bstart,
+            'balance_end_real': bend,
+            'l10n_ua_source_type': self.source_type or self.config_id._source_type(),
+            'l10n_ua_source_ref': self.source_ref or self.provider or '',
+            'l10n_ua_import_date': fields.Datetime.now(),
+            'l10n_ua_sync_job_id': self.id,
+            'l10n_ua_balance_verified': verified,
         })
-        Transaction.create(trans_vals)
-        self._log(f"Created transaction: {trans_id}", level='debug')
-
-        return 'imported'
-
-    def _get_or_create_statement(self, date):
-        """Get existing or create new statement for date. (Legacy - kept for compatibility)"""
-        Statement = self.env['l10n_ua.bank.statement']
-
-        # Search by journal and date only (not by job_id to avoid duplicates)
-        statement = Statement.search([
-            ('journal_id', '=', self.journal_id.id),
-            ('date', '=', date),
-        ], limit=1)
-
-        if not statement:
-            statement = Statement.create({
-                'journal_id': self.journal_id.id,
-                'date': date,
-                'company_id': self.company_id.id,
-                'sync_job_id': self.id,
-                'sync_provider': self.provider,
-            })
-        elif not statement.sync_job_id:
-            # Link existing statement to this job if not already linked
-            statement.sync_job_id = self.id
-
+        if verified and not statement.l10n_ua_balance_ok:
+            self._log('Balance continuity mismatch: opening + Σ != closing '
+                      '(%.2f + %.2f != %.2f)' % (bstart, total, bend),
+                      level='warning')
         return statement
 
     def _match_partner(self, trans):
@@ -462,28 +403,6 @@ class L10nUaBankSyncJob(models.Model):
                 partner = bank_account.partner_id
 
         return partner
-
-    def action_view_transactions(self):
-        """View transactions created by this job."""
-        self.ensure_one()
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('Transactions'),
-            'res_model': 'l10n_ua.bank.transaction',
-            'view_mode': 'list,form',
-            'domain': [('sync_job_id', '=', self.id)],
-        }
-
-    def action_view_statements(self):
-        """View created statements (legacy)."""
-        self.ensure_one()
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('Statements'),
-            'res_model': 'l10n_ua.bank.statement',
-            'view_mode': 'list,form',
-            'domain': [('sync_job_id', '=', self.id)],
-        }
 
     def action_view_logs(self):
         """View job logs."""

@@ -11,6 +11,7 @@
 | `l10n_ua_bank_sync` | 19.0.1.0.0 | 🟢 | Базова синхронізація з банками (конфіг, завдання, виписки, транзакції, правила співставлення) |
 | `l10n_ua_bank_privat` | 19.0.1.0.0 | 🟢 | ПриватБанк (Автоклієнт Privat24 Business + legacy Merchant API) |
 | `l10n_ua_bank_mono` | 19.0.1.0.0 | 🟢 | monobank (Personal Statement API) |
+| `l10n_ua_bank_vst` | 19.0.1.0.0 | ✅ | VST Bank / Банк Восток (імпорт виписки iBank 2 UA CSV) + тести |
 | `l10n_ua_bank_currency_sync` | 19.0.1.0.0 | ✅ | Курси валют (НБУ, ПриватБанк, monobank) + тести |
 | `l10n_ua_payment_link` | 19.0.1.0.0 | 🟢 | QR-посилання НБУ + еквайринг monobank |
 
@@ -20,21 +21,19 @@
 
 Залежності: `l10n_ua_account_base`, `mail`.
 
-Фундамент для банківських інтеграцій. Провайдерні модулі (`_privat`, `_mono`) наслідують його моделі та реалізують виклики конкретних API.
+Фундамент для банківських інтеграцій. Провайдерні модулі (`_privat`, `_mono`, `_vst`, `_openbanking`) наслідують конфіг і реалізують виклики конкретних API/файлів.
+
+**Архітектура виписок (рефактор на native Odoo):** виписка формується **в процесі імпорту** як унікальна рідна сутність `account.bank.statement` — з метаданими джерела (дата, тип file/api/manual, назва файлу/провайдер) і балансами **з джерела** (контроль повноти `balance_end == balance_end_real`; без балансів — виводиться й позначається не звіреною). Рядки — рідні `account.bank.statement.line` (з `l10n_ua_import_uid` для дедупу), контрагент підбирається при імпорті за ЄДРПОУ/IBAN. Звірка та проводки — **рідним механізмом Odoo** (`account.reconcile.model` + reconcile-віджет). Кастомні моделі `l10n_ua.bank.statement` / `l10n_ua.bank.transaction` / `l10n_ua.bank.match.rule` та «Generate Statement» (постфактумне формування) **видалені**.
 
 | Модель | Призначення |
 |--------|-------------|
-| `l10n_ua.bank.sync.config` | Конфігурація підключення (провайдер, журнал, рахунок). Точки розширення: `_fetch_from_bank()`, `_parse_transactions()`, `action_test_connection()` |
-| `l10n_ua.bank.sync.job` | Завдання синхронізації з машиною станів `draft → fetching → fetched → processing → done / error`. Зберігає сирий payload, дозволяє повторну обробку (`action_process`) без повторного завантаження з банку |
-| `l10n_ua.bank.statement` | Імпортована виписка |
-| `l10n_ua.bank.transaction` | Окрема транзакція; поля контрагента (назва, IBAN, ЄДРПОУ), `is_reconciled`, `matched_rule_id`. Метод `action_create_move()` створює проводку (правило дає рахунок-кореспондент, інакше транзитний рахунок) |
-| `l10n_ua.bank.match.rule` | Правила авто-співставлення транзакцій (`check_match`) з рахунком, контрагентом і міткою |
+| `l10n_ua.bank.sync.config` | Конфігурація підключення (провайдер, журнал, рахунок). Точки розширення: `_fetch_from_bank()`, `_parse_transactions()`, `_extract_balances()`, `_source_type()` |
+| `l10n_ua.bank.sync.job` | Завдання синхронізації `draft → fetching → fetched → processing → done / error`. Зберігає сирий payload; `_create_native_statement()` формує рідну виписку при обробці; `bank_statement_id` — посилання на неї |
+| `account.bank.statement` (+метадані) | Рідна виписка з `l10n_ua_source_type/_ref`, `l10n_ua_import_date`, `l10n_ua_balance_verified/_ok` |
 
 Розширення: `res.bank` (код МФО), `res.partner.bank` (валідація IBAN), `account.journal` (прив'язка конфігу синхронізації).
 
-Додатково: майстри синхронізації за довільний період та імпорту виписки, контролер експорту виписки у XLSX (`/l10n_ua_bank_sync/export_statement_xlsx/<id>`), QWeb-звіт виписки.
-
-Тести: відсутні.
+Тести: `test_native_statement.py` (виписка+метадані при імпорті, баланс derived/verified/mismatch, ідемпотентність, підбір контрагента), `test_auto_sync.py`, `test_multicompany.py`.
 
 ---
 
@@ -67,6 +66,18 @@
 ⚠️ Webhook: поле `mono_webhook_url` обчислюється (`/l10n_ua_bank_mono/webhook/<id>`) і є прапорець `mono_webhook_active`, але **контролер webhook у модулі не реалізований** — real-time оновлення поки заглушка. Синхронізація працює через опитування (fetch job).
 
 Тести: відсутні.
+
+---
+
+## l10n_ua_bank_vst — VST Bank (iBank 2 UA)
+
+Залежності: `l10n_ua_bank_sync`.
+
+Файловий провайдер VST Bank (Банк Восток) — `provider = 'vst'`. Банк не опитується по API; виписка експортується з iBank 2 UA у CSV («Виписки по поточним рахункам», windows-1251, роздільник «;», з шапкою). Майстер **Імпорт виписки iBank 2 UA** (`l10n_ua.bank.vst.import`) приймає CSV-файл, створює завдання `l10n_ua.bank.sync.job` (`raw_payload = {'csv': ...}`, стан `fetched`) і запускає `action_process`. `_parse_transactions` розбирає рядки у стандартні транзакції: Дебет → від'ємна сума (Дт), Кредит → додатна (Кт), дата операції, кореспондент (назва / IBAN / ЄДРПОУ), призначення платежу — далі штатний конвеєр bank_sync (правила співставлення, проводки).
+
+Зарплатний реєстр iBank 2 UA формується майстром зарплатного файлу у `l10n_ua_hr_salary` (формат `ibank2`). Банк доданий у `res.bank` (МФО 307123).
+
+**Тести: наявні** — `tests/test_vst_import.py`, 5 сценаріїв (Дт/Кт зі знаком, пропуск шапки/порожніх, делегування іншим провайдерам, майстер→завдання).
 
 ---
 

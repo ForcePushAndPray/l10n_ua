@@ -49,6 +49,24 @@ class L10nUaBankSyncConfig(models.Model):
         tracking=True,
     )
 
+    # Тип обміну (керує видимістю кнопок: онлайн-синхронізація vs імпорт файлу)
+    exchange_type = fields.Selection([
+        ('online', 'Online (API)'),
+        ('file', 'File exchange'),
+        ('manual', 'Manual'),
+    ], string='Exchange Type', compute='_compute_exchange_type', store=True,
+        help='Онлайн-провайдери синхронізуються через API; файлові — імпортом '
+             'виписки з файлу.')
+
+    @api.depends('provider')
+    def _compute_exchange_type(self):
+        for rec in self:
+            st = rec._source_type()
+            rec.exchange_type = (
+                'file' if st == 'file'
+                else 'manual' if st == 'manual'
+                else 'online')
+
     # Sync settings
     auto_sync = fields.Boolean(
         string='Auto Sync',
@@ -172,6 +190,31 @@ class L10nUaBankSyncConfig(models.Model):
         raise NotImplementedError(
             _("Provider '%s' does not implement _parse_transactions method") % self.provider
         )
+
+    def _extract_balances(self, raw_data):
+        """Витягти (opening, closing) баланси рахунку з даних джерела.
+
+        Перевизначає провайдер, чиє джерело несе баланси (файл виписки з
+        opening/closing, або API-endpoint балансу). Повертає (None, None),
+        якщо баланси недоступні — тоді native-виписка формується з виведеним
+        (недостовірним) кінцевим балансом (`l10n_ua_balance_verified = False`).
+        """
+        return (None, None)
+
+    def _source_type(self):
+        """Тип джерела імпорту (file / api / manual). Перевизначає провайдер."""
+        self.ensure_one()
+        return 'manual' if self.provider == 'manual' else 'api'
+
+    def _file_to_payload(self, content, filename=None):
+        """Перетворити байти файлу виписки на raw_payload для _parse_transactions.
+
+        Перевизначає файловий провайдер (VST: cp1251 CSV → {'csv': text}).
+        Дозволяє єдиному майстру імпорту працювати з будь-яким файловим
+        провайдером без знання його формату.
+        """
+        raise UserError(_(
+            "Провайдер '%s' не підтримує імпорт з файлу.") % self.provider)
 
     def _is_sync_due(self, now=None):
         """Whether this config should sync now, per its ``sync_interval_hours``.

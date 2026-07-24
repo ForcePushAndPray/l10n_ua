@@ -17,6 +17,13 @@
                     <group>
                         <field name="file_format"/>
                         <field name="payer_account_id"/>
+                        <field name="transit_account_id"
+                               invisible="file_format not in ('ifobs',)"
+                               required="file_format == 'ifobs'"/>
+                        <field name="salary_project_code"
+                               invisible="file_format not in ('ifobs',)"/>
+                        <field name="accrual_name"
+                               invisible="file_format not in ('ifobs', 'ibank2')"/>
                         <field name="payment_purpose"/>
                         <field name="company_id" groups="base.group_multi_company"/>
                     </group>

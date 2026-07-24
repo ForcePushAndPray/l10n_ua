@@ -1,7 +1,9 @@
 """Тести експорту зарплатного файлу для клієнт-банку (#152)."""
 
 import base64
+import io
 import struct
+import zipfile
 from datetime import date
 
 from lxml import etree
@@ -100,6 +102,52 @@ class TestBankExport(SalaryTestCase):
         wiz = self._wizard(file_format='xml')
         with self.assertRaises(UserError):
             wiz.action_generate()
+
+    # --- #197: банк-специфічні формати iFOBS / iBank 2 UA ---
+
+    def test_ifobs_export(self):
+        slip = self._done_payslip()
+        transit = self.env['res.partner.bank'].create({
+            'acc_number': '26005678901234',
+            'partner_id': self.bank.partner_id.id,
+        })
+        wiz = self._wizard(file_format='ifobs')
+        wiz.transit_account_id = transit.id
+        wiz.salary_project_code = '12345'
+        wiz.action_generate()
+        self.assertTrue(wiz.file_name.endswith('.zip'))
+        zf = zipfile.ZipFile(io.BytesIO(base64.b64decode(wiz.file_data)))
+        self.assertEqual(set(zf.namelist()), {'ScheduleInfo.dbf', 'Amounts.dbf'})
+        # ScheduleInfo — рівно 1 запис.
+        sched = zf.read('ScheduleInfo.dbf')
+        self.assertEqual(struct.unpack('<I', sched[4:8])[0], 1)
+        # Amounts — 1 запис (1 працівник), РНОКПП у першому полі (після прапорця).
+        amt = zf.read('Amounts.dbf')
+        self.assertEqual(struct.unpack('<I', amt[4:8])[0], 1)
+        hlen = struct.unpack('<H', amt[8:10])[0]
+        idcode = amt[hlen + 1:hlen + 11].decode('cp1251').strip()
+        self.assertEqual(idcode, '1234567890')
+
+    def test_ifobs_requires_transit(self):
+        self._done_payslip()
+        wiz = self._wizard(file_format='ifobs')
+        wiz.transit_account_id = False
+        with self.assertRaises(UserError):
+            wiz.action_generate()
+
+    def test_ibank2_export(self):
+        slip = self._done_payslip()
+        wiz = self._wizard(file_format='ibank2')
+        wiz.accrual_name = 'Заробітна плата'
+        wiz.action_generate()
+        self.assertTrue(wiz.file_name.endswith('.txt'))
+        text = base64.b64decode(wiz.file_data).decode('cp1251')
+        self.assertIn('Content-Type=doc/pay_sheet', text)
+        self.assertIn('ONFLOW_TYPE=Заробітна плата', text)
+        self.assertIn('CARD_HOLDERS.0.CARD_NUM=26001234567890', text)
+        self.assertIn('CARD_HOLDERS.0.CARD_HOLDER_INN=1234567890', text)
+        self.assertIn('CARD_HOLDERS.0.AMOUNT=%.2f' % slip.net_salary, text)
+        self.assertIn('PERIOD=06,2025', text)
 
     def test_run_defaults_period(self):
         run = self.env['hr.payslip.run'].create({

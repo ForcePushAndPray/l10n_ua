@@ -50,10 +50,24 @@
               sequence="20"
               groups="l10n_ua_hr_base.group_hr_ua_user"/>
 
+    <menuitem id="menu_hr_piece_work_entry"
+              name="Наряди відрядної оплати"
+              parent="menu_hr_payroll_root"
+              action="action_hr_piece_work_entry"
+              sequence="35"
+              groups="l10n_ua_hr_base.group_hr_ua_user"/>
+
     <menuitem id="menu_hr_payroll_config"
               name="Configuration"
               parent="menu_hr_payroll_root"
               sequence="100"
+              groups="l10n_ua_hr_base.group_hr_ua_manager"/>
+
+    <menuitem id="menu_hr_seniority_scale"
+              name="Шкали вислуги років"
+              parent="menu_hr_payroll_config"
+              action="action_hr_seniority_scale"
+              sequence="50"
               groups="l10n_ua_hr_base.group_hr_ua_manager"/>
 
     <menuitem id="menu_hr_psp_parameters"

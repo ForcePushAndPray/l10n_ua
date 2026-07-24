@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Fixed Assets',
-    'version': '19.0.3.0.0',
+    'version': '19.0.3.1.0',
     'category': 'Accounting/Localization',
     'summary': 'Ukrainian fixed assets: depreciation, OZ-6, acts, MNMA, revaluation, modernization, inventory',
     'description': """
@@ -48,6 +48,7 @@ Requires l10n_ua_account_base and l10n_ua_doc_reports modules.
         'views/l10n_ua_asset_modernization_views.xml',
         'views/l10n_ua_asset_revaluation_views.xml',
         'views/l10n_ua_mnma_views.xml',
+        'views/l10n_ua_mshp_views.xml',
         'views/menu_views.xml',
         # Reports
         'report/asset_oz6_report.xml',
@@ -58,6 +59,7 @@ Requires l10n_ua_account_base and l10n_ua_doc_reports modules.
         'report/asset_revaluation_report.xml',
         'report/mnma_commission_report.xml',
         'report/mnma_writeoff_report.xml',
+        'report/mshp_writeoff_report.xml',
     ],
     'demo': [],
     'images': ['static/description/icon.png'],

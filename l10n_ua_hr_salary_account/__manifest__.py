@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - HR Salary Accounting',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Localization',
     'summary': 'Автоматичне створення проводок при нарахуванні зарплати',
     'author': 'NDEV',
@@ -16,6 +16,7 @@
         'data/hr_salary_account_data.xml',
         'views/hr_salary_account_config_views.xml',
         'views/hr_department_views.xml',
+        'views/hr_version_views.xml',
         'views/hr_payslip_views.xml',
         'views/hr_payslip_run_views.xml',
     ],

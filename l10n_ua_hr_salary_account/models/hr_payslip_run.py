@@ -42,6 +42,13 @@ class HrPayslipRun(models.Model):
     # Consolidated journal entry
     # ------------------------------------------------------------------
 
+    @staticmethod
+    def _analytic_key(dist):
+        """Hashable grouping key for an analytic distribution dict."""
+        if not dist:
+            return ()
+        return tuple(sorted((str(k), v) for k, v in dist.items()))
+
     def _create_consolidated_move(self, config):
         """Create one consolidated journal entry for the entire batch."""
         self.ensure_one()
@@ -55,18 +62,20 @@ class HrPayslipRun(models.Model):
             _logger.warning('No done payslips in batch %s', self.name)
             return
 
-        # Group by expense account (department)
-        expense_totals = {}  # {account_id: {'account': record, 'gross': 0, 'esv': 0}}
+        # Group by expense account + analytic distribution (department/project)
+        expense_totals = {}  # {(account_id, dist_key): {...}}
         total_pdfo = 0.0
         total_military = 0.0
         total_other = 0.0
 
         for slip in done_slips:
             expense_account = slip._get_expense_account(config)
-            key = expense_account.id
+            dist = slip._get_salary_analytic_distribution()
+            key = (expense_account.id, self._analytic_key(dist))
             if key not in expense_totals:
                 expense_totals[key] = {
                     'account': expense_account,
+                    'distribution': dist,
                     'gross': 0.0,
                     'esv': 0.0,
                 }
@@ -78,9 +87,10 @@ class HrPayslipRun(models.Model):
 
         lines = []
 
-        # --- Debit: expense accounts (grouped by department) ---
+        # --- Debit: expense accounts (grouped by department + analytics) ---
         for data in expense_totals.values():
             acc = data['account']
+            dist = data['distribution'] or False
             gross = round(data['gross'], 2)
             esv = round(data['esv'], 2)
             if gross:
@@ -89,6 +99,7 @@ class HrPayslipRun(models.Model):
                     'account_id': acc.id,
                     'debit': gross,
                     'credit': 0.0,
+                    'analytic_distribution': dist,
                 })
             if esv:
                 lines.append({
@@ -96,6 +107,7 @@ class HrPayslipRun(models.Model):
                     'account_id': acc.id,
                     'debit': esv,
                     'credit': 0.0,
+                    'analytic_distribution': dist,
                 })
 
         # --- Credit: wages payable (total gross) ---

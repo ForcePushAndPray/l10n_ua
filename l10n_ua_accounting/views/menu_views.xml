@@ -167,6 +167,12 @@
               action="l10n_ua_currency_revaluation_action"
               sequence="55"/>
 
+    <menuitem id="menu_ua_currency_exchange"
+              name="Купівля/продаж валюти"
+              parent="menu_ua_cash_bank"
+              action="l10n_ua_currency_exchange_action"
+              sequence="60"/>
+
     <!-- ==================== Inventory ==================== -->
     <menuitem id="menu_ua_stock"
               name="Inventory"
