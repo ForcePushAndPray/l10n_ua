@@ -25,22 +25,20 @@ class HrVacationSchedule(models.Model):
         default=lambda self: self.env.company,
         required=True
     )
-    
     line_ids = fields.One2many(
         'hr.vacation.schedule.line',
         'schedule_id',
         string='Schedule Lines'
     )
-    
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
         ('approved', 'Approved'),
     ], string='Status', default='draft', tracking=True)
-    
+
     approval_date = fields.Date(string='Approval Date')
     approved_by = fields.Many2one('res.users', string='Approved By')
-    
+
     notes = fields.Text(string='Notes')
 
     @api.depends('year', 'company_id')
@@ -52,11 +50,11 @@ class HrVacationSchedule(models.Model):
         """Generate schedule lines for all employees"""
         self.ensure_one()
         self.line_ids.unlink()
-        
+
         domain = [('company_id', '=', self.company_id.id)]
         if 'contract_id' in self.env['hr.employee']._fields:
             domain.append(('contract_id.state', '=', 'open'))
-        
+
         employees = self.env['hr.employee'].search(domain)
 
         year_start = fields.Date.from_string(f'{self.year}-01-01')
@@ -201,7 +199,6 @@ class HrVacationScheduleLine(models.Model):
         store=True,
         readonly=False
     )
-    
     job_id = fields.Many2one(
         'hr.job',
         string='Job Position',
@@ -243,19 +240,17 @@ class HrVacationScheduleLine(models.Model):
         compute='_compute_period_days',
         store=True
     )
-
     total_planned = fields.Integer(
         string='Total Planned',
         compute='_compute_period_days',
         store=True
     )
-    
     actual_days = fields.Integer(
         string='Actual Days',
         compute='_compute_actual_days',
         store=True
     )
-    
+
     notes = fields.Char(string='Notes')
 
     @api.depends('employee_id', 'planned_days')
@@ -306,4 +301,3 @@ class HrVacationScheduleLine(models.Model):
         for line in self:
             if line.period_1_start and line.period_1_end and line.period_1_start > line.period_1_end:
                 raise ValidationError('Period 1: Start date must be before end date.')
-

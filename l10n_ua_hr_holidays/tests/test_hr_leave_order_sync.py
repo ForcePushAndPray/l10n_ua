@@ -2,6 +2,7 @@ from odoo.tests import common
 from datetime import date
 from odoo.tests import tagged
 
+
 @tagged('post_install', '-at_install')
 class TestHrLeaveOrderSync(common.TransactionCase):
 
@@ -74,11 +75,10 @@ class TestHrLeaveOrderSync(common.TransactionCase):
         orders_count = self.env['hr.order'].search_count(
             [('employee_id', '=', self.employee.id)])
         self.assertEqual(orders_count, 1, "Order creation generated a duplicate.")
+
         leaves = self.env['hr.leave'].search(
             [('employee_id', '=', self.employee.id)])
         self.assertEqual(len(leaves), 1, "Exactly one leave must be created.")
-        
-        # Check bidirectional relationship
 
         self.assertEqual(order.leave_id.id, leaves.id)
         self.assertEqual(leaves.order_id.id, order.id)
@@ -152,7 +152,6 @@ class TestHrLeaveOrderSync(common.TransactionCase):
             'request_date_from': date(2027, 10, 12),
             'request_date_to': date(2027, 10, 18),
         })
-
         self.assertEqual(order.vacation_date_from, date(2027, 10, 12))
         self.assertEqual(order.vacation_date_to, date(2027, 10, 18))
 
@@ -176,6 +175,7 @@ class TestHrLeaveOrderSync(common.TransactionCase):
         self.assertEqual(draft.state, 'draft')
 
         leave._action_validate()
+
         self.assertEqual(leave.order_id, draft, "Order must not be replaced.")
         self.assertEqual(draft.state, 'confirmed')
         self.assertEqual(self.env['hr.order'].search_count([

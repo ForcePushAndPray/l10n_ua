@@ -10,12 +10,12 @@ class TestHrLeave(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.env.company
-        
+
         cls.employee = cls.env['hr.employee'].create({
             'name': 'Test Employee Leave',
             'company_id': cls.company.id,
         })
-        
+
         cls.leave_type_calendar = cls.env['hr.leave.type'].create({
             'name': 'Annual Leave (Calendar) Test',
             'ua_leave_category': 'annual_basic',
@@ -25,7 +25,7 @@ class TestHrLeave(TransactionCase):
             'company_id': cls.company.id,
             'requires_allocation': False,
         })
-        
+
         cls.leave_type_working = cls.env['hr.leave.type'].create({
             'name': 'Other Leave (Working) Test',
             'ua_leave_category': 'other',
@@ -249,4 +249,3 @@ class TestHrLeave(TransactionCase):
             'date_to': datetime(2030, 6, 21, 17, 0, 0),
         })
         self.assertEqual(leave.vacation_balance_id, balance)
-

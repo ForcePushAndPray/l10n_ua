@@ -21,7 +21,7 @@
                     </div>
                     <group>
                         <group string="Параметри">
-                            <field name="year" readonly="state != 'draft'"/>
+                            <field name="report_date" readonly="state != 'draft'"/>
                             <field name="company_id" groups="base.group_multi_company"
                                    domain="[('id', 'in', allowed_company_ids)]"
                                    readonly="state != 'draft'"/>
@@ -65,7 +65,7 @@
         <field name="arch" type="xml">
             <list string="Vacation Summary Reports">
                 <field name="name"/>
-                <field name="year"/>
+                <field name="report_date"/>
                 <field name="employee_count"/>
                 <field name="total_entitled"/>
                 <field name="total_used"/>
@@ -84,11 +84,11 @@
         <field name="arch" type="xml">
             <search string="Vacation Summary Reports">
                 <field name="name"/>
-                <field name="year"/>
+                <field name="report_date"/>
                 <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="Generated" name="filter_generated" domain="[('state', '=', 'generated')]"/>
                 <group>
-                    <filter string="Year" name="groupby_year" domain="[]" context="{'group_by': 'year'}"/>
+                    <filter string="На дату" name="groupby_report_date" domain="[]" context="{'group_by': 'report_date'}"/>
                 </group>
             </search>
         </field>
@@ -104,7 +104,7 @@
             </p>
             <p>
                 Звіт формує підсумок залишків та використання відпусток
-                усіх працівників за вказаний рік та дозволяє зберегти його
+                усіх працівників на вказану дату та дозволяє зберегти його
                 для подальшого перегляду і друку.
             </p>
         </field>

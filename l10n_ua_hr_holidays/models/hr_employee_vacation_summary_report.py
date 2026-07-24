@@ -10,14 +10,16 @@ class HrEmployeeVacationSummaryReport(models.Model):
     _name = 'hr.employee.vacation.summary.report'
     _description = 'Vacation Summary Report'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _order = 'year desc, id desc'
+    _order = 'report_date desc, id desc'
 
     name = fields.Char(compute='_compute_name', store=True)
-    year = fields.Integer(
-        string='Year',
+    report_date = fields.Date(
+        string='На дату',
         required=True,
-        default=lambda self: fields.Date.today().year,
+        default=fields.Date.context_today,
         tracking=True,
+        help='The report shows, per employee and leave type, the vacation '
+             'period this date falls into.',
     )
     company_id = fields.Many2one(
         'res.company',
@@ -56,11 +58,12 @@ class HrEmployeeVacationSummaryReport(models.Model):
     )
     notes = fields.Text()
 
-    @api.depends('year')
+    @api.depends('report_date')
     def _compute_name(self):
         for rec in self:
-            if rec.year:
-                rec.name = f'Підсумок відпусток за {rec.year} рік'
+            if rec.report_date:
+                rec.name = 'Підсумок відпусток на %s' % (
+                    rec.report_date.strftime('%d.%m.%Y'))
             else:
                 rec.name = 'Підсумок відпусток'
 
@@ -77,7 +80,8 @@ class HrEmployeeVacationSummaryReport(models.Model):
     def action_generate(self):
         Balance = self.env['hr.vacation.balance']
         for rec in self:
-            Balance.sudo().generate_balances(rec.year)
+            ref_date = rec.report_date or fields.Date.context_today(rec)
+            Balance.sudo().generate_balances(up_to_date=ref_date)
             year_start = fields.Date.from_string(f'{rec.year}-01-01')
             year_end = fields.Date.from_string(f'{rec.year}-12-31')
             # Two accounting periods coexist:

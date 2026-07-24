@@ -369,9 +369,10 @@ class TestVacationScheduleReport(TransactionCase):
     # ------------------------------------------------------------------
 
     def test_summary_report_mixed_periods(self):
-        """The summary report gathers both calendar-year balances (matched by
-        year) and work-year balances (matched by overlap) for the report
-        year."""
+        """The summary report gathers, per employee/leave type, the period the
+        selected date falls into (31.12.2025 here) — the same selection as the
+        "Vacation Balances" report — covering both calendar-year and work-year
+        period types."""
         # A calendar-year balance for the report year.
         cal_bal = self.env['hr.vacation.balance'].create({
             'employee_id': self.employee.id,
@@ -383,11 +384,12 @@ class TestVacationScheduleReport(TransactionCase):
         })
 
         report = self.env['hr.employee.vacation.summary.report'].create({
-            'year': 2025,
+            'report_date': date(2025, 12, 31),
             'company_id': self.employee.company_id.id,
         })
-        # generate_balances creates the annual_basic (work-year) balances that
-        # overlap 2025; the calendar balance above is picked up as well.
+        # generate_balances backfills the annual_basic (work-year) balances up
+        # to the selected date; the work year and the calendar balance above
+        # both contain 2025-12-31, so both are picked up.
         report.action_generate()
 
         period_types = set(report.balance_ids.mapped('period_type'))

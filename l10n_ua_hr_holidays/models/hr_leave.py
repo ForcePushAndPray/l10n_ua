@@ -18,7 +18,6 @@ class HrLeave(models.Model):
         compute='_compute_working_days',
         store=True
     )
-    
     average_daily_salary = fields.Float(
         string='Average Daily Salary',
         digits=(16, 2)
@@ -29,10 +28,10 @@ class HrLeave(models.Model):
         store=True,
         digits=(16, 2)
     )
-    
+
     order_number = fields.Char(string='Order Number')
     order_date = fields.Date(string='Order Date')
-   
+
     order_id = fields.Many2one(
         'hr.order',
         string='Leave Order',
@@ -88,7 +87,6 @@ class HrLeave(models.Model):
         compute='_compute_remaining_after',
         store=True
     )
-    
     vacation_year = fields.Integer(
         string='Vacation Year',
         help='Year of the leave start date. Computed automatically and '
@@ -97,7 +95,6 @@ class HrLeave(models.Model):
         store=True,
         readonly=True,
     )
-
     vacation_balance_id = fields.Many2one(
         'hr.vacation.balance',
         string='Vacation Period',
@@ -801,7 +798,7 @@ class HrLeave(models.Model):
     # =================================================================================
     # TRIGGERS FOR CHRONOLOGICAL RECOMPUTATION
     # =================================================================================
-   
+
     # ------------------------------------------------------------------
     # Inverse trigger: keep hr.vacation.balance rollup fields in sync
     # with hr.leave. The stored used_days / planned_days fields on the
@@ -871,7 +868,7 @@ class HrLeave(models.Model):
             period_domain = leave._period_domain()
             if period_domain is None:
                 continue
- 
+
             # Find all leaves with a date greater than the date of the changed leave
             subsequent_leaves = self.env['hr.leave'].search([
                 ('employee_id', '=', leave.employee_id.id),
@@ -892,7 +889,7 @@ class HrLeave(models.Model):
         for leave in self:
             if not leave.employee_id or not leave.date_from:
                 continue
-            
+
             avg_salary = leave._calculate_average_salary()
             leave.average_daily_salary = avg_salary
         return True

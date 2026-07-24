@@ -444,16 +444,19 @@ class HrVacationBalance(models.Model):
             cursor = end + relativedelta(days=1)
         return created
 
-    def generate_balances(self, year=None, leave_types=None):
+    def generate_balances(self, year=None, leave_types=None, up_to_date=None):
         """Backfill accounting periods for all employees so carry-over
         cascades across the full history.
 
         Runs for transferable, day-accruing leave types that are additionally
         flagged with ua_auto_calc_balance; for each of them, every period from
-        the employee's hire anchor up to the reference year is created if
+        the employee's hire anchor up to the reference date is created if
         missing — so a year with no leave taken no longer breaks the carry-over
         chain. Employees without a hire anchor get only the currently
         resolvable period (work-year types: none).
+
+        The reference date is `up_to_date` when given (used by the "as of a
+        date" summary report), otherwise the reference date of `year`, or today.
         """
         up_to_date = self._ref_date_for_year(year) if year else fields.Date.today()
  

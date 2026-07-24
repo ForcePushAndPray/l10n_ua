@@ -13,6 +13,7 @@ from psycopg2 import IntegrityError
 from odoo.tests import TransactionCase, tagged
 from odoo.tools import mute_logger
 
+
 @tagged('post_install', '-at_install')
 class TestPersonalFile(TransactionCase):
     """Test hr.personal.file model."""
