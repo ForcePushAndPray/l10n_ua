@@ -410,9 +410,10 @@
                 <td style="width: 50%; padding: 5px;">Тривалість відпустки:</td>
 		<td style="width: 50%; padding: 5px; border-bottom: 1px solid #000;">
 		    <t t-if="order.leave_id and order.leave_id.calendar_days">
-        		<t t-esc="order.leave_id.calendar_days"/> календарних днів
+                        <t t-set="vbal" t-value="order.leave_id.vacation_balance_id if 'vacation_balance_id' in order.leave_id._fields else False"/>
+        		<t t-esc="order.leave_id.calendar_days"/> календарних дні(в)<t t-if="vbal"> за період <t t-esc="format_date(vbal.period_start)"/>-<t t-esc="format_date(vbal.period_end)"/></t>
     	            </t>
-       		    <t t-else="">____ календарних днів</t>
+       		    <t t-else="">____ календарних дні(в)</t>
 		</td>
             </tr>
             <tr>
