@@ -527,9 +527,7 @@ msgstr "Виробничі календарі"
 
 #. module: l10n_ua_hr_attendance_sheet
 #: model_terms:ir.actions.act_window,help:l10n_ua_hr_attendance_sheet.action_hr_production_calendar
-msgid ""
-"Production calendar defines working days, weekends, and public holidays."
-"Production calendar defines working days, weekends, and public holidays."
+msgid "Production calendar defines working days, weekends, and public holidays."
 msgstr "Виробничий календар визначає робочі дні, вихідні та державні свята."
 
 #. module: l10n_ua_hr_attendance_sheet

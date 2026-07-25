@@ -137,3 +137,36 @@ class TestHrEmployeeReports(TestHrUaBase):
         self.assertNotIn(employee_2, report.employee_ids)
         self.assertEqual(report.employee_count, 1)
         self.assertEqual(report.disabled_count, 1)
+
+    def test_list_report_generated_by_hr_officer(self):
+        """An HR officer can generate the report.
+
+        Contract dates on hr.version are restricted to hr.group_hr_manager,
+        which l10n_ua_hr_base.group_hr_ua_officer does not imply, while the
+        officer has create/write access to the report itself. Reading those
+        dates without elevation used to raise AccessError.
+        """
+        officer = self.env['res.users'].create({
+            'name': 'HR Officer Report',
+            'login': 'hr_officer_report_test',
+            'company_id': self.company.id,
+            'company_ids': [(6, 0, [self.company.id])],
+            'group_ids': [(4, self.env.ref(
+                'l10n_ua_hr_base.group_hr_ua_officer').id)],
+        })
+        self.assertFalse(
+            officer.has_group('hr.group_hr_manager'),
+            'Pre-condition: the officer must not be an HR administrator')
+
+        employee = self._create_employee(name='Emp Officer',
+                                         hire_date='2024-01-01')
+        self._set_contract_period(employee, '2024-01-01')
+
+        report = self.env['hr.employee.list.report'].with_user(officer).create({
+            'company_id': self.company.id,
+            'date': '2026-01-01',
+        })
+        report.action_generate()
+
+        self.assertEqual(report.state, 'generated')
+        self.assertIn(employee, report.with_context(active_test=False).employee_ids)

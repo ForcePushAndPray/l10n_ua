@@ -169,6 +169,19 @@ class TestEmployeeTransfer(TransactionCase):
         # Оклад перенесено з джерела за згодою.
         self.assertAlmostEqual(version.wage, 25000.0, places=2)
 
+    def test_hire_date_comes_from_the_new_version(self):
+        """The wizard writes no employee-level hire date: it derives from the
+        contract version created for the target company."""
+        self._source_with_version()
+        wizard = self._make_wizard()
+        wizard.action_transfer()
+        new_employee = self.source_employee.next_employee_id
+        version = new_employee.current_version_id
+        self.assertEqual(version.contract_date_start, date(2026, 5, 1))
+        self.assertEqual(new_employee.hire_date, version.contract_date_start)
+        # The source keeps its own anchor - the transfer must not move it.
+        self.assertEqual(self.source_employee.hire_date, date(2020, 1, 10))
+
     def test_hiring_order_marked_p7_and_linked(self):
         self._source_with_version()
         wizard = self._make_wizard()

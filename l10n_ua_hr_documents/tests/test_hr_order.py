@@ -90,6 +90,29 @@ class TestHrOrder(TransactionCase):
         order = self._create_order('hiring')
         self.assertEqual(order.order_type, 'hiring')
 
+    def test_hiring_order_sets_hire_date_through_version(self):
+        """The hire date reaches the employee through the contract version."""
+        order = self._create_order('hiring', date_start=date(2025, 6, 10))
+        version = self.env['hr.version'].search([
+            ('employee_id', '=', self.employee.id),
+            ('hire_order_number', '=', order.name),
+        ], limit=1)
+        self.assertTrue(version, 'Hiring order must create a contract version')
+        self.assertEqual(version.contract_date_start, date(2025, 6, 10))
+        self.assertEqual(self.employee.hire_date, date(2025, 6, 10))
+
+    def test_hiring_order_without_start_date_uses_order_date(self):
+        """Without date_start the order date opens the contract period, so the
+        hire date still comes from the version rather than a manual write."""
+        order = self._create_order('hiring')  # date = 2025-06-01, no date_start
+        version = self.env['hr.version'].search([
+            ('employee_id', '=', self.employee.id),
+            ('hire_order_number', '=', order.name),
+        ], limit=1)
+        self.assertTrue(version)
+        self.assertEqual(version.contract_date_start, date(2025, 6, 1))
+        self.assertEqual(self.employee.hire_date, date(2025, 6, 1))
+
     def test_order_dismissal(self):
         """Dismissal order should have correct type."""
         order = self._create_order('dismissal')

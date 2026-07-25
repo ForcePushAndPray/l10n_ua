@@ -1360,12 +1360,8 @@ msgstr "Загальний оклад"
 
 #. module: l10n_ua_hr_contract
 #: model_terms:ir.actions.act_window,help:l10n_ua_hr_contract.action_hr_job_combining
-msgid ""
-"Track employees who perform duties of combined positions with surcharges."
-"Track employees who perform duties of combined positions with surcharges."
-"Track employees who perform duties of combined positions with surcharges."
-"Track employees who perform duties of combined positions with surcharges."
-msgstr ""
+msgid "Track employees who perform duties of combined positions with surcharges."
+msgstr "Облік працівників, які виконують обов’язки за суміщеними посадами з доплатами."
 
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_termination_reason__category__transfer

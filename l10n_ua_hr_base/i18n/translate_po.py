@@ -711,12 +711,12 @@ TRANSLATIONS.update({
     # Hire date
     "Employee hire date. Derived from the contract versions "
     "(hr.version.contract_date_start): the start of the current continuous "
-    "employment spell. Edit manually only for legacy data imported without "
-    "contract versions.":
+    "employment spell. Correct it on the contract version, not here — the field "
+    "stays writable for data imports only.":
         "Дата прийняття на роботу. Береться з версій трудового договору "
         "(hr.version.contract_date_start) — початок поточного безперервного "
-        "періоду зайнятості. Редагуйте вручну лише для legacy-даних, "
-        "імпортованих без версій контракту.",
+        "періоду зайнятості. Виправляйте у версії контракту, а не тут — "
+        "поле лишається доступним для запису тільки для імпорту даних.",
 
     # Staffing table salary range
     "Max": "Макс",
