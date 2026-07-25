@@ -334,6 +334,11 @@ class HrOrder(models.Model):
             emp_vals = {}
             if order.job_id:
                 emp_vals['job_id'] = order.job_id.id
+            # The employee's hire_date derives from the version's
+            # contract_date_start (step 3). It is written here as a fallback
+            # for orders without date_start: the version then carries no
+            # contract date and this value stays the only one. When date_start
+            # is set, the compute overwrites the field with the same date.
             hire_date_val = order.date_start or order.date
             if hire_date_val:
                 emp_vals['hire_date'] = hire_date_val

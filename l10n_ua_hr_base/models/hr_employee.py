@@ -187,11 +187,17 @@ class HrEmployee(models.Model):
              'тому звичайний користувач не повинен мати змогу його редагувати.')
 
     # === Work Experience & Bank ===
-    hire_date = fields.Date(string='Hire Date')
+    hire_date = fields.Date(
+        string='Hire Date', compute='_compute_hire_date',
+        store=True, readonly=False, tracking=True,
+        help='Employee hire date. Derived from the contract versions '
+             '(hr.version.contract_date_start): the start of the current '
+             'continuous employment spell. Correct it on the contract version, '
+             'not here — the field stays writable for data imports only.')
     work_experience_total = fields.Float(string='Total Work Experience (years)',
                                           help='Total work experience in years')
     work_experience_company = fields.Float(string='Company Experience (years)',
-                                            compute='_compute_work_experience_company', store=True)
+                                            compute='_compute_work_experience_company')
     insurance_experience = fields.Float(string='Insurance Experience (years)',
                                          help='Insurance experience for sick leave calculation')
     bank_account_id = fields.Many2one('res.partner.bank', string='Bank Account',
@@ -382,15 +388,59 @@ class HrEmployee(models.Model):
                       'Узгодьте з ТЦК.'),
             )
 
+    @api.depends('version_ids.contract_date_start', 'version_ids.contract_date_end',
+                 'version_ids.date_version', 'version_ids.active')
+    def _compute_hire_date(self):
+        """Hire date derived from the contract versions (hr.version).
+
+        The contract versions are the single source of truth. The core helper
+        `_get_first_contract_date()` returns the start of the CURRENT
+        continuous employment spell (a gap of 4 days or more between versions
+        opens a new one), which matches Ukrainian practice: a rehire moves the
+        vacation work-year anchor, an uninterrupted transfer does not.
+
+        A manual value is NOT overwritten while no version carries a
+        contract_date_start (legacy data import) — the same pattern core uses
+        for `hr.employee.legal_name`.
+
+        sudo() is required: `_get_first_versions_filtered()` demands
+        hr.group_hr_user and `contract_date_start` is restricted to
+        groups="hr.group_hr_manager".
+        """
+        for employee in self:
+            native = employee.sudo()._get_first_contract_date()
+            if native:
+                employee.hire_date = native
+            elif not employee.hire_date:
+                employee.hire_date = False
+
+    def _get_company_experience_years(self, as_of=None):
+        """Company experience in years as of `as_of` (default: today).
+
+        Measured from `hire_date` at the requested date rather than "now":
+        the seniority bonus must use the experience the employee had at the
+        payslip date, otherwise a December recomputation of a January payslip
+        would apply a different percentage.
+        """
+        self.ensure_one()
+        if not self.hire_date:
+            return 0.0
+        ref_date = as_of or fields.Date.context_today(self)
+        if ref_date < self.hire_date:
+            return 0.0
+        delta = relativedelta(ref_date, self.hire_date)
+        return delta.years + delta.months / 12.0
+
     @api.depends('hire_date')
     def _compute_work_experience_company(self):
-        today = date.today()
+        """Display-only, deliberately not stored: the value depends on today's
+        date, so a stored copy goes stale silently (it used to freeze at the
+        moment hire_date was last written). Computations must call
+        `_get_company_experience_years(as_of)` instead.
+        """
+        today = fields.Date.context_today(self)
         for employee in self:
-            if employee.hire_date:
-                delta = relativedelta(today, employee.hire_date)
-                employee.work_experience_company = delta.years + delta.months / 12.0
-            else:
-                employee.work_experience_company = 0.0
+            employee.work_experience_company = employee._get_company_experience_years(today)
 
     def _get_work_year_for_date(self, ref_date):
         """Return (period_start, period_end, period_index) of the work year
@@ -399,15 +449,12 @@ class HrEmployee(models.Model):
         Used by l10n_ua_hr_holidays to accrue annual vacations per the
         Ukrainian Vacation Law (work year = 12 months from hire_date).
 
-        Falls back to current_version_id.contract_date_start when hire_date
-        is empty. Returns (False, False, 0) when neither anchor is available
-        or ref_date precedes the hire date.
+        hire_date itself is derived from the contract versions, so no extra
+        version fallback is needed here. Returns (False, False, 0) when the
+        anchor is missing or ref_date precedes the hire date.
         """
         self.ensure_one()
         anchor = self.hire_date
-        if not anchor:
-            version = self.current_version_id
-            anchor = version.contract_date_start if version else False
         if not anchor or not ref_date or ref_date < anchor:
             return (False, False, 0)
         delta = relativedelta(ref_date, anchor)

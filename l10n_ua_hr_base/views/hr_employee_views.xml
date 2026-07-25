@@ -96,7 +96,7 @@
                     </group>
                     <group>
                         <group string="Стаж роботи">
-                            <field name="hire_date"/>
+                            <field name="hire_date" readonly="1"/>
                             <field name="work_experience_total"/>
                             <field name="work_experience_company"/>
                             <field name="insurance_experience"/>

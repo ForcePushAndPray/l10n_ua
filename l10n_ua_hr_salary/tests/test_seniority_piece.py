@@ -52,7 +52,9 @@ class TestSeniorityPiece(SalaryTestCase):
         self.assertEqual(self.scale.get_percent(12), 25.0)
 
     def test_seniority_accrual_full_month(self):
-        self.employee.hire_date = date(2010, 1, 1)  # >10 років → 25%
+        # Стаж — від штатної дати контракту; hire_date похідний від неї.
+        self.version.contract_date_start = date(2010, 1, 1)  # >10 років → 25%
+        self.assertEqual(self.employee.hire_date, date(2010, 1, 1))
         self.version.write({
             'seniority_enabled': True, 'seniority_scale_id': self.scale.id})
         slip = self._payslip()
@@ -63,8 +65,26 @@ class TestSeniorityPiece(SalaryTestCase):
         self.assertAlmostEqual(acc.amount, 6250.0, places=2)
         self.assertEqual(acc.rate, 25.0)
 
+    def test_seniority_at_payslip_date_not_today(self):
+        """Відсоток береться за стажем на кінець періоду, а не «на сьогодні»."""
+        self.version.contract_date_start = date(2024, 8, 1)
+        self.version.write({
+            'seniority_enabled': True, 'seniority_scale_id': self.scale.id})
+
+        # Період, на кінець якого стажу ще немає (менше року) → надбавки нема.
+        early = self._payslip(date_from=date(2025, 3, 1), date_to=date(2025, 3, 31))
+        early._generate_accruals()
+        self.assertFalse(self._accrual(early, 'SENIORITY'))
+
+        # Період після річниці → 10%.
+        later = self._payslip(date_from=date(2025, 9, 1), date_to=date(2025, 9, 30))
+        later._generate_accruals()
+        acc = self._accrual(later, 'SENIORITY')
+        self.assertEqual(len(acc), 1)
+        self.assertEqual(acc.rate, 10.0)
+
     def test_seniority_prorated(self):
-        self.employee.hire_date = date(2020, 1, 1)  # >1 рік → 10%
+        self.version.contract_date_start = date(2020, 1, 1)  # >1 рік → 10%
         self.version.write({
             'seniority_enabled': True, 'seniority_scale_id': self.scale.id})
         slip = self._payslip()
