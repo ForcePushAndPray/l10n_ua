@@ -197,7 +197,11 @@ msgstr "Неможливо видалити прийнятий документ 
 #. module: l10n_ua_tax_cabinet
 #. odoo-python
 #: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_document.py:0
-msgid "Cannot modify accepted document '%s'. Accepted documents are read-only."
+msgid ""
+"Cannot modify accepted document '%s'. Accepted documents are read-only."
+"Cannot modify accepted document '%s'. Accepted documents are read-only."
+"Cannot modify accepted document '%s'. Accepted documents are read-only."
+"Cannot modify accepted document '%s'. Accepted documents are read-only."
 msgstr ""
 "Неможливо змінити прийнятий документ '%s'. Прийняті документи доступні лише "
 "для читання."
