@@ -16,11 +16,6 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: l10n_ua_hr_documents_certificates
-#: model:hr.certificate.type,template_body:l10n_ua_hr_documents_certificates.certificate_type_bank
-msgid ""
-msgstr ""
-
-#. module: l10n_ua_hr_documents_certificates
 #: model:hr.certificate.type,template_body:l10n_ua_hr_documents_certificates.certificate_type_income
 msgid ""
 "\n"

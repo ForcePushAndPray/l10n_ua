@@ -120,6 +120,12 @@ class TestHrOrder(TransactionCase):
 
     def test_p2_dismissal_text_from_confirmed_order(self):
         """The П-2 closing line is filled in from the confirmed order."""
+        # Confirming a dismissal closes every contract version (writes
+        # contract_date_end), and hr.version requires a start date whenever an
+        # end date is set. Give the employee a hiring date first, the way a real
+        # dismissal always follows a hiring.
+        self.employee.with_context(active_test=False).version_ids.write(
+            {'contract_date_start': date(2024, 1, 1)})
         order = self._create_order(
             'dismissal',
             date=date(2026, 6, 25),
