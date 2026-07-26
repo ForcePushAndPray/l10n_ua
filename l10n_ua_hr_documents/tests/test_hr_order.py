@@ -118,6 +118,23 @@ class TestHrOrder(TransactionCase):
         order = self._create_order('dismissal')
         self.assertEqual(order.order_type, 'dismissal')
 
+    def test_p2_dismissal_text_from_confirmed_order(self):
+        """The П-2 closing line is filled in from the confirmed order."""
+        order = self._create_order(
+            'dismissal',
+            date=date(2026, 6, 25),
+            date_dismissal=date(2026, 6, 30),
+            dismissal_reason='за угодою сторін, п. 1 ст. 36 КЗпП України',
+        )
+        # A draft order leaves the line blank for a handwritten entry.
+        self.assertEqual(self.employee._get_p2_dismissal_text(), '')
+
+        order.action_confirm()
+        self.assertEqual(
+            self.employee._get_p2_dismissal_text(),
+            '30.06.2026 за угодою сторін, п. 1 ст. 36 КЗпП України, '
+            'наказ № %s від 25.06.2026' % order.name)
+
     def test_order_termination_reason_onchange(self):
         """Picking termination_reason_id should auto-fill dismissal_reason text (#95)."""
         reason = self.env.ref('l10n_ua_hr_contract.termination_reason_war_2136_art5')

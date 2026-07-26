@@ -85,11 +85,11 @@ class TestSeniorityPiece(SalaryTestCase):
         self.assertEqual(acc.rate, 10.0)
 
     def test_seniority_prorated(self):
-        self.version.contract_date_start = date(2020, 1, 1)  # half of the month
+        self.version.contract_date_start = date(2020, 1, 1)  # over 1 year -> 10%
         self.version.write({
             'seniority_enabled': True, 'seniority_scale_id': self.scale.id})
         slip = self._payslip()
-        slip.write({'worked_days': 10})  # половина місяця
+        slip.write({'worked_days': 10})  # half of the month
         slip._generate_accruals()
         acc = self._accrual(slip, 'SENIORITY')
         # 25000 * 10% * 10/20 = 1250

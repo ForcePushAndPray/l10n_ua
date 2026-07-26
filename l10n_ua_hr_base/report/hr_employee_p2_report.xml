@@ -258,8 +258,35 @@
                     </t>
                 </table>
                 
-                <h4 style="margin: 15px 0 5px 0;">III. ПРИЙНЯТТЯ НА РОБОТУ І ПЕРЕВЕДЕННЯ</h4>
-                
+                <h4 style="margin: 15px 0 5px 0;">III. ПРОФЕСІЙНА ОСВІТА НА ВИРОБНИЦТВІ (ЗА РАХУНОК ПІДПРИЄМСТВА-РОБОТОДАВЦЯ)</h4>
+
+                <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
+                    <tr style="background-color: #f0f0f0;">
+                        <th style="border: 1px solid #000; padding: 3px;">Дата</th>
+                        <th style="border: 1px solid #000; padding: 3px;">Назва структурного підрозділу</th>
+                        <th style="border: 1px solid #000; padding: 3px;">Період навчання</th>
+                        <th style="border: 1px solid #000; padding: 3px;">Вид навчання</th>
+                        <th style="border: 1px solid #000; padding: 3px;">Форма навчання</th>
+                        <th style="border: 1px solid #000; padding: 3px;">Назва документа, що підтверджує професійну освіту, ким виданий</th>
+                    </tr>
+
+                    <!-- The system keeps no in-service training records, so the
+                         statutory section is printed with blank rows to be
+                         filled in by hand. -->
+                    <t t-foreach="range(3)" t-as="blank_row">
+                        <tr>
+                            <td style="border: 1px solid #000; padding: 3px; height: 20px;"></td>
+                            <td style="border: 1px solid #000; padding: 3px;"></td>
+                            <td style="border: 1px solid #000; padding: 3px;"></td>
+                            <td style="border: 1px solid #000; padding: 3px;"></td>
+                            <td style="border: 1px solid #000; padding: 3px;"></td>
+                            <td style="border: 1px solid #000; padding: 3px;"></td>
+                        </tr>
+                    </t>
+                </table>
+
+                <h4 style="margin: 15px 0 5px 0;">IV. ПРИЗНАЧЕННЯ І ПЕРЕВЕДЕННЯ</h4>
+
                 <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
                     <tr style="background-color: #f0f0f0;">
                         <th style="border: 1px solid #000; padding: 3px;">Дата</th>
@@ -268,10 +295,14 @@
                         <th style="border: 1px solid #000; padding: 3px;">Оклад</th>
                         <th style="border: 1px solid #000; padding: 3px;">Підстава</th>
                     </tr>
+                    <!-- One record only: the card documents a single employment
+                         contract, so the hire date comes from the current
+                         version's contract_date_start, not from hire_date. -->
                     <tr>
                         <td style="border: 1px solid #000; padding: 3px;">
-                            <t t-if="employee.hire_date">
-                                <t t-esc="employee.hire_date.strftime('%d.%m.%Y')"/>
+                            <t t-set="p2_hire_date" t-value="employee._get_p2_hire_date()"/>
+                            <t t-if="p2_hire_date">
+                                <t t-esc="p2_hire_date.strftime('%d.%m.%Y')"/>
                             </t>
                         </td>
                         <td style="border: 1px solid #000; padding: 3px;">
@@ -283,23 +314,9 @@
                         <td style="border: 1px solid #000; padding: 3px;"></td>
                         <td style="border: 1px solid #000; padding: 3px;"></td>
                     </tr>
-                    <tr>
-                        <td style="border: 1px solid #000; padding: 3px; height: 20px;"></td>
-                        <td style="border: 1px solid #000; padding: 3px;"></td>
-                        <td style="border: 1px solid #000; padding: 3px;"></td>
-                        <td style="border: 1px solid #000; padding: 3px;"></td>
-                        <td style="border: 1px solid #000; padding: 3px;"></td>
-                    </tr>
-                    <tr>
-                        <td style="border: 1px solid #000; padding: 3px; height: 20px;"></td>
-                        <td style="border: 1px solid #000; padding: 3px;"></td>
-                        <td style="border: 1px solid #000; padding: 3px;"></td>
-                        <td style="border: 1px solid #000; padding: 3px;"></td>
-                        <td style="border: 1px solid #000; padding: 3px;"></td>
-                    </tr>
                 </table>
                 
-                <h4 style="margin: 15px 0 5px 0;">IV. ВІДПУСТКИ</h4>
+                <h4 style="margin: 15px 0 5px 0;">V. ВІДПУСТКИ</h4>
                 
                 <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
                     <tr style="background-color: #f0f0f0;">
@@ -358,43 +375,28 @@
     		    	</tr>
 		    </t>
                 </table>
-                
-                <t t-if="employee.disability_group and employee.disability_group != 'none'">
-                    <h4 style="margin: 15px 0 5px 0;">V. ДОДАТКОВІ ВІДОМОСТІ</h4>
-                    <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
-                        <tr>
-                            <td style="border: 1px solid #000; padding: 3px; width: 30%;">Група інвалідності</td>
-                            <td style="border: 1px solid #000; padding: 3px; width: 70%;">
-                                <t t-esc="employee.disability_group"/>
-                                <t t-if="employee.disability_reason">
-                                    (<t t-esc="employee.disability_reason"/>)
-                                </t>
-                            </td>
-                        </tr>
-                        <t t-if="employee.disability_document">
-                            <tr>
-                                <td style="border: 1px solid #000; padding: 3px;">Документ МСЕК</td>
-                                <td style="border: 1px solid #000; padding: 3px;">
-                                    <t t-esc="employee.disability_document"/>
-                                </td>
-                            </tr>
-                        </t>
-                        <t t-if="employee.disability_date_from or employee.disability_date_to">
-                            <tr>
-                                <td style="border: 1px solid #000; padding: 3px;">Термін</td>
-                                <td style="border: 1px solid #000; padding: 3px;">
-                                    <t t-if="employee.disability_date_from">
-                                        з <t t-esc="employee.disability_date_from.strftime('%d.%m.%Y')"/>
-                                    </t>
-                                    <t t-if="employee.disability_date_to">
-                                        до <t t-esc="employee.disability_date_to.strftime('%d.%m.%Y')"/>
-                                    </t>
-                                </td>
-                            </tr>
-                        </t>
-                    </table>
-                </t>
-                
+
+                <!-- Closing lines of form П-2. The fill line is a bottom border
+                     rather than underscore characters so that it always reaches
+                     the right page margin. The dismissal line is filled in from
+                     the confirmed dismissal order and stays blank until then. -->
+                <table style="width: 100%; border-collapse: collapse; font-size: 10pt; margin-top: 12px;">
+                    <tr>
+                        <td style="white-space: nowrap; padding: 8px 4px 0 0; vertical-align: bottom;">Додаткові відомості</td>
+                        <td style="width: 100%; border-bottom: 1px solid #000; vertical-align: bottom;">
+                            <t t-esc="employee._get_p2_additional_info()"/>
+                        </td>
+                    </tr>
+                </table>
+                <table style="width: 100%; border-collapse: collapse; font-size: 10pt; margin-top: 8px;">
+                    <tr>
+                        <td style="white-space: nowrap; padding: 8px 4px 0 0; vertical-align: bottom;">Дата і причина звільнення (підстава)</td>
+                        <td style="width: 100%; border-bottom: 1px solid #000; vertical-align: bottom;">
+                            <t t-esc="employee._get_p2_dismissal_text()"/>
+                        </td>
+                    </tr>
+                </table>
+
                 <div style="margin-top: 30px;">
                     <table style="width: 100%;">
                         <tr>

@@ -542,6 +542,32 @@ class TestHrEmployeeHireDate(TestHrUaBase):
                 employee.hire_date, hire_date,
                 '%s: hire_date must derive from the contract version' % xml_id)
 
+    def test_p2_hire_date_uses_current_contract_period(self):
+        """The П-2 card takes the current contract start, not hire_date.
+
+        A re-hire less than four days after the previous contract ended is
+        merged into one spell by the core aggregation behind hire_date, but
+        legally it is a new employment contract and needs its own card.
+        """
+        employee = self._create_employee()
+        self._set_contract(employee, date(2020, 1, 1), date(2024, 4, 30))
+        self.env['hr.version'].create({
+            'employee_id': employee.id,
+            'company_id': employee.company_id.id,
+            'date_version': date(2024, 5, 2),
+            'contract_date_start': date(2024, 5, 2),
+        })
+        # hire_date still reports the merged spell...
+        self.assertEqual(employee.hire_date, date(2020, 1, 1))
+        # ...while the card documents the current contract.
+        self.assertEqual(employee._get_p2_hire_date(), date(2024, 5, 2))
+
+    def test_p2_dismissal_text_empty_without_order(self):
+        """The dismissal line stays blank until an order is confirmed."""
+        employee = self._create_employee()
+        self._set_contract(employee, date(2021, 3, 15))
+        self.assertEqual(employee._get_p2_dismissal_text(), '')
+
     def test_company_experience_at_given_date(self):
         """Experience is measured at the given date, not "today"."""
         employee = self._create_employee()

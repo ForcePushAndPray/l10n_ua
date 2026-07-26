@@ -39,6 +39,7 @@ def _log_divergences(employees):
             )
     return diverged
 
+
 def _backfill_contract_dates(employees):
     """Move a legacy hire_date into the employee's contract versions.
 
@@ -102,4 +103,3 @@ def migrate(cr, version):
         "%d legacy hire dates moved into contract versions",
         len(employees), diverged, backfilled,
     )
-

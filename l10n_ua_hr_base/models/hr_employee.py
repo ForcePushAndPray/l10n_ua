@@ -463,6 +463,98 @@ class HrEmployee(models.Model):
         period_end = anchor + relativedelta(years=period_index) - relativedelta(days=1)
         return (period_start, period_end, period_index)
 
+    def _get_p2_hire_date(self):
+        """Hire date printed on the П-2 card: start of the CURRENT contract.
+
+        Form П-2 (Держкомстат/Міноборони order No 495/656 of 25.12.2009)
+        documents one employment contract: it closes with a single "Дата і
+        причина звільнення" line signed by the employee, and a re-hire starts
+        a NEW card while the old one is filed for 75 years (Мін'юст order
+        No 578/5, art. 499).
+
+        The card therefore takes hr.version.contract_date_start and not
+        hire_date: the core aggregation behind hire_date merges two spells
+        whenever the gap between them is shorter than four days, which would
+        print the previous employment date on a card documenting a new
+        contract.
+
+        sudo() — contract dates live on hr.version behind
+        hr.group_hr_manager, while the card is printed by HR officers.
+        """
+        self.ensure_one()
+        version = self.sudo().current_version_id
+        return version.contract_date_start if version else False
+
+    DISABILITY_GROUP_ROMAN = {'1': 'I', '2': 'II', '3': 'III'}
+
+    def _get_p2_additional_info(self):
+        """Text for the "Додаткові відомості" line of the П-2 card.
+
+        The form carries one free line there, so the disability data is
+        rendered as a sentence instead of a table. Values the system does not
+        hold — the certificate series and number — stay as blanks for a
+        handwritten entry, the same way the printed form does it.
+        """
+        self.ensure_one()
+        group = self.DISABILITY_GROUP_ROMAN.get(self.disability_group)
+        if not group:
+            return ''
+        act_date = (self.disability_date_from.strftime('%d.%m.%Y')
+                    if self.disability_date_from else '____________')
+        # The reason follows the group in brackets, the way the card used to
+        # show it in the dropped table.
+        reason = ' (%s)' % self.disability_reason.strip() if self.disability_reason else ''
+        text = (
+            'Інвалідність %s групи%s, посвідчення серія ______ № ______, '
+            'довідка до акта МСЕК (витяг рішення експертної комісії) '
+            'від %s № %s'
+            % (group, reason, act_date, self.disability_document or '______')
+        )
+        # An open-ended disability carries no expiry date, so the clause is
+        # appended only when one is set.
+        if self.disability_date_to:
+            text += ', строком до %s' % self.disability_date_to.strftime('%d.%m.%Y')
+        return text
+
+    def _get_p2_dismissal_text(self):
+        """Text filling the "Дата і причина звільнення (підстава)" line.
+
+        Built from the confirmed dismissal order as
+        "<date> <reason>, наказ № <number> від <order date>". Returns an empty
+        string while no dismissal order is confirmed, so the form keeps its
+        blank line for a handwritten entry.
+
+        The order model lives in l10n_ua_hr_documents, which this module does
+        not depend on — hence the presence check.
+        """
+        self.ensure_one()
+        if 'hr.order' not in self.env:
+            return ''
+        order = self.env['hr.order'].sudo().search([
+            ('employee_id', '=', self.id),
+            ('order_type', '=', 'dismissal'),
+            ('state', '=', 'confirmed'),
+        ], order='date_dismissal desc, date desc, id desc', limit=1)
+        if not order:
+            return ''
+        parts = []
+        dismissal_date = order.date_dismissal or order.date
+        if dismissal_date:
+            parts.append(dismissal_date.strftime('%d.%m.%Y'))
+        if order.dismissal_reason:
+            # The reason is a Text field; the form line takes a single line.
+            parts.append(' '.join(order.dismissal_reason.split()))
+        reference = []
+        if order.name and order.name != 'New':
+            reference.append('наказ № %s' % order.name)
+        if order.date:
+            reference.append('від %s' % order.date.strftime('%d.%m.%Y'))
+        text = ' '.join(parts)
+        if reference:
+            reference = ' '.join(reference)
+            text = '%s, %s' % (text, reference) if text else reference
+        return text
+
     @api.onchange('actual_same_as_registration')
     def _onchange_actual_same_as_registration(self):
         if self.actual_same_as_registration:
