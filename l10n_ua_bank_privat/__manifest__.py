@@ -1,8 +1,8 @@
 {
     'name': 'Ukraine - PrivatBank Integration',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Accounting/Localization',
-    'summary': 'PrivatBank API + XLS statement import',
+    'summary': 'PrivatBank API + file statement import (XLS/XLSX/CSV/MultiCash)',
     'description': """
 Ukraine PrivatBank Integration
 ==============================
@@ -23,7 +23,7 @@ Extends l10n_ua_bank_sync with PrivatBank-specific functionality.
         'l10n_ua_bank_sync',
     ],
     'external_dependencies': {
-        'python': ['xlrd'],
+        'python': ['xlrd', 'openpyxl'],
     },
     'data': [
         'views/l10n_ua_bank_privat_config_views.xml',
