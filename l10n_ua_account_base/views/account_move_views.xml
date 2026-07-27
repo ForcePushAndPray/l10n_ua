@@ -21,4 +21,20 @@
         </field>
     </record>
 
+    <!-- Колонка «Узгодження» у списку елементів журналу — це matching_number:
+         Char із міткою групи узгодження («20», «P1»), а не сума. Стандартний
+         підпис «Matching» перекладено як «Узгодження», тож колонка з коротким
+         числом читається як грошова і виглядає помилковою (#169). Уточнюємо
+         підпис; переклад — в i18n/uk_UA.po. -->
+    <record id="view_move_line_tree_ua" model="ir.ui.view">
+        <field name="name">account.move.line.list.ua</field>
+        <field name="model">account.move.line</field>
+        <field name="inherit_id" ref="account.view_move_line_tree"/>
+        <field name="arch" type="xml">
+            <field name="matching_number" position="attributes">
+                <attribute name="string">Matching Number</attribute>
+            </field>
+        </field>
+    </record>
+
 </odoo>

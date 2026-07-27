@@ -1,3 +1,4 @@
+import base64
 import logging
 import requests
 from datetime import datetime
@@ -7,14 +8,28 @@ from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
+# Розкладка колонок виписки Приват24 Бізнес (експорт XLS, BIFF8).
+# Шапка таблиці — рядок з «№ документа» у колонці 0; дані — далі.
+PRIVAT_XLS_COL_DOC = 0        # № документа
+PRIVAT_XLS_COL_DATE = 1       # Дата операції (ДД.ММ.РРРР)
+PRIVAT_XLS_COL_AMOUNT = 3     # Сума (знакова: − списання, + надходження)
+PRIVAT_XLS_COL_PURPOSE = 5    # Призначення платежу
+PRIVAT_XLS_COL_EDRPOU = 6     # ЄДРПОУ/РНОКПП контрагента
+PRIVAT_XLS_COL_CNTR_NAME = 7  # Назва контрагента
+PRIVAT_XLS_COL_CNTR_ACC = 8   # Рахунок контрагента
+PRIVAT_XLS_COL_REF = 10       # Референс
+
 
 class L10nUaBankSyncConfig(models.Model):
-    """Extend base config with PrivatBank provider."""
+    """Extend base config with PrivatBank provider (online API + XLS file)."""
     _inherit = 'l10n_ua.bank.sync.config'
 
     provider = fields.Selection(
-        selection_add=[('privat', 'PrivatBank')],
-        ondelete={'privat': 'set default'},
+        selection_add=[
+            ('privat', 'PrivatBank'),
+            ('privat_xls', 'PrivatBank (файл виписки)'),
+        ],
+        ondelete={'privat': 'set default', 'privat_xls': 'set default'},
     )
 
     # PrivatBank API Credentials
@@ -41,9 +56,20 @@ class L10nUaBankSyncConfig(models.Model):
         help='Card number for statement retrieval (16 digits)',
     )
 
+    def _source_type(self):
+        if self.provider == 'privat_xls':
+            return 'file'
+        return super()._source_type()
+
     def _fetch_from_bank(self, date_from, date_to):
         """Fetch statements from PrivatBank API."""
         self.ensure_one()
+
+        if self.provider == 'privat_xls':
+            raise UserError(_(
+                'PrivatBank (файл виписки) — файловий провайдер. Скористайтесь '
+                'майстром «Імпорт виписки з файлу», щоб завантажити файл виписки '
+                'з Приват24 Бізнес (XLS / XLSX / CSV / MultiCash-ZIP).'))
 
         if self.provider != 'privat':
             return super()._fetch_from_bank(date_from, date_to)
@@ -131,9 +157,253 @@ class L10nUaBankSyncConfig(models.Model):
             'response_text': response.text,
         }
 
+    # ------------------------------------------------------------------
+    # PrivatBank XLS file provider (Приват24 Бізнес → експорт XLS)
+    # ------------------------------------------------------------------
+
+    def _file_to_payload(self, content, filename=None):
+        """Байти файлу виписки → JSON-безпечний payload (base64)."""
+        if self.provider == 'privat_xls':
+            return {'privat_xls_b64': base64.b64encode(content).decode('ascii')}
+        return super()._file_to_payload(content, filename)
+
+    def _extract_balances(self, raw_data):
+        """Вхідний/вихідний залишок з файлу виписки ПриватБанку.
+
+        Вхідний залишок = сума рядка «#ПЕРЕНЕСЕННЯ ЗАЛИШКУ»; вихідний =
+        вхідний + Σ рухів. Так виписка отримує коректний balance_start, і
+        показаний кінцевий баланс збігається з реальним (а не лише Σ рухів).
+        """
+        if self.provider != 'privat_xls':
+            return super()._extract_balances(raw_data)
+        transactions, opening = self._privat_file_parse(raw_data)
+        if opening is None:
+            return (None, None)
+        closing = round(opening + sum(t['amount'] for t in transactions), 2)
+        return (opening, closing)
+
+    def action_privat_xls_open_import(self):
+        """Відкрити майстер імпорту виписки XLS для цього конфігу."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Імпорт виписки з файлу'),
+            'res_model': 'l10n_ua.bank.statement.import',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_config_id': self.id},
+        }
+
+    @staticmethod
+    def _privat_cell(value):
+        """Клітинку у рядок: цілі float ('14360570.0') → '14360570'."""
+        if isinstance(value, float) and value.is_integer():
+            return str(int(value))
+        return str(value).strip()
+
+    @staticmethod
+    def _privat_amount(value):
+        """Знакова сума: приймає число або текст ('-100 000.00', '750,00')."""
+        if isinstance(value, (int, float)):
+            return float(value)
+        text = (str(value).strip().replace(' ', '').replace('\xa0', '')
+                .replace(',', '.'))
+        try:
+            return float(text)
+        except ValueError:
+            return 0.0
+
+    @staticmethod
+    def _privat_date(raw):
+        """'ДД.ММ.РРРР' → 'РРРР-ММ-ДД'; '' якщо не дата."""
+        raw = (raw or '').strip()
+        if not raw or '.' not in raw:
+            return ''
+        parts = raw.split('.')
+        if len(parts) != 3:
+            return ''
+        return '%s-%s-%s' % (parts[2], parts[1], parts[0])
+
+    @staticmethod
+    def _privat_is_carry(purpose):
+        """Технічний рядок перенесення вхідного залишку — не рух коштів."""
+        return (purpose or '').strip().startswith('#ПЕРЕНЕСЕННЯ ЗАЛИШКУ')
+
+    def _privat_file_parse(self, raw_data):
+        """Автовизначення формату файлу виписки ПриватБанку та розбір.
+
+        Повертає ``(transactions, opening_balance)`` — вхідний залишок беремо з
+        рядка «#ПЕРЕНЕСЕННЯ ЗАЛИШКУ» (None, якщо його немає).
+
+        Підтримка: XLS (BIFF8), XLSX, CSV (Приват24, cp1251), MultiCash (ZIP з
+        umsatz.txt/auszug.txt). DBF наразі не підтримується.
+        """
+        b64 = (raw_data or {}).get('privat_xls_b64', '')
+        if not b64:
+            return ([], None)
+        content = base64.b64decode(b64)
+
+        if content[:4] == b'PK\x03\x04':
+            # ZIP: MultiCash (umsatz.txt) або XLSX (xl/…).
+            import io
+            import zipfile
+            with zipfile.ZipFile(io.BytesIO(content)) as zf:
+                names = zf.namelist()
+                umsatz = next((n for n in names
+                               if n.lower().endswith('umsatz.txt')), None)
+                if umsatz:
+                    return self._privat_parse_multicash(
+                        zf.read(umsatz).decode('cp1251', 'replace'))
+                if any(n.startswith('xl/') for n in names):
+                    return self._privat_parse_xlsx(content)
+            raise UserError(_(
+                'ZIP-файл не схожий ні на MultiCash (umsatz.txt), ні на XLSX.'))
+        if content[:4] == b'\xd0\xcf\x11\xe0':
+            return self._privat_parse_xls(content)
+        if content[:1] in (b'\x03', b'\x30', b'\x83', b'\x8b', b'\xf5', b'\xfb'):
+            raise UserError(_(
+                'Формат DBF поки не підтримується. Скористайтесь XLS/XLSX/CSV '
+                'або MultiCash-випискою з Приват24 Бізнес.'))
+        # Інакше — текст (CSV Приват24, cp1251).
+        return self._privat_parse_csv(content.decode('cp1251', 'replace'))
+
+    def _privat_parse_xls(self, content):
+        """XLS (BIFF8) через xlrd — табличний експорт Приват24 Бізнес."""
+        import xlrd
+        book = xlrd.open_workbook(file_contents=content)
+        sheet = book.sheet_by_index(0)
+        rows = [[sheet.cell_value(r, c) for c in range(sheet.ncols)]
+                for r in range(sheet.nrows)]
+        return self._privat_parse_table_rows(rows)
+
+    def _privat_parse_xlsx(self, content):
+        """XLSX через openpyxl — та сама розкладка колонок, що й XLS."""
+        import io
+        import openpyxl
+        wb = openpyxl.load_workbook(
+            io.BytesIO(content), read_only=True, data_only=True)
+        ws = wb.active
+        rows = [[('' if v is None else v) for v in row]
+                for row in ws.iter_rows(values_only=True)]
+        return self._privat_parse_table_rows(rows)
+
+    def _privat_parse_table_rows(self, rows):
+        """Спільний розбір табличного експорту (XLS/XLSX).
+
+        Колонки: №документа, дата, час, знакова сума, валюта, призначення,
+        ЄДРПОУ, контрагент, рахунок к/а, МФО, референс.
+
+        Шапки/інфо-блок і підсумки визначаємо не за назвою колонки (XLSX-експорт
+        її не має), а за змістом: транзакція — рядок, де колонка дати містить
+        коректну дату ДД.ММ.РРРР. Решта (текст «Дата операції», порожні,
+        підсумкові рядки) відсіюється автоматично.
+        """
+        transactions = []
+        opening = None
+        for row in rows:
+            if len(row) <= PRIVAT_XLS_COL_REF:
+                continue
+            date = self._privat_date(str(row[PRIVAT_XLS_COL_DATE]))
+            if not date:
+                continue
+            purpose = str(row[PRIVAT_XLS_COL_PURPOSE]).strip()
+            if self._privat_is_carry(purpose):
+                # Вхідний залишок — не рух коштів.
+                opening = self._privat_amount(row[PRIVAT_XLS_COL_AMOUNT])
+                continue
+            doc = self._privat_cell(row[PRIVAT_XLS_COL_DOC])
+            ref = self._privat_cell(row[PRIVAT_XLS_COL_REF])
+            transactions.append({
+                'id': ref or doc,
+                'date': date,
+                'amount': self._privat_amount(row[PRIVAT_XLS_COL_AMOUNT]),
+                'description': purpose,
+                'partner_name': self._privat_cell(row[PRIVAT_XLS_COL_CNTR_NAME]),
+                'partner_iban': self._privat_cell(row[PRIVAT_XLS_COL_CNTR_ACC]),
+                'partner_edrpou': self._privat_cell(row[PRIVAT_XLS_COL_EDRPOU]),
+            })
+        return transactions, opening
+
+    def _privat_parse_csv(self, text):
+        """CSV Приват24 Бізнес (cp1251, роздільник «;»).
+
+        Колонки: ЄДРПОУ; МФО; Рахунок; Валюта; №документу; Дата; МФО банку;
+        Назва банку; Рахунок кор.; ЄДРПОУ кор.; Кореспондент; Сума;
+        Призначення платежу.
+        """
+        import csv
+        import io
+        C_DOC, C_DATE, C_ACC, C_EDRPOU, C_NAME, C_AMOUNT, C_PURPOSE = \
+            4, 5, 8, 9, 10, 11, 12
+        reader = csv.reader(io.StringIO(text), delimiter=';', quotechar='"')
+        transactions = []
+        opening = None
+        for idx, row in enumerate(reader):
+            if len(row) <= C_PURPOSE:
+                continue
+            if idx == 0 and 'Дата' in row[C_DATE]:
+                continue  # шапка
+            date = self._privat_date(row[C_DATE])
+            if not date:
+                continue
+            purpose = (row[C_PURPOSE] or '').strip()
+            if self._privat_is_carry(purpose):
+                opening = self._privat_amount(row[C_AMOUNT])
+                continue
+            transactions.append({
+                'id': (row[C_DOC] or '').strip(),
+                'date': date,
+                'amount': self._privat_amount(row[C_AMOUNT]),
+                'description': purpose,
+                'partner_name': (row[C_NAME] or '').strip(),
+                'partner_iban': (row[C_ACC] or '').strip(),
+                'partner_edrpou': (row[C_EDRPOU] or '').strip(),
+            })
+        return transactions, opening
+
+    def _privat_parse_multicash(self, text):
+        """MultiCash umsatz.txt (cp1251, «;»).
+
+        Значущі поля: [1] рахунок, [3] дата, [5] призначення, [9] №документа,
+        [10] знакова сума; назва контрагента — останнє непорожнє поле (не тег
+        {{…}}).
+        """
+        M_ACC, M_DATE, M_PURPOSE, M_DOC, M_AMOUNT = 1, 3, 5, 9, 10
+        transactions = []
+        opening = None
+        for line in text.splitlines():
+            if not line.strip():
+                continue
+            fields = line.split(';')
+            if len(fields) <= M_AMOUNT:
+                continue
+            date = self._privat_date(fields[M_DATE])
+            if not date:
+                continue
+            purpose = (fields[M_PURPOSE] or '').strip()
+            if self._privat_is_carry(purpose):
+                opening = self._privat_amount(fields[M_AMOUNT])
+                continue
+            partner_name = next(
+                (f.strip() for f in reversed(fields)
+                 if f.strip() and not f.strip().startswith('{{')), '')
+            transactions.append({
+                'id': (fields[M_DOC] or '').strip(),
+                'date': date,
+                'amount': self._privat_amount(fields[M_AMOUNT]),
+                'description': purpose,
+                'partner_name': partner_name,
+                'partner_iban': '',
+                'partner_edrpou': '',
+            })
+        return transactions, opening
+
     def _parse_transactions(self, raw_data):
         """Parse PrivatBank API response into transaction list."""
         self.ensure_one()
+
+        if self.provider == 'privat_xls':
+            return self._privat_file_parse(raw_data)[0]
 
         if self.provider != 'privat':
             return super()._parse_transactions(raw_data)

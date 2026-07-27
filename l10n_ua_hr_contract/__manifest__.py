@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - HR Contracts',
-    'version': '19.0.2.0.0',
+    'version': '19.0.3.0.0',
     'category': 'Human Resources/Localization',
     'summary': 'Ukrainian HR contracts localization (extends hr.version)',
     'description': """
@@ -12,7 +12,7 @@ Extension of hr.version for Ukrainian localization (Odoo 19 architecture):
 * Contract types (permanent, fixed-term, civil, gig-contract)
 * Main workplace / part-time work tracking
 * Work modes (full-time, part-time, flexible, remote)
-* Work schedules (5-day, shift work, etc.)
+* Work schedules via native resource.calendar
 * Probation period management
 * Version allowances (seniority, hazard, intensity)
 * Termination reasons according to Ukrainian Labor Code
@@ -30,6 +30,7 @@ Requires l10n_ua_hr_base module.
     'license': 'LGPL-3',
     'depends': [
         'l10n_ua_hr_base',
+        'resource',   # explicit: we now inherit resource.calendar
     ],
     'data': [
         'security/ir.model.access.csv',
@@ -37,6 +38,7 @@ Requires l10n_ua_hr_base module.
         'data/ir_sequence_data.xml',
         'data/hr_allowance_type_data.xml',
         'data/hr_work_schedule_data.xml',
+        'data/resource_calendar_ua_data.xml',
         'data/hr_termination_reason_data.xml',
         'views/hr_allowance_type_views.xml',
         'views/hr_employee_reports_views.xml',
@@ -46,6 +48,7 @@ Requires l10n_ua_hr_base module.
         'views/hr_job_combining_views.xml',
         'views/hr_version_amendment_views.xml',
         'views/hr_work_schedule_views.xml',
+        'views/resource_calendar_views.xml',
         'views/hr_termination_reason_views.xml',
         'views/hr_employee_views.xml',
         'views/menu_views.xml',

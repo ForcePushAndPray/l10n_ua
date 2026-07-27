@@ -35,9 +35,11 @@
                 <field name="work_mode"/>
             </xpath>
             <!-- Add after schedule separator -->
+            <!-- working_hours_week прибрано (#213): норма тижня тепер
+                 читається зі штатних «Робочих годин», і два сусідні контроли
+                 з однаковим змістом лише заплутували кадровика. -->
             <xpath expr="//separator[@name='schedule']" position="before">
                 <field name="work_rate"/>
-                <field name="working_hours_week"/>
                 <field name="scheduled_hours_week"/>
                 <field name="scheduled_hours_day"/>
             </xpath>
@@ -45,10 +47,12 @@
             <xpath expr="//page[@name='hr_settings']" position="before">
                 <page string="UA: Контракт" name="ua_contract" groups="hr.group_hr_user">
                     <group>
+                        <!-- work_schedule_ua_id прибрано (#213): графік роботи
+                             живе у штатному resource_calendar_id на вкладці
+                             «Робоча інформація». -->
                         <group string="Штатний розпис">
                             <field name="staffing_line_id"/>
                             <field name="tariff_grade_id"/>
-                            <field name="work_schedule_ua_id"/>
                         </group>
                         <group string="Умови праці">
                             <field name="work_conditions"/>

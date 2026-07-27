@@ -2,7 +2,7 @@
 
 Покриття:
 - Норма годин версії (scheduled_hours_week/day) масштабується за work_rate
-- Норма береться з графіка роботи, а без нього — з тижневої норми
+- Норма береться зі штатного календаря версії (resource_calendar_id)
 - Суміщення споживає частку штатної одиниці (combined_rate) у розписі
 - Валідація combined_rate
 """
@@ -35,17 +35,12 @@ class TestWorkRateNorm(ContractTestCase):
         self.assertAlmostEqual(v.scheduled_hours_week, 10.0)
         self.assertAlmostEqual(v.scheduled_hours_day, 2.0)
 
-    def test_norm_from_work_schedule(self):
+    def test_norm_from_work_calendar(self):
         """Скорочений графік (36 год) масштабується за ставкою."""
-        schedule = self.env['hr.work.schedule'].create({
-            'name': 'Скорочений 36',
-            'schedule_type': 'standard',
-            'hours_per_week': 36.0,
-            'hours_per_day': 7.2,
-            'working_days_per_week': 5,
-            'company_id': self.company.id,
-        })
-        v = self._create_version(work_rate=0.5, work_schedule_ua_id=schedule.id)
+        calendar = self.env.ref(
+            'l10n_ua_hr_contract.resource_calendar_ua_std36')
+        v = self._create_version(work_rate=0.5,
+                                 resource_calendar_id=calendar.id)
         self.assertAlmostEqual(v.scheduled_hours_week, 18.0)
         self.assertAlmostEqual(v.scheduled_hours_day, 3.6)
 

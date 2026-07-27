@@ -15,23 +15,6 @@
                             <span class="text-muted">Для генерації QR-коду налаштуйте IBAN та ЄДРПОУ компанії</span>
                         </div>
                     </group>
-                    <group string="Monobank Acquiring">
-                        <field name="mono_payment_link" widget="CopyClipboardURL" readonly="1"
-                               invisible="not mono_payment_link"/>
-                        <field name="mono_invoice_id" readonly="1" invisible="not mono_invoice_id"/>
-                        <div>
-                            <button name="action_create_mono_link"
-                                    type="object"
-                                    string="Створити посилання Monobank"
-                                    class="btn-primary"
-                                    invisible="mono_payment_link"/>
-                            <button name="action_create_mono_link"
-                                    type="object"
-                                    string="Оновити посилання Monobank"
-                                    class="btn-secondary"
-                                    invisible="not mono_payment_link"/>
-                        </div>
-                    </group>
                 </page>
             </xpath>
         </field>

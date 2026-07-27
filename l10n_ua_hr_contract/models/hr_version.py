@@ -49,7 +49,10 @@ class HrVersion(models.Model):
     working_hours_week = fields.Float(
         string='Hours per Week',
         default=40.0,
-        groups="hr.group_hr_user"
+        groups="hr.group_hr_user",
+        help='DEPRECATED (19.0.3.0.0) — use resource_calendar_id. The weekly '
+             'norm now comes from the version calendar and this field is no '
+             'longer read by any computation. Removed in 19.0.4.0.0.'
     )
     work_rate = fields.Float(
         string='Work Rate',
@@ -100,7 +103,10 @@ class HrVersion(models.Model):
     work_schedule_ua_id = fields.Many2one(
         'hr.work.schedule',
         string='Work Schedule (UA)',
-        groups="hr.group_hr_user"
+        groups="hr.group_hr_user",
+        help='DEPRECATED (19.0.3.0.0) — use resource_calendar_id. Kept '
+             'readable so the 19.0.3.0.0 migration can be reviewed; removed '
+             'together with hr.work.schedule in 19.0.4.0.0.'
     )
 
     # === Allowances ===
@@ -223,26 +229,29 @@ class HrVersion(models.Model):
         for version in self:
             version.total_wage = version.wage + version.total_allowances
 
-    @api.depends('work_rate', 'working_hours_week',
-                 'work_schedule_ua_id.hours_per_week',
-                 'work_schedule_ua_id.hours_per_day',
-                 'work_schedule_ua_id.working_days_per_week')
+    @api.depends('work_rate',
+                 'resource_calendar_id.hours_per_week',
+                 'resource_calendar_id.hours_per_day')
     def _compute_scheduled_norm(self):
         """Норма годин пропорційна ставці зайнятості (work_rate).
 
-        Базова норма береться з графіка роботи (work_schedule_ua_id), а за
-        його відсутності — з тижневої норми версії (working_hours_week,
-        типово 40 год, 5-денний тиждень).
+        Базова норма береться зі штатного календаря версії
+        (resource_calendar_id) — того самого, з якого списують відпустки, тож
+        зарплата й відпустки більше не можуть розійтися (#213).
+
+        Календар без рядків присутності дав би нульову норму, тому лишається
+        запобіжник на 40-годинний тиждень: краще типова норма, ніж мовчазний
+        нуль у розрахунку зарплати. Передвизначені змінні графіки цього
+        запобіжника не потребують — у них норма задана явно.
         """
         for version in self:
             rate = version.work_rate if version.work_rate else 1.0
-            sched = version.work_schedule_ua_id
-            if sched and sched.hours_per_week:
-                week = sched.hours_per_week
-                days = sched.working_days_per_week or 5
-                day = sched.hours_per_day or (week / days)
-            else:
-                week = version.working_hours_week or 40.0
+            calendar = version.resource_calendar_id
+            week = calendar.hours_per_week if calendar else 0.0
+            day = calendar.hours_per_day if calendar else 0.0
+            if not week:
+                week = 40.0
+            if not day:
                 day = week / 5.0
             version.scheduled_hours_week = week * rate
             version.scheduled_hours_day = day * rate

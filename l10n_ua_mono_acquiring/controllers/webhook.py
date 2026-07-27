@@ -1,4 +1,3 @@
-import hashlib
 import logging
 import traceback
 
@@ -11,7 +10,7 @@ _logger = logging.getLogger(__name__)
 class MonobankAcquiringWebhook(http.Controller):
 
     @http.route(
-        '/l10n_ua_payment_link/mono/webhook',
+        '/l10n_ua_mono_acquiring/webhook',
         methods=['POST'],
         type='http',
         csrf=False,
@@ -27,29 +26,23 @@ class MonobankAcquiringWebhook(http.Controller):
             status = data.get('status')
 
             if not invoice_id or status != 'success':
-                return request.make_response('ok', [('Content-Type', 'text/plain')])
+                return request.make_response(
+                    'ok', [('Content-Type', 'text/plain')])
 
             # Try sale.order first, then account.move
-            order = (
-                request.env['sale.order']
-                .sudo()
-                .search([('mono_invoice_id', '=', invoice_id)], limit=1)
-            )
+            order = request.env['sale.order'].sudo().search(
+                [('mono_invoice_id', '=', invoice_id)], limit=1)
             if order:
                 self._process_sale_order(order, data)
             else:
-                move = (
-                    request.env['account.move']
-                    .sudo()
-                    .search([('mono_invoice_id', '=', invoice_id)], limit=1)
-                )
+                move = request.env['account.move'].sudo().search(
+                    [('mono_invoice_id', '=', invoice_id)], limit=1)
                 if move:
                     self._process_invoice(move, data)
                 else:
                     _logger.warning(
-                        "Monobank webhook: no order/invoice for invoiceId=%s ref=%s",
-                        invoice_id, reference,
-                    )
+                        "Monobank webhook: no order/invoice for "
+                        "invoiceId=%s ref=%s", invoice_id, reference)
 
         except Exception:
             _logger.error("Monobank webhook error:\n%s", traceback.format_exc())
@@ -72,8 +65,7 @@ class MonobankAcquiringWebhook(http.Controller):
             invoices.action_post()
         else:
             invoices = order.invoice_ids.filtered(
-                lambda m: m.state == 'posted' and m.payment_state != 'paid'
-            )
+                lambda m: m.state == 'posted' and m.payment_state != 'paid')
 
         if invoices:
             request.env['account.payment.register'].sudo().with_context(
@@ -82,8 +74,7 @@ class MonobankAcquiringWebhook(http.Controller):
             ).create({})._create_payments()
         else:
             _logger.warning(
-                "Monobank webhook: no invoices to pay for %s", order.name
-            )
+                "Monobank webhook: no invoices to pay for %s", order.name)
 
     def _process_invoice(self, move, data):
         """Register payment for existing posted invoice."""
@@ -94,7 +85,8 @@ class MonobankAcquiringWebhook(http.Controller):
             return
 
         if move.payment_state == 'paid':
-            _logger.info("Monobank webhook: invoice %s already paid", move.name)
+            _logger.info(
+                "Monobank webhook: invoice %s already paid", move.name)
             return
 
         request.env['account.payment.register'].sudo().with_context(

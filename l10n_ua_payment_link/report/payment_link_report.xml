@@ -89,16 +89,6 @@
                             </div>
                         </div>
 
-                        <!-- Monobank QR Code -->
-                        <div style="text-align: center; margin: 30px 0;" t-if="o.mono_payment_link">
-                            <h4>Або оплатіть карткою за посиланням Monobank</h4>
-                            <img t-att-src="o._get_mono_qr_barcode_url()"
-                                 style="width: 250px; height: 250px;"/>
-                            <div style="margin-top: 10px; color: #666; font-size: 9pt;">
-                                Оплата карткою через Monobank Acquiring
-                            </div>
-                        </div>
-
                     </div>
                 </t>
             </t>
@@ -166,16 +156,6 @@
                                  style="width: 300px; height: 300px;"/>
                             <div style="margin-top: 10px; color: #666; font-size: 9pt;">
                                 Стандарт НБУ (Постанова від 01.02.2021 №11)
-                            </div>
-                        </div>
-
-                        <!-- Monobank QR Code -->
-                        <div style="text-align: center; margin: 30px 0;" t-if="o.mono_payment_link">
-                            <h4>Або оплатіть карткою за посиланням Monobank</h4>
-                            <img t-att-src="o._get_mono_qr_barcode_url()"
-                                 style="width: 250px; height: 250px;"/>
-                            <div style="margin-top: 10px; color: #666; font-size: 9pt;">
-                                Оплата карткою через Monobank Acquiring
                             </div>
                         </div>
 

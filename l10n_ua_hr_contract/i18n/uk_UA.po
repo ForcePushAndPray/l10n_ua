@@ -527,6 +527,7 @@ msgstr "Фіксована сума доплати"
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_version__work_mode__flexible
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule__schedule_type__flexible
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__resource_calendar__ua_schedule_type__flexible
 msgid "Flexible Schedule"
 msgstr "Гнучкий графік"
 
@@ -620,6 +621,7 @@ msgstr "Шкідливі"
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__is_hazardous
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_allowance_type__category__hazard
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_resource_calendar__ua_is_hazardous
 msgid "Hazardous Conditions"
 msgstr "Шкідливі умови"
 
@@ -705,6 +707,7 @@ msgstr "Якщо позначено, деякі повідомлення маю�
 
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__is_night_work
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_resource_calendar__ua_is_night_work
 msgid "Includes Night Work"
 msgstr "Включає нічну роботу"
 
@@ -854,11 +857,13 @@ msgstr "Тип наступної активності"
 
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__night_end_hour
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_resource_calendar__ua_night_end_hour
 msgid "Night End Hour"
 msgstr "Кінець нічного часу"
 
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__night_start_hour
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_resource_calendar__ua_night_start_hour
 msgid "Night Start Hour"
 msgstr "Початок нічного часу"
 
@@ -1075,6 +1080,7 @@ msgstr "Оформлення суміщення посад для працівн
 
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__reduced_hours
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_resource_calendar__ua_reduced_hours
 msgid "Reduced Working Hours"
 msgstr "Скорочений робочий час"
 
@@ -1193,6 +1199,7 @@ msgstr "Потрібна вихідна допомога"
 
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule__schedule_type__shift
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__resource_calendar__ua_schedule_type__shift
 msgid "Shift Work"
 msgstr "Змінна робота"
 
@@ -1209,6 +1216,7 @@ msgstr "Штатна позиція"
 
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule__schedule_type__standard
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__resource_calendar__ua_schedule_type__standard
 msgid "Standard (5-day week)"
 msgstr "Стандартний (5-денний тиждень)"
 
@@ -1245,6 +1253,7 @@ msgstr ""
 
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule__schedule_type__summarized
+#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__resource_calendar__ua_schedule_type__summarized
 msgid "Summarized Accounting"
 msgstr "Підсумований облік"
 
@@ -1777,3 +1786,37 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_employee_view_form_version_ua
 msgid "Штатний розпис"
 msgstr ""
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_resource_calendar__ua_code
+msgid "Schedule Code"
+msgstr "Код графіка"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_resource_calendar__ua_code
+msgid "Short code used in reports and imports (STD40, SHIFT2X2)."
+msgstr "Короткий код для звітів та імпорту (STD40, SHIFT2X2)."
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_resource_calendar__ua_schedule_type
+msgid "Schedule Type (UA)"
+msgstr "Тип графіка (UA)"
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_resource_calendar__ua_schedule_type
+msgid ""
+"Ukrainian classification of the working-time regime. Independent of the core "
+"schedule_type, which only states whether the hours are fixed or flexible."
+msgstr ""
+"Українська класифікація режиму робочого часу. Не пов'язана зі штатним "
+"schedule_type, який лише вказує, фіксовані години чи гнучкі."
+
+#. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_resource_calendar__ua_reduced_hours
+msgid "Reduced working time under Article 51 of the Labour Code."
+msgstr "Скорочена тривалість робочого часу за статтею 51 КЗпП."
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.resource_calendar_form_ua
+msgid "Українська локалізація"
+msgstr "Українська локалізація"

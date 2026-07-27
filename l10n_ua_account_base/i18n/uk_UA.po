@@ -632,6 +632,11 @@ msgid "Account Subconto Configuration"
 msgstr "Налаштування субконто рахунку"
 
 #. module: l10n_ua_account_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_account_base.view_move_line_tree_ua
+msgid "Matching Number"
+msgstr "№ узгодження"
+
+#. module: l10n_ua_account_base
 #: model:ir.model,name:l10n_ua_account_base.model_l10n_ua_move_line_subconto
 msgid "Move Line Subconto Value"
 msgstr "Значення субконто проводки"
