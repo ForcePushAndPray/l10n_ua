@@ -7,11 +7,11 @@
         <field name="arch" type="xml">
             <form string="Vacation Summary Report">
                 <header>
-                    <button name="action_generate" string="Сформувати" type="object"
+                    <button name="action_generate" string="Generate" type="object"
                             class="btn-primary" invisible="state != 'draft'"/>
-                    <button name="action_print" string="Друк" type="object"
+                    <button name="action_print" string="Print" type="object"
                             class="btn-secondary" invisible="state != 'generated'"/>
-                    <button name="action_draft" string="Редагувати" type="object"
+                    <button name="action_draft" string="Edit" type="object"
                             invisible="state == 'draft'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,generated"/>
                 </header>
@@ -20,12 +20,13 @@
                         <h1><field name="name" readonly="1"/></h1>
                     </div>
                     <group>
-                        <group string="Параметри">
-                            <field name="year" readonly="state != 'draft'"/>
+                        <group string="Parameters">
+                            <field name="report_date" readonly="state != 'draft'"/>
                             <field name="company_id" groups="base.group_multi_company"
+                                   domain="[('id', 'in', allowed_company_ids)]"
                                    readonly="state != 'draft'"/>
                         </group>
-                        <group string="Результат">
+                        <group string="Result">
                             <field name="employee_count"/>
                             <field name="total_entitled"/>
                             <field name="total_used"/>
@@ -33,7 +34,7 @@
                         </group>
                     </group>
                     <notebook>
-                        <page string="Залишки відпусток" name="balances">
+                        <page string="Vacation Balances" name="balances">
                             <field name="balance_ids" readonly="1">
                                 <list>
                                     <field name="employee_id"/>
@@ -48,8 +49,8 @@
                                 </list>
                             </field>
                         </page>
-                        <page string="Нотатки" name="notes">
-                            <field name="notes" placeholder="Додаткові нотатки..."/>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Additional notes..."/>
                         </page>
                     </notebook>
                 </sheet>
@@ -64,7 +65,7 @@
         <field name="arch" type="xml">
             <list string="Vacation Summary Reports">
                 <field name="name"/>
-                <field name="year"/>
+                <field name="report_date"/>
                 <field name="employee_count"/>
                 <field name="total_entitled"/>
                 <field name="total_used"/>
@@ -83,11 +84,11 @@
         <field name="arch" type="xml">
             <search string="Vacation Summary Reports">
                 <field name="name"/>
-                <field name="year"/>
+                <field name="report_date"/>
                 <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
                 <filter string="Generated" name="filter_generated" domain="[('state', '=', 'generated')]"/>
                 <group>
-                    <filter string="Year" name="groupby_year" domain="[]" context="{'group_by': 'year'}"/>
+                    <filter string="As of Date" name="groupby_report_date" domain="[]" context="{'group_by': 'report_date'}"/>
                 </group>
             </search>
         </field>
@@ -103,7 +104,7 @@
             </p>
             <p>
                 Звіт формує підсумок залишків та використання відпусток
-                усіх працівників за вказаний рік та дозволяє зберегти його
+                усіх працівників на вказану дату та дозволяє зберегти його
                 для подальшого перегляду і друку.
             </p>
         </field>

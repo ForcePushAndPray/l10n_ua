@@ -30,6 +30,16 @@
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed"/>
                 </header>
                 <sheet>
+                    <!-- Time Off smart button — count of the employee's time
+                         off records; opens their list. Only for vacation
+                         orders. -->
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_leaves" type="object"
+                                class="oe_stat_button" icon="fa-plane"
+                                invisible="order_type != 'vacation'">
+                            <field name="leave_count" widget="statinfo"/>
+                        </button>
+                    </div>
                     <group>
                         <group>
                             <field name="name" readonly="1"/>
@@ -58,7 +68,13 @@
                             <field name="holiday_status_id" invisible="order_type != 'vacation'" required="order_type == 'vacation'" readonly="bool(leave_id)"/>
                             <field name="vacation_date_from" invisible="order_type != 'vacation'" required="order_type == 'vacation'"/>
                             <field name="vacation_date_to" invisible="order_type != 'vacation'" required="order_type == 'vacation'"/>
-                            <field name="leave_id" invisible="order_type != 'vacation'" readonly="1"/>
+                            <!-- force_save so a leave_id supplied via
+                                 default_leave_id (e.g. the "Create Order"
+                                 button on a leave) is actually written on
+                                 save. Without it the readonly field is dropped
+                                 by the web client and hr.order.create would
+                                 auto-create a second, overlapping leave. -->
+                            <field name="leave_id" invisible="order_type != 'vacation'" readonly="1" force_save="1"/>
                         </group>
                     </group>
                     <notebook>

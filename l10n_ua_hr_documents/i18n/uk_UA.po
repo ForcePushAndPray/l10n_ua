@@ -1118,3 +1118,18 @@ msgstr ""
 "Не вдалось синхронізувати дані наказу з карткою співробітника.\n"
 "\n"
 "Подробиці: %s"
+
+#. module: l10n_ua_hr_documents
+#: model:ir.model.fields,field_description:l10n_ua_hr_documents.field_hr_order__leave_count
+msgid "Time Off"
+msgstr "Відпустки"
+
+#. module: l10n_ua_hr_documents
+#: model:ir.model.fields,field_description:l10n_ua_hr_documents.field_hr_employee__orders_count
+msgid "Orders"
+msgstr "Накази"
+
+#. module: l10n_ua_hr_documents
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_documents.hr_employee_view_form_inherit_documents
+msgid "New Order"
+msgstr "Новий наказ"

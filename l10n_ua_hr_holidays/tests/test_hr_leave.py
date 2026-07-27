@@ -10,12 +10,12 @@ class TestHrLeave(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.env.company
-        
+
         cls.employee = cls.env['hr.employee'].create({
             'name': 'Test Employee Leave',
             'company_id': cls.company.id,
         })
-        
+
         cls.leave_type_calendar = cls.env['hr.leave.type'].create({
             'name': 'Annual Leave (Calendar) Test',
             'ua_leave_category': 'annual_basic',
@@ -25,7 +25,7 @@ class TestHrLeave(TransactionCase):
             'company_id': cls.company.id,
             'requires_allocation': False,
         })
-        
+
         cls.leave_type_working = cls.env['hr.leave.type'].create({
             'name': 'Other Leave (Working) Test',
             'ua_leave_category': 'other',
@@ -141,15 +141,17 @@ class TestHrLeave(TransactionCase):
             'name': 'Test Leave',
             'employee_id': self.employee.id,
             'holiday_status_id': self.leave_type_calendar.id,
-            'date_from': datetime(2026, 1, 15, 8, 0, 0),
-            'date_to': datetime(2026, 1, 21, 17, 0, 0),
+            # vacation_year follows request_date_from (the driver field), so
+            # set it explicitly rather than relying on date_from back-derivation.
+            'request_date_from': date(2026, 1, 15),
+            'request_date_to': date(2026, 1, 21),
             'vacation_year': 2025,  # ignored — the field is computed
         })
         self.assertEqual(leave.vacation_year, 2026)
         # Moving the dates re-derives the year automatically.
         leave.write({
-            'date_from': datetime(2027, 3, 1, 8, 0, 0),
-            'date_to': datetime(2027, 3, 5, 17, 0, 0),
+            'request_date_from': date(2027, 3, 1),
+            'request_date_to': date(2027, 3, 5),
         })
         self.assertEqual(leave.vacation_year, 2027)
 
@@ -168,8 +170,10 @@ class TestHrLeave(TransactionCase):
         self.assertEqual(leave.holiday_status_id, self.leave_type_calendar)
 
     def test_vacation_period_auto_selected(self):
-        """When creating a leave, matching period is auto-selected if it exists."""
-        # Create a vacation balance for this employee/type
+        """When creating a leave, the period its first day falls into is
+        auto-selected if it already exists (no duplicate)."""
+        # Pre-create the 2026 period; the leave's first day (2026-06-15) falls
+        # into it, so it must be reused rather than duplicated.
         balance = self.env['hr.vacation.balance'].create({
             'employee_id': self.employee.id,
             'leave_type_id': self.leave_type_calendar.id,
@@ -178,7 +182,6 @@ class TestHrLeave(TransactionCase):
             'entitled_days': 24,
             'company_id': self.company.id,
         })
-        # Create leave with dates in that period
         leave = self.env['hr.leave'].create({
             'name': 'Test Leave',
             'employee_id': self.employee.id,
@@ -191,9 +194,9 @@ class TestHrLeave(TransactionCase):
         self.assertEqual(leave.vacation_balance_id, balance)
 
     def test_vacation_period_auto_created_on_create(self):
-        """Creating a leave for dates with no existing period auto-creates
-        the period (and it lands in hr.vacation.balance / Vacation Balances)."""
-        # No balance exists for 2029 yet.
+        """Creating a leave with no chosen period auto-creates and links the
+        period the leave's FIRST DAY falls into (a future 2029 period here),
+        and it lands in hr.vacation.balance / Vacation Balances."""
         leave = self.env['hr.leave'].create({
             'name': 'Test Leave',
             'employee_id': self.employee.id,
@@ -204,22 +207,26 @@ class TestHrLeave(TransactionCase):
             'date_to': datetime(2029, 6, 21, 17, 0, 0),
         })
         self.assertTrue(leave.vacation_balance_id)
-        self.assertEqual(leave.vacation_balance_id.period_start, date(2029, 1, 1))
-        self.assertEqual(leave.vacation_balance_id.period_end, date(2029, 12, 31))
+        # Defaults to the period the first vacation day falls into (2029).
+        self.assertEqual(
+            leave.vacation_balance_id.period_start, date(2029, 1, 1))
+        self.assertEqual(
+            leave.vacation_balance_id.period_end, date(2029, 12, 31))
         # The period is a real hr.vacation.balance record (Vacation Balances).
         self.assertIn(leave.vacation_balance_id, self.env['hr.vacation.balance'].search([
             ('employee_id', '=', self.employee.id),
             ('leave_type_id', '=', self.leave_type_calendar.id),
         ]))
 
-    def test_vacation_period_recreated_on_date_change(self):
-        """Moving dates to a period that does not exist yet creates and links
-        the matching period instead of leaving the leave orphaned."""
+    def test_vacation_period_kept_on_date_change(self):
+        """The accounting period is a manual choice: moving the leave dates to
+        another year does NOT re-point the leave at a different period."""
+        today = date.today()
         balance = self.env['hr.vacation.balance'].create({
             'employee_id': self.employee.id,
             'leave_type_id': self.leave_type_calendar.id,
-            'period_start': date(2026, 1, 1),
-            'period_end': date(2026, 12, 31),
+            'period_start': date(today.year, 1, 1),
+            'period_end': date(today.year, 12, 31),
             'entitled_days': 24,
             'company_id': self.company.id,
         })
@@ -227,19 +234,18 @@ class TestHrLeave(TransactionCase):
             'name': 'Test Leave',
             'employee_id': self.employee.id,
             'holiday_status_id': self.leave_type_calendar.id,
-            'request_date_from': date(2026, 6, 15),
-            'request_date_to': date(2026, 6, 21),
-            'date_from': datetime(2026, 6, 15, 8, 0, 0),
-            'date_to': datetime(2026, 6, 21, 17, 0, 0),
+            'request_date_from': date(today.year, 6, 15),
+            'request_date_to': date(today.year, 6, 21),
+            'date_from': datetime(today.year, 6, 15, 8, 0, 0),
+            'date_to': datetime(today.year, 6, 21, 17, 0, 0),
         })
+        # Defaults to the current period on create.
         self.assertEqual(leave.vacation_balance_id, balance)
-        # Move to 2030 (no period yet) → a new period is created and linked.
+        # Moving to 2030 leaves the chosen period untouched.
         leave.write({
             'request_date_from': date(2030, 6, 15),
             'request_date_to': date(2030, 6, 21),
             'date_from': datetime(2030, 6, 15, 8, 0, 0),
             'date_to': datetime(2030, 6, 21, 17, 0, 0),
         })
-        self.assertTrue(leave.vacation_balance_id)
-        self.assertNotEqual(leave.vacation_balance_id, balance)
-        self.assertEqual(leave.vacation_balance_id.period_start, date(2030, 1, 1))
+        self.assertEqual(leave.vacation_balance_id, balance)

@@ -10,14 +10,16 @@ class HrEmployeeVacationSummaryReport(models.Model):
     _name = 'hr.employee.vacation.summary.report'
     _description = 'Vacation Summary Report'
     _inherit = ['mail.thread', 'mail.activity.mixin']
-    _order = 'year desc, id desc'
+    _order = 'report_date desc, id desc'
 
     name = fields.Char(compute='_compute_name', store=True)
-    year = fields.Integer(
-        string='Year',
+    report_date = fields.Date(
+        string='As of Date',
         required=True,
-        default=lambda self: fields.Date.today().year,
+        default=fields.Date.context_today,
         tracking=True,
+        help='The report shows, per employee and leave type, the vacation '
+             'period this date falls into.',
     )
     company_id = fields.Many2one(
         'res.company',
@@ -56,11 +58,12 @@ class HrEmployeeVacationSummaryReport(models.Model):
     )
     notes = fields.Text()
 
-    @api.depends('year')
+    @api.depends('report_date')
     def _compute_name(self):
         for rec in self:
-            if rec.year:
-                rec.name = f'Підсумок відпусток за {rec.year} рік'
+            if rec.report_date:
+                rec.name = 'Підсумок відпусток на %s' % (
+                    rec.report_date.strftime('%d.%m.%Y'))
             else:
                 rec.name = 'Підсумок відпусток'
 
@@ -77,11 +80,21 @@ class HrEmployeeVacationSummaryReport(models.Model):
     def action_generate(self):
         Balance = self.env['hr.vacation.balance']
         for rec in self:
-            Balance.sudo().generate_balances(rec.year)
+            ref_date = rec.report_date or fields.Date.context_today(rec)
+            # Make sure every employee/auto-calc leave type has the period the
+            # selected date falls into. generate_balances backfills the whole
+            # chain up to that date, so a missing period (including one past the
+            # last existing period) is created and then picked up below.
+            Balance.sudo().generate_balances(up_to_date=ref_date)
+            # Select the period each employee/leave type is in on that date —
+            # period_start <= date <= period_end — exactly like the Vacation
+            # Balances (Залишки відпусток) report. remaining_days is the same
+            # field, so the figures agree.
             balances = Balance.search(
                 [
-                    ('year', '=', rec.year),
                     ('employee_id.company_id', '=', rec.company_id.id),
+                    ('period_start', '<=', ref_date),
+                    ('period_end', '>=', ref_date),
                 ],
                 order='employee_id, leave_type_id',
             )

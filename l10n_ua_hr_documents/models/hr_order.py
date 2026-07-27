@@ -122,6 +122,33 @@ class HrOrder(models.Model):
         copy=False,
         index=True,
     )
+    leave_count = fields.Integer(
+        string='Time Off',
+        compute='_compute_leave_count',
+        help='Number of time off records for this employee. Drives the '
+             '"Time Off" smart button on vacation orders.'
+    )
+
+    @api.depends('employee_id')
+    def _compute_leave_count(self):
+        Leave = self.env['hr.leave']
+        for order in self:
+            order.leave_count = Leave.search_count([
+                ('employee_id', '=', order.employee_id.id),
+            ]) if order.employee_id else 0
+
+    def action_view_leaves(self):
+        """Smart button: open all time off records for this order's
+        employee."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Time Off'),
+            'res_model': 'hr.leave',
+            'view_mode': 'list,form',
+            'domain': [('employee_id', '=', self.employee_id.id)],
+            'context': {'default_employee_id': self.employee_id.id},
+        }
     # Related field — eliminates duplication (рек. №5)
     holiday_status_id = fields.Many2one(
         'hr.leave.type',
@@ -234,7 +261,7 @@ class HrOrder(models.Model):
             if order.leave_id and not order.leave_id.order_id:
                 order.leave_id.with_context(
                     _sync_order_leave=True, leave_skip_state_check=True
-                ).write({'order_id': order.id})        
+                ).write({'order_id': order.id})
         orders._sync_hiring_to_employee()
         return orders
 
@@ -256,7 +283,7 @@ class HrOrder(models.Model):
                         'date_from': fields.Datetime.from_string(str(order.vacation_date_from)) if order.vacation_date_from else False,
                         'date_to': fields.Datetime.from_string(str(order.vacation_date_to)) if order.vacation_date_to else False,
                     })
-        if vals.keys() & {'order_type', 'employee_id', 'job_id', 'date', 'date_start', 'date_end', 'is_fixed_term', 'name'}:    
+        if vals.keys() & {'order_type', 'employee_id', 'job_id', 'date', 'date_start', 'date_end', 'is_fixed_term', 'name'}:
             self._sync_hiring_to_employee()
 
         return result
@@ -397,6 +424,22 @@ class HrOrder(models.Model):
         self.write({'state': 'confirmed'})
         for order in self.filtered(lambda o: o.order_type == 'dismissal' and o.employee_id):
             order._apply_dismissal()
+        # Confirming a vacation order approves its leave, so the two stay in
+        # sync (the reverse direction — leave validation confirming the order —
+        # already exists). Guarded by a dedicated key set only when the leave's
+        # own validation is confirming the order, so we skip the redundant
+        # re-approval there. (We must NOT key off _sync_order_leave: hr.order
+        # records created via create() keep that flag in their env context, so
+        # a plain order.action_confirm() call would wrongly be treated as an
+        # internal sync and never approve the leave.)
+        if not self.env.context.get('_order_confirm_skip_leave'):
+            leaves = self.filtered(
+                lambda o: o.order_type == 'vacation' and o.leave_id
+            ).mapped('leave_id')
+            if leaves:
+                leaves.with_context(
+                    _sync_order_leave=True, leave_skip_state_check=True
+                )._approve_from_order()
 
     def _apply_dismissal(self):
         """Apply a confirmed dismissal order to the employee:
@@ -430,7 +473,7 @@ class HrOrder(models.Model):
             employee.departure_date = dismissal_date
         if employee.active:
             employee.active = False
-    
+
     def action_cancel(self):
         self.write({'state': 'cancelled'})
         for order in self.filtered(lambda o: o.leave_id):

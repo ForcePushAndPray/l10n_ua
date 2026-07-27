@@ -47,13 +47,19 @@ class TestHrOrder(TransactionCase):
             'is_paid': True,
         })
 
-        # Find all leave types in the test database
-        leave_types = cls.env['hr.leave.type'].search([])
-        # Disable allocation requirements to prevent ValidationError during test execution
-        if 'requires_allocation' in leave_types._fields:
-            leave_types.write({'requires_allocation': 'no'})
-        elif 'allocation_type' in leave_types._fields: # Fallback  
-            leave_types.write({'allocation_type': 'no'})
+        # Relax allocation requirements so leave validation doesn't block the
+        # order-driven leave creation. Do it per type and skip any type that
+        # already has leaves: Odoo forbids changing the allocation requirement
+        # once leaves of that type exist (and such types aren't used here).
+        Leave = cls.env['hr.leave']
+        for lt in cls.env['hr.leave.type'].search([]):
+            if 'requires_allocation' not in lt._fields:
+                break
+            if lt.requires_allocation == 'no':
+                continue
+            if Leave.search_count([('holiday_status_id', '=', lt.id)]):
+                continue
+            lt.requires_allocation = 'no'
 
     def _create_order(self, order_type='hiring', **kwargs):
         vals = {

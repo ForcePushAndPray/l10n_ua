@@ -50,9 +50,12 @@ class TestVacationCompensation(TransactionCase):
         self.assertAlmostEqual(order.unused_vacation_days, 12, places=2)
 
     def test_days_scoped_to_dismissal_year(self):
-        """Only the dismissal year's balance counts, not other years."""
-        self._balance(2025, 8)
+        """Only the dismissal year's balance counts, not other years. A later
+        year is used here so the check is not confounded by carry-over: unused
+        days flow forward (dismissal year -> future), never back, so the 2027
+        balance must not be summed into the 2026 compensation."""
         self._balance(2026, 3)
+        self._balance(2027, 8)
         order = self._dismissal(date(2026, 7, 1))
         self.assertAlmostEqual(order.unused_vacation_days, 3, places=2)
 

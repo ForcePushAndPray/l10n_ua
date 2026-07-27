@@ -18,7 +18,7 @@ class HrLeave(models.Model):
         compute='_compute_working_days',
         store=True
     )
-    
+
     average_daily_salary = fields.Float(
         string='Average Daily Salary',
         digits=(16, 2)
@@ -29,10 +29,10 @@ class HrLeave(models.Model):
         store=True,
         digits=(16, 2)
     )
-    
+
     order_number = fields.Char(string='Order Number')
     order_date = fields.Date(string='Order Date')
-   
+
     order_id = fields.Many2one(
         'hr.order',
         string='Leave Order',
@@ -41,6 +41,42 @@ class HrLeave(models.Model):
         index=True,
         domain=[('order_type', '=', 'vacation')],
     )
+
+    order_count = fields.Integer(
+        string='Orders',
+        compute='_compute_order_count',
+        help='Number of vacation orders issued for this employee. Drives the '
+             '"Orders" smart button.'
+    )
+    can_create_order = fields.Boolean(
+        string='Can Create Order',
+        compute='_compute_can_create_order',
+        help='Technical: true when the "Create Order" button should be shown — '
+             'the leave type issues vacation orders and this leave has none '
+             'yet.'
+    )
+    leave_type_create_order = fields.Boolean(
+        string='Type Issues Orders',
+        related='holiday_status_id.create_order',
+        help='Technical mirror of the leave type\'s "Create Order" flag, used '
+             'to show/hide the order buttons on the form.'
+    )
+
+    @api.depends('employee_id')
+    def _compute_order_count(self):
+        Order = self.env['hr.order']
+        for leave in self:
+            leave.order_count = Order.search_count([
+                ('order_type', '=', 'vacation'),
+                ('employee_id', '=', leave.employee_id.id),
+            ]) if leave.employee_id else 0
+
+    @api.depends('order_id', 'employee_id', 'leave_type_create_order')
+    def _compute_can_create_order(self):
+        for leave in self:
+            leave.can_create_order = bool(
+                not leave.order_id and leave.employee_id
+                and leave.leave_type_create_order)
 
     remaining_days_before = fields.Float(
         string='Balance Before',
@@ -53,7 +89,7 @@ class HrLeave(models.Model):
         compute='_compute_remaining_after',
         store=True
     )
-    
+
     vacation_year = fields.Integer(
         string='Vacation Year',
         help='Year of the leave start date. Computed automatically and '
@@ -66,16 +102,31 @@ class HrLeave(models.Model):
     vacation_balance_id = fields.Many2one(
         'hr.vacation.balance',
         string='Vacation Period',
-        compute='_compute_vacation_balance',
-        store=True,
-        readonly=False,
         index=True,
         domain="[('employee_id', '=', employee_id),"
                " ('leave_type_id', '=', holiday_status_id)]",
-        help='Accounting period (vacation balance) this leave is charged '
-             'against: a work year for annual leaves, a calendar year for '
-             'social and other leaves.'
+        help='Accounting period this leave is charged against. Chosen manually '
+             '(defaults to the period that contains today); the leave dates '
+             'need not fall inside the selected period.'
     )
+
+    @api.onchange('holiday_status_id', 'employee_id', 'request_date_from')
+    def _onchange_default_vacation_period(self):
+        """When the leave type, employee or start date is set, backfill every
+        accounting period for the employee/type from the hire date up to today
+        (and up to the leave's first day when that day is later), then preselect
+        the period the leave's FIRST DAY falls into — which may be a future
+        period for a vacation planned ahead. HR can still change it to any
+        period in the list; the leave dates need not fall inside the chosen
+        period."""
+        lt = self.holiday_status_id
+        emp = self.employee_id
+        if not lt or not lt.ua_leave_category or not emp:
+            return
+        today = fields.Date.context_today(self)
+        start = self.request_date_from or today
+        self.vacation_balance_id = self.env['hr.vacation.balance'].sudo(
+        )._ensure_periods_up_to(emp, lt, max(today, start), select_date=start)
 
     carryover_warning = fields.Char(
         string='Carry-over Warning',
@@ -157,22 +208,6 @@ class HrLeave(models.Model):
             leave.vacation_year = (
                 leave.request_date_from.year if leave.request_date_from else 0)
 
-    @api.depends('employee_id', 'holiday_status_id', 'request_date_from')
-    def _compute_vacation_balance(self):
-        Balance = self.env['hr.vacation.balance']
-        for leave in self:
-            if not leave.employee_id or not leave.holiday_status_id or not leave.request_date_from:
-                leave.vacation_balance_id = False
-                continue
-            # The period containing the leave's start date — works for both
-            # calendar and work periods.
-            leave.vacation_balance_id = Balance.search([
-                ('employee_id', '=', leave.employee_id.id),
-                ('leave_type_id', '=', leave.holiday_status_id.id),
-                ('period_start', '<=', leave.request_date_from),
-                ('period_end', '>=', leave.request_date_from),
-            ], limit=1)
-
     show_create_vacation_period = fields.Boolean(
         string='Can Create Vacation Period',
         compute='_compute_show_create_vacation_period',
@@ -226,17 +261,10 @@ class HrLeave(models.Model):
     @api.constrains('vacation_balance_id', 'request_date_from',
                     'holiday_status_id', 'employee_id')
     def _check_vacation_balance_period(self):
-        """Block saving when the linked vacation period does not belong to the
-        leave's employee/type, or when the leave's start date falls outside
-        the linked period's bounds.
-
-        The check uses date containment (period_start <= start <= period_end)
-        — the same rule _compute_vacation_balance links by — rather than
-        comparing against a freshly recomputed canonical period. That keeps
-        a leave valid whenever it truly sits inside its linked period, even
-        if that period's stored bounds differ from the hire-anchored canonical
-        ones (e.g. a migrated/back-filled balance), so balance recalculation
-        does not spuriously fail while re-linking related leaves."""
+        """Block saving only when the linked vacation period does not belong to
+        the leave's employee and leave type. The period is chosen manually and
+        the leave dates need NOT fall inside it (HR may record a past-period
+        leave with current dates), so there is no date-containment check."""
         for leave in self:
             bal = leave.vacation_balance_id
             if not bal:
@@ -246,16 +274,6 @@ class HrLeave(models.Model):
                 raise ValidationError(_(
                     'The vacation period does not belong to this employee '
                     'and leave type.'))
-            if (leave.request_date_from and bal.period_start and bal.period_end
-                    and not (bal.period_start <= leave.request_date_from
-                             <= bal.period_end)):
-                raise ValidationError(_(
-                    'The leave start date %(date)s is outside the selected '
-                    'vacation period (%(period)s). Pick or create the '
-                    'matching period.',
-                    date=leave.request_date_from.strftime('%d.%m.%Y'),
-                    period=bal.period_label,
-                ))
 
     @api.constrains('request_date_from', 'employee_id', 'holiday_status_id')
     def _check_leave_after_hire(self):
@@ -295,6 +313,75 @@ class HrLeave(models.Model):
             'target': 'current',
         }
 
+    def _create_vacation_order(self):
+        """Create a *draft* vacation order for this leave and link the two
+        sides together. Shared by the manual "Create Order" button (HR may
+        issue a draft order before the leave is approved) and by validation
+        when no order exists yet. Never creates a second order for a leave that
+        already has one."""
+        self.ensure_one()
+        if self.order_id:
+            return self.order_id
+        order = self.env['hr.order'].with_context(
+            _creating_order_from_leave=True
+        ).create({
+            'order_type': 'vacation',
+            'employee_id': self.employee_id.id,
+            'department_id': self.employee_id.department_id.id,
+            'job_id': self.employee_id.job_id.id,
+            'vacation_date_from': self.request_date_from,
+            'vacation_date_to': self.request_date_to,
+            'subject': 'Про надання відпустки',
+        })
+        self.with_context(_sync_order_leave=True).write({'order_id': order.id})
+        order.with_context(_sync_order_leave=True).write({'leave_id': self.id})
+        return order
+
+    def action_create_order(self):
+        """Manual "Create Order" button. Opens a new vacation order form with
+        every field pre-filled from the leave, so the user can review it and
+        save it explicitly — the standard Odoo document-creation flow (no
+        silent background creation). Saving links the order to this leave via
+        default_leave_id, so no duplicate leave is spawned. Guarded so it never
+        starts a second order."""
+        self.ensure_one()
+        if self.order_id:
+            raise UserError(_('This leave already has a linked order.'))
+        if not self.holiday_status_id.create_order:
+            raise UserError(_(
+                'The selected leave type does not issue vacation orders.'))
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Create Vacation Order'),
+            'res_model': 'hr.order',
+            'view_mode': 'form',
+            'target': 'current',
+            'context': {
+                'default_order_type': 'vacation',
+                'default_employee_id': self.employee_id.id,
+                'default_department_id': self.employee_id.department_id.id,
+                'default_job_id': self.employee_id.job_id.id,
+                'default_leave_id': self.id,
+                'default_vacation_date_from': self.request_date_from,
+                'default_vacation_date_to': self.request_date_to,
+                'default_subject': 'Про надання відпустки',
+            },
+        }
+
+    def action_view_orders(self):
+        """Smart button: open the vacation orders issued for this employee."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Vacation Orders'),
+            'res_model': 'hr.order',
+            'view_mode': 'list,form',
+            'domain': [('order_type', '=', 'vacation'),
+                       ('employee_id', '=', self.employee_id.id)],
+            'context': {'default_order_type': 'vacation',
+                        'default_employee_id': self.employee_id.id},
+        }
+
     @api.model
     def default_get(self, fields_list):
         """Pre-fill the leave type on the new-leave form with the company's
@@ -327,91 +414,57 @@ class HrLeave(models.Model):
                 if default_lt:
                     vals['holiday_status_id'] = default_lt.id
 
-        # Link the vacation period for the leave's dates, creating it when it
-        # does not exist yet, so every saved leave lands in a period (and the
-        # period shows up in the Vacation Balances report). Skipped only when
-        # the caller set the period explicitly or the period is unresolvable.
+        # Default the accounting period to the one the leave's FIRST DAY falls
+        # into (backfilling every period for the type up to today, and up to
+        # that day when it is later), UNLESS the caller set it explicitly (leave
+        # form onchange, or a vacation order passing the period the user chose).
+        # The period stays a manual choice; the leave dates need not fall inside
+        # it, and a vacation planned ahead defaults to its future period.
         Balance = self.env['hr.vacation.balance']
+        today = fields.Date.context_today(self)
         for vals in vals_list:
             emp_id = vals.get('employee_id')
             lt_id = vals.get('holiday_status_id')
-            date_from = vals.get('date_from') or vals.get('request_date_from')
-
-            if emp_id and lt_id and date_from and not vals.get('vacation_balance_id'):
-                ref_date = fields.Date.to_date(date_from)
-                period = Balance._get_or_create_period(
+            if emp_id and lt_id and not vals.get('vacation_balance_id'):
+                start = (fields.Date.to_date(vals.get('request_date_from'))
+                         or fields.Date.to_date(vals.get('date_from'))
+                         or today)
+                period = Balance._ensure_periods_up_to(
                     self.env['hr.employee'].browse(emp_id),
                     self.env['hr.leave.type'].browse(lt_id),
-                    ref_date,
+                    max(today, start), select_date=start,
                 )
                 if period:
                     vals['vacation_balance_id'] = period.id
 
-        # Resolve which leaves should auto-create an order
-        type_ids = {v.get('holiday_status_id') for v in vals_list if v.get('holiday_status_id')}
-        types_with_order = set()
-        if type_ids:
-            types_with_order = set(self.env['hr.leave.type'].browse(type_ids).filtered(
-                lambda t: t.create_order
-            ).ids)
-
-        order_vals_list = []
-        order_indices = []
-        for idx, vals in enumerate(vals_list):
-            if (not vals.get('order_id')
-                    and not self.env.context.get('_creating_leave_from_order')
-                    and vals.get('holiday_status_id') in types_with_order):
-                order_vals_list.append({
-                    'order_type': 'vacation',
-                    'employee_id': vals.get('employee_id'),
-                    'vacation_date_from': fields.Date.to_date(vals.get('date_from')),
-                    'vacation_date_to': fields.Date.to_date(vals.get('date_to')),
-                    # holiday_status_id auto-derived from leave_id (related)
-                })
-                order_indices.append(idx)
-
-        if order_vals_list:
-            orders = self.env['hr.order'].with_context(
-                _creating_order_from_leave=True
-            ).create(order_vals_list)
-            for idx, order in zip(order_indices, orders):
-                vals_list[idx]['order_id'] = order.id
-                vals_list[idx].setdefault('order_number', order.name)
-                vals_list[idx].setdefault('order_date', order.date)
-
+        # No order is auto-created on save. A vacation order is issued only via
+        # the explicit "Create Order" button (draft, even before approval) or
+        # at validation — see action_create_order / _action_validate. The
+        # reverse direction (an hr.order creating its leave) is unchanged and
+        # still runs from hr.order.create with _creating_leave_from_order.
         leaves = super().create(vals_list)
 
-        # Back-link orders → leaves + sync dates from already-computed leave
-        for leave in leaves:
-            if leave.order_id and not leave.order_id.leave_id:
-                date_from = leave.date_from.date() if leave.date_from else leave.request_date_from
-                date_to = leave.date_to.date() if leave.date_to else leave.request_date_to
-                leave.order_id.with_context(_sync_order_leave=True).write({
-                    'leave_id': leave.id,
-                    'vacation_date_from': date_from,
-                    'vacation_date_to': date_to,
-                    'department_id': leave.employee_id.department_id.id,
-                    'job_id': leave.employee_id.job_id.id,
-                })
         # Per-leave Balance Before/After for subsequent leaves in same year.
         leaves._recompute_subsequent_leaves()
         # Rollup fields used_days / planned_days on hr.vacation.balance.
-        leaves._recompute_balances_for_keys(leaves._balance_keys())               
+        leaves._recompute_balances_for_keys(leaves._balance_keys())
         return leaves
 
     def _ensure_vacation_period(self):
-        """Link (creating if needed) the accounting period for each leave's
-        current dates. The stored compute re-links to an existing period; this
-        creates one when none exists yet. Runs after dates are written, so the
-        period matches request_date_from and the period constraint is happy."""
+        """Fill an empty accounting period with the one the leave's FIRST DAY
+        falls into (backfilling periods up to today, or up to that day when it
+        is later). Only leaves with no period yet are touched — a manually
+        chosen period is never overwritten."""
         Balance = self.env['hr.vacation.balance']
+        today = fields.Date.context_today(self)
         for leave in self:
-            if (leave.vacation_balance_id or not leave.request_date_from
+            if (leave.vacation_balance_id
                     or not leave.employee_id or not leave.holiday_status_id):
                 continue
-            period = Balance._get_or_create_period(
+            start = leave.request_date_from or today
+            period = Balance._ensure_periods_up_to(
                 leave.employee_id, leave.holiday_status_id,
-                leave.request_date_from)
+                max(today, start), select_date=start)
             if period:
                 leave.vacation_balance_id = period.id
 
@@ -433,47 +486,48 @@ class HrLeave(models.Model):
              'employee_id', 'holiday_status_id'} & vals.keys()
                 and 'vacation_balance_id' not in vals):
             self._ensure_vacation_period()
-        # Add a check for _creating_leave_from_order to avoid order duplication
-        if not self.env.context.get('_sync_order_leave') and not self.env.context.get('_creating_leave_from_order'):
-            if {'date_from', 'date_to'} & vals.keys():
-                for leave in self.filtered(lambda l: l.order_id):
-                    leave.order_id.with_context(_sync_order_leave=True).write({
-                        'vacation_date_from': leave.date_from.date() if leave.date_from else False,
-                        'vacation_date_to': leave.date_to.date() if leave.date_to else False,
-                    })
-            if 'holiday_status_id' in vals:
-                for leave in self.filtered(
-                    lambda l: not l.order_id
-                    and l.holiday_status_id
-                    and l.holiday_status_id.create_order
-                    and l.state not in ('validate', 'validate1', 'refuse')
-                ):
-                    order = self.env['hr.order'].with_context(
-                        _creating_order_from_leave=True
-                    ).create({
-                        'order_type': 'vacation',
-                        'employee_id': leave.employee_id.id,
-                        'department_id': leave.employee_id.department_id.id,
-                        'job_id': leave.employee_id.job_id.id,
-                        'vacation_date_from': leave.date_from.date() if leave.date_from else False,
-                        'vacation_date_to': leave.date_to.date() if leave.date_to else False,
-                        'subject': 'Про надання відпустки',
-                    })
-                    leave.with_context(_sync_order_leave=True).write({'order_id': order.id})
-                    order.with_context(_sync_order_leave=True).write({'leave_id': leave.id})
+        # Keep an already-linked order's dates in step with the leave (so edits
+        # to a draft order's leave flow through). We never auto-create an order
+        # here — issuing one is explicit (button) or happens at validation.
+        if (not self.env.context.get('_sync_order_leave')
+                and not self.env.context.get('_creating_leave_from_order')
+                and {'date_from', 'date_to', 'request_date_from',
+                     'request_date_to'} & vals.keys()):
+            for leave in self.filtered(lambda l: l.order_id):
+                leave.order_id.with_context(_sync_order_leave=True).write({
+                    'vacation_date_from': leave.request_date_from,
+                    'vacation_date_to': leave.request_date_to,
+                })
         # Per-leave Balance Before/After for subsequent leaves.
         if any(f in vals for f in ('date_from', 'date_to', 'request_date_from',
                                     'request_date_to', 'state', 'holiday_status_id')):
             self._recompute_subsequent_leaves()
         # Rollup fields on hr.vacation.balance.
         if self._BALANCE_TRIGGER_FIELDS & vals.keys():
-            self._recompute_balances_for_keys(old_balance_keys | self._balance_keys())                   
+            self._recompute_balances_for_keys(old_balance_keys | self._balance_keys())
         return result
 
     def _action_validate(self, *args, **kwargs):
         res = super()._action_validate(*args, **kwargs)
-        for leave in self.filtered(lambda l: l.order_id and l.order_id.state == 'draft'):
-            leave.order_id.with_context(_sync_order_leave=True).action_confirm()
+        # The order is issued at approval time. Create it now for order-issuing
+        # leave types that have none yet, then confirm the (draft) order.
+        for leave in self.filtered(lambda l: l.holiday_status_id.create_order):
+            order = leave.order_id or leave._create_vacation_order()
+            if order and order.state == 'draft':
+                # _order_confirm_skip_leave stops the order, in turn, from
+                # re-approving this very leave (which is already validating).
+                order.with_context(
+                    _sync_order_leave=True, _order_confirm_skip_leave=True
+                ).action_confirm()
+        return res
+
+    def action_back_to_approval(self, *args, **kwargs):
+        res = super().action_back_to_approval(*args, **kwargs)
+        # Returning a leave to approval reverts its confirmed order to draft,
+        # so the order tracks a leave that is no longer approved.
+        for leave in self.filtered(
+                lambda l: l.order_id and l.order_id.state == 'confirmed'):
+            leave.order_id.with_context(_sync_order_leave=True).action_draft()
         return res
 
     def action_refuse(self, *args, **kwargs):
@@ -481,6 +535,24 @@ class HrLeave(models.Model):
         for leave in self.filtered(lambda l: l.order_id and l.order_id.state != 'cancelled'):
             leave.order_id.with_context(_sync_order_leave=True).write({'state': 'cancelled'})
         return res
+
+    def _approve_from_order(self):
+        """Drive the leave to its fully-approved state to mirror a confirmed
+        vacation order (the order -> leave direction of the state sync). Runs
+        the standard approval chain, so single- and double-validation leave
+        types both end up validated. Leaves already validated, refused or
+        cancelled are left untouched. Called by hr.order.action_confirm with
+        the _sync_order_leave guard so it does not bounce back to the order."""
+        for leave in self:
+            if leave.state in ('validate', 'refuse', 'cancel'):
+                continue
+            leave = leave.sudo()
+            if leave.state == 'draft':
+                leave.action_confirm()
+            if leave.state in ('confirm', 'validate1'):
+                leave.action_approve()
+            if leave.state == 'validate1':
+                leave.action_validate()
 
     def unlink(self):
         # Capture balance keys before deletion so we can refresh the
@@ -730,7 +802,7 @@ class HrLeave(models.Model):
     # =================================================================================
     # TRIGGERS FOR CHRONOLOGICAL RECOMPUTATION
     # =================================================================================
-   
+
     # ------------------------------------------------------------------
     # Inverse trigger: keep hr.vacation.balance rollup fields in sync
     # with hr.leave. The stored used_days / planned_days fields on the
@@ -771,32 +843,10 @@ class HrLeave(models.Model):
         ]
 
     def _balance_keys(self):
-        """Return ids of the hr.vacation.balance rows touched by leaves in
-        self: the linked balance plus any balance whose period overlaps the
-        leave dates (covers unlinked legacy leaves and period moves)."""
-        Balance = self.env['hr.vacation.balance'].sudo()
-        balance_ids = set()
-        for leave in self:
-            if leave.vacation_balance_id:
-                balance_ids.add(leave.vacation_balance_id.id)
-            emp = leave.employee_id.id
-            ltype = leave.holiday_status_id.id
-            if not emp or not ltype:
-                continue
-            base_domain = [
-                ('employee_id', '=', emp),
-                ('leave_type_id', '=', ltype),
-            ]
-            if leave.request_date_from and leave.request_date_to:
-                balance_ids.update(Balance.search(base_domain + [
-                    ('period_start', '<=', leave.request_date_to),
-                    ('period_end', '>=', leave.request_date_from),
-                ]).ids)
-            if leave.vacation_year:
-                balance_ids.update(Balance.search(base_domain + [
-                    ('year', '=', leave.vacation_year),
-                ]).ids)
-        return balance_ids
+        """Return ids of the hr.vacation.balance rows charged by leaves in self:
+        the period each leave is explicitly linked to (used/planned days are
+        counted by that link, not by the leave dates)."""
+        return set(self.mapped('vacation_balance_id').ids)
 
     @api.model
     def _recompute_balances_for_keys(self, keys):
@@ -822,7 +872,7 @@ class HrLeave(models.Model):
             period_domain = leave._period_domain()
             if period_domain is None:
                 continue
- 
+
             # Find all leaves with a date greater than the date of the changed leave
             subsequent_leaves = self.env['hr.leave'].search([
                 ('employee_id', '=', leave.employee_id.id),
@@ -843,7 +893,7 @@ class HrLeave(models.Model):
         for leave in self:
             if not leave.employee_id or not leave.date_from:
                 continue
-            
+
             avg_salary = leave._calculate_average_salary()
             leave.average_daily_salary = avg_salary
         return True
