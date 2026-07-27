@@ -25,7 +25,8 @@ class TestHrVersion(ContractTestCase):
         self.assertEqual(version.work_mode, 'full_time')
         self.assertTrue(version.is_main_workplace)
         self.assertEqual(version.work_rate, 1.0)
-        self.assertEqual(version.working_hours_week, 40.0)
+        # Тижнева норма живе у штатному календарі версії, не на версії (#213)
+        self.assertEqual(version.scheduled_hours_week, 40.0)
 
     def test_version_contract_types(self):
         """All 8 Ukrainian contract types should be valid."""

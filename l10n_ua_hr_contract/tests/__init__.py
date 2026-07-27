@@ -5,4 +5,7 @@ from . import test_job_combining
 from . import test_allowance
 from . import test_work_schedule
 from . import test_work_rate
+from . import test_resource_calendar_ua
+from . import test_scheduled_norm
+from . import test_migration_calendars
 from . import test_multicompany
