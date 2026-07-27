@@ -55,8 +55,12 @@
                 <field name="is_amendment" invisible="1"/>
             </xpath>
 
-            <xpath expr="//label[@for='name']" position="attributes">
-                <attribute name="string">Назва договору</attribute>
+            <!-- Cross-version safe: the `name` field exists in the OCA form on
+                 both the old (label + h1) and current (h1-only, widget="text")
+                 agreement@19.0 layouts, whereas //label[@for='name'] does not
+                 exist on the newer one (issue #211). -->
+            <xpath expr="//field[@name='name']" position="attributes">
+                <attribute name="placeholder">Назва договору</attribute>
             </xpath>
 
             <!-- Тип договору показуємо завжди (без гейту по групі) -->

@@ -140,7 +140,7 @@
                         domain="[('state', '=', 'cancelled')]"/>
                 <separator/>
                 <filter string="Цей рік" name="filter_this_year"
-                        domain="[('date', '&gt;=', context_today().replace(month=1, day=1))]"/>
+                        domain="[('date', '&gt;=', (context_today() + relativedelta(month=1, day=1)).strftime('%Y-%m-%d'))]"/>
 
                 <group>
                     <filter string="Стан" name="groupby_state" domain="[]"
