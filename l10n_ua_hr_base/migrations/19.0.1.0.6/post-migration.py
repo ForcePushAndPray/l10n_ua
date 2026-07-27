@@ -86,7 +86,6 @@ def _backfill_contract_dates(employees):
         backfilled += 1
     return backfilled
 
-
 def migrate(cr, version):
     env = api.Environment(cr, SUPERUSER_ID, {})
     Employee = env['hr.employee'].with_context(active_test=False)

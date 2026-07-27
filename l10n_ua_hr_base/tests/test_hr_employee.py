@@ -189,8 +189,14 @@ class TestHrEmployeeComputedFields(TestHrUaBase):
         employee.invalidate_recordset(['dependents_count'])
         self.assertEqual(employee.dependents_count, 1)  # Still 1
 
-        # Marking the adult as a full-time student makes them a dependent.
-        child2.is_student = True
+        # is_dependent is a manual marker only: the aggregate counts by the
+        # PSP criteria (age / student / disability), as its help states.
+        child2.is_dependent = True
+        employee.invalidate_recordset(['dependents_count'])
+        self.assertEqual(employee.dependents_count, 1)  # Still 1
+
+        # A disabled child is PSP-eligible at any age, so this one does count.
+        child2.write({'is_disabled': True, 'disability_group': '2'})
         employee.invalidate_recordset(['dependents_count'])
         self.assertEqual(employee.dependents_count, 2)
 
