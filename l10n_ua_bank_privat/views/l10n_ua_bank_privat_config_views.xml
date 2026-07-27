@@ -10,6 +10,9 @@
             <xpath expr="//button[@name='action_sync_now']" position="before">
                 <button name="action_test_connection" string="Test Connection" type="object"
                         invisible="provider != 'privat'"/>
+                <button name="action_privat_xls_open_import" type="object"
+                        string="Імпорт виписки XLS" class="btn-primary"
+                        invisible="provider != 'privat_xls'"/>
             </xpath>
             <xpath expr="//group[@name='account_group']" position="after">
                 <group string="PrivatBank API (Autoclient)" invisible="provider != 'privat'">

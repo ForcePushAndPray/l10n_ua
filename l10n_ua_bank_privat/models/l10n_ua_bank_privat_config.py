@@ -1,3 +1,4 @@
+import base64
 import logging
 import requests
 from datetime import datetime
@@ -7,14 +8,28 @@ from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
+# Розкладка колонок виписки Приват24 Бізнес (експорт XLS, BIFF8).
+# Шапка таблиці — рядок з «№ документа» у колонці 0; дані — далі.
+PRIVAT_XLS_COL_DOC = 0        # № документа
+PRIVAT_XLS_COL_DATE = 1       # Дата операції (ДД.ММ.РРРР)
+PRIVAT_XLS_COL_AMOUNT = 3     # Сума (знакова: − списання, + надходження)
+PRIVAT_XLS_COL_PURPOSE = 5    # Призначення платежу
+PRIVAT_XLS_COL_EDRPOU = 6     # ЄДРПОУ/РНОКПП контрагента
+PRIVAT_XLS_COL_CNTR_NAME = 7  # Назва контрагента
+PRIVAT_XLS_COL_CNTR_ACC = 8   # Рахунок контрагента
+PRIVAT_XLS_COL_REF = 10       # Референс
+
 
 class L10nUaBankSyncConfig(models.Model):
-    """Extend base config with PrivatBank provider."""
+    """Extend base config with PrivatBank provider (online API + XLS file)."""
     _inherit = 'l10n_ua.bank.sync.config'
 
     provider = fields.Selection(
-        selection_add=[('privat', 'PrivatBank')],
-        ondelete={'privat': 'set default'},
+        selection_add=[
+            ('privat', 'PrivatBank'),
+            ('privat_xls', 'PrivatBank (виписка XLS)'),
+        ],
+        ondelete={'privat': 'set default', 'privat_xls': 'set default'},
     )
 
     # PrivatBank API Credentials
@@ -41,9 +56,20 @@ class L10nUaBankSyncConfig(models.Model):
         help='Card number for statement retrieval (16 digits)',
     )
 
+    def _source_type(self):
+        if self.provider == 'privat_xls':
+            return 'file'
+        return super()._source_type()
+
     def _fetch_from_bank(self, date_from, date_to):
         """Fetch statements from PrivatBank API."""
         self.ensure_one()
+
+        if self.provider == 'privat_xls':
+            raise UserError(_(
+                'PrivatBank (виписка XLS) — файловий провайдер. Скористайтесь '
+                'майстром «Імпорт виписки з файлу», щоб завантажити XLS-файл '
+                'виписки з Приват24 Бізнес.'))
 
         if self.provider != 'privat':
             return super()._fetch_from_bank(date_from, date_to)
@@ -131,9 +157,104 @@ class L10nUaBankSyncConfig(models.Model):
             'response_text': response.text,
         }
 
+    # ------------------------------------------------------------------
+    # PrivatBank XLS file provider (Приват24 Бізнес → експорт XLS)
+    # ------------------------------------------------------------------
+
+    def _file_to_payload(self, content, filename=None):
+        """Байти XLS-файлу → JSON-безпечний payload (base64)."""
+        if self.provider == 'privat_xls':
+            return {'privat_xls_b64': base64.b64encode(content).decode('ascii')}
+        return super()._file_to_payload(content, filename)
+
+    def action_privat_xls_open_import(self):
+        """Відкрити майстер імпорту виписки XLS для цього конфігу."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Імпорт виписки з файлу'),
+            'res_model': 'l10n_ua.bank.statement.import',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_config_id': self.id},
+        }
+
+    @staticmethod
+    def _privat_xls_cell(value):
+        """Клітинку XLS у рядок: цілі float ('14360570.0') → '14360570'."""
+        if isinstance(value, float) and value.is_integer():
+            return str(int(value))
+        return str(value).strip()
+
+    @staticmethod
+    def _privat_xls_amount(value):
+        if isinstance(value, (int, float)):
+            return float(value)
+        text = str(value).strip().replace(' ', '').replace('\xa0', '').replace(',', '.')
+        try:
+            return float(text)
+        except ValueError:
+            return 0.0
+
+    def _privat_xls_parse(self, raw_data):
+        """Розібрати виписку Приват24 Бізнес (XLS) у список транзакцій."""
+        import xlrd
+        b64 = (raw_data or {}).get('privat_xls_b64', '')
+        if not b64:
+            return []
+        content = base64.b64decode(b64)
+        book = xlrd.open_workbook(file_contents=content)
+        sheet = book.sheet_by_index(0)
+
+        # Шапка таблиці — рядок, де у колонці 0 стоїть «№ документа».
+        header_row = None
+        for r in range(sheet.nrows):
+            if str(sheet.cell_value(r, PRIVAT_XLS_COL_DOC)).strip() == '№ документа':
+                header_row = r
+                break
+        if header_row is None:
+            raise UserError(_(
+                'Не вдалося знайти шапку таблиці у XLS-виписці ПриватБанку '
+                '(очікується колонка «№ документа»). Переконайтесь, що це '
+                'експорт виписки з Приват24 Бізнес.'))
+
+        transactions = []
+        for r in range(header_row + 1, sheet.nrows):
+            raw_date = str(sheet.cell_value(r, PRIVAT_XLS_COL_DATE)).strip()
+            # Підсумкові/порожні рядки без коректної дати — пропускаємо.
+            if not raw_date or '.' not in raw_date:
+                continue
+            purpose = str(sheet.cell_value(r, PRIVAT_XLS_COL_PURPOSE)).strip()
+            # Технічний рядок перенесення вхідного залишку — не рух коштів.
+            if purpose.startswith('#ПЕРЕНЕСЕННЯ ЗАЛИШКУ'):
+                continue
+            parts = raw_date.split('.')
+            if len(parts) != 3:
+                continue
+            date = '%s-%s-%s' % (parts[2], parts[1], parts[0])
+            doc = self._privat_xls_cell(sheet.cell_value(r, PRIVAT_XLS_COL_DOC))
+            ref = self._privat_xls_cell(sheet.cell_value(r, PRIVAT_XLS_COL_REF))
+            transactions.append({
+                'id': ref or doc,
+                'date': date,
+                'amount': self._privat_xls_amount(
+                    sheet.cell_value(r, PRIVAT_XLS_COL_AMOUNT)),
+                'description': purpose,
+                'partner_name': self._privat_xls_cell(
+                    sheet.cell_value(r, PRIVAT_XLS_COL_CNTR_NAME)),
+                'partner_iban': self._privat_xls_cell(
+                    sheet.cell_value(r, PRIVAT_XLS_COL_CNTR_ACC)),
+                'partner_edrpou': self._privat_xls_cell(
+                    sheet.cell_value(r, PRIVAT_XLS_COL_EDRPOU)),
+            })
+        return transactions
+
     def _parse_transactions(self, raw_data):
         """Parse PrivatBank API response into transaction list."""
         self.ensure_one()
+
+        if self.provider == 'privat_xls':
+            return self._privat_xls_parse(raw_data)
 
         if self.provider != 'privat':
             return super()._parse_transactions(raw_data)
