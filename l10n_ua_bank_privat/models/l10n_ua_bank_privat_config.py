@@ -162,10 +162,25 @@ class L10nUaBankSyncConfig(models.Model):
     # ------------------------------------------------------------------
 
     def _file_to_payload(self, content, filename=None):
-        """Байти XLS-файлу → JSON-безпечний payload (base64)."""
+        """Байти файлу виписки → JSON-безпечний payload (base64)."""
         if self.provider == 'privat_xls':
             return {'privat_xls_b64': base64.b64encode(content).decode('ascii')}
         return super()._file_to_payload(content, filename)
+
+    def _extract_balances(self, raw_data):
+        """Вхідний/вихідний залишок з файлу виписки ПриватБанку.
+
+        Вхідний залишок = сума рядка «#ПЕРЕНЕСЕННЯ ЗАЛИШКУ»; вихідний =
+        вхідний + Σ рухів. Так виписка отримує коректний balance_start, і
+        показаний кінцевий баланс збігається з реальним (а не лише Σ рухів).
+        """
+        if self.provider != 'privat_xls':
+            return super()._extract_balances(raw_data)
+        transactions, opening = self._privat_file_parse(raw_data)
+        if opening is None:
+            return (None, None)
+        closing = round(opening + sum(t['amount'] for t in transactions), 2)
+        return (opening, closing)
 
     def action_privat_xls_open_import(self):
         """Відкрити майстер імпорту виписки XLS для цього конфігу."""
@@ -217,12 +232,15 @@ class L10nUaBankSyncConfig(models.Model):
     def _privat_file_parse(self, raw_data):
         """Автовизначення формату файлу виписки ПриватБанку та розбір.
 
+        Повертає ``(transactions, opening_balance)`` — вхідний залишок беремо з
+        рядка «#ПЕРЕНЕСЕННЯ ЗАЛИШКУ» (None, якщо його немає).
+
         Підтримка: XLS (BIFF8), XLSX, CSV (Приват24, cp1251), MultiCash (ZIP з
         umsatz.txt/auszug.txt). DBF наразі не підтримується.
         """
         b64 = (raw_data or {}).get('privat_xls_b64', '')
         if not b64:
-            return []
+            return ([], None)
         content = base64.b64decode(b64)
 
         if content[:4] == b'PK\x03\x04':
@@ -281,6 +299,7 @@ class L10nUaBankSyncConfig(models.Model):
         підсумкові рядки) відсіюється автоматично.
         """
         transactions = []
+        opening = None
         for row in rows:
             if len(row) <= PRIVAT_XLS_COL_REF:
                 continue
@@ -289,6 +308,8 @@ class L10nUaBankSyncConfig(models.Model):
                 continue
             purpose = str(row[PRIVAT_XLS_COL_PURPOSE]).strip()
             if self._privat_is_carry(purpose):
+                # Вхідний залишок — не рух коштів.
+                opening = self._privat_amount(row[PRIVAT_XLS_COL_AMOUNT])
                 continue
             doc = self._privat_cell(row[PRIVAT_XLS_COL_DOC])
             ref = self._privat_cell(row[PRIVAT_XLS_COL_REF])
@@ -301,7 +322,7 @@ class L10nUaBankSyncConfig(models.Model):
                 'partner_iban': self._privat_cell(row[PRIVAT_XLS_COL_CNTR_ACC]),
                 'partner_edrpou': self._privat_cell(row[PRIVAT_XLS_COL_EDRPOU]),
             })
-        return transactions
+        return transactions, opening
 
     def _privat_parse_csv(self, text):
         """CSV Приват24 Бізнес (cp1251, роздільник «;»).
@@ -316,6 +337,7 @@ class L10nUaBankSyncConfig(models.Model):
             4, 5, 8, 9, 10, 11, 12
         reader = csv.reader(io.StringIO(text), delimiter=';', quotechar='"')
         transactions = []
+        opening = None
         for idx, row in enumerate(reader):
             if len(row) <= C_PURPOSE:
                 continue
@@ -326,6 +348,7 @@ class L10nUaBankSyncConfig(models.Model):
                 continue
             purpose = (row[C_PURPOSE] or '').strip()
             if self._privat_is_carry(purpose):
+                opening = self._privat_amount(row[C_AMOUNT])
                 continue
             transactions.append({
                 'id': (row[C_DOC] or '').strip(),
@@ -336,7 +359,7 @@ class L10nUaBankSyncConfig(models.Model):
                 'partner_iban': (row[C_ACC] or '').strip(),
                 'partner_edrpou': (row[C_EDRPOU] or '').strip(),
             })
-        return transactions
+        return transactions, opening
 
     def _privat_parse_multicash(self, text):
         """MultiCash umsatz.txt (cp1251, «;»).
@@ -347,6 +370,7 @@ class L10nUaBankSyncConfig(models.Model):
         """
         M_ACC, M_DATE, M_PURPOSE, M_DOC, M_AMOUNT = 1, 3, 5, 9, 10
         transactions = []
+        opening = None
         for line in text.splitlines():
             if not line.strip():
                 continue
@@ -358,6 +382,7 @@ class L10nUaBankSyncConfig(models.Model):
                 continue
             purpose = (fields[M_PURPOSE] or '').strip()
             if self._privat_is_carry(purpose):
+                opening = self._privat_amount(fields[M_AMOUNT])
                 continue
             partner_name = next(
                 (f.strip() for f in reversed(fields)
@@ -371,14 +396,14 @@ class L10nUaBankSyncConfig(models.Model):
                 'partner_iban': '',
                 'partner_edrpou': '',
             })
-        return transactions
+        return transactions, opening
 
     def _parse_transactions(self, raw_data):
         """Parse PrivatBank API response into transaction list."""
         self.ensure_one()
 
         if self.provider == 'privat_xls':
-            return self._privat_file_parse(raw_data)
+            return self._privat_file_parse(raw_data)[0]
 
         if self.provider != 'privat':
             return super()._parse_transactions(raw_data)

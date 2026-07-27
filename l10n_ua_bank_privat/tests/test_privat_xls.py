@@ -165,3 +165,19 @@ class TestPrivatFileImport(TransactionCase):
         # dBase III/FoxBase magic → дружня помилка, не виняток парсера
         with self.assertRaises(UserError):
             self._parse(b'\x30' + b'\x00' * 40)
+
+    def test_opening_balance_extracted(self):
+        # Рядок #ПЕРЕНЕСЕННЯ ЗАЛИШКУ (500) стає вхідним залишком, а не рухом;
+        # вихідний = вхідний + Σ рухів (-100000 + 750).
+        cases = [('xls', self._xls_bytes, xlwt),
+                 ('xlsx', self._xlsx_bytes, openpyxl),
+                 ('csv', self._csv_bytes, True),
+                 ('multicash', self._multicash_zip_bytes, True)]
+        expected_closing = 500.0 + (-100000.0 + 750.0)
+        for name, builder, need in cases:
+            if need is None:
+                continue
+            payload = self.cfg._file_to_payload(builder(), 'stmt')
+            opening, closing = self.cfg._extract_balances(payload)
+            self.assertAlmostEqual(opening, 500.0, places=2, msg=name)
+            self.assertAlmostEqual(closing, expected_closing, places=2, msg=name)
