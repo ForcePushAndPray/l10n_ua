@@ -88,6 +88,29 @@ class Agreement(models.Model):
         compute='_compute_contract_count',
     )
 
+    # ------------------------------------------------------------------
+    # Меню
+    # ------------------------------------------------------------------
+    @api.model
+    def _l10n_ua_deactivate_legacy_type_menus(self):
+        """Приховати меню «Типи договорів» зі старих знімків OCA/agreement.
+
+        XML-id цього меню в OCA/agreement@19.0 змінювався між знімками
+        (``agreement_type_menu_main`` / ``agreement_type_menu`` → ``agreement_type``),
+        а в поточному його немає взагалі. Ми оголошуємо власний menuitem під
+        «Налаштуваннями», тож будь-яке успадковане меню OCA дало б дубль у
+        оновленій БД. Відсутність id — нормальний випадок (чиста інсталяція),
+        тому резолвимо толерантно.
+        """
+        for xmlid in (
+            'agreement.agreement_type_menu_main',
+            'agreement.agreement_type_menu',
+            'agreement.agreement_type',
+        ):
+            menu = self.env.ref(xmlid, raise_if_not_found=False)
+            if menu and menu._name == 'ir.ui.menu':
+                menu.active = False
+
     @api.depends('parent_agreement_id')
     def _compute_is_amendment(self):
         for rec in self:

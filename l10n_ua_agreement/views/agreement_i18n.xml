@@ -22,16 +22,20 @@
         <field name="parent_id" ref="agreement.agreement_menu_root"/>
     </record>
 
-    <!-- Типи договорів -> у Налаштування (без зайвої папки-обгортки) -->
-    <record id="agreement.agreement_type_menu_main" model="ir.ui.menu">
-        <field name="active">False</field>
-    </record>
-    <record id="agreement.agreement_type_menu" model="ir.ui.menu">
-        <field name="name">Типи договорів</field>
-        <field name="active">True</field>
-        <field name="parent_id" ref="agreement.agreement_setting_menu"/>
-        <field name="group_ids" eval="[(5, 0, 0)]"/>
-    </record>
+    <!-- Типи договорів -> у Налаштування (без зайвої папки-обгортки).
+         Меню оголошуємо ВЛАСНЕ, а не правимо чуже: XML-id меню типів договорів
+         у OCA/agreement@19.0 змінювався між знімками, а в поточному знімку
+         (22407f2) такого menuitem немає взагалі — лишилася тільки дія
+         agreement_type_action. Посилання на agreement.agreement_type_menu*
+         валило чисту інсталяцію (#211). Дія присутня в усіх знімках. -->
+    <menuitem id="menu_agreement_type_ua"
+              name="Типи договорів"
+              parent="agreement.agreement_setting_menu"
+              action="agreement.agreement_type_action"
+              sequence="10"/>
+
+    <!-- Успадковані меню OCA (якщо БД їх ще має) гасимо, щоб не було дубля -->
+    <function model="agreement" name="_l10n_ua_deactivate_legacy_type_menus"/>
 
     <!-- Назви дій -->
     <record id="agreement.agreement_action" model="ir.actions.act_window">
