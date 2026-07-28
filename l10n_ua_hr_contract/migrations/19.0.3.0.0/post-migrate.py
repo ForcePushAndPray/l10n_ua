@@ -8,6 +8,26 @@ _logger = logging.getLogger(__name__)
 # the same four values, so the mapping is an identity.
 UA_SCHEDULE_TYPES = ('standard', 'shift', 'flexible', 'summarized')
 
+# A candidate calendar is only trusted when its weekly norm agrees with the
+# schedule's own, within this many hours. Rounding of derived norms (a 6-day
+# week gives 6.67 h/day) needs some slack, a wrong calendar is off by much more.
+NORM_TOLERANCE_HOURS = 0.5
+
+
+def _norm_matches(calendar, schedule):
+    """Whether the candidate calendar's weekly norm agrees with the schedule.
+
+    hr.work.schedule.resource_calendar_id was documented as an integration
+    bridge but never read by any code, so nothing ever validated it — and the
+    same holds for a predefined schedule whose hours an HR officer edited
+    locally. Both are checked against the schedule's own hours_per_week rather
+    than trusted, because accepting a mismatched calendar silently changes the
+    employee's payroll norm and leave entitlement.
+    """
+    if not schedule.hours_per_week:
+        return True
+    return abs(calendar.hours_per_week - schedule.hours_per_week) <= NORM_TOLERANCE_HOURS
+
 
 def _attendance_vals_from_lines(schedule):
     """Attendance values built from the schedule's own daily grid, if any.
@@ -129,19 +149,39 @@ def migrate(cr, version):
 
     created = {}
     skipped = []
+    already_correct = 0
     migrated = 0
 
     versions = env['hr.version'].search([('work_schedule_ua_id', '!=', False)])
     for ver in versions:
         schedule = ver.work_schedule_ua_id
-        target = (schedule.resource_calendar_id
-                  or by_code.get(schedule.code)
-                  or created.get(schedule.id))
+
+        target = None
+        rejected = []
+        for candidate in (created.get(schedule.id),
+                          schedule.resource_calendar_id,
+                          by_code.get(schedule.code)):
+            if not candidate:
+                continue
+            if _norm_matches(candidate, schedule):
+                target = candidate
+                break
+            rejected.append((candidate.id, candidate.hours_per_week))
+
         if not target:
+            if rejected:
+                _logger.warning(
+                    "l10n_ua_hr_contract 19.0.3.0.0: schedule %s (id=%s, "
+                    "%.2f h/week) had candidate calendars with a different "
+                    "norm %s; building a calendar from the schedule instead",
+                    schedule.name, schedule.id, schedule.hours_per_week,
+                    rejected)
             target = _create_calendar_from_schedule(env, schedule)
             created[schedule.id] = target
-            if schedule.code:
-                by_code.setdefault(schedule.code, target)
+
+        if ver.resource_calendar_id == target:
+            already_correct += 1
+            continue
 
         company_default = ver.company_id.resource_calendar_id
         if ver.resource_calendar_id and ver.resource_calendar_id != company_default:
@@ -161,6 +201,6 @@ def migrate(cr, version):
             len(skipped), skipped)
 
     _logger.info(
-        "l10n_ua_hr_contract 19.0.3.0.0: %s versions mapped, %s skipped, "
-        "%s calendars created from custom schedules",
-        migrated, len(skipped), len(created))
+        "l10n_ua_hr_contract 19.0.3.0.0: %s versions mapped, %s already "
+        "correct, %s skipped, %s calendars built from schedules",
+        migrated, already_correct, len(skipped), len(created))

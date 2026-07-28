@@ -124,6 +124,86 @@ class TestMigrationCalendars(ContractTestCase):
         self.assertAlmostEqual(calendar.hours_per_week, 42.0, places=2)
         self.assertAlmostEqual(calendar.hours_per_day, 12.0, places=2)
 
+    def test_migration_rejects_bridge_calendar_with_wrong_norm(self):
+        """Bridge-календар із чужою нормою не приймається (знайдено на демо).
+
+        На демо hr.work.schedule.resource_calendar_id вказував на календар із
+        20 год/тиждень для 40-годинного графіка. Це поле нічим і ніколи не
+        валідувалося, тож довіряти йому без звірки не можна.
+        """
+        wrong = self.env['resource.calendar'].create({
+            'name': 'Насправді 20 годин',
+            'company_id': self.company.id,
+            'attendance_ids': [(5, 0, 0)] + [
+                (0, 0, {'name': 'Робочий день', 'dayofweek': str(d),
+                        'day_period': 'morning',
+                        'hour_from': 8.0, 'hour_to': 12.0})
+                for d in range(5)],
+        })
+        self.assertAlmostEqual(wrong.hours_per_week, 20.0, places=2)
+
+        schedule = self._schedule(code='STD36', resource_calendar_id=wrong.id)
+        version = self._create_version(
+            work_schedule_ua_id=schedule.id,
+            resource_calendar_id=self.company_calendar.id)
+
+        self._run()
+
+        self.assertNotEqual(
+            version.resource_calendar_id, wrong,
+            'Migration trusted a bridge calendar with a mismatched norm')
+        self.assertEqual(
+            version.resource_calendar_id,
+            self.env.ref('l10n_ua_hr_contract.resource_calendar_ua_std36'))
+
+    def test_migration_preserves_locally_edited_norm(self):
+        """Локально змінена норма передвизначеного графіка не втрачається.
+
+        На демо SHIFT2X2 мав 48 год/тиждень замість типових 42; зіставлення
+        за кодом мовчки перевело б працівника на 42.
+        """
+        schedule = self._schedule(
+            name='Змінний 2/2, локально 48 год',
+            code='SHIFT2X2',
+            schedule_type='shift',
+            hours_per_week=48.0,
+            hours_per_day=12.0,
+            working_days_per_week=0)
+        version = self._create_version(
+            work_schedule_ua_id=schedule.id,
+            resource_calendar_id=self.company_calendar.id)
+
+        self._run()
+
+        calendar = version.resource_calendar_id
+        self.assertNotEqual(
+            calendar,
+            self.env.ref('l10n_ua_hr_contract.resource_calendar_ua_shift2x2'),
+            'Migration silently replaced a locally edited norm')
+        self.assertAlmostEqual(calendar.hours_per_week, 48.0, places=2)
+        self.assertAlmostEqual(version.scheduled_hours_week, 48.0, places=2)
+
+    def test_migration_leaves_already_correct_version_alone(self):
+        """Версія, що вже на цільовому календарі, не потрапляє в пропущені."""
+        calendar = self.env.ref(
+            'l10n_ua_hr_contract.resource_calendar_ua_std36')
+        schedule = self._schedule(code='STD36')
+        version = self._create_version(
+            work_schedule_ua_id=schedule.id,
+            resource_calendar_id=calendar.id)
+
+        with self.assertLogs('l10n_ua_hr_contract_post_migrate_19_3_0') as logs:
+            self._run()
+
+        reported = [line for line in logs.output
+                    if line.startswith('WARNING')
+                    and '(%s,' % version.id in line]
+        self.assertFalse(
+            reported,
+            'Version already on the target calendar was reported for manual '
+            'review: %s' % reported)
+        self.assertEqual(version.resource_calendar_id, calendar)
+
     def test_migration_reuses_calendar_across_versions(self):
         """Один клієнтський графік дає один календар на всі версії."""
         schedule = self._schedule(name='Спільний', code='SHARED30')
