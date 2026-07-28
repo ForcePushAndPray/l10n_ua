@@ -204,6 +204,96 @@ class TestMigrationCalendars(ContractTestCase):
             'review: %s' % reported)
         self.assertEqual(version.resource_calendar_id, calendar)
 
+    def test_migration_grid_contradicting_declared_norm_is_dropped(self):
+        """Сітка, що суперечить оголошеній нормі, не змінює норму (з демо).
+
+        На демо SHIFT2X2 мав денну сітку на 56 год при оголошених 48 — цикл 2/2
+        у тиждень не вкладається. Норма, за якою рахували до апгрейду, має
+        лишитися незмінною.
+        """
+        schedule = self._schedule(
+            name='Змінний із суперечливою сіткою',
+            code='CONTRADICT',
+            schedule_type='shift',
+            hours_per_week=48.0,
+            hours_per_day=12.0,
+            working_days_per_week=0)
+        self.env['hr.work.schedule.line'].create([{
+            'schedule_id': schedule.id,
+            'day_of_week': str(day),
+            'is_working_day': True,
+            'work_from': 8.0,
+            'work_to': 20.0,
+            'break_from': 0.0,
+            'break_to': 0.0,
+        } for day in range(6)])  # 6 × 12 = 72 год, а не 48
+
+        version = self._create_version(
+            work_schedule_ua_id=schedule.id,
+            resource_calendar_id=self.company_calendar.id)
+
+        self._run()
+
+        calendar = version.resource_calendar_id
+        self.assertFalse(
+            calendar.attendance_ids,
+            'A grid contradicting the declared norm was kept')
+        self.assertAlmostEqual(calendar.hours_per_week, 48.0, places=2)
+        self.assertAlmostEqual(version.scheduled_hours_week, 48.0, places=2)
+
+    def test_migration_grid_matching_declared_norm_is_kept(self):
+        """Узгоджена денна сітка переноситься в календар."""
+        schedule = self._schedule(
+            name='Графік із коректною сіткою',
+            code='GRIDOK',
+            hours_per_week=40.0,
+            hours_per_day=8.0,
+            working_days_per_week=5)
+        self.env['hr.work.schedule.line'].create([{
+            'schedule_id': schedule.id,
+            'day_of_week': str(day),
+            'is_working_day': True,
+            'work_from': 9.0,
+            'work_to': 18.0,
+            'break_from': 13.0,
+            'break_to': 14.0,
+        } for day in range(5)])  # 5 × 8 = 40 год
+
+        version = self._create_version(
+            work_schedule_ua_id=schedule.id,
+            resource_calendar_id=self.company_calendar.id)
+
+        self._run()
+
+        calendar = version.resource_calendar_id
+        self.assertTrue(calendar.attendance_ids)
+        self.assertAlmostEqual(calendar.hours_per_week, 40.0, places=2)
+
+    def test_migration_never_changes_the_declared_norm(self):
+        """Інваріант: жоден створений календар не змінює норму графіка."""
+        schedules = [
+            self._schedule(code='INV1', hours_per_week=37.0, hours_per_day=7.4,
+                           working_days_per_week=5),
+            self._schedule(code='INV2', schedule_type='shift',
+                           hours_per_week=44.0, hours_per_day=11.0,
+                           working_days_per_week=0),
+            self._schedule(code='INV3', schedule_type='summarized',
+                           hours_per_week=39.0, hours_per_day=0.0,
+                           working_days_per_week=0),
+        ]
+        versions = [
+            self._create_version(work_schedule_ua_id=s.id,
+                                 resource_calendar_id=self.company_calendar.id)
+            for s in schedules]
+
+        self._run()
+
+        for schedule, version in zip(schedules, versions):
+            self.assertAlmostEqual(
+                version.resource_calendar_id.hours_per_week,
+                schedule.hours_per_week, delta=0.5,
+                msg='Norm changed for schedule %s' % schedule.code)
+
     def test_migration_reuses_calendar_across_versions(self):
         """Один клієнтський графік дає один календар на всі версії."""
         schedule = self._schedule(name='Спільний', code='SHARED30')

@@ -81,6 +81,10 @@ def _attendance_vals_uniform(schedule):
     } for day in range(days)]
 
 
+def _weekly_hours(attendances):
+    return sum(max(0.0, a['hour_to'] - a['hour_from']) for a in attendances)
+
+
 def _create_calendar_from_schedule(env, schedule):
     """Build a resource.calendar out of a customer-defined UA schedule.
 
@@ -88,9 +92,24 @@ def _create_calendar_from_schedule(env, schedule):
     summarized accounting) becomes a core 'flexible' calendar carrying the
     hours explicitly — core then leaves hours_per_week/hours_per_day alone
     instead of recomputing them to zero from an empty attendance list.
+
+    The same applies when a grid exists but contradicts the schedule's own
+    weekly norm: a 2/2 cycle cannot be expressed as a week, so its daily rows
+    add up to something the payroll never used. The declared norm wins, so
+    that nobody's norm changes just because of the upgrade.
     """
     attendances = (_attendance_vals_from_lines(schedule)
                    or _attendance_vals_uniform(schedule))
+    if attendances and schedule.hours_per_week:
+        grid_hours = _weekly_hours(attendances)
+        if abs(grid_hours - schedule.hours_per_week) > NORM_TOLERANCE_HOURS:
+            _logger.warning(
+                "l10n_ua_hr_contract 19.0.3.0.0: schedule %s (id=%s) declares "
+                "%.2f h/week but its daily grid adds up to %.2f; keeping the "
+                "declared norm and dropping the grid",
+                schedule.name, schedule.id, schedule.hours_per_week,
+                grid_hours)
+            attendances = []
     vals = {
         'name': schedule.name,
         'ua_code': schedule.code,
