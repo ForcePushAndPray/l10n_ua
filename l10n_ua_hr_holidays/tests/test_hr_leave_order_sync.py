@@ -129,6 +129,34 @@ class TestHrLeaveOrderSync(common.TransactionCase):
         self.assertEqual(self.env['hr.leave'].search_count(
             [('employee_id', '=', self.employee.id)]), 1,
             "No duplicate leave must be created.")
+
+    def test_smart_buttons_scoped_to_this_document(self):
+        """The Orders / Time Off smart buttons count and open the documents
+        linked to THIS record — a second leave with its own order must not
+        inflate the first one's count."""
+        leave_a = self._make_leave(date(2028, 5, 10), date(2028, 5, 15))
+        order_a = self._create_order_via_button(leave_a)
+        leave_b = self._make_leave(date(2028, 8, 10), date(2028, 8, 15))
+        order_b = self._create_order_via_button(leave_b)
+
+        # The employee has two vacation orders overall...
+        self.assertEqual(self.env['hr.order'].search_count([
+            ('employee_id', '=', self.employee.id),
+            ('order_type', '=', 'vacation'),
+        ]), 2)
+
+        # ...but each leave sees only its own.
+        (leave_a | leave_b).invalidate_recordset(['order_count'])
+        self.assertEqual(leave_a.order_count, 1)
+        self.assertEqual(leave_b.order_count, 1)
+        self.assertEqual(leave_a.action_view_orders().get('res_id'), order_a.id)
+        self.assertEqual(leave_b.action_view_orders().get('res_id'), order_b.id)
+
+        # Same scoping from the order side.
+        (order_a | order_b).invalidate_recordset(['leave_count'])
+        self.assertEqual(order_a.leave_count, 1)
+        self.assertEqual(order_a.action_view_leaves().get('res_id'), leave_a.id)
+        self.assertEqual(order_b.action_view_leaves().get('res_id'), leave_b.id)
         self.assertEqual(self.env['hr.order'].search_count([
             ('employee_id', '=', self.employee.id),
             ('order_type', '=', 'vacation'),

@@ -125,31 +125,48 @@ class HrOrder(models.Model):
     leave_count = fields.Integer(
         string='Time Off',
         compute='_compute_leave_count',
-        help='Number of time off records for this employee. Drives the '
-             '"Time Off" smart button on vacation orders.'
+        help='Number of time off records tied to THIS order (0 or 1 — the '
+             'order and its leave reference each other). Drives the "Time '
+             'Off" smart button on vacation orders.'
     )
 
-    @api.depends('employee_id')
+    @api.depends('leave_id')
     def _compute_leave_count(self):
-        Leave = self.env['hr.leave']
         for order in self:
-            order.leave_count = Leave.search_count([
-                ('employee_id', '=', order.employee_id.id),
-            ]) if order.employee_id else 0
+            order.leave_count = len(order._linked_leaves())
+
+    def _linked_leaves(self):
+        """Leaves tied to THIS order — not the employee's whole time off
+        history. Normally exactly the order's own leave_id; the reverse link
+        (hr.leave.order_id) is unioned in as well so a leave pointing here
+        without the back-link having been written yet is still surfaced."""
+        self.ensure_one()
+        leaves = self.leave_id
+        origin_id = self._origin.id
+        if origin_id:
+            leaves |= self.env['hr.leave'].search(
+                [('order_id', '=', origin_id)])
+        return leaves
 
     def action_view_leaves(self):
-        """Smart button: open all time off records for this order's
-        employee."""
+        """Smart button: open the time off record(s) tied to THIS order —
+        opening the form directly when there is just one (the normal case)."""
         self.ensure_one()
-        return {
+        leaves = self._linked_leaves()
+        action = {
             'type': 'ir.actions.act_window',
             'name': _('Time Off'),
             'res_model': 'hr.leave',
-            'view_mode': 'list,form',
-            'domain': [('employee_id', '=', self.employee_id.id)],
             'context': {'default_employee_id': self.employee_id.id},
         }
-    # Related field — eliminates duplication (рек. №5)
+        if len(leaves) == 1:
+            action.update({'view_mode': 'form', 'res_id': leaves.id})
+        else:
+            action.update({'view_mode': 'list,form',
+                           'domain': [('id', 'in', leaves.ids)]})
+        return action
+
+    # Related field — eliminates duplication 
     holiday_status_id = fields.Many2one(
         'hr.leave.type',
         string='Leave Type',

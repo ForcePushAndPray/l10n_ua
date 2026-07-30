@@ -37,6 +37,8 @@
                         </group>
                         <group>
                             <field name="vacation_transfer_mode" widget="radio"/>
+                            <field name="vacation_period_mode" widget="radio"
+                                   invisible="vacation_transfer_mode != 'transfer'"/>
                         </group>
                     </group>
                 </sheet>

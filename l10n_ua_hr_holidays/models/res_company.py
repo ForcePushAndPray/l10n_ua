@@ -202,7 +202,11 @@ class ResCompany(models.Model):
             'tag': 'display_notification',
             'params': {
                 'title': _('UA Leave Types Imported'),
-                'message': _('%d leave types have been created for %s') % (created_count, self.name),
+                # Named placeholders so translators may reorder them freely;
+                # positional %d/%s would swap the values and raise on reorder.
+                'message': _(
+                    '%(count)d leave types have been created for %(company)s',
+                    count=created_count, company=self.name),
                 'type': 'success',
                 'sticky': False,
             }

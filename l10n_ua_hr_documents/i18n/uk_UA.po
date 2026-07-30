@@ -1133,3 +1133,14 @@ msgstr "Накази"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_documents.hr_employee_view_form_inherit_documents
 msgid "New Order"
 msgstr "Новий наказ"
+
+#. module: l10n_ua_hr_documents
+#: model:ir.model.fields,help:l10n_ua_hr_documents.field_hr_order__leave_count
+msgid ""
+"Number of time off records tied to THIS order (0 or 1 — the order "
+"and its leave reference each other). Drives the \"Time Off\" smart "
+"button on vacation orders."
+msgstr ""
+"Кількість відпусток, прив'язаних до ЦЬОГО наказу (0 або 1 — наказ "
+"та його відпустка посилаються одне на одного). Керує смарт-кнопкою "
+"«Відпустки» на наказах про відпустку."

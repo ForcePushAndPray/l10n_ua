@@ -25,7 +25,7 @@
                 <div class="oe_button_box" name="button_box">
                     <button name="action_view_orders" type="object"
                             class="oe_stat_button" icon="fa-file-text-o"
-                            invisible="not leave_type_create_order">
+                            invisible="not leave_type_create_order or order_count == 0">
                         <field name="order_count" widget="statinfo"/>
                     </button>
                 </div>
@@ -36,6 +36,13 @@
                     <div class="alert alert-warning" role="alert" colspan="2"
                          invisible="not carryover_warning">
                         <field name="carryover_warning" readonly="1" nolabel="1"/>
+                    </div>
+                    <!-- Advisory only: charging a leave to a period its dates
+                         do not cover is allowed, but flag it so a wrongly
+                         picked period does not silently distort the balance. -->
+                    <div class="alert alert-info" role="alert" colspan="2"
+                         invisible="not period_mismatch_warning">
+                        <field name="period_mismatch_warning" readonly="1" nolabel="1"/>
                     </div>
                     <group>
                         <field name="calendar_days"/>

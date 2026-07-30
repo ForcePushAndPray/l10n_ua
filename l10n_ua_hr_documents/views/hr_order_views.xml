@@ -36,7 +36,7 @@
                     <div class="oe_button_box" name="button_box">
                         <button name="action_view_leaves" type="object"
                                 class="oe_stat_button" icon="fa-plane"
-                                invisible="order_type != 'vacation'">
+                                invisible="order_type != 'vacation' or leave_count == 0">
                             <field name="leave_count" widget="statinfo"/>
                         </button>
                     </div>

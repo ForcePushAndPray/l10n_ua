@@ -191,6 +191,93 @@ class TestVacationPeriodBalance(TransactionCase):
         self.assertEqual(wy2.used_days, 0)
         self.assertEqual(wy2.planned_days, 0)
 
+    def test_unlinked_leave_still_counted_by_its_dates(self):
+        """Safety net: a leave left WITHOUT a period (import, a write clearing
+        the field) is still charged to the period its start date falls into, so
+        used_days never silently understates the days taken."""
+        wy2 = self.env['hr.vacation.balance'].create({
+            'employee_id': self.employee.id,
+            'leave_type_id': self.annual_type.id,
+            'period_start': date(2025, 7, 15),
+            'period_end': date(2026, 7, 14),
+            'period_index': 2,
+            'entitled_days': 24,
+        })
+        leave = self._create_leave(
+            self.annual_type, date(2025, 9, 3), date(2025, 9, 7))
+        leave.action_approve()
+        self.assertEqual(wy2.used_days, leave.calendar_days)
+
+        # Drop the link the way a stray import/write would.
+        leave.sudo().write({'vacation_balance_id': False})
+        self.assertFalse(leave.vacation_balance_id)
+
+        wy2.invalidate_recordset(['used_days', 'remaining_days'])
+        self.assertEqual(wy2.used_days, leave.calendar_days,
+                         'Unlinked leave must still count against its period')
+        self.assertEqual(wy2.remaining_days, 24 - leave.calendar_days)
+
+    def test_validation_links_missing_period(self):
+        """Approving a leave that carries no period links it, so the days are
+        charged by the explicit link rather than only by the date fallback."""
+        self.env['hr.vacation.balance'].create({
+            'employee_id': self.employee.id,
+            'leave_type_id': self.annual_type.id,
+            'period_start': date(2025, 7, 15),
+            'period_end': date(2026, 7, 14),
+            'period_index': 2,
+            'entitled_days': 24,
+        })
+        leave = self._create_leave(
+            self.annual_type, date(2025, 9, 3), date(2025, 9, 7))
+        leave.sudo().write({'vacation_balance_id': False})
+        self.assertFalse(leave.vacation_balance_id)
+
+        leave.action_approve()
+
+        self.assertTrue(leave.vacation_balance_id,
+                        'Validation must fill the missing accounting period')
+        self.assertEqual(leave.vacation_balance_id.period_start,
+                         date(2025, 7, 15))
+
+    def test_period_mismatch_warning_when_dates_outside_period(self):
+        """Charging a leave to a period that does not cover its dates stays
+        ALLOWED, but raises a non-blocking notice so a wrongly picked period is
+        not applied silently."""
+        wy1 = self.env['hr.vacation.balance'].create({
+            'employee_id': self.employee.id,
+            'leave_type_id': self.annual_type.id,
+            'period_start': date(2024, 7, 15),
+            'period_end': date(2025, 7, 14),
+            'period_index': 1,
+            'entitled_days': 24,
+        })
+        # Dates are in the NEXT work year, charged to WY1 on purpose.
+        leave = self._create_leave(
+            self.annual_type, date(2025, 9, 3), date(2025, 9, 7),
+            vacation_balance_id=wy1.id)
+
+        self.assertTrue(leave.id, 'The leave must still save')
+        self.assertEqual(leave.vacation_balance_id, wy1)
+        self.assertTrue(leave.period_mismatch_warning)
+        self.assertIn('03.09.2025', leave.period_mismatch_warning)
+
+    def test_no_period_mismatch_warning_when_dates_inside(self):
+        """No notice when the leave starts inside the period it is charged
+        to — the normal case."""
+        wy2 = self.env['hr.vacation.balance'].create({
+            'employee_id': self.employee.id,
+            'leave_type_id': self.annual_type.id,
+            'period_start': date(2025, 7, 15),
+            'period_end': date(2026, 7, 14),
+            'period_index': 2,
+            'entitled_days': 24,
+        })
+        leave = self._create_leave(
+            self.annual_type, date(2025, 9, 3), date(2025, 9, 7),
+            vacation_balance_id=wy2.id)
+        self.assertFalse(leave.period_mismatch_warning)
+
     def test_overuse_deficit_carries_negative_forward(self):
         """Taking more days than available (e.g. 26 against a 24-day
         entitlement) leaves the period at a negative Remaining, and that
@@ -746,3 +833,29 @@ class TestVacationPeriodBalance(TransactionCase):
         wy2 = self._wy2_of(lt)
         self.assertEqual(wy2.carried_over, 24)         # everything carried
         self.assertFalse(leave.carryover_warning)
+
+    def test_non_transferable_deficit_not_carried(self):
+        """A non-transferable type carries nothing forward — not even a
+        negative over-use debt. Its next period keeps Carried Over 0 and only
+        its own entitlement, unlike a transferable type whose deficit rolls
+        forward."""
+        lt = self._work_type(is_transferable=False, leave_validation_type='hr')
+        wy1 = self._wy1_with_unused(lt)                # entitled 24
+        wy2 = self.env['hr.vacation.balance'].create({
+            'employee_id': self.employee.id,
+            'leave_type_id': lt.id,
+            'period_start': date(2025, 7, 15),
+            'period_end': date(2026, 7, 14),
+            'period_index': 2,
+            'entitled_days': 24,
+        })
+        # Over-use WY1: a leave longer than the entitlement, charged to WY1
+        # and approved so the days count as used.
+        leave = self._create_leave(
+            lt, date(2024, 9, 1), date(2024, 9, 30), vacation_balance_id=wy1.id)
+        leave.action_approve()
+        self.assertGreater(wy1.used_days, 24)
+        self.assertLess(wy1.remaining_days, 0)          # WY1 is in deficit
+        wy2.invalidate_recordset(['carried_over', 'total_available'])
+        self.assertEqual(wy2.carried_over, 0)           # debt NOT carried
+        self.assertEqual(wy2.total_available, 24)       # only its own days
