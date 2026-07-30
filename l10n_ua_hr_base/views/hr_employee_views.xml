@@ -33,18 +33,21 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
-            <xpath expr="//field[@name='private_street']/ancestor::group[1]" position="after">
-                <group string="Адреса реєстрації">
-                    <field name="registration_same_as_actual"/>
-                    <label for="registration_street" string="Registration Address" invisible="registration_same_as_actual"/>
-                    <div class="o_address_format" invisible="registration_same_as_actual">
-                        <field name="registration_street" placeholder="Street..." class="o_address_street"/>
-                        <field name="registration_street2" placeholder="Street 2..." class="o_address_street"/>
-                        <field name="registration_city" placeholder="City" class="o_address_city"/>
-                        <field name="registration_region_id" class="o_address_state" placeholder="Region" options='{"no_open": True, "no_create": True}'/>
-                        <field name="registration_zip" placeholder="ZIP" class="o_address_zip"/>
-                    </div>
-                </group>
+            <!-- Registration address, right below the native private address it
+                 mirrors and inside the same "Location" group, so both blocks
+                 share one heading and one layout.
+                 The address rows collapse once the checkbox is ticked; the
+                 checkbox itself stays and spells out where they went. -->
+            <xpath expr="//group[@name='hr_location_group']/div[@class='o_address_format']" position="after">
+                <field name="registration_same_as_actual"/>
+                <label for="registration_street" string="Registration Address" invisible="registration_same_as_actual"/>
+                <div class="o_address_format" invisible="registration_same_as_actual">
+                    <field name="registration_street" placeholder="Street..." class="o_address_street"/>
+                    <field name="registration_street2" placeholder="Street 2..." class="o_address_street"/>
+                    <field name="registration_city" placeholder="City" class="o_address_city"/>
+                    <field name="registration_region_id" class="o_address_state" placeholder="Region" options='{"no_open": True, "no_create": True}'/>
+                    <field name="registration_zip" placeholder="ZIP" class="o_address_zip"/>
+                </div>
             </xpath>
 
             <xpath expr="//notebook" position="inside">

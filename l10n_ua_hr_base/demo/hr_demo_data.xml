@@ -97,10 +97,6 @@
             <field name="private_street2">кв. 10</field>
             <field name="private_city">Київ</field>
             <field name="private_zip">01001</field>
-            <field name="registration_street">вул. Хрещатик, 1</field>
-            <field name="registration_street2">кв. 10</field>
-            <field name="registration_city">Київ</field>
-            <field name="registration_zip">01001</field>
             <field name="registration_same_as_actual" eval="True"/>
             <field name="hire_date">2015-01-10</field>
             <field name="military_status">liable</field>
@@ -131,10 +127,6 @@
             <field name="private_street2">кв. 5</field>
             <field name="private_city">Київ</field>
             <field name="private_zip">01004</field>
-            <field name="registration_street">вул. Велика Васильківська, 25</field>
-            <field name="registration_street2">кв. 5</field>
-            <field name="registration_city">Київ</field>
-            <field name="registration_zip">01004</field>
             <field name="registration_same_as_actual" eval="True"/>
             <field name="hire_date">2018-06-01</field>
             <field name="military_status">not_applicable</field>
@@ -162,10 +154,6 @@
             <field name="private_street2">кв. 15</field>
             <field name="private_city">Київ</field>
             <field name="private_zip">01033</field>
-            <field name="registration_street">вул. Саксаганського, 100</field>
-            <field name="registration_street2">кв. 15</field>
-            <field name="registration_city">Київ</field>
-            <field name="registration_zip">01033</field>
             <field name="registration_same_as_actual" eval="True"/>
             <field name="hire_date">2016-09-01</field>
             <field name="military_status">not_applicable</field>
@@ -193,10 +181,6 @@
             <field name="private_street2">кв. 88</field>
             <field name="private_city">Київ</field>
             <field name="private_zip">03056</field>
-            <field name="registration_street">пр. Перемоги, 37</field>
-            <field name="registration_street2">кв. 88</field>
-            <field name="registration_city">Київ</field>
-            <field name="registration_zip">03056</field>
             <field name="registration_same_as_actual" eval="True"/>
             <field name="hire_date">2020-03-15</field>
             <field name="military_status">liable</field>
@@ -230,10 +214,6 @@
             <field name="private_street2">кв. 42</field>
             <field name="private_city">Київ</field>
             <field name="private_zip">03056</field>
-            <field name="registration_street">вул. Борщагівська, 150</field>
-            <field name="registration_street2">кв. 42</field>
-            <field name="registration_city">Київ</field>
-            <field name="registration_zip">03056</field>
             <field name="registration_same_as_actual" eval="True"/>
             <field name="hire_date">2021-08-01</field>
             <field name="military_status">liable</field>
@@ -265,11 +245,11 @@
             <field name="private_street2">кв. 20</field>
             <field name="private_city">Київ</field>
             <field name="private_zip">01004</field>
-            <field name="registration_street">вул. Льва Толстого, 5</field>
-            <field name="registration_street2">кв. 20</field>
-            <field name="registration_city">Київ</field>
-            <field name="registration_zip">01004</field>
-            <field name="registration_same_as_actual" eval="True"/>
+            <field name="registration_street">вул. Городоцька, 210</field>
+            <field name="registration_street2">кв. 7</field>
+            <field name="registration_city">Львів</field>
+            <field name="registration_zip">79000</field>
+            <field name="registration_same_as_actual" eval="False"/>
             <field name="hire_date">2022-01-10</field>
             <field name="military_status">not_applicable</field>
             <field name="disability_group">3</field>

@@ -252,6 +252,96 @@ class TestHrEmployeeComputedFields(TestHrUaBase):
         self.assertEqual(employee.registration_city, 'Dnipro')
         self.assertEqual(employee.registration_street2, 'Office 12')
 
+    def test_registration_address_updates_on_version_write(self):
+        """private_* lives on hr.version, so writing there must sync too."""
+        employee = self._create_employee(
+            private_street='Old Street 5',
+            private_city='Odesa',
+            registration_same_as_actual=True,
+        )
+
+        employee.current_version_id.write({
+            'private_street': 'Nova Street 7',
+            'private_city': 'Kharkiv',
+        })
+
+        self.assertEqual(employee.registration_street, 'Nova Street 7')
+        self.assertEqual(employee.registration_city, 'Kharkiv')
+
+    def test_registration_address_ignores_historical_version(self):
+        """Editing a past version must not rewrite today's registration address."""
+        employee = self._create_employee(
+            private_street='Current Street 1',
+            private_city='Odesa',
+            registration_same_as_actual=True,
+        )
+        old_version = self.env['hr.version'].create({
+            'employee_id': employee.id,
+            'date_version': date.today() - relativedelta(years=2),
+            'private_street': 'Ancient Street 99',
+            'private_city': 'Lviv',
+        })
+
+        old_version.write({'private_city': 'Ternopil'})
+
+        self.assertEqual(employee.registration_street, 'Current Street 1')
+        self.assertEqual(employee.registration_city, 'Odesa')
+
+    def test_registration_address_overwrites_manual_edit_while_mirrored(self):
+        """With the flag on, the registration block is not independently editable."""
+        employee = self._create_employee(
+            private_street='Khreshchatyk 1',
+            private_city='Kyiv',
+            registration_same_as_actual=True,
+        )
+
+        employee.write({'registration_city': 'Lviv', 'private_zip': '01001'})
+
+        self.assertEqual(employee.registration_city, 'Kyiv')
+        self.assertEqual(employee.registration_zip, '01001')
+
+    def test_registration_address_frozen_after_unchecking_flag(self):
+        """Unchecking the flag freezes the copy and lets it diverge."""
+        employee = self._create_employee(
+            private_street='Khreshchatyk 1',
+            private_city='Kyiv',
+            registration_same_as_actual=True,
+        )
+
+        employee.write({'registration_same_as_actual': False})
+        employee.write({'private_city': 'Dnipro'})
+
+        self.assertEqual(employee.registration_city, 'Kyiv')
+        self.assertEqual(employee.private_city, 'Dnipro')
+
+    def test_registration_address_display_is_complete(self):
+        """The printed/exported one-liner keeps every component, street2 included."""
+        employee = self._create_employee(
+            registration_zip='79000',
+            registration_city='Львів',
+            registration_street='вул. Шевченка, 10',
+            registration_street2='кв. 5',
+            registration_same_as_actual=False,
+        )
+
+        self.assertEqual(
+            employee._get_ua_registration_address_display(),
+            '79000, Львів, вул. Шевченка, 10, кв. 5')
+
+    def test_registration_address_display_falls_back_to_private(self):
+        """With the flag on the one-liner reads the mirrored private address."""
+        employee = self._create_employee(
+            private_zip='01001',
+            private_city='Київ',
+            private_street='вул. Хрещатик, 1',
+            private_street2='кв. 10',
+            registration_same_as_actual=True,
+        )
+
+        self.assertEqual(
+            employee._get_ua_registration_address_display(),
+            '01001, Київ, вул. Хрещатик, 1, кв. 10')
+
 
 @tagged('post_install', '-at_install')
 class TestHrEmployeeMilitaryBenefits(TestHrUaBase):

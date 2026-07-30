@@ -73,6 +73,20 @@ class TestEmployeeTransfer(TransactionCase):
         wizard.action_transfer()
         new_employee = self.source_employee.next_employee_id
 
+        dismissal_orders = self.env['hr.order'].search([
+            ('employee_id', '=', self.source_employee.id),
+            ('order_type', '=', 'dismissal'),
+        ])
+        self.assertTrue(dismissal_orders, 'Dismissal hr.order must be created')
+        self.assertEqual(dismissal_orders.date_dismissal, date(2026, 4, 30))
+
+        hiring_orders = self.env['hr.order'].search([
+            ('employee_id', '=', new_employee.id),
+            ('order_type', '=', 'hiring'),
+        ])
+        self.assertTrue(hiring_orders, 'Hiring hr.order must be created')
+        self.assertEqual(hiring_orders.date_start, date(2026, 5, 1))
+
     def test_transfer_copies_address_fields(self):
         """Test that transfer wizard copies private address and registration address fields."""
         self.source_employee.write({
@@ -97,19 +111,22 @@ class TestEmployeeTransfer(TransactionCase):
         self.assertEqual(new_employee.registration_city, 'Львів')
         self.assertFalse(new_employee.registration_same_as_actual)
 
-        dismissal_orders = self.env['hr.order'].search([
-            ('employee_id', '=', self.source_employee.id),
-            ('order_type', '=', 'dismissal'),
-        ])
-        self.assertTrue(dismissal_orders, 'Dismissal hr.order must be created')
-        self.assertEqual(dismissal_orders.date_dismissal, date(2026, 4, 30))
+    def test_transfer_keeps_mirrored_registration_address(self):
+        """Із прапорцем збігу перенесена реєстрація дзеркалить приватну адресу."""
+        self.source_employee.write({
+            'private_street': 'Хрещатик 1',
+            'private_street2': 'кв. 10',
+            'private_city': 'Київ',
+            'registration_same_as_actual': True,
+        })
+        wizard = self._make_wizard()
+        wizard.action_transfer()
+        new_employee = self.source_employee.next_employee_id
 
-        hiring_orders = self.env['hr.order'].search([
-            ('employee_id', '=', new_employee.id),
-            ('order_type', '=', 'hiring'),
-        ])
-        self.assertTrue(hiring_orders, 'Hiring hr.order must be created')
-        self.assertEqual(hiring_orders.date_start, date(2026, 5, 1))
+        self.assertTrue(new_employee.registration_same_as_actual)
+        self.assertEqual(new_employee.registration_street, 'Хрещатик 1')
+        self.assertEqual(new_employee.registration_street2, 'кв. 10')
+        self.assertEqual(new_employee.registration_city, 'Київ')
 
     def test_cannot_transfer_to_same_company(self):
         with self.assertRaises(UserError):

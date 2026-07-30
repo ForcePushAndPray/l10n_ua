@@ -1494,6 +1494,7 @@ msgstr "Номер запису"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_tcc__region_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
 msgid "Region"
 msgstr "Область"
 
@@ -1503,7 +1504,6 @@ msgid "Registration"
 msgstr "Реєстрація"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__registration_address
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
 msgid "Registration Address"
 msgstr "Адреса реєстрації"
@@ -1602,8 +1602,8 @@ msgstr "Оклад:"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__registration_same_as_actual
-msgid "Same as Actual Residence"
-msgstr "Збігається з адресою проживання"
+msgid "Registration Address Same as Private Address"
+msgstr "Адреса реєстрації збігається з адресою проживання"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_kp2010__section_code
@@ -2044,11 +2044,6 @@ msgstr "Табельний номер співробітника"
 
 #. module: l10n_ua_hr_base
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
-msgid "Region"
-msgstr "Область"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
 msgid "City"
 msgstr "Місто"
 
@@ -2056,11 +2051,6 @@ msgstr "Місто"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
 msgid "ZIP"
 msgstr "Індекс"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
-msgid "Address"
-msgstr "Адреса"
 
 #. module: l10n_ua_hr_base
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
@@ -2081,8 +2071,3 @@ msgstr "Вулиця реєстрації"
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__registration_street2
 msgid "Registration Street 2"
 msgstr "Вулиця реєстрації 2"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__actual_same_as_registration
-msgid "Same as Registration (legacy alias)"
-msgstr "Збігається з реєстрацією (застаріле)"

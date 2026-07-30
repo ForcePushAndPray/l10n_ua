@@ -169,12 +169,7 @@
                         <td style="border: 1px solid #000; padding: 3px;">8.</td>
                         <td style="border: 1px solid #000; padding: 3px;">Місце проживання (реєстрації)</td>
                         <td style="border: 1px solid #000; padding: 3px;" colspan="3">
-                            <t t-if="employee.registration_same_as_actual">
-                                <t t-esc="', '.join(filter(None, [employee.private_zip, employee.private_state_id.name if employee.private_state_id else '', employee.private_city, employee.private_street, employee.private_street2]))"/>
-                            </t>
-                            <t t-else="">
-                                <t t-esc="', '.join(filter(None, [employee.registration_zip, employee.registration_region_id.name if employee.registration_region_id else '', employee.registration_city, employee.registration_street, employee.registration_street2]))"/>
-                            </t>
+                            <t t-esc="employee._get_ua_registration_address_display()"/>
                         </td>
                     </tr>
                     <tr>
@@ -185,7 +180,7 @@
                                 (те саме)
                             </t>
                             <t t-else="">
-                                <t t-esc="', '.join(filter(None, [employee.private_zip, employee.private_state_id.name if employee.private_state_id else '', employee.private_city, employee.private_street]))"/>
+                                <t t-esc="employee._get_ua_actual_address_display()"/>
                             </t>
                         </td>
                     </tr>

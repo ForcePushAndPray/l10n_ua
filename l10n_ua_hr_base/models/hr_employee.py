@@ -1,7 +1,26 @@
+from collections import defaultdict
+
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
+
+# Native private (actual) address field -> our registration address field.
+# private_* lives on hr.version, registration_* on hr.employee; hr_version.py
+# reuses this map to keep both sides in sync from either direction.
+REGISTRATION_ADDRESS_MAP = {
+    'private_street': 'registration_street',
+    'private_street2': 'registration_street2',
+    'private_city': 'registration_city',
+    'private_zip': 'registration_zip',
+    'private_state_id': 'registration_region_id',
+}
+REGISTRATION_SYNC_TRIGGERS = set(REGISTRATION_ADDRESS_MAP) | {'registration_same_as_actual'}
+
+
+def _join_address_parts(parts):
+    """Join non-empty address components into a single printable line."""
+    return ', '.join(part for part in parts if part)
 
 
 class HrEmployee(models.Model):
@@ -41,12 +60,13 @@ class HrEmployee(models.Model):
                                           help='Unique record number in the register (for ID cards)')
 
     # === Registration Address (Прописка) ===
+    # The native private_* block (on hr.version) is the master address; this
+    # block mirrors it one-to-one, minus the country: a прописка is by
+    # definition a domestic record, hence the UA-only domain on the region and
+    # the absence of a registration country field.
     registration_same_as_actual = fields.Boolean(
-        string='Same as Actual Residence',
+        string='Registration Address Same as Private Address',
         help='When checked, registration address fields are automatically copied from native Odoo private_* fields.')
-    actual_same_as_registration = fields.Boolean(
-        related='registration_same_as_actual', readonly=False,
-        string='Same as Registration (legacy alias)')
 
     registration_street = fields.Char(string='Registration Street')
     registration_street2 = fields.Char(string='Registration Street 2')
@@ -54,7 +74,9 @@ class HrEmployee(models.Model):
         'res.country.state', string='Registration Region',
         domain="[('country_id.code', '=', 'UA')]")
     registration_city = fields.Char(string='Registration City')
-    registration_zip = fields.Char(string='Registration ZIP', size=5)
+    # No size limit: private_zip is unbounded, and a narrower column here would
+    # silently truncate whatever it mirrors.
+    registration_zip = fields.Char(string='Registration ZIP')
 
     # === Education ===
     # Use Odoo core fields: study_school (institution), study_field (specialty), certificate (level)
@@ -418,54 +440,85 @@ class HrEmployee(models.Model):
         period_end = anchor + relativedelta(years=period_index) - relativedelta(days=1)
         return (period_start, period_end, period_index)
 
-    @api.onchange('registration_same_as_actual', 'private_street', 'private_street2',
-                  'private_city', 'private_zip', 'private_state_id')
+    @api.onchange('registration_same_as_actual', *REGISTRATION_ADDRESS_MAP)
     def _onchange_registration_same_as_actual(self):
-        """When registration_same_as_actual is checked, copy Odoo private_* fields into registration_* fields."""
+        """Mirror the private address into the registration block in the UI."""
         if self.registration_same_as_actual:
-            self.registration_street = self.private_street
-            self.registration_street2 = self.private_street2
-            self.registration_city = self.private_city
-            self.registration_zip = self.private_zip
-            self.registration_region_id = self.private_state_id
+            for private_field, registration_field in REGISTRATION_ADDRESS_MAP.items():
+                self[registration_field] = self[private_field]
 
     @api.model_create_multi
     def create(self, vals_list):
         employees = super().create(vals_list)
-        for employee in employees:
-            if employee.registration_same_as_actual:
-                employee._sync_registration_address_from_private()
+        employees._sync_registration_address_from_private()
         return employees
 
     def write(self, vals):
         res = super().write(vals)
-        address_fields = {'registration_same_as_actual', 'private_street', 'private_street2',
-                          'private_city', 'private_zip', 'private_state_id'}
-        if address_fields.intersection(vals.keys()):
-            for employee in self:
-                if employee.registration_same_as_actual:
-                    employee._sync_registration_address_from_private()
+        if not REGISTRATION_SYNC_TRIGGERS.isdisjoint(vals):
+            self._sync_registration_address_from_private()
         return res
 
     def _sync_registration_address_from_private(self):
-        """Helper to sync registration address fields from private address when flag is True."""
-        for employee in self:
-            vals_to_write = {
-                'registration_street': employee.private_street or False,
-                'registration_street2': employee.private_street2 or False,
-                'registration_city': employee.private_city or False,
-                'registration_zip': employee.private_zip or False,
-                'registration_region_id': employee.private_state_id.id if employee.private_state_id else False,
-            }
-            changes = {}
-            for k, v in vals_to_write.items():
-                current_val = getattr(employee, k)
-                if k == 'registration_region_id':
-                    current_val = current_val.id if current_val else False
-                if current_val != v:
-                    changes[k] = v
-            if changes:
-                super(HrEmployee, employee).write(changes)
+        """Copy the private (actual) address onto the registration block.
+
+        Only records with the flag set are touched. Employees needing the same
+        values are written together, so a mass update (import, transfer) costs a
+        handful of queries instead of one per employee. A plain write() is used
+        rather than a super() jump so that overrides of other modules and the
+        chatter tracking still run; it cannot recurse because none of the
+        written fields is a sync trigger.
+
+        The address is always read from the *current* version: a form opened on
+        a past or future version puts that version in the context, and mirroring
+        it would overwrite today's registration address with a historical one.
+        """
+        records = self.with_context(version_id=False)
+        grouped = defaultdict(lambda: records.browse())
+        for employee in records.filtered('registration_same_as_actual'):
+            vals = employee._registration_address_vals()
+            if vals:
+                grouped[tuple(sorted(vals.items()))] += employee
+        for vals, employees in grouped.items():
+            employees.write(dict(vals))
+
+    def _registration_address_vals(self):
+        """Values that would bring this employee's registration block in line."""
+        self.ensure_one()
+        vals = {}
+        for private_field, registration_field in REGISTRATION_ADDRESS_MAP.items():
+            new_value = self._address_field_value(private_field)
+            if self._address_field_value(registration_field) != new_value:
+                vals[registration_field] = new_value
+        return vals
+
+    def _address_field_value(self, fname):
+        """Comparable, writable value of an address field (id for many2one)."""
+        value = self[fname]
+        if self._fields[fname].type == 'many2one':
+            return value.id
+        return value or False
+
+    def _get_ua_actual_address_display(self):
+        """One-line actual (private) address, for printed forms and bank files."""
+        self.ensure_one()
+        return _join_address_parts([
+            self.private_zip, self.private_state_id.name, self.private_city,
+            self.private_street, self.private_street2])
+
+    def _get_ua_registration_address_display(self):
+        """One-line registration address, for printed forms and bank files.
+
+        Falls back to the private address when the flag is set, so records that
+        predate the sync (or were written straight to SQL) still print.
+        """
+        self.ensure_one()
+        if self.registration_same_as_actual:
+            return self._get_ua_actual_address_display()
+        return _join_address_parts([
+            self.registration_zip, self.registration_region_id.name,
+            self.registration_city, self.registration_street,
+            self.registration_street2])
 
     @api.constrains('rnokpp')
     def _check_rnokpp(self):
