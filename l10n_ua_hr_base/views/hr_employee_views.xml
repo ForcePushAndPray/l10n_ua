@@ -33,8 +33,22 @@
                 <attribute name="invisible">1</attribute>
             </xpath>
 
+            <xpath expr="//field[@name='private_street']/ancestor::group[1]" position="after">
+                <group string="Адреса реєстрації">
+                    <field name="registration_same_as_actual"/>
+                    <label for="registration_street" string="Registration Address" invisible="registration_same_as_actual"/>
+                    <div class="o_address_format" invisible="registration_same_as_actual">
+                        <field name="registration_street" placeholder="Street..." class="o_address_street"/>
+                        <field name="registration_street2" placeholder="Street 2..." class="o_address_street"/>
+                        <field name="registration_city" placeholder="City" class="o_address_city"/>
+                        <field name="registration_region_id" class="o_address_state" placeholder="Region" options='{"no_open": True, "no_create": True}'/>
+                        <field name="registration_zip" placeholder="ZIP" class="o_address_zip"/>
+                    </div>
+                </group>
+            </xpath>
+
             <xpath expr="//notebook" position="inside">
-                <!-- UA Personal: Documents, Addresses, Education, Military, Benefits, Family -->
+                <!-- UA Personal: Documents, Education, Military, Benefits, Family -->
                 <page string="UA: Персональне" name="ua_personal" groups="hr.group_hr_user">
                     <group>
                         <group string="Документи">
@@ -46,14 +60,6 @@
                             <field name="passport_issued_date"/>
                             <field name="passport_expiration_date" string="Дійсний до" invisible="document_type != 'id_card'"/>
                             <field name="passport_record_number" invisible="document_type != 'id_card'"/>
-                        </group>
-                        <group string="Адреси">
-                            <field name="registration_region_id"/>
-                            <field name="registration_city"/>
-                            <field name="registration_zip"/>
-                            <field name="registration_address"/>
-                            <field name="actual_same_as_registration"/>
-                            <field name="actual_address" invisible="actual_same_as_registration"/>
                         </group>
                     </group>
                     <group>

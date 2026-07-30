@@ -73,6 +73,30 @@ class TestEmployeeTransfer(TransactionCase):
         wizard.action_transfer()
         new_employee = self.source_employee.next_employee_id
 
+    def test_transfer_copies_address_fields(self):
+        """Test that transfer wizard copies private address and registration address fields."""
+        self.source_employee.write({
+            'private_street': 'Хрещатик 1',
+            'private_street2': 'кв. 10',
+            'private_city': 'Київ',
+            'private_zip': '01001',
+            'registration_street': 'Шевченка 10',
+            'registration_street2': 'кв. 5',
+            'registration_city': 'Львів',
+            'registration_zip': '79000',
+            'registration_same_as_actual': False,
+        })
+        wizard = self._make_wizard()
+        wizard.action_transfer()
+        new_employee = self.source_employee.next_employee_id
+
+        self.assertEqual(new_employee.private_street, 'Хрещатик 1')
+        self.assertEqual(new_employee.private_street2, 'кв. 10')
+        self.assertEqual(new_employee.registration_street, 'Шевченка 10')
+        self.assertEqual(new_employee.registration_street2, 'кв. 5')
+        self.assertEqual(new_employee.registration_city, 'Львів')
+        self.assertFalse(new_employee.registration_same_as_actual)
+
         dismissal_orders = self.env['hr.order'].search([
             ('employee_id', '=', self.source_employee.id),
             ('order_type', '=', 'dismissal'),

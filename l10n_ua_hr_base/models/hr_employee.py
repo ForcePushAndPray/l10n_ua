@@ -40,19 +40,21 @@ class HrEmployee(models.Model):
     passport_record_number = fields.Char(string='Record Number', size=14,
                                           help='Unique record number in the register (for ID cards)')
 
-    # === Registration Address ===
-    registration_address = fields.Text(string='Registration Address')
+    # === Registration Address (Прописка) ===
+    registration_same_as_actual = fields.Boolean(
+        string='Same as Actual Residence',
+        help='When checked, registration address fields are automatically copied from native Odoo private_* fields.')
+    actual_same_as_registration = fields.Boolean(
+        related='registration_same_as_actual', readonly=False,
+        string='Same as Registration (legacy alias)')
+
+    registration_street = fields.Char(string='Registration Street')
+    registration_street2 = fields.Char(string='Registration Street 2')
     registration_region_id = fields.Many2one(
         'res.country.state', string='Registration Region',
         domain="[('country_id.code', '=', 'UA')]")
     registration_city = fields.Char(string='Registration City')
     registration_zip = fields.Char(string='Registration ZIP', size=5)
-
-    # === Actual Address ===
-    actual_address = fields.Text(string='Actual Address')
-    actual_same_as_registration = fields.Boolean(
-        string='Same as Registration',
-        help='Actual address is the same as registration address')
 
     # === Education ===
     # Use Odoo core fields: study_school (institution), study_field (specialty), certificate (level)
@@ -416,10 +418,54 @@ class HrEmployee(models.Model):
         period_end = anchor + relativedelta(years=period_index) - relativedelta(days=1)
         return (period_start, period_end, period_index)
 
-    @api.onchange('actual_same_as_registration')
-    def _onchange_actual_same_as_registration(self):
-        if self.actual_same_as_registration:
-            self.actual_address = self.registration_address
+    @api.onchange('registration_same_as_actual', 'private_street', 'private_street2',
+                  'private_city', 'private_zip', 'private_state_id')
+    def _onchange_registration_same_as_actual(self):
+        """When registration_same_as_actual is checked, copy Odoo private_* fields into registration_* fields."""
+        if self.registration_same_as_actual:
+            self.registration_street = self.private_street
+            self.registration_street2 = self.private_street2
+            self.registration_city = self.private_city
+            self.registration_zip = self.private_zip
+            self.registration_region_id = self.private_state_id
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        employees = super().create(vals_list)
+        for employee in employees:
+            if employee.registration_same_as_actual:
+                employee._sync_registration_address_from_private()
+        return employees
+
+    def write(self, vals):
+        res = super().write(vals)
+        address_fields = {'registration_same_as_actual', 'private_street', 'private_street2',
+                          'private_city', 'private_zip', 'private_state_id'}
+        if address_fields.intersection(vals.keys()):
+            for employee in self:
+                if employee.registration_same_as_actual:
+                    employee._sync_registration_address_from_private()
+        return res
+
+    def _sync_registration_address_from_private(self):
+        """Helper to sync registration address fields from private address when flag is True."""
+        for employee in self:
+            vals_to_write = {
+                'registration_street': employee.private_street or False,
+                'registration_street2': employee.private_street2 or False,
+                'registration_city': employee.private_city or False,
+                'registration_zip': employee.private_zip or False,
+                'registration_region_id': employee.private_state_id.id if employee.private_state_id else False,
+            }
+            changes = {}
+            for k, v in vals_to_write.items():
+                current_val = getattr(employee, k)
+                if k == 'registration_region_id':
+                    current_val = current_val.id if current_val else False
+                if current_val != v:
+                    changes[k] = v
+            if changes:
+                super(HrEmployee, employee).write(changes)
 
     @api.constrains('rnokpp')
     def _check_rnokpp(self):

@@ -69,7 +69,7 @@ class HrIfobsEmployeeExport(models.TransientModel):
             'PHONE': getattr(emp, 'private_phone', '') or '',
             'MOBPHONE': phone_mob,
             'JOBPHONE': emp.work_phone or '',
-            'ADRESS': getattr(emp, 'registration_address', '') or '',
+            'ADRESS': ', '.join(filter(None, [getattr(emp, 'registration_street', ''), getattr(emp, 'registration_street2', '')])) or '',
             'TABNOM': '',
             'JOB': emp.job_id.name if emp.job_id else '',
         }

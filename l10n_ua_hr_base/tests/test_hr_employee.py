@@ -209,17 +209,48 @@ class TestHrEmployeeComputedFields(TestHrUaBase):
         employee.invalidate_recordset(['work_experience_company'])
         self.assertAlmostEqual(employee.work_experience_company, 0.5, places=1)
 
-    def test_actual_address_copy(self):
-        """Test that actual_address is copied from registration when flag is set."""
+    def test_registration_address_copy_from_private(self):
+        """Test that registration address is automatically synced from Odoo private_* fields on create."""
         employee = self._create_employee(
-            registration_address='123 Main Street, Kyiv',
+            private_street='123 Main Street',
+            private_street2='Apt 4B',
+            private_city='Kyiv',
+            private_zip='01001',
+            registration_same_as_actual=True,
         )
 
-        # Set flag via onchange simulation
-        employee.actual_same_as_registration = True
-        employee._onchange_actual_same_as_registration()
+        self.assertEqual(employee.registration_street, '123 Main Street')
+        self.assertEqual(employee.registration_street2, 'Apt 4B')
+        self.assertEqual(employee.registration_city, 'Kyiv')
+        self.assertEqual(employee.registration_zip, '01001')
 
-        self.assertEqual(employee.actual_address, '123 Main Street, Kyiv')
+    def test_registration_address_custom_when_flag_false(self):
+        """Test that registration address can be different from private address when flag is false."""
+        employee = self._create_employee(
+            private_street='Khreshchatyk 1',
+            private_city='Kyiv',
+            registration_street='Shevchenka 10',
+            registration_city='Lviv',
+            registration_same_as_actual=False,
+        )
+
+        self.assertEqual(employee.private_city, 'Kyiv')
+        self.assertEqual(employee.registration_city, 'Lviv')
+        self.assertNotEqual(employee.registration_city, employee.private_city)
+
+    def test_registration_address_updates_on_private_change(self):
+        """Test that updating private address via ORM write() automatically updates registration address when flag is true."""
+        employee = self._create_employee(
+            private_street='Old Street 5',
+            private_city='Odesa',
+            registration_same_as_actual=True,
+        )
+        self.assertEqual(employee.registration_city, 'Odesa')
+
+        # Update private city via ORM write (without manually calling onchange)
+        employee.write({'private_city': 'Dnipro', 'private_street2': 'Office 12'})
+        self.assertEqual(employee.registration_city, 'Dnipro')
+        self.assertEqual(employee.registration_street2, 'Office 12')
 
 
 @tagged('post_install', '-at_install')

@@ -93,10 +93,15 @@
             <field name="education_level_id" ref="l10n_ua_hr_base.education_level_master"/>
             <field name="study_school">Київський національний університет</field>
             <field name="study_field">Менеджмент</field>
-            <field name="registration_address">м. Київ, вул. Хрещатик, 1, кв. 10</field>
+            <field name="private_street">вул. Хрещатик, 1</field>
+            <field name="private_street2">кв. 10</field>
+            <field name="private_city">Київ</field>
+            <field name="private_zip">01001</field>
+            <field name="registration_street">вул. Хрещатик, 1</field>
+            <field name="registration_street2">кв. 10</field>
             <field name="registration_city">Київ</field>
             <field name="registration_zip">01001</field>
-            <field name="actual_same_as_registration" eval="True"/>
+            <field name="registration_same_as_actual" eval="True"/>
             <field name="hire_date">2015-01-10</field>
             <field name="military_status">liable</field>
             <field name="military_category">1</field>
@@ -122,10 +127,15 @@
             <field name="education_level_id" ref="l10n_ua_hr_base.education_level_master"/>
             <field name="study_school">Національний університет "Львівська політехніка"</field>
             <field name="study_field">Управління персоналом</field>
-            <field name="registration_address">м. Київ, вул. Велика Васильківська, 25, кв. 5</field>
+            <field name="private_street">вул. Велика Васильківська, 25</field>
+            <field name="private_street2">кв. 5</field>
+            <field name="private_city">Київ</field>
+            <field name="private_zip">01004</field>
+            <field name="registration_street">вул. Велика Васильківська, 25</field>
+            <field name="registration_street2">кв. 5</field>
             <field name="registration_city">Київ</field>
             <field name="registration_zip">01004</field>
-            <field name="actual_same_as_registration" eval="True"/>
+            <field name="registration_same_as_actual" eval="True"/>
             <field name="hire_date">2018-06-01</field>
             <field name="military_status">not_applicable</field>
             <field name="mobile_phone">+380502345678</field>
@@ -148,10 +158,15 @@
             <field name="education_level_id" ref="l10n_ua_hr_base.education_level_master"/>
             <field name="study_school">Київський національний економічний університет</field>
             <field name="study_field">Облік і аудит</field>
-            <field name="registration_address">м. Київ, вул. Саксаганського, 100, кв. 15</field>
+            <field name="private_street">вул. Саксаганського, 100</field>
+            <field name="private_street2">кв. 15</field>
+            <field name="private_city">Київ</field>
+            <field name="private_zip">01033</field>
+            <field name="registration_street">вул. Саксаганського, 100</field>
+            <field name="registration_street2">кв. 15</field>
             <field name="registration_city">Київ</field>
             <field name="registration_zip">01033</field>
-            <field name="actual_same_as_registration" eval="True"/>
+            <field name="registration_same_as_actual" eval="True"/>
             <field name="hire_date">2016-09-01</field>
             <field name="military_status">not_applicable</field>
             <field name="mobile_phone">+380503456789</field>
@@ -174,10 +189,15 @@
             <field name="education_level_id" ref="l10n_ua_hr_base.education_level_bachelor"/>
             <field name="study_school">НТУУ "КПІ"</field>
             <field name="study_field">Комп'ютерні науки</field>
-            <field name="registration_address">м. Київ, пр. Перемоги, 37, кв. 88</field>
+            <field name="private_street">пр. Перемоги, 37</field>
+            <field name="private_street2">кв. 88</field>
+            <field name="private_city">Київ</field>
+            <field name="private_zip">03056</field>
+            <field name="registration_street">пр. Перемоги, 37</field>
+            <field name="registration_street2">кв. 88</field>
             <field name="registration_city">Київ</field>
             <field name="registration_zip">03056</field>
-            <field name="actual_same_as_registration" eval="True"/>
+            <field name="registration_same_as_actual" eval="True"/>
             <field name="hire_date">2020-03-15</field>
             <field name="military_status">liable</field>
             <field name="military_category">1</field>
@@ -206,10 +226,15 @@
             <field name="education_level_id" ref="l10n_ua_hr_base.education_level_master"/>
             <field name="study_school">НТУУ "КПІ"</field>
             <field name="study_field">Програмна інженерія</field>
-            <field name="registration_address">м. Київ, вул. Борщагівська, 150, кв. 42</field>
+            <field name="private_street">вул. Борщагівська, 150</field>
+            <field name="private_street2">кв. 42</field>
+            <field name="private_city">Київ</field>
+            <field name="private_zip">03056</field>
+            <field name="registration_street">вул. Борщагівська, 150</field>
+            <field name="registration_street2">кв. 42</field>
             <field name="registration_city">Київ</field>
             <field name="registration_zip">03056</field>
-            <field name="actual_same_as_registration" eval="True"/>
+            <field name="registration_same_as_actual" eval="True"/>
             <field name="hire_date">2021-08-01</field>
             <field name="military_status">liable</field>
             <field name="military_category">2</field>
@@ -236,10 +261,15 @@
             <field name="education_level_id" ref="l10n_ua_hr_base.education_level_bachelor"/>
             <field name="study_school">Київський національний університет</field>
             <field name="study_field">Психологія</field>
-            <field name="registration_address">м. Київ, вул. Льва Толстого, 5, кв. 20</field>
+            <field name="private_street">вул. Льва Толстого, 5</field>
+            <field name="private_street2">кв. 20</field>
+            <field name="private_city">Київ</field>
+            <field name="private_zip">01004</field>
+            <field name="registration_street">вул. Льва Толстого, 5</field>
+            <field name="registration_street2">кв. 20</field>
             <field name="registration_city">Київ</field>
             <field name="registration_zip">01004</field>
-            <field name="actual_same_as_registration" eval="True"/>
+            <field name="registration_same_as_actual" eval="True"/>
             <field name="hire_date">2022-01-10</field>
             <field name="military_status">not_applicable</field>
             <field name="disability_group">3</field>
