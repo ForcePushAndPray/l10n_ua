@@ -15,12 +15,10 @@ class TestHrLeaveOrderSync(common.TransactionCase):
             'name': 'Test Employee',
         })
 
-        # Create a leave type that issues vacation orders
         cls.leave_type = cls.env['hr.leave.type'].create({
             'name': 'Annual Basic Leave',
             'time_type': 'leave',
             'requires_allocation': 'yes',
-            'create_order': True,
             'is_paid': True,
         })
 
@@ -59,29 +57,113 @@ class TestHrLeaveOrderSync(common.TransactionCase):
             'subject': ctx['default_subject'],
         })
 
-    def test_bidirectional_create_from_order(self):
-        """Creating an order still creates exactly 1 leave and no duplicate
-        order (the order -> leave direction is unchanged)."""
-        order = self.env['hr.order'].create({
+    def _make_vacation_order(self, day_from, day_to, **extra):
+        vals = {
             'order_type': 'vacation',
             'employee_id': self.employee.id,
             'holiday_status_id': self.leave_type.id,
-            'vacation_date_from': date(2027, 8, 1),
-            'vacation_date_to': date(2027, 8, 5),
-            'date': date(2027, 8, 1),
+            'vacation_date_from': day_from,
+            'vacation_date_to': day_to,
+            'date': day_from,
             'subject': 'Vacation',
+        }
+        vals.update(extra)
+        return self.env['hr.order'].create(vals)
+
+    def _create_leave_via_button(self, order):
+        """Simulate the "New Time Off" button: it returns an action opening a
+        pre-filled leave form; here we replay the form save."""
+        ctx = order.action_create_leave()['context']
+        return self.env['hr.leave'].create({
+            'employee_id': ctx['default_employee_id'],
+            'holiday_status_id': ctx['default_holiday_status_id'],
+            'request_date_from': ctx['default_request_date_from'],
+            'request_date_to': ctx['default_request_date_to'],
+            'order_id': ctx['default_order_id'],
         })
 
-        orders_count = self.env['hr.order'].search_count(
-            [('employee_id', '=', self.employee.id)])
-        self.assertEqual(orders_count, 1, "Order creation generated a duplicate.")
+    def test_no_leave_created_on_order_save(self):
+        """Saving a vacation order must NOT auto-create the time off."""
+        order = self._make_vacation_order(date(2027, 8, 1), date(2027, 8, 5))
 
-        leaves = self.env['hr.leave'].search(
-            [('employee_id', '=', self.employee.id)])
-        self.assertEqual(len(leaves), 1, "Exactly one leave must be created.")
+        self.assertFalse(order.leave_id,
+                         "Saving an order should not create a leave.")
+        self.assertEqual(self.env['hr.leave'].search_count(
+            [('employee_id', '=', self.employee.id)]), 0)
+        self.assertTrue(order.can_create_leave,
+                        "The 'New Time Off' button should be available.")
 
-        self.assertEqual(order.leave_id.id, leaves.id)
-        self.assertEqual(leaves.order_id.id, order.id)
+    def test_new_time_off_button_prefills_and_links(self):
+        """The button opens a leave form pre-filled from the order; saving it
+        links both sides."""
+        order = self._make_vacation_order(date(2027, 8, 1), date(2027, 8, 5))
+        action = order.action_create_leave()
+
+        self.assertEqual(action['res_model'], 'hr.leave')
+        self.assertEqual(action['view_mode'], 'form')
+        ctx = action['context']
+        self.assertEqual(ctx['default_employee_id'], self.employee.id)
+        self.assertEqual(ctx['default_holiday_status_id'], self.leave_type.id)
+        self.assertEqual(ctx['default_request_date_from'], date(2027, 8, 1))
+        self.assertEqual(ctx['default_request_date_to'], date(2027, 8, 5))
+        self.assertEqual(ctx['default_order_id'], order.id)
+        # Nothing exists until the user saves.
+        self.assertFalse(order.leave_id)
+
+        leave = self._create_leave_via_button(order)
+
+        self.assertEqual(leave.order_id, order)
+        self.assertEqual(order.leave_id, leave, "The order must point back.")
+        self.assertFalse(order.can_create_leave,
+                         "Button must hide once a leave exists.")
+        self.assertEqual(self.env['hr.leave'].search_count(
+            [('employee_id', '=', self.employee.id)]), 1,
+            "No duplicate leave must be created.")
+
+    def test_leave_keeps_the_order_when_the_form_drops_it(self):
+        """The link survives even if the form loses order_id — navigating away
+        from the unsaved leave and back would otherwise save it unlinked and
+        let the order offer a second one."""
+        order = self._make_vacation_order(date(2027, 8, 20), date(2027, 8, 25))
+        ctx = order.action_create_leave()['context']
+
+        # Save WITHOUT order_id, as a form that lost the default would.
+        leave = self.env['hr.leave'].with_context(**ctx).create({
+            'employee_id': ctx['default_employee_id'],
+            'holiday_status_id': ctx['default_holiday_status_id'],
+            'request_date_from': ctx['default_request_date_from'],
+            'request_date_to': ctx['default_request_date_to'],
+        })
+
+        self.assertEqual(leave.order_id, order,
+                         'The context must still link the leave to its order.')
+        self.assertEqual(order.leave_id, leave)
+        self.assertFalse(order.can_create_leave)
+
+    def test_order_keeps_the_leave_when_the_form_drops_it(self):
+        """Same protection in the other direction."""
+        leave = self._make_leave(date(2027, 8, 20), date(2027, 8, 25))
+        ctx = leave.action_create_order()['context']
+
+        order = self.env['hr.order'].with_context(**ctx).create({
+            'order_type': ctx['default_order_type'],
+            'employee_id': ctx['default_employee_id'],
+            'vacation_date_from': ctx['default_vacation_date_from'],
+            'vacation_date_to': ctx['default_vacation_date_to'],
+            'subject': ctx['default_subject'],
+        })
+
+        self.assertEqual(order.leave_id, leave,
+                         'The context must still link the order to its leave.')
+        self.assertFalse(leave.can_create_order)
+
+    def test_new_time_off_blocked_when_leave_exists(self):
+        """Calling the button twice must not start a second leave."""
+        from odoo.exceptions import UserError
+        order = self._make_vacation_order(date(2027, 8, 10), date(2027, 8, 15))
+        self._create_leave_via_button(order)
+        with self.assertRaises(UserError):
+            order.action_create_leave()
 
     def test_no_order_created_on_save(self):
         """Saving a leave must NOT auto-create an order anymore."""
@@ -215,17 +297,8 @@ class TestHrLeaveOrderSync(common.TransactionCase):
         """Confirming a vacation order does not move the leave: states are
         changed only through their own buttons. The leave can still be
         approved afterwards, when the order was issued first."""
-        order = self.env['hr.order'].create({
-            'order_type': 'vacation',
-            'employee_id': self.employee.id,
-            'holiday_status_id': self.leave_type.id,
-            'vacation_date_from': date(2028, 3, 1),
-            'vacation_date_to': date(2028, 3, 5),
-            'date': date(2028, 3, 1),
-            'subject': 'Vacation',
-        })
-        leave = order.leave_id
-        self.assertTrue(leave, "Order must auto-create its leave.")
+        order = self._make_vacation_order(date(2028, 3, 1), date(2028, 3, 5))
+        leave = self._create_leave_via_button(order)
         state_before = leave.state
 
         order.action_confirm()
@@ -275,24 +348,15 @@ class TestHrLeaveOrderSync(common.TransactionCase):
         })
 
     def test_vacation_confirm_requires_hr_officer(self):
-        """Confirming a vacation order is what grants the leave, so it needs
-        Ukraine HR Officer rights — a plain HR user cannot do it."""
+        """Issuing a vacation order needs Ukraine HR Officer rights — a plain
+        HR user cannot confirm one."""
         from odoo.exceptions import UserError
-        order = self.env['hr.order'].create({
-            'order_type': 'vacation',
-            'employee_id': self.employee.id,
-            'holiday_status_id': self.leave_type.id,
-            'vacation_date_from': date(2028, 3, 1),
-            'vacation_date_to': date(2028, 3, 5),
-            'date': date(2028, 3, 1),
-            'subject': 'Vacation',
-        })
+        order = self._make_vacation_order(date(2028, 3, 1), date(2028, 3, 5))
         clerk = self._user_with(['base.group_user', 'hr.group_hr_user'],
                                 'plain_hr_user')
         with self.assertRaises(UserError):
             order.with_user(clerk).action_confirm()
         self.assertEqual(order.state, 'draft')
-        self.assertNotEqual(order.leave_id.state, 'validate')
 
     def test_vacation_confirm_by_officer_is_audited(self):
         """An HR officer may confirm; the order records who confirmed it and
@@ -341,6 +405,7 @@ class TestHrLeaveOrderSync(common.TransactionCase):
 
         leave.action_refuse()
 
+        self.assertTrue(order.exists(), "The order must not be deleted.")
         self.assertEqual(order.state, 'draft',
                          "Refusing the leave must not change the order state.")
         self.assertEqual(leave.order_id, order, "The link must survive.")

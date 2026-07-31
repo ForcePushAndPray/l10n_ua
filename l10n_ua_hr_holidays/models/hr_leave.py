@@ -52,15 +52,8 @@ class HrLeave(models.Model):
     can_create_order = fields.Boolean(
         string='Can Create Order',
         compute='_compute_can_create_order',
-        help='Technical: true when the "Create Order" button should be shown — '
-             'the leave type issues vacation orders and this leave has none '
-             'yet.'
-    )
-    leave_type_create_order = fields.Boolean(
-        string='Type Issues Orders',
-        related='holiday_status_id.create_order',
-        help='Technical mirror of the leave type\'s "Create Order" flag, used '
-             'to show/hide the order buttons on the form.'
+        help='Technical: true when the "New Order" button should be shown — '
+             'this leave has an employee and no order linked yet.'
     )
 
     @api.depends('order_id')
@@ -98,12 +91,11 @@ class HrLeave(models.Model):
                 else False)
 
 
-    @api.depends('order_id', 'employee_id', 'leave_type_create_order')
+    @api.depends('order_id', 'employee_id')
     def _compute_can_create_order(self):
         for leave in self:
             leave.can_create_order = bool(
-                not leave.order_id and leave.employee_id
-                and leave.leave_type_create_order)
+                not leave.order_id and leave.employee_id)
 
     remaining_days_before = fields.Float(
         string='Balance Before',
@@ -378,9 +370,6 @@ class HrLeave(models.Model):
         self.ensure_one()
         if self.order_id:
             raise UserError(_('This leave already has a linked order.'))
-        if not self.holiday_status_id.create_order:
-            raise UserError(_(
-                'The selected leave type does not issue vacation orders.'))
         return {
             'type': 'ir.actions.act_window',
             'name': _('Create Vacation Order'),
@@ -450,6 +439,14 @@ class HrLeave(models.Model):
                 ], limit=1)
                 if default_lt:
                     vals['holiday_status_id'] = default_lt.id
+        # A leave opened from an order's "New Time Off" button carries the
+        # order in the context. Re-apply it here as well: navigating away from
+        # the unsaved form and back can drop the field, which would silently
+        # save an unlinked leave and let the order offer to create a second one.
+        order_from_ctx = self.env.context.get('default_order_id')
+        if order_from_ctx:
+            for vals in vals_list:
+                vals.setdefault('order_id', order_from_ctx)
 
         # Default the accounting period to the one the leave's FIRST DAY falls
         # into (backfilling every period for the type up to today, and up to
@@ -474,12 +471,17 @@ class HrLeave(models.Model):
                 if period:
                     vals['vacation_balance_id'] = period.id
 
-        # No order is auto-created on save. A vacation order is issued only via
-        # the explicit "Create Order" button (draft, even before approval) or
-        # at validation — see action_create_order / _action_validate. The
-        # reverse direction (an hr.order creating its leave) is unchanged and
-        # still runs from hr.order.create with _creating_leave_from_order.
+        # No order is auto-created on save: one is issued only through the
+        # "New Order" button, which opens a pre-filled order form.
         leaves = super().create(vals_list)
+
+        # A leave opened from an order's "New Time Off" button arrives with
+        # order_id already set; complete the pair so the order points back.
+        for leave in leaves:
+            if leave.order_id and not leave.order_id.leave_id:
+                leave.order_id.with_context(
+                    _sync_order_leave=True, leave_skip_state_check=True
+                ).write({'leave_id': leave.id})
 
         # Per-leave Balance Before/After for subsequent leaves in same year.
         leaves._recompute_subsequent_leaves()
@@ -523,11 +525,10 @@ class HrLeave(models.Model):
              'employee_id', 'holiday_status_id'} & vals.keys()
                 and 'vacation_balance_id' not in vals):
             self._ensure_vacation_period()
-        # Keep an already-linked order's dates in step with the leave (so edits
-        # to a draft order's leave flow through). We never auto-create an order
-        # here — issuing one is explicit (button) or happens at validation.
+        # Keep an already-linked order's dates in step with the leave, so edits
+        # to the leave flow through to its draft order. Only dates travel —
+        # states never do.
         if (not self.env.context.get('_sync_order_leave')
-                and not self.env.context.get('_creating_leave_from_order')
                 and {'date_from', 'date_to', 'request_date_from',
                      'request_date_to'} & vals.keys()):
             for leave in self.filtered(lambda l: l.order_id):

@@ -1144,3 +1144,71 @@ msgstr ""
 "Кількість відпусток, прив'язаних до ЦЬОГО наказу (0 або 1 — наказ "
 "та його відпустка посилаються одне на одного). Керує смарт-кнопкою "
 "«Відпустки» на наказах про відпустку."
+
+#. module: l10n_ua_hr_documents
+#: model:ir.model.fields,field_description:l10n_ua_hr_documents.field_hr_order__confirmed_by_id
+msgid "Confirmed By"
+msgstr "Підтвердив"
+
+#. module: l10n_ua_hr_documents
+#: model:ir.model.fields,help:l10n_ua_hr_documents.field_hr_order__confirmed_by_id
+msgid ""
+"User who confirmed this order in the system — the HR officer "
+"recording that the printed order was signed. Kept as the audit "
+"trail of the act the order performs (e.g. granting a leave)."
+msgstr ""
+"Користувач, який підтвердив цей наказ у системі, — кадровик, що "
+"фіксує підписання друкованого наказу. Зберігається як аудиторський "
+"слід дії, яку виконує наказ (напр., надання відпустки)."
+
+#. module: l10n_ua_hr_documents
+#: model:ir.model.fields,field_description:l10n_ua_hr_documents.field_hr_order__confirmed_date
+msgid "Confirmed On"
+msgstr "Дата підтвердження"
+
+#. module: l10n_ua_hr_documents
+#: model:ir.model.fields,help:l10n_ua_hr_documents.field_hr_order__confirmed_date
+msgid "When the order was confirmed in the system."
+msgstr "Коли наказ було підтверджено в системі."
+
+#. module: l10n_ua_hr_documents
+#: code:addons/l10n_ua_hr_documents/models/hr_order.py:0
+msgid ""
+"Confirming a vacation order grants the leave, which requires the "
+"\"Ukraine HR: Officer\" access rights. Ask an HR officer to confirm "
+"this order."
+msgstr ""
+"Підтвердження наказу на відпустку надає відпустку, тому потребує "
+"прав «Ukraine HR: Officer». Попросіть кадровика підтвердити цей "
+"наказ."
+#. module: l10n_ua_hr_documents
+#: model:ir.model.fields,field_description:l10n_ua_hr_documents.field_hr_order__can_create_leave
+msgid "Can Create Time Off"
+msgstr "Можна створити відпустку"
+
+#. module: l10n_ua_hr_documents
+#: model:ir.model.fields,help:l10n_ua_hr_documents.field_hr_order__can_create_leave
+msgid ""
+"Technical: true when the \"New Time Off\" button should be shown — a "
+"vacation order with all its details filled in and no time off "
+"linked yet."
+msgstr ""
+"Технічне: істина, коли слід показати кнопку «Нова відпустка» — "
+"наказ на відпустку із заповненими даними, до якого ще не прив'язано "
+"відпустку."
+
+#. module: l10n_ua_hr_documents
+#: code:addons/l10n_ua_hr_documents/models/hr_order.py:0
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_documents.view_hr_order_form
+msgid "New Time Off"
+msgstr "Нова відпустка"
+
+#. module: l10n_ua_hr_documents
+#: code:addons/l10n_ua_hr_documents/models/hr_order.py:0
+msgid "This order already has a linked time off."
+msgstr "Цей наказ уже має прив'язану відпустку."
+
+#. module: l10n_ua_hr_documents
+#: code:addons/l10n_ua_hr_documents/models/hr_order.py:0
+msgid "Only a vacation order records time off."
+msgstr "Лише наказ на відпустку оформлює відпустку."

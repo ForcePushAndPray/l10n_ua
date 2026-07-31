@@ -20,6 +20,22 @@
                         invisible="not can_create_order or not id"/>
             </xpath>
 
+            <!-- Once an order is linked, the data shared with it (leave type
+                 and dates; the employee comes from the order too) must stay
+                 identical on both documents, so it is locked here. The
+                 description and the attachments stay editable. -->
+            <xpath expr="//field[@name='holiday_status_id']" position="attributes">
+                <attribute name="readonly">state in ['cancel', 'refuse', 'validate', 'validate1'] or order_id</attribute>
+                <!-- no_open: opening the leave type from here navigates away
+                     and comes back with a fresh, unsaved record — which loses
+                     both the readonly state and, worse, the link to the order
+                     the form was opened from. -->
+                <attribute name="options">{'no_create': True, 'no_open': True, 'request_type': 'leave'}</attribute>
+            </xpath>
+            <xpath expr="//field[@name='request_date_from']" position="attributes">
+                <attribute name="readonly">state != 'confirm' or order_id</attribute>
+            </xpath>
+
             <!-- A confirmed order is the legal document obliging the employee
                  to take the leave, so the leave can no longer be undone.
                  Approving it stays possible: the order may have been issued
@@ -36,12 +52,16 @@
             <xpath expr="//field[@name='dashboard_warning_message']"
                    position="before">
                 <field name="can_create_order" invisible="1"/>
-                <field name="leave_type_create_order" invisible="1"/>
                 <field name="has_confirmed_order" invisible="1"/>
+                <!-- Not shown to the user (the order is reached through the
+                     Orders smart button), but kept in the view so a leave
+                     opened from an order's "New Time Off" button carries
+                     default_order_id through to the save. -->
+                <field name="order_id" invisible="1"/>
                 <div class="oe_button_box" name="button_box">
                     <button name="action_view_orders" type="object"
                             class="oe_stat_button" icon="fa-file-text-o"
-                            invisible="not leave_type_create_order or order_count == 0">
+                            invisible="order_count == 0">
                         <field name="order_count" widget="statinfo"/>
                     </button>
                 </div>
@@ -67,8 +87,11 @@
                         <!-- HR picks the accounting period. On leave-type
                              selection all periods up to today are backfilled
                              and the one containing today is preselected. -->
+                        <!-- no_open for the same reason as the leave type:
+                             navigating away from an unsaved leave loses the
+                             order it was opened from. -->
                         <field name="vacation_balance_id"
-                               options="{'no_create': True}"/>
+                               options="{'no_create': True, 'no_open': True}"/>
                     </group>
                     <group>
                         <field name="average_daily_salary"/>
@@ -82,6 +105,35 @@
                          button; it is not shown or picked as a field here, so
                          it cannot be re-pointed at an unrelated order. -->
                 </group>
+            </xpath>
+        </field>
+    </record>
+
+        <!-- Employee, company and department are NOT in the base leave form: the
+         manager form adds them, so the locking and the no_open above never
+         reached them. Same treatment here — navigating to those records from
+         an unsaved leave loses the order it was opened from, and the three
+         are part of the data the leave shares with its order. -->
+    <record id="hr_leave_view_form_manager_ua" model="ir.ui.view">
+        <field name="name">hr.leave.view.form.manager.ua</field>
+        <field name="model">hr.leave</field>
+        <field name="inherit_id" ref="hr_holidays.hr_leave_view_form_manager"/>
+        <field name="arch" type="xml">
+            <!-- The base form also carries an invisible employee_id, so match
+                 the manager one by its widget rather than by name alone. -->
+            <xpath expr="//field[@name='employee_id'][@widget='many2one_avatar_employee']"
+                   position="attributes">
+                <attribute name="options">{'no_open': True}</attribute>
+                <attribute name="readonly">state in ['cancel', 'refuse', 'validate', 'validate1'] or order_id</attribute>
+            </xpath>
+            <xpath expr="//field[@name='company_id']" position="attributes">
+                <attribute name="options">{'no_open': True}</attribute>
+                <attribute name="readonly">bool(order_id)</attribute>
+            </xpath>
+            <!-- department_id is already readonly in core; a readonly m2o is
+                 still a link, so it only needs no_open. -->
+            <xpath expr="//field[@name='department_id']" position="attributes">
+                <attribute name="options">{'no_open': True}</attribute>
             </xpath>
         </field>
     </record>

@@ -130,6 +130,48 @@ class HrOrder(models.Model):
              'Off" smart button on vacation orders.'
     )
 
+    can_create_leave = fields.Boolean(
+        string='Can Create Time Off',
+        compute='_compute_can_create_leave',
+        help='Technical: true when the "New Time Off" button should be shown — '
+             'a vacation order with all its details filled in and no time off '
+             'linked yet.'
+    )
+
+    @api.depends('order_type', 'leave_id', 'employee_id', 'holiday_status_id',
+                 'vacation_date_from', 'vacation_date_to')
+    def _compute_can_create_leave(self):
+        for order in self:
+            order.can_create_leave = bool(
+                order.order_type == 'vacation' and not order.leave_id
+                and order.employee_id and order.holiday_status_id
+                and order.vacation_date_from and order.vacation_date_to)
+
+    def action_create_leave(self):
+        """"New Time Off" button. Opens a leave form pre-filled from this
+        order so the user can review and save it — the same explicit flow the
+        leave form uses to issue an order. Nothing is created until they save;
+        default_order_id links the two sides back together."""
+        self.ensure_one()
+        if self.leave_id:
+            raise UserError(_('This order already has a linked time off.'))
+        if self.order_type != 'vacation':
+            raise UserError(_('Only a vacation order records time off.'))
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('New Time Off'),
+            'res_model': 'hr.leave',
+            'view_mode': 'form',
+            'target': 'current',
+            'context': {
+                'default_employee_id': self.employee_id.id,
+                'default_holiday_status_id': self.holiday_status_id.id,
+                'default_request_date_from': self.vacation_date_from,
+                'default_request_date_to': self.vacation_date_to,
+                'default_order_id': self.id,
+            },
+        }
+
     @api.depends('leave_id')
     def _compute_leave_count(self):
         # Elevated: HR officers can read their companies' time off, but a
@@ -263,27 +305,18 @@ class HrOrder(models.Model):
                 sequence_code = f'hr.order.{order_type}'
                 vals['name'] = self.env['ir.sequence'].next_by_code(sequence_code) or 'New'
 
-        # Collect indices of vacation orders that need a leave auto-created
-        leave_vals_list = []
-        leave_indices = []
-        for idx, vals in enumerate(vals_list):
-            if (vals.get('order_type') == 'vacation'
-                    and not vals.get('leave_id')
-                    and not self.env.context.get('_creating_order_from_leave')):
-                leave_vals_list.append({
-                    'employee_id': vals.get('employee_id'),
-                    'holiday_status_id': vals.get('holiday_status_id'),
-                    'request_date_from': vals.get('vacation_date_from'),
-                    'request_date_to': vals.get('vacation_date_to'),
-                })
-                leave_indices.append(idx)
+        # No time off is auto-created for a vacation order. It is created only
+        # through the "New Time Off" button, which opens a leave form
+        # pre-filled from the order for the user to review and save.
 
-        if leave_vals_list:
-            leaves = self.env['hr.leave'].with_context(
-                _creating_leave_from_order=True
-            ).create(leave_vals_list)
-            for idx, leave in zip(leave_indices, leaves):
-                vals_list[idx]['leave_id'] = leave.id
+        # An order opened from a leave's "New Order" button carries the leave
+        # in the context. Re-apply it: navigating away from the unsaved form
+        # and back can drop the field, which would save an unlinked order and
+        # let the leave offer to create a second one.
+        leave_from_ctx = self.env.context.get('default_leave_id')
+        if leave_from_ctx:
+            for vals in vals_list:
+                vals.setdefault('leave_id', leave_from_ctx)
 
         # Add _sync_order_leave context to prevent duplicate orders on inverse
         # related fields write. leave_skip_state_check lets the order write to

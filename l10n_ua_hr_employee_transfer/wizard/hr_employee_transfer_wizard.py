@@ -95,7 +95,6 @@ class HrEmployeeTransferWizard(models.TransientModel):
         help='Зміни в КЗпП 2022 року: накопичений залишок при переведенні згоряє. '
              'За згодою сторін може переноситися — оберіть "Перенести".',
     )
-
     vacation_period_mode = fields.Selection(
         [
             ('keep', 'Keep Work Year (preserve hire_date)'),
@@ -149,7 +148,6 @@ class HrEmployeeTransferWizard(models.TransientModel):
                 vals[fname] = value.id if value else False
             else:
                 vals[fname] = value
-        vals['hire_date'] = self.hire_date
         # "keep": preserve the original hire date so the annual (work-year)
         # vacation seniority continues; "reset": start the work year from the
         # transfer date. The contract version start stays the transfer date

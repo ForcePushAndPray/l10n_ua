@@ -1064,17 +1064,6 @@ msgid "Vacation Calendar"
 msgstr "Календар відпусток"
 
 #. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__create_order
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_leave_view_form_ua
-msgid "Create Order"
-msgstr "Створювати наказ"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave_type__create_order
-msgid "Automatically create a vacation order (form П-3) when a leave of this type is created"
-msgstr "Автоматично створювати наказ про відпустку (форма П-3) при створенні відпустки цього типу"
-
-#. module: l10n_ua_hr_holidays
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_form
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_tree
 msgid "Recalculate"
@@ -1543,25 +1532,11 @@ msgstr "Можна створити наказ"
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave__can_create_order
 msgid ""
-"Technical: true when the \"Create Order\" button should be shown — "
-"the leave type issues vacation orders and this leave has none yet."
+"Technical: true when the \"New Order\" button should be shown — this "
+"leave has an employee and no order linked yet."
 msgstr ""
-"Технічне: істина, коли слід показати кнопку «Створити наказ» — тип "
-"відпустки видає накази, а ця відпустка ще не має наказу."
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__leave_type_create_order
-msgid "Type Issues Orders"
-msgstr "Тип видає накази"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave__leave_type_create_order
-msgid ""
-"Technical mirror of the leave type's \"Create Order\" flag, used to "
-"show/hide the order buttons on the form."
-msgstr ""
-"Технічне дзеркало прапорця «Створювати наказ» типу відпустки; "
-"використовується для показу/приховування кнопок наказу на формі."
+"Технічне: істина, коли слід показати кнопку «Новий наказ» — у цієї "
+"відпустки є співробітник і ще немає прив'язаного наказу."
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave__vacation_balance_id
@@ -1588,11 +1563,6 @@ msgstr "Накази на відпустку"
 #: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
 msgid "This leave already has a linked order."
 msgstr "Ця відпустка вже має прив'язаний наказ."
-
-#. module: l10n_ua_hr_holidays
-#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
-msgid "The selected leave type does not issue vacation orders."
-msgstr "Обраний тип відпустки не передбачає видачі наказів."
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__leave_id
@@ -1635,3 +1605,43 @@ msgid ""
 msgstr ""
 "Звіт показує для кожного працівника й типу відпустки той період, у "
 "який потрапляє ця дата."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__has_confirmed_order
+msgid "Covered by a Confirmed Order"
+msgstr "Покрито підтвердженим наказом"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave__has_confirmed_order
+msgid ""
+"Technical: true when a confirmed vacation order covers this leave. "
+"The order obliges the employee to take it, so the leave can no "
+"longer be refused or sent back to approval."
+msgstr ""
+"Технічне: істина, коли цю відпустку покриває підтверджений наказ. "
+"Наказ зобов'язує працівника її взяти, тож відпустку більше не можна "
+"відхилити чи повернути на затвердження."
+
+#. module: l10n_ua_hr_holidays
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid "refused"
+msgstr "відхилити"
+
+#. module: l10n_ua_hr_holidays
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid "sent back to approval"
+msgstr "повернути на затвердження"
+
+#. module: l10n_ua_hr_holidays
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid ""
+"Leave of %(employee)s is covered by confirmed vacation order "
+"%(order)s, so it cannot be %(action)s. Cancel the order first."
+msgstr ""
+"Відпустку %(employee)s покриває підтверджений наказ %(order)s, тому "
+"її не можна %(action)s. Спершу скасуйте наказ."
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_leave_view_form_ua
+msgid "New Order"
+msgstr "Новий наказ"
