@@ -46,6 +46,10 @@
                             <field name="order_type"/>
                             <field name="date"/>
                             <field name="subject"/>
+                            <!-- Audit trail: who recorded the signed order in
+                                 the system, and when. -->
+                            <field name="confirmed_by_id" invisible="state == 'draft'"/>
+                            <field name="confirmed_date" invisible="state == 'draft'"/>
                         </group>
                         <group>
                             <field name="company_id" groups="base.group_multi_company" options="{'no_create': True}"/>

@@ -82,6 +82,22 @@ class HrLeave(models.Model):
                 [('leave_id', '=', origin_id)])
         return orders
 
+    has_confirmed_order = fields.Boolean(
+        string='Covered by a Confirmed Order',
+        compute='_compute_has_confirmed_order',
+        help='Technical: true when a confirmed vacation order covers this '
+             'leave. The order obliges the employee to take it, so the leave '
+             'can no longer be refused or sent back to approval.'
+    )
+
+    @api.depends('order_id', 'order_id.state')
+    def _compute_has_confirmed_order(self):
+        for leave in self:
+            leave.has_confirmed_order = (
+                leave.order_id.state == 'confirmed' if leave.order_id
+                else False)
+
+
     @api.depends('order_id', 'employee_id', 'leave_type_create_order')
     def _compute_can_create_order(self):
         for leave in self:
@@ -352,46 +368,6 @@ class HrLeave(models.Model):
                     hire=hire.strftime('%d.%m.%Y'),
                 ))
 
-    @api.onchange('order_id')
-    def _onchange_order_id(self):
-        if self.order_id:
-            self.order_number = self.order_id.name
-            self.order_date = self.order_id.date
-
-    def action_view_order(self):
-        self.ensure_one()
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'hr.order',
-            'res_id': self.order_id.id,
-            'view_mode': 'form',
-            'target': 'current',
-        }
-
-    def _create_vacation_order(self):
-        """Create a *draft* vacation order for this leave and link the two
-        sides together. Shared by the manual "Create Order" button (HR may
-        issue a draft order before the leave is approved) and by validation
-        when no order exists yet. Never creates a second order for a leave that
-        already has one."""
-        self.ensure_one()
-        if self.order_id:
-            return self.order_id
-        order = self.env['hr.order'].with_context(
-            _creating_order_from_leave=True
-        ).create({
-            'order_type': 'vacation',
-            'employee_id': self.employee_id.id,
-            'department_id': self.employee_id.department_id.id,
-            'job_id': self.employee_id.job_id.id,
-            'vacation_date_from': self.request_date_from,
-            'vacation_date_to': self.request_date_to,
-            'subject': 'Про надання відпустки',
-        })
-        self.with_context(_sync_order_leave=True).write({'order_id': order.id})
-        order.with_context(_sync_order_leave=True).write({'leave_id': self.id})
-        return order
-
     def action_create_order(self):
         """Manual "Create Order" button. Opens a new vacation order form with
         every field pre-filled from the leave, so the user can review it and
@@ -577,51 +553,36 @@ class HrLeave(models.Model):
         # freely writable. Leaves that still cannot resolve a period are left
         # untouched — the balance's date-based fallback picks them up.
         self._ensure_vacation_period()
-        res = super()._action_validate(*args, **kwargs)
-        # The order is issued at approval time. Create it now for order-issuing
-        # leave types that have none yet, then confirm the (draft) order.
-        for leave in self.filtered(lambda l: l.holiday_status_id.create_order):
-            order = leave.order_id or leave._create_vacation_order()
-            if order and order.state == 'draft':
-                # _order_confirm_skip_leave stops the order, in turn, from
-                # re-approving this very leave (which is already validating).
-                order.with_context(
-                    _sync_order_leave=True, _order_confirm_skip_leave=True
-                ).action_confirm()
-        return res
+        # Nothing is done to the order from here: orders are created and
+        # confirmed only through their own buttons. Approving a leave whose
+        # order is already confirmed stays allowed on purpose — the order may
+        # have been issued first and the leave confirmed afterwards.
+        return super()._action_validate(*args, **kwargs)
 
-    def action_back_to_approval(self, *args, **kwargs):
-        res = super().action_back_to_approval(*args, **kwargs)
-        # Returning a leave to approval reverts its confirmed order to draft,
-        # so the order tracks a leave that is no longer approved.
-        for leave in self.filtered(
-                lambda l: l.order_id and l.order_id.state == 'confirmed'):
-            leave.order_id.with_context(_sync_order_leave=True).action_draft()
-        return res
+    def _check_order_allows_cancelling(self, action):
+        """Block undoing a leave that a confirmed order already covers.
+
+        The order is the legal document that obliges the employee to take the
+        leave, so once it is confirmed the leave cannot be refused or sent back
+        to approval — the order would have to be cancelled first."""
+        blocked = self.filtered(
+            lambda l: l.order_id and l.order_id.state == 'confirmed')
+        if blocked:
+            raise UserError(_(
+                'Leave of %(employee)s is covered by confirmed vacation order '
+                '%(order)s, so it cannot be %(action)s. Cancel the order '
+                'first.',
+                employee=blocked[0].employee_id.name,
+                order=blocked[0].order_id.name or '',
+                action=action))
 
     def action_refuse(self, *args, **kwargs):
-        res = super().action_refuse(*args, **kwargs)
-        for leave in self.filtered(lambda l: l.order_id and l.order_id.state != 'cancelled'):
-            leave.order_id.with_context(_sync_order_leave=True).write({'state': 'cancelled'})
-        return res
+        self._check_order_allows_cancelling(_('refused'))
+        return super().action_refuse(*args, **kwargs)
 
-    def _approve_from_order(self):
-        """Drive the leave to its fully-approved state to mirror a confirmed
-        vacation order (the order -> leave direction of the state sync). Runs
-        the standard approval chain, so single- and double-validation leave
-        types both end up validated. Leaves already validated, refused or
-        cancelled are left untouched. Called by hr.order.action_confirm with
-        the _sync_order_leave guard so it does not bounce back to the order."""
-        for leave in self:
-            if leave.state in ('validate', 'refuse', 'cancel'):
-                continue
-            leave = leave.sudo()
-            if leave.state == 'draft':
-                leave.action_confirm()
-            if leave.state in ('confirm', 'validate1'):
-                leave.action_approve()
-            if leave.state == 'validate1':
-                leave.action_validate()
+    def action_back_to_approval(self, *args, **kwargs):
+        self._check_order_allows_cancelling(_('sent back to approval'))
+        return super().action_back_to_approval(*args, **kwargs)
 
     def unlink(self):
         # Capture balance keys before deletion so we can refresh the

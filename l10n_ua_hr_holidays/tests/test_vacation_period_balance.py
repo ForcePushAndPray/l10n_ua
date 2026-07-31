@@ -1,4 +1,5 @@
 from datetime import date, datetime
+from psycopg2 import IntegrityError
 from odoo.exceptions import ValidationError
 from odoo.tests.common import TransactionCase
 from odoo.tools import mute_logger
@@ -212,10 +213,15 @@ class TestVacationPeriodBalance(TransactionCase):
         leave.sudo().write({'vacation_balance_id': False})
         self.assertFalse(leave.vacation_balance_id)
 
-        wy2.invalidate_recordset(['used_days', 'remaining_days'])
+        wy2.invalidate_recordset(
+            ['used_days', 'total_available', 'remaining_days'])
         self.assertEqual(wy2.used_days, leave.calendar_days,
                          'Unlinked leave must still count against its period')
-        self.assertEqual(wy2.remaining_days, 24 - leave.calendar_days)
+        # Compare against the period's own Total Available rather than its
+        # entitlement: creating the leave backfills the earlier work year,
+        # whose unused days are carried over into this one.
+        self.assertEqual(wy2.remaining_days,
+                         wy2.total_available - leave.calendar_days)
 
     def test_validation_links_missing_period(self):
         """Approving a leave that carries no period links it, so the days are
@@ -465,13 +471,16 @@ class TestVacationPeriodBalance(TransactionCase):
             'period_start': date(2024, 7, 15),
             'period_end': date(2025, 7, 14),
         })
-        with self.assertRaises(Exception), self.env.cr.savepoint():
+        with self.assertRaises(IntegrityError), \
+                mute_logger('odoo.sql_db'), \
+                self.env.cr.savepoint():
             self.env['hr.vacation.balance'].create({
                 'employee_id': self.employee.id,
                 'leave_type_id': self.annual_type.id,
                 'period_start': date(2024, 7, 15),
                 'period_end': date(2025, 7, 14),
             })
+            self.env.flush_all()
 
     def test_proportional_entitled_days_short_period(self):
         """A shortened period (e.g. termination) prorates entitled days."""

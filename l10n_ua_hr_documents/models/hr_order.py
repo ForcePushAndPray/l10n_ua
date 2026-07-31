@@ -132,8 +132,12 @@ class HrOrder(models.Model):
 
     @api.depends('leave_id')
     def _compute_leave_count(self):
+        # Elevated: HR officers can read their companies' time off, but a
+        # plain HR user may also open a vacation order, and for them the core
+        # rule hides another employee's leave. A stat number on a smart button
+        # must never make the form unopenable.
         for order in self:
-            order.leave_count = len(order._linked_leaves())
+            order.leave_count = len(order.sudo()._linked_leaves())
 
     def _linked_leaves(self):
         """Leaves tied to THIS order — not the employee's whole time off
@@ -231,6 +235,22 @@ class HrOrder(models.Model):
         ('confirmed', 'Confirmed'),
         ('cancelled', 'Cancelled'),
     ], string='Status', default='draft', tracking=True)
+
+    confirmed_by_id = fields.Many2one(
+        'res.users',
+        string='Confirmed By',
+        readonly=True,
+        copy=False,
+        help='User who confirmed this order in the system — the HR officer '
+             'recording that the printed order was signed. Kept as the audit '
+             'trail of the act the order performs (e.g. granting a leave).',
+    )
+    confirmed_date = fields.Datetime(
+        string='Confirmed On',
+        readonly=True,
+        copy=False,
+        help='When the order was confirmed in the system.',
+    )
 
     company_id = fields.Many2one('res.company', string='Company', required=True, index=True,
                                   default=lambda self: self.env.company)
@@ -437,26 +457,37 @@ class HrOrder(models.Model):
                 )
                 raise self._sync_failure(exc) from exc
 
+    def _check_vacation_confirm_rights(self):
+        """Confirming a vacation order records that the printed, signed order
+        was issued — the legal act that obliges the employee to take the leave,
+        and which locks the leave against being refused afterwards.
+
+        HR officers prepare and confirm orders (the director signs the printed
+        document), hence the Ukraine HR Officer group: plain HR users, who may
+        only maintain employee data, cannot issue one."""
+        if self.env.su:
+            return
+        if self.env.user.has_group('l10n_ua_hr_base.group_hr_ua_officer'):
+            return
+        raise UserError(_(
+            'Confirming a vacation order grants the leave, which requires the '
+            '"Ukraine HR: Officer" access rights. Ask an HR officer to confirm '
+            'this order.'))
+
     def action_confirm(self):
-        self.write({'state': 'confirmed'})
+        if self.filtered(lambda o: o.order_type == 'vacation'):
+            self._check_vacation_confirm_rights()
+        self.write({
+            'state': 'confirmed',
+            'confirmed_by_id': self.env.user.id,
+            'confirmed_date': fields.Datetime.now(),
+        })
         for order in self.filtered(lambda o: o.order_type == 'dismissal' and o.employee_id):
             order._apply_dismissal()
-        # Confirming a vacation order approves its leave, so the two stay in
-        # sync (the reverse direction — leave validation confirming the order —
-        # already exists). Guarded by a dedicated key set only when the leave's
-        # own validation is confirming the order, so we skip the redundant
-        # re-approval there. (We must NOT key off _sync_order_leave: hr.order
-        # records created via create() keep that flag in their env context, so
-        # a plain order.action_confirm() call would wrongly be treated as an
-        # internal sync and never approve the leave.)
-        if not self.env.context.get('_order_confirm_skip_leave'):
-            leaves = self.filtered(
-                lambda o: o.order_type == 'vacation' and o.leave_id
-            ).mapped('leave_id')
-            if leaves:
-                leaves.with_context(
-                    _sync_order_leave=True, leave_skip_state_check=True
-                )._approve_from_order()
+        # The linked leave is deliberately NOT touched: leave and order states
+        # are moved only through their own buttons. Confirming the order does
+        # lock the leave though — it can no longer be refused or sent back to
+        # approval (see hr.leave._check_order_allows_cancelling).
 
     def _apply_dismissal(self):
         """Apply a confirmed dismissal order to the employee:

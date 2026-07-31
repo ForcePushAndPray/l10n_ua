@@ -129,6 +129,10 @@ class TestHrLeaveOrderSync(common.TransactionCase):
         self.assertEqual(self.env['hr.leave'].search_count(
             [('employee_id', '=', self.employee.id)]), 1,
             "No duplicate leave must be created.")
+        self.assertEqual(self.env['hr.order'].search_count([
+            ('employee_id', '=', self.employee.id),
+            ('order_type', '=', 'vacation'),
+        ]), 1, "No duplicate order must be created.")
 
     def test_smart_buttons_scoped_to_this_document(self):
         """The Orders / Time Off smart buttons count and open the documents
@@ -157,10 +161,6 @@ class TestHrLeaveOrderSync(common.TransactionCase):
         self.assertEqual(order_a.leave_count, 1)
         self.assertEqual(order_a.action_view_leaves().get('res_id'), leave_a.id)
         self.assertEqual(order_b.action_view_leaves().get('res_id'), leave_b.id)
-        self.assertEqual(self.env['hr.order'].search_count([
-            ('employee_id', '=', self.employee.id),
-            ('order_type', '=', 'vacation'),
-        ]), 1, "No duplicate order must be created.")
 
     def test_button_blocked_when_order_exists(self):
         """Once an order is linked, the button raises instead of starting a
@@ -183,21 +183,24 @@ class TestHrLeaveOrderSync(common.TransactionCase):
         self.assertEqual(order.vacation_date_from, date(2027, 10, 12))
         self.assertEqual(order.vacation_date_to, date(2027, 10, 18))
 
-    def test_order_created_at_validation(self):
-        """No order on save; validation creates and confirms it."""
+    def test_validation_never_issues_an_order(self):
+        """Approving a leave issues no order — orders come only from the
+        "New Order" button."""
         leave = self._make_leave(date(2027, 10, 1), date(2027, 10, 5))
         self.assertFalse(leave.order_id)
 
         leave._action_validate()
 
-        order = leave.order_id
-        self.assertTrue(order, "Validation must create the order.")
-        self.assertEqual(order.state, 'confirmed',
-                         "Order must be confirmed once the leave is validated.")
+        self.assertFalse(leave.order_id,
+                         "Approving a leave must not create an order.")
+        self.assertEqual(self.env['hr.order'].search_count([
+            ('employee_id', '=', self.employee.id),
+            ('order_type', '=', 'vacation'),
+        ]), 0)
 
-    def test_validation_confirms_existing_draft(self):
-        """A pre-created draft order is confirmed at validation, not
-        duplicated."""
+    def test_validation_leaves_existing_draft_untouched(self):
+        """A draft order keeps its state when its leave is approved: only the
+        order's own buttons move it."""
         leave = self._make_leave(date(2027, 11, 10), date(2027, 11, 15))
         draft = self._create_order_via_button(leave)
         self.assertEqual(draft.state, 'draft')
@@ -205,15 +208,13 @@ class TestHrLeaveOrderSync(common.TransactionCase):
         leave._action_validate()
 
         self.assertEqual(leave.order_id, draft, "Order must not be replaced.")
-        self.assertEqual(draft.state, 'confirmed')
-        self.assertEqual(self.env['hr.order'].search_count([
-            ('employee_id', '=', self.employee.id),
-            ('order_type', '=', 'vacation'),
-        ]), 1, "Validation must not create a duplicate order.")
+        self.assertEqual(draft.state, 'draft',
+                         "Approving the leave must not confirm the order.")
 
-    def test_order_confirm_approves_leave(self):
-        """Confirming a vacation order approves (validates) its linked leave —
-        the order -> leave state sync."""
+    def test_order_confirm_does_not_approve_leave(self):
+        """Confirming a vacation order does not move the leave: states are
+        changed only through their own buttons. The leave can still be
+        approved afterwards, when the order was issued first."""
         order = self.env['hr.order'].create({
             'order_type': 'vacation',
             'employee_id': self.employee.id,
@@ -225,27 +226,124 @@ class TestHrLeaveOrderSync(common.TransactionCase):
         })
         leave = order.leave_id
         self.assertTrue(leave, "Order must auto-create its leave.")
-        self.assertNotEqual(leave.state, 'validate',
-                            "Leave must start unapproved.")
+        state_before = leave.state
 
         order.action_confirm()
 
         self.assertEqual(order.state, 'confirmed')
-        self.assertEqual(leave.state, 'validate',
-                         "Leave must be validated when its order is confirmed.")
+        self.assertEqual(leave.state, state_before,
+                         "Confirming the order must not move the leave.")
 
-    def test_back_to_approval_reverts_order_to_draft(self):
-        """Returning a validated leave to approval puts its confirmed order
-        back to draft."""
-        leave = self._make_leave(date(2027, 12, 1), date(2027, 12, 5))
+        # Approving the leave later is still allowed — the whole point of
+        # keeping Approve active once an order exists.
         leave._action_validate()
-        order = leave.order_id
-        self.assertEqual(order.state, 'confirmed')
+        self.assertEqual(leave.state, 'validate')
 
-        leave.action_back_to_approval()
+    def test_confirmed_order_blocks_undoing_the_leave(self):
+        """A confirmed order is the legal document obliging the employee to
+        take the leave, so the leave can no longer be refused or sent back to
+        approval."""
+        from odoo.exceptions import UserError
+        leave = self._make_leave(date(2028, 9, 1), date(2028, 9, 5))
+        order = self._create_order_via_button(leave)
+        order.action_confirm()
+        leave.invalidate_recordset(['has_confirmed_order'])
+        self.assertTrue(leave.has_confirmed_order)
+
+        with self.assertRaises(UserError):
+            leave.action_refuse()
+        with self.assertRaises(UserError):
+            leave.action_back_to_approval()
+
+    def test_draft_order_does_not_block_the_leave(self):
+        """Only a CONFIRMED order locks the leave: a draft one leaves refusing
+        available."""
+        leave = self._make_leave(date(2028, 10, 1), date(2028, 10, 5))
+        self._create_order_via_button(leave)
+        leave.invalidate_recordset(['has_confirmed_order'])
+        self.assertFalse(leave.has_confirmed_order)
+
+        leave.action_refuse()
+        self.assertEqual(leave.state, 'refuse')
+
+    def _user_with(self, groups, login):
+        # Odoo 19 renamed res.users.groups_id -> group_ids.
+        return self.env['res.users'].create({
+            'name': login,
+            'login': login,
+            'group_ids': [(6, 0, [self.env.ref(g).id for g in groups])],
+        })
+
+    def test_vacation_confirm_requires_hr_officer(self):
+        """Confirming a vacation order is what grants the leave, so it needs
+        Ukraine HR Officer rights — a plain HR user cannot do it."""
+        from odoo.exceptions import UserError
+        order = self.env['hr.order'].create({
+            'order_type': 'vacation',
+            'employee_id': self.employee.id,
+            'holiday_status_id': self.leave_type.id,
+            'vacation_date_from': date(2028, 3, 1),
+            'vacation_date_to': date(2028, 3, 5),
+            'date': date(2028, 3, 1),
+            'subject': 'Vacation',
+        })
+        clerk = self._user_with(['base.group_user', 'hr.group_hr_user'],
+                                'plain_hr_user')
+        with self.assertRaises(UserError):
+            order.with_user(clerk).action_confirm()
+        self.assertEqual(order.state, 'draft')
+        self.assertNotEqual(order.leave_id.state, 'validate')
+
+    def test_vacation_confirm_by_officer_is_audited(self):
+        """An HR officer may confirm; the order records who confirmed it and
+        when."""
+        order = self.env['hr.order'].create({
+            'order_type': 'vacation',
+            'employee_id': self.employee.id,
+            'holiday_status_id': self.leave_type.id,
+            'vacation_date_from': date(2028, 4, 1),
+            'vacation_date_to': date(2028, 4, 5),
+            'date': date(2028, 4, 1),
+            'subject': 'Vacation',
+        })
+        officer = self._user_with(
+            ['base.group_user', 'l10n_ua_hr_base.group_hr_ua_officer'],
+            'ua_hr_officer')
+
+        order.with_user(officer).action_confirm()
+
+        self.assertEqual(order.state, 'confirmed')
+        self.assertEqual(order.confirmed_by_id, officer)
+        self.assertTrue(order.confirmed_date)
+
+    def test_officer_may_read_company_leaves(self):
+        """The Ukraine HR Officer record rule lets an officer read another
+        employee's time off in their company — core alone would hide it, and
+        the order flow depends on that access."""
+        from odoo.exceptions import AccessError
+        leave = self._make_leave(date(2028, 6, 1), date(2028, 6, 5))
+        officer = self._user_with(
+            ['base.group_user', 'l10n_ua_hr_base.group_hr_ua_officer'],
+            'ua_hr_officer_read')
+        # The leave belongs to another employee, so a plain user cannot see it.
+        plain = self._user_with(['base.group_user'], 'plain_employee_read')
+        with self.assertRaises(AccessError):
+            leave.with_user(plain).read(['state'])
+        # The officer can.
+        self.assertTrue(leave.with_user(officer).read(['state']))
+
+    def test_refuse_leaves_a_draft_order_alone(self):
+        """Refusing a leave neither deletes its draft order nor changes its
+        state — orders move only through their own buttons."""
+        leave = self._make_leave(date(2027, 12, 1), date(2027, 12, 5))
+        order = self._create_order_via_button(leave)
+        self.assertEqual(order.state, 'draft')
+
+        leave.action_refuse()
 
         self.assertEqual(order.state, 'draft',
-                         "Order must return to draft when the leave does.")
+                         "Refusing the leave must not change the order state.")
+        self.assertEqual(leave.order_id, order, "The link must survive.")
 
     def test_cascade_delete(self):
         """Unlinking a draft leave also unlinks its draft order."""

@@ -7,13 +7,28 @@
         <field name="inherit_id" ref="hr_holidays.hr_leave_view_form"/>
         <field name="arch" type="xml">
 
-            <!-- "Create Order" — HR can issue the vacation order (as a draft)
-                 before the leave is approved. Hidden once an order exists or
-                 for leave types that do not issue orders. -->
+            <!-- "New Order" — opens a vacation order form pre-filled from this
+                 leave, styled like the same button on the employee card.
+                 Hidden once an order exists or for leave types that do not
+                 issue orders. Orders are only ever created this way. -->
             <xpath expr="//header" position="inside">
-                <button string="Create Order" name="action_create_order"
-                        type="object" class="oe_highlight"
+                <button name="action_create_order"
+                        type="object"
+                        string="New Order"
+                        class="btn-primary"
+                        icon="fa-plus"
                         invisible="not can_create_order or not id"/>
+            </xpath>
+
+            <!-- A confirmed order is the legal document obliging the employee
+                 to take the leave, so the leave can no longer be undone.
+                 Approving it stays possible: the order may have been issued
+                 first and the leave confirmed only afterwards. -->
+            <xpath expr="//button[@name='action_refuse']" position="attributes">
+                <attribute name="invisible">not can_refuse or not id or has_confirmed_order</attribute>
+            </xpath>
+            <xpath expr="//button[@name='action_back_to_approval']" position="attributes">
+                <attribute name="invisible">not can_back_to_approve or not id or has_confirmed_order</attribute>
             </xpath>
 
             <!-- Orders smart button — count of vacation orders for this
@@ -22,6 +37,7 @@
                    position="before">
                 <field name="can_create_order" invisible="1"/>
                 <field name="leave_type_create_order" invisible="1"/>
+                <field name="has_confirmed_order" invisible="1"/>
                 <div class="oe_button_box" name="button_box">
                     <button name="action_view_orders" type="object"
                             class="oe_stat_button" icon="fa-file-text-o"
@@ -62,9 +78,9 @@
                         <field name="remaining_days_before"/>
                         <field name="remaining_days_after"/>
                     </group>
-                    <group>
-			<field name="order_id"/>
-                    </group>
+                    <!-- The linked order is reached through the "Orders" smart
+                         button; it is not shown or picked as a field here, so
+                         it cannot be re-pointed at an unrelated order. -->
                 </group>
             </xpath>
         </field>
