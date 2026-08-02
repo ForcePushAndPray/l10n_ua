@@ -17,9 +17,34 @@
                             invisible="state in ('paid', 'cancelled')"/>
                     <button name="action_draft" string="Set to Draft" type="object"
                             invisible="state != 'cancelled'"/>
+                    <!-- The absence and the order are separate documents: each
+                         is created explicitly, reviewed and saved by whoever
+                         has the right to create it. -->
+                    <button name="action_create_leave" string="New Time Off" type="object"
+                            invisible="not can_create_leave or state == 'cancelled'"/>
+                    <button name="action_create_order" string="New Order" type="object"
+                            invisible="not can_create_order or state == 'cancelled'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,paid"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_view_leave" type="object"
+                                class="oe_stat_button" icon="fa-calendar-times-o"
+                                invisible="not leave_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Time Off</span>
+                            </div>
+                        </button>
+                        <button name="action_view_order" type="object"
+                                class="oe_stat_button" icon="fa-file-text-o"
+                                invisible="not order_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Order</span>
+                            </div>
+                        </button>
+                    </div>
+                    <field name="can_create_leave" invisible="1"/>
+                    <field name="can_create_order" invisible="1"/>
                     <div class="oe_title">
                         <label for="name"/>
                         <h1>
@@ -63,7 +88,8 @@
                         </group>
                     </group>
                     <group>
-                        <field name="leave_id"/>
+                        <field name="leave_id" readonly="1"/>
+                        <field name="order_id" readonly="1"/>
                         <field name="notes"/>
                     </group>
                 </sheet>

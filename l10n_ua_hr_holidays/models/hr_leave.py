@@ -42,6 +42,17 @@ class HrLeave(models.Model):
         domain=[('order_type', '=', 'vacation')],
     )
 
+    sick_leave_id = fields.Many2one(
+        'hr.sick.leave',
+        string='Sick Leave',
+        ondelete='set null',
+        copy=False,
+        index=True,
+        help='The sick leave certificate this absence records. Set when the '
+             'absence is created from the certificate\'s "New Time Off" '
+             'button.'
+    )
+
     order_count = fields.Integer(
         string='Orders',
         compute='_compute_order_count',
@@ -482,6 +493,9 @@ class HrLeave(models.Model):
                 leave.order_id.with_context(
                     _sync_order_leave=True, leave_skip_state_check=True
                 ).write({'leave_id': leave.id})
+            # Same for a leave opened from a sick leave's "New Time Off".
+            if leave.sick_leave_id and not leave.sick_leave_id.leave_id:
+                leave.sick_leave_id.write({'leave_id': leave.id})
 
         # Per-leave Balance Before/After for subsequent leaves in same year.
         leaves._recompute_subsequent_leaves()

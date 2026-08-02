@@ -1,5 +1,5 @@
-from odoo import models, fields, api
-from odoo.exceptions import ValidationError
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError, ValidationError
 
 
 class HrSickLeave(models.Model):
@@ -124,10 +124,39 @@ class HrSickLeave(models.Model):
     
     leave_id = fields.Many2one(
         'hr.leave',
-        string='Related Leave'
+        string='Related Leave',
+        copy=False,
+        index=True,
     )
-    
+    order_id = fields.Many2one(
+        'hr.order',
+        string='Related Order',
+        ondelete='set null',
+        copy=False,
+        index=True,
+    )
+    can_create_leave = fields.Boolean(
+        string='Can Create Time Off',
+        compute='_compute_can_create_documents',
+        help='Technical: true when the "New Time Off" button should be shown — '
+             'a sick leave with its dates filled in and no time off linked yet.'
+    )
+    can_create_order = fields.Boolean(
+        string='Can Create Order',
+        compute='_compute_can_create_documents',
+        help='Technical: true when the "New Order" button should be shown — '
+             'a sick leave with an employee and no order linked yet.'
+    )
+
     notes = fields.Text(string='Notes')
+
+    @api.depends('leave_id', 'order_id', 'employee_id', 'date_from', 'date_to')
+    def _compute_can_create_documents(self):
+        for rec in self:
+            rec.can_create_leave = bool(
+                not rec.leave_id and rec.employee_id
+                and rec.date_from and rec.date_to)
+            rec.can_create_order = bool(not rec.order_id and rec.employee_id)
 
     @api.depends('date_from', 'date_to')
     def _compute_calendar_days(self):
@@ -270,35 +299,94 @@ class HrSickLeave(models.Model):
             return round(total_earnings / total_calendar_days, 2)
         return 0.0
 
+    def _sick_leave_type(self):
+        """The company's sick leave type, or an empty recordset."""
+        self.ensure_one()
+        return self.env['hr.leave.type'].search([
+            ('ua_leave_category', '=', 'sick'),
+            '|', ('company_id', '=', (self.company_id or self.env.company).id),
+            ('company_id', '=', False),
+        ], limit=1)
+
+    def action_create_leave(self):
+        """"New Time Off" button. Opens a leave form pre-filled from this sick
+        leave so the user reviews and saves it explicitly.
+
+        Confirming a sick leave used to create the absence in the background
+        and approve it on the spot, which put an employee on approved leave
+        with no author and no trail, and skipped the approval gate of
+        hr_holidays entirely. Documents are created by whoever has the right
+        to create them, one button at a time — the same flow vacation orders
+        use.
+        """
+        self.ensure_one()
+        if self.leave_id:
+            raise UserError(_('This sick leave already has a linked time off.'))
+        leave_type = self._sick_leave_type()
+        if not leave_type:
+            raise UserError(_(
+                'No sick leave type is configured. Create a time off type '
+                'with the Ukrainian category "Sick Leave" first.'))
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('New Time Off'),
+            'res_model': 'hr.leave',
+            'view_mode': 'form',
+            'target': 'current',
+            'context': {
+                'default_employee_id': self.employee_id.id,
+                'default_holiday_status_id': leave_type.id,
+                'default_request_date_from': self.date_from,
+                'default_request_date_to': self.date_to,
+                'default_name': _('Sick Leave %s', self.name),
+                'default_sick_leave_id': self.id,
+            },
+        }
+
+    def action_create_order(self):
+        """"New Order" button. Opens a sick-leave order pre-filled from this
+        record; nothing is created until the user saves it."""
+        self.ensure_one()
+        if self.order_id:
+            raise UserError(_('This sick leave already has a linked order.'))
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('New Order'),
+            'res_model': 'hr.order',
+            'view_mode': 'form',
+            'target': 'current',
+            'context': {
+                'default_order_type': 'sick_leave',
+                'default_employee_id': self.employee_id.id,
+                'default_department_id': self.employee_id.department_id.id,
+                'default_job_id': self.employee_id.job_id.id,
+                'default_sick_leave_id': self.id,
+            },
+        }
+
+    def action_view_leave(self):
+        """Smart button: open the time off recorded for this sick leave."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.leave',
+            'view_mode': 'form',
+            'res_id': self.leave_id.id,
+        }
+
+    def action_view_order(self):
+        """Smart button: open the order issued for this sick leave."""
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.order',
+            'view_mode': 'form',
+            'res_id': self.order_id.id,
+        }
+
     def action_confirm(self):
-        """Confirm sick leave and create hr.leave record."""
-        for rec in self:
-            if not rec.leave_id:
-                # Find sick leave type
-                leave_type = self.env['hr.leave.type'].search([
-                    ('ua_leave_category', '=', 'sick')
-                ], limit=1)
-
-                if leave_type:
-                    # Create hr.leave record
-                    leave_vals = {
-                        'employee_id': rec.employee_id.id,
-                        'holiday_status_id': leave_type.id,
-                        'date_from': rec.date_from,
-                        'date_to': rec.date_to,
-                        'request_date_from': rec.date_from,
-                        'request_date_to': rec.date_to,
-                        'name': f'Sick Leave {rec.name}',
-                    }
-                    leave = self.env['hr.leave'].create(leave_vals)
-                    rec.leave_id = leave.id
-
-                    # Auto-approve the leave if in draft state
-                    if leave.state == 'draft':
-                        leave.action_confirm()
-                    if leave.state == 'confirm':
-                        leave.action_approve()
-
+        """Confirm the sick leave. The absence and the order are separate
+        documents, created through their own buttons."""
         self.write({'state': 'confirmed'})
 
     def action_pay(self):

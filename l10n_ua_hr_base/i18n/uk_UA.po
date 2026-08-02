@@ -16,6 +16,22 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: l10n_ua_hr_base
+#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__military_accounting_applicable
+msgid "Підлягає військовому обліку"
+msgstr "Підлягає військовому обліку"
+
+#. module: l10n_ua_hr_base
+#: code:addons/l10n_ua_hr_base/models/hr_employee.py:0
+msgid ""
+"Military accounting applies to citizens of Ukraine only (art. 1 of Law No "
+"2232-XII). %(employee)s has the nationality %(country)s — clear the military "
+"register category or correct the nationality."
+msgstr ""
+"Військовий облік ведеться лише щодо громадян України (ст. 1 Закону "
+"№ 2232-XII). У %(employee)s зазначено громадянство %(country)s — приберіть "
+"категорію військового обліку або виправте громадянство."
+
+#. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__message_needaction
 msgid "Action Needed"
 msgstr "Потрібна дія"
