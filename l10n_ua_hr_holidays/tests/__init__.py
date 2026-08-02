@@ -7,3 +7,4 @@ from . import test_period_type
 from . import test_multicompany
 from . import test_vacation_period_balance
 from . import test_vacation_schedule_report
+from . import test_sick_leave_documents

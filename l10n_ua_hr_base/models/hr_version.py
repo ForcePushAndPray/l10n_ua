@@ -6,6 +6,20 @@ from .hr_employee import REGISTRATION_ADDRESS_MAP
 class HrVersion(models.Model):
     _inherit = 'hr.version'
 
+    @api.constrains('country_id')
+    def _check_ua_military_citizenship(self):
+        """Mirror of the employee-side check, from where nationality lives.
+
+        `country_id` is stored on the version, so setting a foreign
+        nationality on an employee card writes hr.version and never triggers
+        an hr.employee constraint. Only the current version counts — the
+        employee's own `country_id` reads from it.
+        """
+        for version in self:
+            employee = version.employee_id
+            if employee and employee.current_version_id == version:
+                employee._assert_military_matches_citizenship()
+
     def _sync_ua_registration_address(self):
         """Push the private address of the current version onto the employee.
 

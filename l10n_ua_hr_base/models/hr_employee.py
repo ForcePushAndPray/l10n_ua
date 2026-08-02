@@ -91,6 +91,16 @@ class HrEmployee(models.Model):
     diploma_date = fields.Date(string='Diploma Date')
 
     # === Military Accounting ===
+    military_accounting_applicable = fields.Boolean(
+        string='Підлягає військовому обліку',
+        compute='_compute_military_accounting_applicable',
+        help='Військовий облік ведеться лише щодо громадян України '
+             '(ст. 1 Закону № 2232-XII «Про військовий обов\'язок і військову '
+             'службу»). Обчислюється з громадянства — штатного поля '
+             '«Nationality (Country)» на версії трудового договору. '
+             'Незаповнене громадянство вважається українським: у більшості '
+             'карток його не вносять, і ховати блок від усіх було б гірше, '
+             'ніж показати його зайвий раз.')
     military_status = fields.Selection([
         ('liable', 'Liable for Military Service'),
         ('reserved', 'Reserved'),
@@ -278,6 +288,46 @@ class HrEmployee(models.Model):
         for employee in self:
             employee.dependents_count = len(employee.children_ids.filtered(
                 lambda c: c.age < 18 or c.is_student or c.is_disabled))
+
+    @api.depends('country_id')
+    def _compute_military_accounting_applicable(self):
+        """Military accounting covers Ukrainian citizens only.
+
+        The nationality lives on hr.version (core `country_id`, "Nationality
+        (Country)"), so no citizenship field of our own is needed. An empty
+        nationality counts as Ukrainian — the field is rarely filled in, and
+        hiding the block from every such card would be worse than showing it
+        once too often.
+        """
+        for employee in self:
+            country = employee.country_id
+            employee.military_accounting_applicable = (
+                not country or country.code == 'UA')
+
+    @api.constrains('military_register_category')
+    def _check_military_accounting_citizenship(self):
+        """A foreign national cannot be put on the military register.
+
+        Only the military side is watched here. The nationality is stored on
+        hr.version, so writing `country_id` on the employee never reaches an
+        hr.employee constraint — hr.version carries the mirror check (see
+        `hr_version._check_ua_military_citizenship`).
+        """
+        self._assert_military_matches_citizenship()
+
+    def _assert_military_matches_citizenship(self):
+        for employee in self:
+            if (employee.military_register_category
+                    and employee.military_register_category != 'not_applicable'
+                    and not employee.military_accounting_applicable):
+                raise ValidationError(_(
+                    'Military accounting applies to citizens of Ukraine only '
+                    '(art. 1 of Law No 2232-XII). %(employee)s has the '
+                    'nationality %(country)s — clear the military register '
+                    'category or correct the nationality.',
+                    employee=employee.name,
+                    country=employee.country_id.name,
+                ))
 
     @api.depends('military_reservation', 'military_reservation_until')
     def _compute_military_reservation_expired(self):
