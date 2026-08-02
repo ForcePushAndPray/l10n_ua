@@ -6,6 +6,7 @@ from . import hr_tariff_grade
 from . import hr_kp2010
 from . import hr_employee_child
 from . import hr_employee
+from . import hr_version
 from . import hr_department
 from . import hr_job
 from . import hr_staffing_table

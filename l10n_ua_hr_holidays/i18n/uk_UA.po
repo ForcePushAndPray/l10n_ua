@@ -952,6 +952,28 @@ msgid "Used Days"
 msgstr "Використано днів"
 
 #. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_employee__vacation_anchor_date
+msgid "Vacation Work-Year Anchor"
+msgstr "Анкер робочого року відпустки"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_employee__vacation_anchor_date
+msgid ""
+"Date the annual (work-year) vacation seniority is counted from, when it "
+"differs from the hire date. Set by the inter-company transfer wizard in "
+"\"Keep Work Year\" mode: art. 9 §3 of the Vacation Law lets the previous "
+"employer's seniority continue when the compensation for unused days is "
+"transferred along with the employee. Empty — the work year runs from the "
+"hire date."
+msgstr ""
+"Дата, від якої рахується стаж для щорічної відпустки, якщо вона "
+"відрізняється від дати прийняття. Заповнює майстер переведення в режимі "
+"«Зберегти робочий рік»: ч. 3 ст. 9 Закону «Про відпустки» дозволяє зарахувати "
+"стаж попереднього роботодавця, якщо разом із працівником перераховано "
+"компенсацію за невикористані дні. Порожнє — робочий рік рахується від дати "
+"прийняття."
+
+#. module: l10n_ua_hr_holidays
 #: model:ir.model,name:l10n_ua_hr_holidays.model_hr_vacation_balance
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_form
 msgid "Vacation Balance"

@@ -386,7 +386,7 @@ class HrOrder(models.Model):
         Three writes happen, each guarded by its own savepoint so a failure in
         one does not abort the order transaction or the other writes:
 
-        1. Employee-level fields (``job_id``, ``hire_date``).
+        1. Employee-level fields (``job_id``).
         2. Current version metadata (``hire_order_number``, ``hire_order_date``,
            ``job_id``) — so the employee form immediately reflects the latest
            order; these fields do not interact with contract period overlap
@@ -395,6 +395,12 @@ class HrOrder(models.Model):
            (``contract_date_start``/``contract_date_end``) — created or updated
            in place, matched first by ``hire_order_number`` and then by
            ``date_version``.
+
+        The order never writes ``hire_date`` on the employee: that field is
+        computed from the contract versions, so step 3 is what sets it. An
+        order without an explicit ``date_start`` falls back to the order date
+        for the contract period, which keeps the version — not the employee
+        record — the single source of the hire date.
         """
         Version = self.env['hr.version']
         for order in self.filtered(lambda o: o.order_type == 'hiring' and o.employee_id):
@@ -404,9 +410,6 @@ class HrOrder(models.Model):
             emp_vals = {}
             if order.job_id:
                 emp_vals['job_id'] = order.job_id.id
-            hire_date_val = order.date_start or order.date
-            if hire_date_val:
-                emp_vals['hire_date'] = hire_date_val
             if emp_vals:
                 try:
                     with self.env.cr.savepoint():
@@ -439,13 +442,18 @@ class HrOrder(models.Model):
                         )
                         raise self._sync_failure(exc) from exc
 
-            # 3. Contract version for the new employment period
+            # 3. Contract version for the new employment period.
+            # The contract period starts on date_start, or on the order date
+            # when the order does not spell it out — an employment order always
+            # opens a period, and leaving contract_date_start empty would keep
+            # the version out of the employee's hire date and out of the core
+            # overlap checks.
             version_start = order.date_start or order.date
             if not version_start:
                 continue
 
             version_vals = {
-                'contract_date_start': order.date_start or False,
+                'contract_date_start': version_start,
                 'hire_order_date': order.date or False,
             }
             if order_no:

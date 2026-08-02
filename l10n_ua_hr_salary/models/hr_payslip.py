@@ -834,7 +834,9 @@ class HrPayslip(models.Model):
                 [('company_id', 'in', (self.company_id.id, False))], limit=1)
         if not scale:
             return
-        years = self.employee_id.work_experience_company or 0.0
+        # Experience as of the end of the payslip period, not "today": a
+        # recomputation of a past month must apply that period's percentage.
+        years = self.employee_id._get_company_experience_years(self.date_to)
         percent = scale.get_percent(years)
         if percent <= 0:
             return

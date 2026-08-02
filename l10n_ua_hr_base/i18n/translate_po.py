@@ -37,6 +37,7 @@ TRANSLATIONS = {
     "Child": "Дитина",
     "Child Name": "ПІБ дитини",
     "Chornobyl Category": "Категорія чорнобильця",
+    "City": "Місто",
     "Code": "Код",
     "Coefficient": "Коефіцієнт",
     "Combat Veteran": "Учасник бойових дій",
@@ -178,6 +179,9 @@ TRANSLATIONS = {
     "Record Number": "Номер запису",
     "Region": "Область",
     "Registration Address": "Адреса реєстрації",
+    "Registration Address Same as Private Address": "Адреса реєстрації збігається з адресою проживання",
+    "Registration Street": "Вулиця реєстрації",
+    "Registration Street 2": "Вулиця реєстрації 2",
     "Registration City": "Населений пункт реєстрації",
     "Registration Number of the Taxpayer Account Card (Individual Tax Number)": "Реєстраційний номер облікової картки платника податків (Індивідуальний податковий номер)",
     "Registration Region": "Область реєстрації",
@@ -190,7 +194,6 @@ TRANSLATIONS = {
     "Reserved Until": "Заброньований до",
     "Reset to Draft": "Повернути в чернетку",
     "Salary": "Оклад",
-    "Same as Registration": "Співпадає з реєстрацією",
     "Section Code": "Код розділу",
     "Senior Lieutenant": "Старший лейтенант",
     "Senior Sergeant": "Старший сержант",
@@ -206,6 +209,7 @@ TRANSLATIONS = {
     "Staffing Table Entry": "Запис штатного розпису",
     "Standard (50%)": "Стандартна (50%)",
     "State": "Статус",
+    "Street 2...": "Вулиця 2...",
     "Status": "Статус",
     "TCC": "ТЦК",
     "Tariff Grade": "Тарифний розряд",
@@ -227,7 +231,9 @@ TRANSLATIONS = {
     "Vocational Education": "Професійно-технічна освіта",
     "War Veteran": "Ветеран війни",
     "Widowed": "Вдівець/вдова",
+    "When checked, registration address fields are automatically copied from native Odoo private_* fields.": "Якщо увімкнено, адреса реєстрації автоматично копіюється з приватної адреси проживання та приховується з форми.",
     "Work Conditions": "Умови праці",
+    "ZIP": "Індекс",
     "Classifier of Professions (KP 2010)": "Класифікатор професій (КП 2010)",
     "(Vacant:": "(Вакантно:",
     "Actual address is the same as registration address": "Фактична адреса співпадає з адресою реєстрації",
@@ -478,6 +484,9 @@ TRANSLATIONS.update({
     "Record Number": "Номер запису",
     "Region": "Область",
     "Registration Address": "Адреса реєстрації",
+    "Registration Street": "Вулиця реєстрації",
+    "Registration Street 2": "Вулиця реєстрації 2",
+    "Street 2...": "Вулиця 2...",
     "Registration City": "Місто реєстрації",
     "Registration Region": "Область реєстрації",
     "Registration ZIP": "Індекс реєстрації",
@@ -708,6 +717,16 @@ TRANSLATIONS.update({
     "Job Position": "Посада",
     "Position": "Посада",
 
+    # Hire date
+    "Employee hire date. Derived from the contract versions "
+    "(hr.version.contract_date_start): the start of the current continuous "
+    "employment spell. Correct it on the contract version, not here — the field "
+    "stays writable for data imports only.":
+        "Дата прийняття на роботу. Береться з версій трудового договору "
+        "(hr.version.contract_date_start) — початок поточного безперервного "
+        "періоду зайнятості. Виправляйте у версії контракту, а не тут — "
+        "поле лишається доступним для запису тільки для імпорту даних.",
+
     # Staffing table salary range
     "Max": "Макс",
     "Min": "Мін",
@@ -790,10 +809,16 @@ def translate_po(input_file, output_file):
                         else:
                             result.append(f'msgstr "{translation}"')
                         translated_count += 1
-                        i = j + 1
+                        i = k
                         continue
                     elif msgstr_empty and msgid and is_english(msgid) and msgid not in TRANSLATIONS:
                         untranslated.append(msgid)
+            # The msgid continuation lines were already copied above. Resume at
+            # the msgstr line so the outer loop does not copy them a second
+            # time — doing so duplicated them on every run and produced msgids
+            # that no source string can ever match.
+            i = j
+            continue
 
         i += 1
 

@@ -87,6 +87,47 @@ class TestEmployeeTransfer(TransactionCase):
         self.assertTrue(hiring_orders, 'Hiring hr.order must be created')
         self.assertEqual(hiring_orders.date_start, date(2026, 5, 1))
 
+    def test_transfer_copies_address_fields(self):
+        """Test that transfer wizard copies private address and registration address fields."""
+        self.source_employee.write({
+            'private_street': 'Хрещатик 1',
+            'private_street2': 'кв. 10',
+            'private_city': 'Київ',
+            'private_zip': '01001',
+            'registration_street': 'Шевченка 10',
+            'registration_street2': 'кв. 5',
+            'registration_city': 'Львів',
+            'registration_zip': '79000',
+            'registration_same_as_actual': False,
+        })
+        wizard = self._make_wizard()
+        wizard.action_transfer()
+        new_employee = self.source_employee.next_employee_id
+
+        self.assertEqual(new_employee.private_street, 'Хрещатик 1')
+        self.assertEqual(new_employee.private_street2, 'кв. 10')
+        self.assertEqual(new_employee.registration_street, 'Шевченка 10')
+        self.assertEqual(new_employee.registration_street2, 'кв. 5')
+        self.assertEqual(new_employee.registration_city, 'Львів')
+        self.assertFalse(new_employee.registration_same_as_actual)
+
+    def test_transfer_keeps_mirrored_registration_address(self):
+        """Із прапорцем збігу перенесена реєстрація дзеркалить приватну адресу."""
+        self.source_employee.write({
+            'private_street': 'Хрещатик 1',
+            'private_street2': 'кв. 10',
+            'private_city': 'Київ',
+            'registration_same_as_actual': True,
+        })
+        wizard = self._make_wizard()
+        wizard.action_transfer()
+        new_employee = self.source_employee.next_employee_id
+
+        self.assertTrue(new_employee.registration_same_as_actual)
+        self.assertEqual(new_employee.registration_street, 'Хрещатик 1')
+        self.assertEqual(new_employee.registration_street2, 'кв. 10')
+        self.assertEqual(new_employee.registration_city, 'Київ')
+
     def test_cannot_transfer_to_same_company(self):
         with self.assertRaises(UserError):
             self._make_wizard(target_company_id=self.company_a.id)
@@ -169,6 +210,19 @@ class TestEmployeeTransfer(TransactionCase):
         # Оклад перенесено з джерела за згодою.
         self.assertAlmostEqual(version.wage, 25000.0, places=2)
 
+    def test_hire_date_comes_from_the_new_version(self):
+        """The wizard writes no employee-level hire date: it derives from the
+        contract version created for the target company."""
+        self._source_with_version()
+        wizard = self._make_wizard()
+        wizard.action_transfer()
+        new_employee = self.source_employee.next_employee_id
+        version = new_employee.current_version_id
+        self.assertEqual(version.contract_date_start, date(2026, 5, 1))
+        self.assertEqual(new_employee.hire_date, version.contract_date_start)
+        # The source keeps its own anchor - the transfer must not move it.
+        self.assertEqual(self.source_employee.hire_date, date(2020, 1, 10))
+
     def test_hiring_order_marked_p7_and_linked(self):
         self._source_with_version()
         wizard = self._make_wizard()
@@ -224,7 +278,7 @@ class TestEmployeeTransfer(TransactionCase):
 
     def test_transfer_keep_work_year(self):
         """keep: the transferred work-year balance keeps the source period
-        bounds (the original hire_date is preserved on the new employee)."""
+        bounds, and the seniority anchor travels to the new employee."""
         self._skip_if_no_balance()
         annual = self.env.ref('l10n_ua_hr_holidays.leave_type_annual_basic')
         # Source work-year period that contains the transfer date (2026-05-01).
@@ -245,9 +299,17 @@ class TestEmployeeTransfer(TransactionCase):
         self.assertEqual(new_bal.period_start, date(2026, 1, 10))
         self.assertEqual(new_bal.period_end, date(2027, 1, 9))
         self.assertEqual(new_bal.carried_over, 24)
-        # The original hire date is preserved so the work year continues.
-        self.assertEqual(self.source_employee.next_employee_id.hire_date,
+        new_employee = self.source_employee.next_employee_id
+        # The new contract still starts on the transfer date — only the
+        # vacation seniority continues, through the anchor.
+        self.assertEqual(new_employee.hire_date, date(2026, 5, 1))
+        self.assertEqual(new_employee.vacation_anchor_date,
                          self.source_employee.hire_date)
+        # ...so the next work year lines up with the carried-over period.
+        start, end, _index = new_employee._get_work_year_for_date(
+            date(2026, 6, 1))
+        self.assertEqual(start, date(2026, 1, 10))
+        self.assertEqual(end, date(2027, 1, 9))
 
     def test_transfer_reset_work_year(self):
         """reset: the transferred work-year balance starts a new work year at
@@ -271,8 +333,10 @@ class TestEmployeeTransfer(TransactionCase):
         # New work year anchored to the transfer date (2026-05-01).
         self.assertEqual(new_bal.period_start, date(2026, 5, 1))
         self.assertEqual(new_bal.carried_over, 24)
-        self.assertEqual(self.source_employee.next_employee_id.hire_date,
-                         date(2026, 5, 1))
+        new_employee = self.source_employee.next_employee_id
+        self.assertEqual(new_employee.hire_date, date(2026, 5, 1))
+        # No carried anchor: the work year runs from the new hire date.
+        self.assertFalse(new_employee.vacation_anchor_date)
 
     def test_transfer_calendar_type(self):
         """A calendar-type balance transfers with the same calendar period,

@@ -18,8 +18,8 @@ PERSONAL_FIELDS = [
     'rnokpp', 'document_type', 'passport_series',
     'passport_id', 'passport_expiration_date',
     'passport_issued_by', 'passport_issued_date', 'passport_record_number',
-    'registration_address', 'registration_region_id', 'registration_city',
-    'registration_zip', 'actual_address', 'actual_same_as_registration',
+    'registration_street', 'registration_street2', 'registration_region_id', 'registration_city',
+    'registration_zip', 'registration_same_as_actual',
     'education_level_id', 'study_school', 'study_field',
     'diploma_series', 'diploma_number', 'diploma_date',
     'military_status', 'military_register_category', 'military_category',
@@ -132,6 +132,18 @@ class HrEmployeeTransferWizard(models.TransientModel):
                 raise UserError(_('Дата прийняття не може бути раніше за дату звільнення.'))
 
     def _prepare_new_employee_vals(self):
+        """Values for the employee record created in the target company.
+
+        hire_date is deliberately absent: it is computed from the contract
+        versions, and `_create_new_version` sets contract_date_start on the
+        new employee's version in the same transaction, right after the
+        record is created. Writing it here as well would make the wizard a
+        second source for a date the version already owns.
+
+        The work year carried over in "keep" mode therefore travels in
+        `vacation_anchor_date` instead: the new contract legitimately starts
+        on the transfer date, only the vacation seniority keeps running.
+        """
         self.ensure_one()
         source = self.source_employee_id
         vals = {
@@ -148,14 +160,16 @@ class HrEmployeeTransferWizard(models.TransientModel):
                 vals[fname] = value.id if value else False
             else:
                 vals[fname] = value
-        # "keep": preserve the original hire date so the annual (work-year)
-        # vacation seniority continues; "reset": start the work year from the
-        # transfer date. The contract version start stays the transfer date
-        # regardless (set in _create_new_version).
-        if self.vacation_period_mode == 'keep' and source.hire_date:
-            vals['hire_date'] = source.hire_date
-        else:
-            vals['hire_date'] = self.hire_date
+        # "keep": the annual (work-year) vacation seniority continues, so the
+        # anchor of the source travels along — its own anchor when it was
+        # itself transferred, its hire date otherwise. "reset": no anchor, the
+        # work year starts from the new hire date (= the transfer date).
+        # The field lives in l10n_ua_hr_holidays, which this module does not
+        # depend on.
+        if 'vacation_anchor_date' in source._fields:
+            vals['vacation_anchor_date'] = (
+                source._get_vacation_anchor_date()
+                if self.vacation_period_mode == 'keep' else False)
         if not self.copy_documents:
             for fname in ('passport_series', 'passport_id', 'passport_expiration_date',
                           'passport_issued_by', 'passport_issued_date',

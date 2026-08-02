@@ -69,7 +69,9 @@ class HrIfobsEmployeeExport(models.TransientModel):
             'PHONE': getattr(emp, 'private_phone', '') or '',
             'MOBPHONE': phone_mob,
             'JOBPHONE': emp.work_phone or '',
-            'ADRESS': getattr(emp, 'registration_address', '') or '',
+            # Structured address columns above stay empty, so ADRESS must carry
+            # the whole thing — index, region, city and street included.
+            'ADRESS': emp._get_ua_registration_address_display(),
             'TABNOM': '',
             'JOB': emp.job_id.name if emp.job_id else '',
         }

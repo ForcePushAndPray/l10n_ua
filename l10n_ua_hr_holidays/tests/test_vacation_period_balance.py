@@ -738,6 +738,30 @@ class TestVacationPeriodBalance(TransactionCase):
         self.assertEqual(balance.period_end, date(2027, 6, 30))
         self.assertEqual(balance.period_index, 2)
 
+    def test_balance_for_hire_year_uses_work_year_not_calendar(self):
+        """A balance created by year only for an employee hired later in that
+        same year resolves to the work year, not the calendar fallback.
+
+        This is the transfer-wizard path: it carries vacation days over with
+        just {'year': hire_date.year}, and for a future-dated hire the year's
+        reference date lands before the hire anniversary.
+        """
+        employee = self.env['hr.employee'].create({'name': 'Transferred Employee'})
+        version = employee.with_context(active_test=False).version_ids[:1]
+        version.write({'contract_date_start': date(2050, 5, 1)})
+        self.assertEqual(employee.hire_date, date(2050, 5, 1))
+
+        balance = self.env['hr.vacation.balance'].create({
+            'employee_id': employee.id,
+            'leave_type_id': self.annual_type.id,
+            'year': 2050,
+            'entitled_days': 0,
+            'carried_over': 7,
+        })
+        self.assertEqual(balance.period_start, date(2050, 5, 1))
+        self.assertEqual(balance.period_end, date(2051, 4, 30))
+        self.assertEqual(balance.period_index, 1)
+
     def test_reanchor_noop_when_already_correct(self):
         balance = self.env['hr.vacation.balance'].create({
             'employee_id': self.employee.id,

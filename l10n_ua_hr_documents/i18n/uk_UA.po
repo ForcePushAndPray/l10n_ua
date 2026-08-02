@@ -23,32 +23,32 @@ msgstr "'Наказ_%s_%s' % (object.name, object.date)"
 #. module: l10n_ua_hr_documents
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_documents.report_hr_order_document
 msgid "(П.І.Б.)"
-msgstr ""
+msgstr "(П.І.Б.)"
 
 #. module: l10n_ua_hr_documents
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_documents.report_hr_order_document
 msgid "(підпис)"
-msgstr ""
+msgstr "(підпис)"
 
 #. module: l10n_ua_hr_documents
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_documents.report_hr_order_document
 msgid "<strong>Посада:</strong>"
-msgstr ""
+msgstr "<strong>Посада:</strong>"
 
 #. module: l10n_ua_hr_documents
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_documents.report_hr_order_document
 msgid "<strong>Працівник:</strong>"
-msgstr ""
+msgstr "<strong>Працівник:</strong>"
 
 #. module: l10n_ua_hr_documents
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_documents.report_hr_order_document
 msgid "<strong>Підрозділ:</strong>"
-msgstr ""
+msgstr "<strong>Підрозділ:</strong>"
 
 #. module: l10n_ua_hr_documents
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_documents.report_hr_order_document
 msgid "<strong>Тема:</strong>"
-msgstr ""
+msgstr "<strong>Тема:</strong>"
 
 #. module: l10n_ua_hr_documents
 #: model:ir.model.fields,field_description:l10n_ua_hr_documents.field_hr_order__message_needaction

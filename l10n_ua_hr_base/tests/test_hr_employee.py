@@ -202,8 +202,14 @@ class TestHrEmployeeComputedFields(TestHrUaBase):
         employee.invalidate_recordset(['dependents_count'])
         self.assertEqual(employee.dependents_count, 1)  # Still 1
 
-        # Marking the adult as a full-time student makes them a dependent.
-        child2.is_student = True
+        # is_dependent is a manual marker only: the aggregate counts by the
+        # PSP criteria (age / student / disability), as its help states.
+        child2.is_dependent = True
+        employee.invalidate_recordset(['dependents_count'])
+        self.assertEqual(employee.dependents_count, 1)  # Still 1
+
+        # A disabled child is PSP-eligible at any age, so this one does count.
+        child2.write({'is_disabled': True, 'disability_group': '2'})
         employee.invalidate_recordset(['dependents_count'])
         self.assertEqual(employee.dependents_count, 2)
 
@@ -222,17 +228,138 @@ class TestHrEmployeeComputedFields(TestHrUaBase):
         employee.invalidate_recordset(['work_experience_company'])
         self.assertAlmostEqual(employee.work_experience_company, 0.5, places=1)
 
-    def test_actual_address_copy(self):
-        """Test that actual_address is copied from registration when flag is set."""
+    def test_registration_address_copy_from_private(self):
+        """Test that registration address is automatically synced from Odoo private_* fields on create."""
         employee = self._create_employee(
-            registration_address='123 Main Street, Kyiv',
+            private_street='123 Main Street',
+            private_street2='Apt 4B',
+            private_city='Kyiv',
+            private_zip='01001',
+            registration_same_as_actual=True,
         )
 
-        # Set flag via onchange simulation
-        employee.actual_same_as_registration = True
-        employee._onchange_actual_same_as_registration()
+        self.assertEqual(employee.registration_street, '123 Main Street')
+        self.assertEqual(employee.registration_street2, 'Apt 4B')
+        self.assertEqual(employee.registration_city, 'Kyiv')
+        self.assertEqual(employee.registration_zip, '01001')
 
-        self.assertEqual(employee.actual_address, '123 Main Street, Kyiv')
+    def test_registration_address_custom_when_flag_false(self):
+        """Test that registration address can be different from private address when flag is false."""
+        employee = self._create_employee(
+            private_street='Khreshchatyk 1',
+            private_city='Kyiv',
+            registration_street='Shevchenka 10',
+            registration_city='Lviv',
+            registration_same_as_actual=False,
+        )
+
+        self.assertEqual(employee.private_city, 'Kyiv')
+        self.assertEqual(employee.registration_city, 'Lviv')
+        self.assertNotEqual(employee.registration_city, employee.private_city)
+
+    def test_registration_address_updates_on_private_change(self):
+        """Test that updating private address via ORM write() automatically updates registration address when flag is true."""
+        employee = self._create_employee(
+            private_street='Old Street 5',
+            private_city='Odesa',
+            registration_same_as_actual=True,
+        )
+        self.assertEqual(employee.registration_city, 'Odesa')
+
+        # Update private city via ORM write (without manually calling onchange)
+        employee.write({'private_city': 'Dnipro', 'private_street2': 'Office 12'})
+        self.assertEqual(employee.registration_city, 'Dnipro')
+        self.assertEqual(employee.registration_street2, 'Office 12')
+
+    def test_registration_address_updates_on_version_write(self):
+        """private_* lives on hr.version, so writing there must sync too."""
+        employee = self._create_employee(
+            private_street='Old Street 5',
+            private_city='Odesa',
+            registration_same_as_actual=True,
+        )
+
+        employee.current_version_id.write({
+            'private_street': 'Nova Street 7',
+            'private_city': 'Kharkiv',
+        })
+
+        self.assertEqual(employee.registration_street, 'Nova Street 7')
+        self.assertEqual(employee.registration_city, 'Kharkiv')
+
+    def test_registration_address_ignores_historical_version(self):
+        """Editing a past version must not rewrite today's registration address."""
+        employee = self._create_employee(
+            private_street='Current Street 1',
+            private_city='Odesa',
+            registration_same_as_actual=True,
+        )
+        old_version = self.env['hr.version'].create({
+            'employee_id': employee.id,
+            'date_version': date.today() - relativedelta(years=2),
+            'private_street': 'Ancient Street 99',
+            'private_city': 'Lviv',
+        })
+
+        old_version.write({'private_city': 'Ternopil'})
+
+        self.assertEqual(employee.registration_street, 'Current Street 1')
+        self.assertEqual(employee.registration_city, 'Odesa')
+
+    def test_registration_address_overwrites_manual_edit_while_mirrored(self):
+        """With the flag on, the registration block is not independently editable."""
+        employee = self._create_employee(
+            private_street='Khreshchatyk 1',
+            private_city='Kyiv',
+            registration_same_as_actual=True,
+        )
+
+        employee.write({'registration_city': 'Lviv', 'private_zip': '01001'})
+
+        self.assertEqual(employee.registration_city, 'Kyiv')
+        self.assertEqual(employee.registration_zip, '01001')
+
+    def test_registration_address_frozen_after_unchecking_flag(self):
+        """Unchecking the flag freezes the copy and lets it diverge."""
+        employee = self._create_employee(
+            private_street='Khreshchatyk 1',
+            private_city='Kyiv',
+            registration_same_as_actual=True,
+        )
+
+        employee.write({'registration_same_as_actual': False})
+        employee.write({'private_city': 'Dnipro'})
+
+        self.assertEqual(employee.registration_city, 'Kyiv')
+        self.assertEqual(employee.private_city, 'Dnipro')
+
+    def test_registration_address_display_is_complete(self):
+        """The printed/exported one-liner keeps every component, street2 included."""
+        employee = self._create_employee(
+            registration_zip='79000',
+            registration_city='Львів',
+            registration_street='вул. Шевченка, 10',
+            registration_street2='кв. 5',
+            registration_same_as_actual=False,
+        )
+
+        self.assertEqual(
+            employee._get_ua_registration_address_display(),
+            '79000, Львів, вул. Шевченка, 10, кв. 5')
+
+    def test_registration_address_display_falls_back_to_private(self):
+        """With the flag on the one-liner reads the mirrored private address."""
+        employee = self._create_employee(
+            private_zip='01001',
+            private_city='Київ',
+            private_street='вул. Хрещатик, 1',
+            private_street2='кв. 10',
+            registration_same_as_actual=True,
+        )
+
+        self.assertEqual(
+            employee._get_ua_registration_address_display(),
+            '01001, Київ, вул. Хрещатик, 1, кв. 10')
 
 
 @tagged('post_install', '-at_install')
@@ -450,3 +577,139 @@ class TestHrEmployeeMilitaryRegister1487(TestHrUaBase):
                                           military_register_category='liable')
         self.assertEqual(employee.military_status, 'liable')
         self.assertEqual(employee.military_register_category, 'liable')
+
+
+@tagged('post_install', '-at_install')
+class TestHrEmployeeHireDate(TestHrUaBase):
+    """hire_date derived from the native contract versions (hr.version)."""
+
+    def _set_contract(self, employee, start, end=False, version=None):
+        version = version or employee.version_ids[:1]
+        version.write({'contract_date_start': start, 'contract_date_end': end})
+        return version
+
+    def test_hire_date_derived_from_contract_version(self):
+        """Hire date comes from the version's contract_date_start."""
+        employee = self._create_employee()
+        self._set_contract(employee, date(2021, 3, 15))
+        self.assertEqual(employee.hire_date, date(2021, 3, 15))
+
+    def test_hire_date_follows_contract_change(self):
+        """Correcting the version's date recomputes hire_date."""
+        employee = self._create_employee()
+        version = self._set_contract(employee, date(2021, 3, 15))
+        version.contract_date_start = date(2021, 4, 1)
+        self.assertEqual(employee.hire_date, date(2021, 4, 1))
+
+    def test_manual_hire_date_kept_without_contract_dates(self):
+        """Legacy import: with no contract dates the manual value survives."""
+        employee = self._create_employee(hire_date=date(2015, 1, 10))
+        self.assertEqual(employee.hire_date, date(2015, 1, 10))
+        # Writing a version field other than the contract dates keeps it.
+        employee.version_ids[:1].date_version = date(2015, 1, 10)
+        self.assertEqual(employee.hire_date, date(2015, 1, 10))
+
+    def test_contract_wins_over_manual_value(self):
+        """The native field wins: the version overrides a manual date."""
+        employee = self._create_employee(hire_date=date(2015, 1, 10))
+        self._set_contract(employee, date(2016, 9, 1))
+        self.assertEqual(employee.hire_date, date(2016, 9, 1))
+
+    def test_rehire_after_gap_moves_anchor(self):
+        """A rehire (gap of 4 days or more) moves the anchor forward."""
+        employee = self._create_employee()
+        self._set_contract(employee, date(2020, 1, 1), date(2022, 5, 31))
+        self.env['hr.version'].create({
+            'employee_id': employee.id,
+            'company_id': employee.company_id.id,
+            'date_version': date(2023, 2, 1),
+            'contract_date_start': date(2023, 2, 1),
+        })
+        self.assertEqual(employee.hire_date, date(2023, 2, 1))
+
+    def test_continuous_transfer_keeps_anchor(self):
+        """An uninterrupted transfer (next day) keeps the original anchor."""
+        employee = self._create_employee()
+        self._set_contract(employee, date(2020, 1, 1), date(2022, 5, 31))
+        self.env['hr.version'].create({
+            'employee_id': employee.id,
+            'company_id': employee.company_id.id,
+            'date_version': date(2022, 6, 1),
+            'contract_date_start': date(2022, 6, 1),
+        })
+        self.assertEqual(employee.hire_date, date(2020, 1, 1))
+
+    def test_work_year_anchored_on_contract_date(self):
+        """The vacation work year is anchored on the contract start date."""
+        employee = self._create_employee()
+        self._set_contract(employee, date(2021, 3, 15))
+        start, end, index = employee._get_work_year_for_date(date(2023, 5, 1))
+        self.assertEqual(start, date(2023, 3, 15))
+        self.assertEqual(end, date(2024, 3, 14))
+        self.assertEqual(index, 3)
+
+    def test_demo_employees_derive_hire_date_from_versions(self):
+        """Demo cards are shaped like real ones: the hire date comes from the
+        contract version, not from a manual employee-level value.
+
+        Skipped when the database is installed without demo data.
+        """
+        expected = {
+            'demo_employee_director': date(2015, 1, 10),
+            'demo_employee_hr_manager': date(2018, 6, 1),
+            'demo_employee_accountant': date(2016, 9, 1),
+            'demo_employee_it_admin': date(2020, 3, 15),
+            'demo_employee_developer': date(2021, 8, 1),
+            'demo_employee_hr_specialist': date(2022, 1, 10),
+        }
+        first = self.env.ref('l10n_ua_hr_base.demo_employee_director',
+                             raise_if_not_found=False)
+        if not first:
+            self.skipTest('demo data is not installed')
+        for xml_id, hire_date in expected.items():
+            employee = self.env.ref('l10n_ua_hr_base.%s' % xml_id)
+            versions = employee.with_context(active_test=False).version_ids
+            self.assertIn(
+                hire_date, versions.mapped('contract_date_start'),
+                '%s: the contract version must carry the hire date' % xml_id)
+            self.assertEqual(
+                employee.hire_date, hire_date,
+                '%s: hire_date must derive from the contract version' % xml_id)
+
+    def test_p2_hire_date_uses_current_contract_period(self):
+        """The П-2 card takes the current contract start, not hire_date.
+
+        A re-hire less than four days after the previous contract ended is
+        merged into one spell by the core aggregation behind hire_date, but
+        legally it is a new employment contract and needs its own card.
+        """
+        employee = self._create_employee()
+        self._set_contract(employee, date(2020, 1, 1), date(2024, 4, 30))
+        self.env['hr.version'].create({
+            'employee_id': employee.id,
+            'company_id': employee.company_id.id,
+            'date_version': date(2024, 5, 2),
+            'contract_date_start': date(2024, 5, 2),
+        })
+        # hire_date still reports the merged spell...
+        self.assertEqual(employee.hire_date, date(2020, 1, 1))
+        # ...while the card documents the current contract.
+        self.assertEqual(employee._get_p2_hire_date(), date(2024, 5, 2))
+
+    def test_p2_dismissal_text_empty_without_order(self):
+        """The dismissal line stays blank until an order is confirmed."""
+        employee = self._create_employee()
+        self._set_contract(employee, date(2021, 3, 15))
+        self.assertEqual(employee._get_p2_dismissal_text(), '')
+
+    def test_company_experience_at_given_date(self):
+        """Experience is measured at the given date, not "today"."""
+        employee = self._create_employee()
+        self._set_contract(employee, date(2020, 1, 1))
+        self.assertAlmostEqual(
+            employee._get_company_experience_years(date(2025, 1, 1)), 5.0, places=2)
+        self.assertAlmostEqual(
+            employee._get_company_experience_years(date(2023, 7, 1)), 3.5, places=2)
+        # No experience before the hire date.
+        self.assertEqual(
+            employee._get_company_experience_years(date(2019, 1, 1)), 0.0)
