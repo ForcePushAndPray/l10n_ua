@@ -29,20 +29,12 @@ class HrEmployee(models.Model):
         related='current_version_id.work_rate',
         readonly=False
     )
-    working_hours_week = fields.Float(
-        related='current_version_id.working_hours_week',
-        readonly=False
-    )
     staffing_line_id = fields.Many2one(
         related='current_version_id.staffing_line_id',
         readonly=False
     )
     tariff_grade_id = fields.Many2one(
         related='current_version_id.tariff_grade_id',
-        readonly=False
-    )
-    work_schedule_ua_id = fields.Many2one(
-        related='current_version_id.work_schedule_ua_id',
         readonly=False
     )
     work_conditions = fields.Selection(

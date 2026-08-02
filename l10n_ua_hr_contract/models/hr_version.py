@@ -46,14 +46,6 @@ class HrVersion(models.Model):
     ], string='Work Mode', default='full_time', tracking=True,
        groups="hr.group_hr_user")
 
-    working_hours_week = fields.Float(
-        string='Hours per Week',
-        default=40.0,
-        groups="hr.group_hr_user",
-        help='DEPRECATED (19.0.3.0.0) — use resource_calendar_id. The weekly '
-             'norm now comes from the version calendar and this field is no '
-             'longer read by any computation. Removed in 19.0.4.0.0.'
-    )
     work_rate = fields.Float(
         string='Work Rate',
         default=1.0,
@@ -99,14 +91,6 @@ class HrVersion(models.Model):
         'hr.tariff.grade',
         string='Tariff Grade',
         groups="hr.group_hr_user"
-    )
-    work_schedule_ua_id = fields.Many2one(
-        'hr.work.schedule',
-        string='Work Schedule (UA)',
-        groups="hr.group_hr_user",
-        help='DEPRECATED (19.0.3.0.0) — use resource_calendar_id. Kept '
-             'readable so the 19.0.3.0.0 migration can be reviewed; removed '
-             'together with hr.work.schedule in 19.0.4.0.0.'
     )
 
     # === Allowances ===

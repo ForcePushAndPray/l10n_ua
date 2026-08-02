@@ -1,7 +1,6 @@
 from . import hr_document_mixin  # Must be first - abstract mixin
 from . import resource_calendar
 from . import hr_allowance_type
-from . import hr_work_schedule
 from . import hr_termination_reason
 from . import hr_version_allowance
 from . import hr_version

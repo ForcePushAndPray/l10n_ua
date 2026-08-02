@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - HR Contracts',
-    'version': '19.0.3.0.0',
+    'version': '19.0.4.0.0',
     'category': 'Human Resources/Localization',
     'summary': 'Ukrainian HR contracts localization (extends hr.version)',
     'description': """
@@ -37,7 +37,6 @@ Requires l10n_ua_hr_base module.
         'security/multicompany_security.xml',
         'data/ir_sequence_data.xml',
         'data/hr_allowance_type_data.xml',
-        'data/hr_work_schedule_data.xml',
         'data/resource_calendar_ua_data.xml',
         'data/hr_termination_reason_data.xml',
         'views/hr_allowance_type_views.xml',
@@ -47,7 +46,6 @@ Requires l10n_ua_hr_base module.
         'views/hr_version_salary_change_views.xml',
         'views/hr_job_combining_views.xml',
         'views/hr_version_amendment_views.xml',
-        'views/hr_work_schedule_views.xml',
         'views/resource_calendar_views.xml',
         'views/hr_termination_reason_views.xml',
         'views/hr_employee_views.xml',
