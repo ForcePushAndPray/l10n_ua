@@ -717,6 +717,16 @@ TRANSLATIONS.update({
     "Job Position": "Посада",
     "Position": "Посада",
 
+    # Hire date
+    "Employee hire date. Derived from the contract versions "
+    "(hr.version.contract_date_start): the start of the current continuous "
+    "employment spell. Correct it on the contract version, not here — the field "
+    "stays writable for data imports only.":
+        "Дата прийняття на роботу. Береться з версій трудового договору "
+        "(hr.version.contract_date_start) — початок поточного безперервного "
+        "періоду зайнятості. Виправляйте у версії контракту, а не тут — "
+        "поле лишається доступним для запису тільки для імпорту даних.",
+
     # Staffing table salary range
     "Max": "Макс",
     "Min": "Мін",
@@ -799,10 +809,16 @@ def translate_po(input_file, output_file):
                         else:
                             result.append(f'msgstr "{translation}"')
                         translated_count += 1
-                        i = j + 1
+                        i = k
                         continue
                     elif msgstr_empty and msgid and is_english(msgid) and msgid not in TRANSLATIONS:
                         untranslated.append(msgid)
+            # The msgid continuation lines were already copied above. Resume at
+            # the msgstr line so the outer loop does not copy them a second
+            # time — doing so duplicated them on every run and produced msgids
+            # that no source string can ever match.
+            i = j
+            continue
 
         i += 1
 

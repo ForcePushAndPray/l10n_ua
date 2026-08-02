@@ -121,6 +121,14 @@ class HrEmployeeTransferWizard(models.TransientModel):
                 raise UserError(_('Дата прийняття не може бути раніше за дату звільнення.'))
 
     def _prepare_new_employee_vals(self):
+        """Values for the employee record created in the target company.
+
+        hire_date is deliberately absent: it is computed from the contract
+        versions, and `_create_new_version` sets contract_date_start on the
+        new employee's version in the same transaction, right after the
+        record is created. Writing it here as well would make the wizard a
+        second source for a date the version already owns.
+        """
         self.ensure_one()
         source = self.source_employee_id
         vals = {
@@ -137,7 +145,6 @@ class HrEmployeeTransferWizard(models.TransientModel):
                 vals[fname] = value.id if value else False
             else:
                 vals[fname] = value
-        vals['hire_date'] = self.hire_date
         if not self.copy_documents:
             for fname in ('passport_series', 'passport_id', 'passport_expiration_date',
                           'passport_issued_by', 'passport_issued_date',

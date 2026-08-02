@@ -199,10 +199,16 @@ def translate_po(input_file, output_file):
                         else:
                             result.append(f'msgstr "{translation}"')
                         translated_count += 1
-                        i = j + 1
+                        i = k
                         continue
                     elif msgstr_empty and msgid and is_english(msgid) and msgid not in TRANSLATIONS:
                         untranslated.append(msgid)
+            # The msgid continuation lines were already copied above. Resume at
+            # the msgstr line so the outer loop does not copy them a second
+            # time — doing so duplicated them on every run and produced msgids
+            # that no source string can ever match.
+            i = j
+            continue
 
         i += 1
 

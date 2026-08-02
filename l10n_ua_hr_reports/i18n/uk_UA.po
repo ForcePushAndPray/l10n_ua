@@ -87,7 +87,6 @@ msgstr "Нараховано та виплачено"
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_needaction
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_needaction
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_needaction
-
 msgid "Action Needed"
 msgstr "Потрібна дія"
 
@@ -96,7 +95,6 @@ msgstr "Потрібна дія"
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__activity_ids
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__activity_ids
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_ids
-
 msgid "Activities"
 msgstr "Активності"
 
@@ -129,7 +127,6 @@ msgstr "Іконка типу активності"
 #: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__4
 #: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__4
 #: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__4
-
 msgid "April"
 msgstr "Квітень"
 
@@ -327,7 +324,6 @@ msgstr "Експорт XML"
 #: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__2
 #: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__2
 #: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__2
-
 msgid "February"
 msgstr "Лютий"
 

@@ -273,17 +273,18 @@ class HrCertificate(models.Model):
         )
 
     def _get_hire_date(self):
-        """Initial employment start date — earliest contract_date_start across versions."""
+        """Employment start date — single source: hr.employee.hire_date.
+
+        That field derives from the contract versions
+        (hr.version.contract_date_start), so certificates now print exactly
+        the date shown on the P-2 card and used for vacation accrual. The
+        date_version fallback stays for records with no contract dates at all.
+        """
         self.ensure_one()
         if not self.employee_id:
             return False
-        version = self.env['hr.version'].search(
-            [('employee_id', '=', self.employee_id.id),
-             ('contract_date_start', '!=', False)],
-            order='contract_date_start asc', limit=1,
-        )
-        if version:
-            return version.contract_date_start
+        if self.employee_id.hire_date:
+            return self.employee_id.hire_date
         first_any = self.env['hr.version'].search(
             [('employee_id', '=', self.employee_id.id)],
             order='date_version asc', limit=1,

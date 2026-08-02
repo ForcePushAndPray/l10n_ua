@@ -98,7 +98,8 @@
             <field name="private_city">Київ</field>
             <field name="private_zip">01001</field>
             <field name="registration_same_as_actual" eval="True"/>
-            <field name="hire_date">2015-01-10</field>
+            <field name="date_version" eval="'2015-01-10'"/>
+            <field name="contract_date_start" eval="'2015-01-10'"/>
             <field name="military_status">liable</field>
             <field name="military_category">1</field>
             <field name="military_rank_id" ref="l10n_ua_hr_base.military_rank_captain"/>
@@ -128,7 +129,8 @@
             <field name="private_city">Київ</field>
             <field name="private_zip">01004</field>
             <field name="registration_same_as_actual" eval="True"/>
-            <field name="hire_date">2018-06-01</field>
+            <field name="date_version" eval="'2018-06-01'"/>
+            <field name="contract_date_start" eval="'2018-06-01'"/>
             <field name="military_status">not_applicable</field>
             <field name="mobile_phone">+380502345678</field>
             <field name="work_email">hr@demo.ua</field>
@@ -155,7 +157,8 @@
             <field name="private_city">Київ</field>
             <field name="private_zip">01033</field>
             <field name="registration_same_as_actual" eval="True"/>
-            <field name="hire_date">2016-09-01</field>
+            <field name="date_version" eval="'2016-09-01'"/>
+            <field name="contract_date_start" eval="'2016-09-01'"/>
             <field name="military_status">not_applicable</field>
             <field name="mobile_phone">+380503456789</field>
             <field name="work_email">accountant@demo.ua</field>
@@ -182,7 +185,8 @@
             <field name="private_city">Київ</field>
             <field name="private_zip">03056</field>
             <field name="registration_same_as_actual" eval="True"/>
-            <field name="hire_date">2020-03-15</field>
+            <field name="date_version" eval="'2020-03-15'"/>
+            <field name="contract_date_start" eval="'2020-03-15'"/>
             <field name="military_status">liable</field>
             <field name="military_category">1</field>
             <field name="military_rank_id" ref="l10n_ua_hr_base.military_rank_soldier"/>
@@ -215,7 +219,8 @@
             <field name="private_city">Київ</field>
             <field name="private_zip">03056</field>
             <field name="registration_same_as_actual" eval="True"/>
-            <field name="hire_date">2021-08-01</field>
+            <field name="date_version" eval="'2021-08-01'"/>
+            <field name="contract_date_start" eval="'2021-08-01'"/>
             <field name="military_status">liable</field>
             <field name="military_category">2</field>
             <field name="military_rank_id" ref="l10n_ua_hr_base.military_rank_junior_sergeant"/>
@@ -250,7 +255,8 @@
             <field name="registration_city">Львів</field>
             <field name="registration_zip">79000</field>
             <field name="registration_same_as_actual" eval="False"/>
-            <field name="hire_date">2022-01-10</field>
+            <field name="date_version" eval="'2022-01-10'"/>
+            <field name="contract_date_start" eval="'2022-01-10'"/>
             <field name="military_status">not_applicable</field>
             <field name="disability_group">3</field>
             <field name="disability_reason">Загальне захворювання</field>

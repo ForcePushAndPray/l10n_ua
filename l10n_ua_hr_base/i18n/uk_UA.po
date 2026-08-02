@@ -329,11 +329,7 @@ msgstr "Код з Класифікатора професій (КП 2010)"
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_department__koatuu_code
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_res_company__koatuu
-msgid ""
-"Code of the Classification of Administrative-Territorial Units of Ukraine"
-"Code of the Classification of Administrative-Territorial Units of Ukraine"
-"Code of the Classification of Administrative-Territorial Units of Ukraine"
-"Code of the Classification of Administrative-Territorial Units of Ukraine"
+msgid "Code of the Classification of Administrative-Territorial Units of Ukraine"
 msgstr "Код Класифікатора адміністративно-територіальних одиниць України"
 
 #. module: l10n_ua_hr_base
@@ -443,13 +439,8 @@ msgstr "Випробувальний термін за замовчування�
 
 #. module: l10n_ua_hr_base
 #: model_terms:ir.actions.act_window,help:l10n_ua_hr_base.action_hr_staffing_table
-msgid ""
-"Define positions, staff units, and salaries for your organization structure."
-"Define positions, staff units, and salaries for your organization structure."
-"Define positions, staff units, and salaries for your organization structure."
-"Define positions, staff units, and salaries for your organization structure."
-msgstr ""
-"Визначте посади, штатні одиниці та оклади для структури вашої організації."
+msgid "Define positions, staff units, and salaries for your organization structure."
+msgstr "Визначте посади, штатні одиниці та оклади для структури вашої організації."
 
 #. module: l10n_ua_hr_base
 #: model:ir.model,name:l10n_ua_hr_base.model_hr_department
@@ -857,6 +848,19 @@ msgstr "Важкі"
 #: model:hr.employee.benefit,name:l10n_ua_hr_base.benefit_hero_ukraine
 msgid "Hero of Ukraine"
 msgstr "Герой України"
+
+#. module: l10n_ua_hr_base
+#: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_employee__hire_date
+msgid ""
+"Employee hire date. Derived from the contract versions "
+"(hr.version.contract_date_start): the start of the current continuous "
+"employment spell. Correct it on the contract version, not here — the field "
+"stays writable for data imports only."
+msgstr ""
+"Дата прийняття на роботу. Береться з версій трудового договору "
+"(hr.version.contract_date_start) — початок поточного безперервного періоду "
+"зайнятості. Виправляйте у версії контракту, а не тут — поле лишається "
+"доступним для запису тільки для імпорту даних."
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__hire_date
@@ -1520,11 +1524,7 @@ msgstr "Реєстраційний номер облікової картки п
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_employee__rnokpp
-msgid ""
-"Registration Number of the Taxpayer Account Card (Individual Tax Number)"
-"Registration Number of the Taxpayer Account Card (Individual Tax Number)"
-"Registration Number of the Taxpayer Account Card (Individual Tax Number)"
-"Registration Number of the Taxpayer Account Card (Individual Tax Number)"
+msgid "Registration Number of the Taxpayer Account Card (Individual Tax Number)"
 msgstr "Реєстраційний номер облікової картки платника податків (ІПН)"
 
 #. module: l10n_ua_hr_base
@@ -1738,18 +1738,6 @@ msgid ""
 "Overdue: Due date is already passed\n"
 "Today: Activity date is today\n"
 "Planned: Future activities."
-"Status based on activities\n"
-"Overdue: Due date is already passed\n"
-"Today: Activity date is today\n"
-"Planned: Future activities."
-"Status based on activities\n"
-"Overdue: Due date is already passed\n"
-"Today: Activity date is today\n"
-"Planned: Future activities."
-"Status based on activities\n"
-"Overdue: Due date is already passed\n"
-"Today: Activity date is today\n"
-"Planned: Future activities."
 msgstr ""
 "Статус на основі активностей\n"
 "Прострочено: Термін вже минув\n"
@@ -1813,12 +1801,6 @@ msgstr "Територіальні центри комплектування"
 #. module: l10n_ua_hr_base
 #: model_terms:ir.actions.act_window,help:l10n_ua_hr_base.action_hr_kp2010
 msgid ""
-"The KP 2010 classifier contains Ukrainian profession codes required for "
-"official reporting."
-"The KP 2010 classifier contains Ukrainian profession codes required for "
-"official reporting."
-"The KP 2010 classifier contains Ukrainian profession codes required for "
-"official reporting."
 "The KP 2010 classifier contains Ukrainian profession codes required for "
 "official reporting."
 msgstr ""
@@ -1897,11 +1879,7 @@ msgstr "Непридатний до служби"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_res_company__edrpou
-msgid ""
-"Unified State Register of Enterprises and Organizations of Ukraine code"
-"Unified State Register of Enterprises and Organizations of Ukraine code"
-"Unified State Register of Enterprises and Organizations of Ukraine code"
-"Unified State Register of Enterprises and Organizations of Ukraine code"
+msgid "Unified State Register of Enterprises and Organizations of Ukraine code"
 msgstr "Код єднодержавної реєстрації підприємств та організацій України"
 
 #. module: l10n_ua_hr_base

@@ -211,11 +211,17 @@ class HrEmployee(models.Model):
              'тому звичайний користувач не повинен мати змогу його редагувати.')
 
     # === Work Experience & Bank ===
-    hire_date = fields.Date(string='Hire Date')
+    hire_date = fields.Date(
+        string='Hire Date', compute='_compute_hire_date',
+        store=True, readonly=False, tracking=True,
+        help='Employee hire date. Derived from the contract versions '
+             '(hr.version.contract_date_start): the start of the current '
+             'continuous employment spell. Correct it on the contract version, '
+             'not here — the field stays writable for data imports only.')
     work_experience_total = fields.Float(string='Total Work Experience (years)',
                                           help='Total work experience in years')
     work_experience_company = fields.Float(string='Company Experience (years)',
-                                            compute='_compute_work_experience_company', store=True)
+                                            compute='_compute_work_experience_company')
     insurance_experience = fields.Float(string='Insurance Experience (years)',
                                          help='Insurance experience for sick leave calculation')
     bank_account_id = fields.Many2one('res.partner.bank', string='Bank Account',
@@ -406,15 +412,89 @@ class HrEmployee(models.Model):
                       'Узгодьте з ТЦК.'),
             )
 
+    # A gap of four days or more between two contract periods starts a new
+    # employment spell — the same threshold core uses in
+    # `hr.employee._get_first_version_date()`.
+    UA_EMPLOYMENT_GAP_DAYS = 4
+
+    def _get_ua_first_contract_date(self):
+        """Start of the CURRENT continuous employment spell (hr.version).
+
+        Follows the gap rule of the core helper `_get_first_version_date()`,
+        but reads `contract_date_start` / `contract_date_end` instead of the
+        computed `date_start`. Core falls back to `date_version` when a
+        version carries no contract period, which would report a hire date
+        for every employee — including legacy records imported without any
+        contract data, whose manual `hire_date` must survive.
+
+        Returns False while no version carries a contract start date.
+        """
+        self.ensure_one()
+        versions = self.with_context(active_test=False).version_ids.filtered('contract_date_start')
+        if not versions:
+            return False
+        versions = versions.sorted('contract_date_start', reverse=True)
+        anchor = versions[0].contract_date_start
+        for previous in versions[1:]:
+            # An open-ended previous period never opens a gap, exactly as core
+            # does with its date(2100, 1, 1) sentinel.
+            gap = (anchor - (previous.contract_date_end or date(2100, 1, 1))).days
+            if gap >= self.UA_EMPLOYMENT_GAP_DAYS:
+                break
+            anchor = previous.contract_date_start
+        return anchor
+
+    @api.depends('version_ids.contract_date_start', 'version_ids.contract_date_end',
+                 'version_ids.date_version', 'version_ids.active')
+    def _compute_hire_date(self):
+        """Hire date derived from the contract versions (hr.version).
+
+        The contract versions are the single source of truth. The start of the
+        CURRENT continuous employment spell (a gap of 4 days or more between
+        versions opens a new one) matches Ukrainian practice: a rehire moves
+        the vacation work-year anchor, an uninterrupted transfer does not.
+
+        A manual value is NOT overwritten while no version carries a
+        contract_date_start (legacy data import) — the same pattern core uses
+        for `hr.employee.legal_name`.
+
+        sudo() is required: `contract_date_start` is restricted to
+        groups="hr.group_hr_manager".
+        """
+        for employee in self:
+            native = employee.sudo()._get_ua_first_contract_date()
+            if native:
+                employee.hire_date = native
+            elif not employee.hire_date:
+                employee.hire_date = False
+
+    def _get_company_experience_years(self, as_of=None):
+        """Company experience in years as of `as_of` (default: today).
+
+        Measured from `hire_date` at the requested date rather than "now":
+        the seniority bonus must use the experience the employee had at the
+        payslip date, otherwise a December recomputation of a January payslip
+        would apply a different percentage.
+        """
+        self.ensure_one()
+        if not self.hire_date:
+            return 0.0
+        ref_date = as_of or fields.Date.context_today(self)
+        if ref_date < self.hire_date:
+            return 0.0
+        delta = relativedelta(ref_date, self.hire_date)
+        return delta.years + delta.months / 12.0
+
     @api.depends('hire_date')
     def _compute_work_experience_company(self):
-        today = date.today()
+        """Display-only, deliberately not stored: the value depends on today's
+        date, so a stored copy goes stale silently (it used to freeze at the
+        moment hire_date was last written). Computations must call
+        `_get_company_experience_years(as_of)` instead.
+        """
+        today = fields.Date.context_today(self)
         for employee in self:
-            if employee.hire_date:
-                delta = relativedelta(today, employee.hire_date)
-                employee.work_experience_company = delta.years + delta.months / 12.0
-            else:
-                employee.work_experience_company = 0.0
+            employee.work_experience_company = employee._get_company_experience_years(today)
 
     def _get_work_year_for_date(self, ref_date):
         """Return (period_start, period_end, period_index) of the work year
@@ -423,15 +503,12 @@ class HrEmployee(models.Model):
         Used by l10n_ua_hr_holidays to accrue annual vacations per the
         Ukrainian Vacation Law (work year = 12 months from hire_date).
 
-        Falls back to current_version_id.contract_date_start when hire_date
-        is empty. Returns (False, False, 0) when neither anchor is available
-        or ref_date precedes the hire date.
+        hire_date itself is derived from the contract versions, so no extra
+        version fallback is needed here. Returns (False, False, 0) when the
+        anchor is missing or ref_date precedes the hire date.
         """
         self.ensure_one()
         anchor = self.hire_date
-        if not anchor:
-            version = self.current_version_id
-            anchor = version.contract_date_start if version else False
         if not anchor or not ref_date or ref_date < anchor:
             return (False, False, 0)
         delta = relativedelta(ref_date, anchor)
@@ -439,6 +516,98 @@ class HrEmployee(models.Model):
         period_start = anchor + relativedelta(years=period_index - 1)
         period_end = anchor + relativedelta(years=period_index) - relativedelta(days=1)
         return (period_start, period_end, period_index)
+
+    def _get_p2_hire_date(self):
+        """Hire date printed on the П-2 card: start of the CURRENT contract.
+
+        Form П-2 (Держкомстат/Міноборони order No 495/656 of 25.12.2009)
+        documents one employment contract: it closes with a single "Дата і
+        причина звільнення" line signed by the employee, and a re-hire starts
+        a NEW card while the old one is filed for 75 years (Мін'юст order
+        No 578/5, art. 499).
+
+        The card therefore takes hr.version.contract_date_start and not
+        hire_date: the core aggregation behind hire_date merges two spells
+        whenever the gap between them is shorter than four days, which would
+        print the previous employment date on a card documenting a new
+        contract.
+
+        sudo() — contract dates live on hr.version behind
+        hr.group_hr_manager, while the card is printed by HR officers.
+        """
+        self.ensure_one()
+        version = self.sudo().current_version_id
+        return version.contract_date_start if version else False
+
+    DISABILITY_GROUP_ROMAN = {'1': 'I', '2': 'II', '3': 'III'}
+
+    def _get_p2_additional_info(self):
+        """Text for the "Додаткові відомості" line of the П-2 card.
+
+        The form carries one free line there, so the disability data is
+        rendered as a sentence instead of a table. Values the system does not
+        hold — the certificate series and number — stay as blanks for a
+        handwritten entry, the same way the printed form does it.
+        """
+        self.ensure_one()
+        group = self.DISABILITY_GROUP_ROMAN.get(self.disability_group)
+        if not group:
+            return ''
+        act_date = (self.disability_date_from.strftime('%d.%m.%Y')
+                    if self.disability_date_from else '____________')
+        # The reason follows the group in brackets, the way the card used to
+        # show it in the dropped table.
+        reason = ' (%s)' % self.disability_reason.strip() if self.disability_reason else ''
+        text = (
+            'Інвалідність %s групи%s, посвідчення серія ______ № ______, '
+            'довідка до акта МСЕК (витяг рішення експертної комісії) '
+            'від %s № %s'
+            % (group, reason, act_date, self.disability_document or '______')
+        )
+        # An open-ended disability carries no expiry date, so the clause is
+        # appended only when one is set.
+        if self.disability_date_to:
+            text += ', строком до %s' % self.disability_date_to.strftime('%d.%m.%Y')
+        return text
+
+    def _get_p2_dismissal_text(self):
+        """Text filling the "Дата і причина звільнення (підстава)" line.
+
+        Built from the confirmed dismissal order as
+        "<date> <reason>, наказ № <number> від <order date>". Returns an empty
+        string while no dismissal order is confirmed, so the form keeps its
+        blank line for a handwritten entry.
+
+        The order model lives in l10n_ua_hr_documents, which this module does
+        not depend on — hence the presence check.
+        """
+        self.ensure_one()
+        if 'hr.order' not in self.env:
+            return ''
+        order = self.env['hr.order'].sudo().search([
+            ('employee_id', '=', self.id),
+            ('order_type', '=', 'dismissal'),
+            ('state', '=', 'confirmed'),
+        ], order='date_dismissal desc, date desc, id desc', limit=1)
+        if not order:
+            return ''
+        parts = []
+        dismissal_date = order.date_dismissal or order.date
+        if dismissal_date:
+            parts.append(dismissal_date.strftime('%d.%m.%Y'))
+        if order.dismissal_reason:
+            # The reason is a Text field; the form line takes a single line.
+            parts.append(' '.join(order.dismissal_reason.split()))
+        reference = []
+        if order.name and order.name != 'New':
+            reference.append('наказ № %s' % order.name)
+        if order.date:
+            reference.append('від %s' % order.date.strftime('%d.%m.%Y'))
+        text = ' '.join(parts)
+        if reference:
+            reference = ' '.join(reference)
+            text = '%s, %s' % (text, reference) if text else reference
+        return text
 
     @api.onchange('registration_same_as_actual', *REGISTRATION_ADDRESS_MAP)
     def _onchange_registration_same_as_actual(self):
