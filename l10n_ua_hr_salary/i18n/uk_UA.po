@@ -1131,9 +1131,8 @@ msgstr "Номер"
 
 #. module: l10n_ua_hr_salary
 #: model:ir.model.fields,help:l10n_ua_hr_salary.field_hr_payslip__rnokpp
-msgid ""
-"Registration Number of the Taxpayer Account Card (Individual Tax Number)"
-msgstr ""
+msgid "Registration Number of the Taxpayer Account Card (Individual Tax Number)"
+msgstr "Реєстраційний номер облікової картки платника податків (ІПН)"
 
 #. module: l10n_ua_hr_salary
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_execution_document__remaining_amount
@@ -1226,6 +1225,10 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
+"Статус на основі активностей\n"
+"Прострочено: Термін вже минув\n"
+"Сьогодні: Дата активності сьогодні\n"
+"Заплановано: Майбутні активності."
 
 #. module: l10n_ua_hr_salary
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_psp_parameters__subsistence_minimum

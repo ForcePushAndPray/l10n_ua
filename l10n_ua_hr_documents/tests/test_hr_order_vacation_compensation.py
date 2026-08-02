@@ -18,11 +18,16 @@ class TestVacationCompensation(TransactionCase):
             'name': 'Звільнюваний Працівник',
             'company_id': cls.company.id,
         })
-        cls.leave_type = cls.env['hr.leave.type'].search([], limit=1)
-        if not cls.leave_type:
-            cls.leave_type = cls.env['hr.leave.type'].create({
-                'name': 'Щорічна основна',
-            })
+        # Own leave type instead of "whatever comes first in the database":
+        # the result depends on the type's transfer rules, so picking an
+        # arbitrary one made the outcome depend on the installed modules.
+        # Non-transferable keeps each year's days inside their own period,
+        # which is what the year-scoping test below is about; carry-over is
+        # covered separately by test_transferable_type_carries_previous_years.
+        cls.leave_type = cls.env['hr.leave.type'].create({
+            'name': 'Annual Basic (compensation test)',
+            'is_transferable': False,
+        })
 
     def _balance(self, year, entitled):
         return self.env['hr.vacation.balance'].create({
@@ -58,6 +63,29 @@ class TestVacationCompensation(TransactionCase):
         self._balance(2027, 8)
         order = self._dismissal(date(2026, 7, 1))
         self.assertAlmostEqual(order.unused_vacation_days, 3, places=2)
+
+    def test_transferable_type_carries_previous_years(self):
+        """A transferable type rolls last year's unused days into the
+        dismissal year, and they are compensated too.
+
+        Art. 24 of the Vacation Law requires compensating every unused day,
+        not only the dismissal year's entitlement. The year-scoped search
+        still holds: the older balance is not counted twice, its remainder
+        reaches the total through carried_over.
+        """
+        leave_type = self.env['hr.leave.type'].create({
+            'name': 'Annual Basic transferable (compensation test)',
+            'is_transferable': True,
+        })
+        for year, days in ((2025, 8), (2026, 3)):
+            self.env['hr.vacation.balance'].create({
+                'employee_id': self.employee.id,
+                'leave_type_id': leave_type.id,
+                'year': year,
+                'entitled_days': days,
+            })
+        order = self._dismissal(date(2026, 7, 1))
+        self.assertAlmostEqual(order.unused_vacation_days, 11, places=2)
 
     def test_manual_override_persists(self):
         """A hand-entered day count is kept (field is editable)."""

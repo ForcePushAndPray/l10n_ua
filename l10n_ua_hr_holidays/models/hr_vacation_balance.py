@@ -204,29 +204,14 @@ class HrVacationBalance(models.Model):
 
     @api.model
     def _employee_hire_anchor(self, employee):
-        """Explicit hire date used to bound accounting periods and to block
-        pre-hire leaves/periods. Only employee.hire_date (the UA-managed
-        field) is used here — the work-year anchor keeps its own
-        contract_date_start fallback in hr.employee._get_work_year_for_date,
-        but the hard block relies on the value HR actually maintains."""
-        return employee.hire_date if employee else False
+        """Hire date that bounds accounting periods, blocks pre-hire
+        leaves/periods and starts the period-chain backfill.
 
-    @api.model
-    def _employee_period_anchor(self, employee):
-        """Date the employee's accounting history starts from: hire_date,
-        falling back to the current contract start (same anchor
-        hr.employee._get_work_year_for_date uses). Used as the walk's starting
-        point when backfilling the full period chain — unlike
-        _employee_hire_anchor, which stays hire_date-only for pre-hire
-        blocking. Without this fallback an employee with a contract but no
-        hire_date would backfill only the current period."""
-        if not employee:
-            return False
-        if employee.hire_date:
-            return employee.hire_date
-        version = (employee.current_version_id
-                   if 'current_version_id' in employee._fields else False)
-        return version.contract_date_start if version else False
+        Single source: employee.hire_date, which itself derives from the
+        contract versions (hr.version.contract_date_start) — so no separate
+        version fallback is needed here or in
+        hr.employee._get_work_year_for_date."""
+        return employee.hire_date if employee else False
 
     @api.model
     def _ref_date_for_year(self, year):
@@ -407,10 +392,9 @@ class HrVacationBalance(models.Model):
             return self.browse()
         if up_to_date is None:
             up_to_date = fields.Date.today()
-        # Walk from the employment anchor (hire_date or contract start)
-        # forward so the whole history is filled; with no anchor at all we can
-        # only handle the current period.
-        cursor = self._employee_period_anchor(employee) or up_to_date
+        # Walk from the employment anchor forward so the whole history is
+        # filled; with no anchor at all we can only handle the current period.
+        cursor = self._employee_hire_anchor(employee) or up_to_date
         created = self.browse()
         guard = 0
         while cursor <= up_to_date and guard < 200:
@@ -596,6 +580,16 @@ class HrVacationBalance(models.Model):
             leave_type = self.env['hr.leave.type'].browse(vals.get('leave_type_id'))
             year = vals.get('year') or fields.Date.today().year
             ref_date = self._ref_date_for_year(year)
+            # A reference date earlier in the year than the hire anniversary
+            # resolves no work year at all (the employee was not hired yet on
+            # that day) and would drop the balance to the calendar fallback
+            # below. This happens whenever a period is created for a year the
+            # employee is hired into — e.g. the transfer wizard carrying
+            # vacation days into a future-dated hire. Start the lookup at the
+            # hire anchor instead: same year, but inside the employment.
+            hire = self._employee_hire_anchor(employee)
+            if hire and hire.year == ref_date.year and ref_date < hire:
+                ref_date = hire
             start, end, index = self._get_period_for(employee, leave_type, ref_date)
             if not start:
                 # Work-year type without hire anchor: calendar fallback
@@ -713,10 +707,7 @@ class HrVacationBalance(models.Model):
         self.ensure_one()
         if self.period_type != 'work' or not self.employee_id:
             return
-        anchor = self.employee_id.hire_date
-        if not anchor:
-            version = self.employee_id.current_version_id
-            anchor = version.contract_date_start if version else False
+        anchor = self._employee_hire_anchor(self.employee_id)
         if not anchor:
             return
         index = (self.year or anchor.year) - anchor.year + 1

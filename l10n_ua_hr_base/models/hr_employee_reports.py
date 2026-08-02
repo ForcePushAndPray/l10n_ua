@@ -26,7 +26,12 @@ def _was_employed_on(employee, as_of):
     if not as_of:
         return True
 
-    employee = employee.with_context(active_test=False)
+    # Contract dates live on hr.version behind hr.group_hr_manager, while the
+    # reports built on this helper are open to HR officers (see
+    # ir.model.access.csv). Read the dates as superuser: the caller already
+    # selected the employees under its own access rights, and only the dates
+    # behind the employed/not-employed decision are read here.
+    employee = employee.sudo().with_context(active_test=False)
 
     def has(rec, name):
         return name in rec._fields
@@ -54,10 +59,7 @@ def _was_employed_on(employee, as_of):
     if has_any_version_date:
         return False
 
-    hire_candidates = [employee.hire_date]
-    if has(employee, 'first_contract_date'):
-        hire_candidates.append(employee.first_contract_date)
-    if not any(d and d <= as_of for d in hire_candidates):
+    if not employee.hire_date or employee.hire_date > as_of:
         return False
 
     departure = employee.departure_date if has(employee, 'departure_date') else False
