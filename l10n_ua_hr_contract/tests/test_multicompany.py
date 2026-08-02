@@ -14,7 +14,6 @@ class TestMultiCompanyRules(TransactionCase):
         'l10n_ua_hr_contract.hr_job_combining_company_rule',
         'l10n_ua_hr_contract.hr_version_amendment_company_rule',
         'l10n_ua_hr_contract.hr_version_salary_change_company_rule',
-        'l10n_ua_hr_contract.hr_work_schedule_company_rule',
     ]
 
     def test_rules_exist_and_global(self):

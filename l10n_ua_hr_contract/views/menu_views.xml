@@ -27,12 +27,6 @@
               action="action_hr_allowance_type"
               sequence="40"/>
 
-    <menuitem id="menu_hr_work_schedule"
-              name="Work Schedules"
-              parent="hr.menu_human_resources_configuration"
-              action="action_hr_work_schedule"
-              sequence="41"/>
-
     <menuitem id="menu_hr_termination_reason"
               name="Termination Reasons"
               parent="hr.menu_human_resources_configuration"

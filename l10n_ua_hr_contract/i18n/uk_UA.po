@@ -22,11 +22,6 @@ msgid "1.0 = full rate, 0.5 = half rate, etc."
 msgstr "1.0 = повна ставка, 0.5 = половина ставки тощо"
 
 #. module: l10n_ua_hr_contract
-#: model:hr.work.schedule,name:l10n_ua_hr_contract.work_schedule_6day
-msgid "6-денний робочий тиждень"
-msgstr "6-денний робочий тиждень"
-
-#. module: l10n_ua_hr_contract
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__message_needaction
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_amendment__message_needaction
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_salary_change__message_needaction
@@ -42,7 +37,6 @@ msgstr "Активувати"
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__active
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__active
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_allowance__is_active
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__active
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_job_combining__state__active
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_job_combining_search
 msgid "Active"
@@ -185,16 +179,6 @@ msgid "Beyond Control (Art. 36 p.3,4,6,7,8)"
 msgstr "Незалежні обставини (ст. 36 п.3,4,6,7,8)"
 
 #. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__break_from
-msgid "Break From"
-msgstr "Перерва з"
-
-#. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__break_to
-msgid "Break To"
-msgstr "Перерва до"
-
-#. module: l10n_ua_hr_contract
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_termination_reason__category__agreement
 msgid "By Agreement (Art. 36 p.1)"
 msgstr "За угодою сторін (ст. 36 п.1)"
@@ -262,7 +246,6 @@ msgstr "Цивільно-правовий договір"
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__code
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__code
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__code
 msgid "Code"
 msgstr "Код"
 
@@ -282,7 +265,6 @@ msgstr "Суміщувана посада"
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__company_id
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_amendment__company_id
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_salary_change__company_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__company_id
 msgid "Company"
 msgstr "Компанія"
 
@@ -336,19 +318,12 @@ msgid "Create your first termination reason"
 msgstr "Створіть першу причину звільнення"
 
 #. module: l10n_ua_hr_contract
-#: model_terms:ir.actions.act_window,help:l10n_ua_hr_contract.action_hr_work_schedule
-msgid "Create your first work schedule"
-msgstr "Створіть перший графік роботи"
-
-#. module: l10n_ua_hr_contract
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__create_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__create_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__create_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_allowance__create_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_amendment__create_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_salary_change__create_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__create_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__create_uid
 msgid "Created by"
 msgstr "Створив"
 
@@ -359,8 +334,6 @@ msgstr "Створив"
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_allowance__create_date
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_amendment__create_date
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_salary_change__create_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__create_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__create_date
 msgid "Created on"
 msgstr "Створено"
 
@@ -384,11 +357,6 @@ msgid "Date To"
 msgstr "Дата до"
 
 #. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__day_of_week
-msgid "Day of Week"
-msgstr "День тижня"
-
-#. module: l10n_ua_hr_contract
 #: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_termination_reason__notice_days
 msgid "Days of advance notice required"
 msgstr "Необхідна кількість днів попередження"
@@ -407,8 +375,6 @@ msgstr "Відсоток за замовчуванням"
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__description
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__description
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_amendment__description
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__description
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_work_schedule_view_form
 msgid "Description"
 msgstr "Опис"
 
@@ -433,8 +399,6 @@ msgstr "Працівник Дія.Сіті"
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_allowance__display_name
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_amendment__display_name
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_salary_change__display_name
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__display_name
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__display_name
 msgid "Display Name"
 msgstr "Відображуване ім'я"
 
@@ -526,7 +490,6 @@ msgstr "Фіксована сума доплати"
 
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_version__work_mode__flexible
-#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule__schedule_type__flexible
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__resource_calendar__ua_schedule_type__flexible
 msgid "Flexible Schedule"
 msgstr "Гнучкий графік"
@@ -551,11 +514,6 @@ msgstr "Підписники (Партнери)"
 #: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_version_salary_change__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
 msgstr "Іконка Font Awesome, напр. fa-tasks"
-
-#. module: l10n_ua_hr_contract
-#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule_line__day_of_week__4
-msgid "Friday"
-msgstr "П'ятниця"
 
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__full_reference
@@ -619,7 +577,6 @@ msgid "Hazardous (Шкідливі)"
 msgstr "Шкідливі"
 
 #. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__is_hazardous
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_allowance_type__category__hazard
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_resource_calendar__ua_is_hazardous
 msgid "Hazardous Conditions"
@@ -643,14 +600,8 @@ msgid "Hire Order Number"
 msgstr "Номер наказу про прийняття"
 
 #. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__hours_per_day
-msgid "Hours per Day"
-msgstr "Годин на день"
-
-#. module: l10n_ua_hr_contract
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_employee__working_hours_week
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version__working_hours_week
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__hours_per_week
 msgid "Hours per Week"
 msgstr "Годин на тиждень"
 
@@ -669,8 +620,6 @@ msgstr "Гібридна робота"
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_allowance__id
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_amendment__id
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_salary_change__id
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__id
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__id
 msgid "ID"
 msgstr "ID"
 
@@ -706,7 +655,6 @@ msgid "If checked, some messages have a delivery error."
 msgstr "Якщо позначено, деякі повідомлення мають помилку доставки."
 
 #. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__is_night_work
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_resource_calendar__ua_is_night_work
 msgid "Includes Night Work"
 msgstr "Включає нічну роботу"
@@ -751,8 +699,6 @@ msgstr "Стаття КЗпП"
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_allowance__write_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_amendment__write_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_salary_change__write_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__write_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__write_uid
 msgid "Last Updated by"
 msgstr "Оновив"
 
@@ -763,15 +709,8 @@ msgstr "Оновив"
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_allowance__write_date
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_amendment__write_date
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_salary_change__write_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__write_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__write_date
 msgid "Last Updated on"
 msgstr "Оновлено"
-
-#. module: l10n_ua_hr_contract
-#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_work_schedule__resource_calendar_id
-msgid "Link to Odoo resource calendar for employee scheduling integration"
-msgstr "Посилання на календар ресурсів Odoo для інтеграції планування працівників"
 
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_employee__is_main_workplace
@@ -794,11 +733,6 @@ msgid "Messages"
 msgstr "Повідомлення"
 
 #. module: l10n_ua_hr_contract
-#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule_line__day_of_week__0
-msgid "Monday"
-msgstr "Понеділок"
-
-#. module: l10n_ua_hr_contract
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_job_combining__my_activity_date_deadline
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_amendment__my_activity_date_deadline
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_salary_change__my_activity_date_deadline
@@ -808,7 +742,6 @@ msgstr "Термін моєї активності"
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__name
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__name
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__name
 msgid "Name"
 msgstr "Назва"
 
@@ -856,13 +789,11 @@ msgid "Next Activity Type"
 msgstr "Тип наступної активності"
 
 #. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__night_end_hour
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_resource_calendar__ua_night_end_hour
 msgid "Night End Hour"
 msgstr "Кінець нічного часу"
 
 #. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__night_start_hour
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_resource_calendar__ua_night_start_hour
 msgid "Night Start Hour"
 msgstr "Початок нічного часу"
@@ -1079,7 +1010,6 @@ msgid "Record job combining for employees"
 msgstr "Оформлення суміщення посад для працівників"
 
 #. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__reduced_hours
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_resource_calendar__ua_reduced_hours
 msgid "Reduced Working Hours"
 msgstr "Скорочений робочий час"
@@ -1144,35 +1074,9 @@ msgid "Salary Changes"
 msgstr "Зміни окладу"
 
 #. module: l10n_ua_hr_contract
-#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule_line__day_of_week__5
-msgid "Saturday"
-msgstr "Субота"
-
-#. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__schedule_id
-msgid "Schedule"
-msgstr "Графік"
-
-#. module: l10n_ua_hr_contract
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_version_amendment__amendment_type__schedule
 msgid "Schedule Change"
 msgstr "Зміна графіка"
-
-#. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__line_ids
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_work_schedule_view_form
-msgid "Schedule Lines"
-msgstr "Рядки графіка"
-
-#. module: l10n_ua_hr_contract
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_work_schedule_view_form
-msgid "Schedule Name"
-msgstr "Назва графіка"
-
-#. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__schedule_type
-msgid "Schedule Type"
-msgstr "Тип графіка"
 
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_version__contract_type_ua__seasonal
@@ -1188,7 +1092,6 @@ msgstr "Стаж"
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_allowance_type__sequence
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_termination_reason__sequence
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version_allowance__sequence
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__sequence
 msgid "Sequence"
 msgstr "Послідовність"
 
@@ -1198,15 +1101,9 @@ msgid "Severance Pay Required"
 msgstr "Потрібна вихідна допомога"
 
 #. module: l10n_ua_hr_contract
-#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule__schedule_type__shift
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__resource_calendar__ua_schedule_type__shift
 msgid "Shift Work"
 msgstr "Змінна робота"
-
-#. module: l10n_ua_hr_contract
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_work_schedule_view_form
-msgid "Special Conditions"
-msgstr "Особливі умови"
 
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_employee__staffing_line_id
@@ -1215,7 +1112,6 @@ msgid "Staffing Position"
 msgstr "Штатна позиція"
 
 #. module: l10n_ua_hr_contract
-#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule__schedule_type__standard
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__resource_calendar__ua_schedule_type__standard
 msgid "Standard (5-day week)"
 msgstr "Стандартний (5-денний тиждень)"
@@ -1252,15 +1148,9 @@ msgid ""
 msgstr ""
 
 #. module: l10n_ua_hr_contract
-#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule__schedule_type__summarized
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__resource_calendar__ua_schedule_type__summarized
 msgid "Summarized Accounting"
 msgstr "Підсумований облік"
-
-#. module: l10n_ua_hr_contract
-#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule_line__day_of_week__6
-msgid "Sunday"
-msgstr "Неділя"
 
 #. module: l10n_ua_hr_contract
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.view_hr_job_combining_form
@@ -1345,11 +1235,6 @@ msgid "Three Months Salary"
 msgstr "Тримісячний оклад"
 
 #. module: l10n_ua_hr_contract
-#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule_line__day_of_week__3
-msgid "Thursday"
-msgstr "Четвер"
-
-#. module: l10n_ua_hr_contract
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_employee_view_form_version_ua
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_version_allowance_view_list
 msgid "Total"
@@ -1380,11 +1265,6 @@ msgstr ""
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_termination_reason__category__transfer
 msgid "Transfer (Art. 36 p.5)"
 msgstr "Переведення (ст. 36 п.5)"
-
-#. module: l10n_ua_hr_contract
-#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule_line__day_of_week__1
-msgid "Tuesday"
-msgstr "Вівторок"
 
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_termination_reason__compensation_amount__two_months
@@ -1451,11 +1331,6 @@ msgid "Website communication history"
 msgstr "Історія комунікації веб-сайту"
 
 #. module: l10n_ua_hr_contract
-#: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_work_schedule_line__day_of_week__2
-msgid "Wednesday"
-msgstr "Середа"
-
-#. module: l10n_ua_hr_contract
 #: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_termination_reason__requires_compensation
 msgid "Whether severance pay is required by law"
 msgstr "Чи потрібна вихідна допомога за законом"
@@ -1470,11 +1345,6 @@ msgstr "Умови праці"
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_version_amendment__amendment_type__conditions
 msgid "Work Conditions Change"
 msgstr "Зміна умов праці"
-
-#. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__work_from
-msgid "Work From"
-msgstr "Робота з"
 
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__hr_allowance_type__category__intensity
@@ -1492,55 +1362,6 @@ msgstr "Режим роботи"
 #: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version__work_rate
 msgid "Work Rate"
 msgstr "Ставка"
-
-#. module: l10n_ua_hr_contract
-#: model:ir.model,name:l10n_ua_hr_contract.model_hr_work_schedule
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_work_schedule_view_form
-msgid "Work Schedule"
-msgstr "Графік роботи"
-
-#. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_employee__work_schedule_ua_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_version__work_schedule_ua_id
-msgid "Work Schedule (UA)"
-msgstr "Графік роботи (UA)"
-
-#. module: l10n_ua_hr_contract
-#: model:ir.model,name:l10n_ua_hr_contract.model_hr_work_schedule_line
-msgid "Work Schedule Line"
-msgstr "Рядок графіка роботи"
-
-#. module: l10n_ua_hr_contract
-#: model:ir.actions.act_window,name:l10n_ua_hr_contract.action_hr_work_schedule
-#: model:ir.ui.menu,name:l10n_ua_hr_contract.menu_hr_work_schedule
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_work_schedule_view_tree
-msgid "Work Schedules"
-msgstr "Графіки роботи"
-
-#. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__work_to
-msgid "Work To"
-msgstr "Робота до"
-
-#. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__is_working_day
-msgid "Working Day"
-msgstr "Робочий день"
-
-#. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__working_days_per_week
-msgid "Working Days per Week"
-msgstr "Робочих днів на тиждень"
-
-#. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule_line__working_hours
-msgid "Working Hours"
-msgstr "Робочі години"
-
-#. module: l10n_ua_hr_contract
-#: model:ir.model.fields,field_description:l10n_ua_hr_contract.field_hr_work_schedule__resource_calendar_id
-msgid "Working Hours Calendar"
-msgstr "Календар робочих годин"
 
 #. module: l10n_ua_hr_contract
 #: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_termination_reason__article
@@ -1570,11 +1391,6 @@ msgstr ""
 #. module: l10n_ua_hr_contract
 #: model:hr.termination.reason,name:l10n_ua_hr_contract.termination_reason_theft
 msgid "Вчинення за місцем роботи розкрадання"
-msgstr ""
-
-#. module: l10n_ua_hr_contract
-#: model:hr.work.schedule,name:l10n_ua_hr_contract.work_schedule_flexible
-msgid "Гнучкий графік"
 msgstr ""
 
 #. module: l10n_ua_hr_contract
@@ -1658,21 +1474,6 @@ msgid "Зміни зарплати"
 msgstr ""
 
 #. module: l10n_ua_hr_contract
-#: model:hr.work.schedule,name:l10n_ua_hr_contract.work_schedule_shift_2x2
-msgid "Змінний 2/2 (12 год)"
-msgstr ""
-
-#. module: l10n_ua_hr_contract
-#: model:hr.work.schedule,name:l10n_ua_hr_contract.work_schedule_shift_3x3
-msgid "Змінний 3/3 (8 год)"
-msgstr ""
-
-#. module: l10n_ua_hr_contract
-#: model:hr.work.schedule,name:l10n_ua_hr_contract.work_schedule_shift_1x3
-msgid "Змінний доба/три"
-msgstr ""
-
-#. module: l10n_ua_hr_contract
 #: model:hr.termination.reason,name:l10n_ua_hr_contract.termination_reason_liquidation
 msgid "Ліквідація підприємства"
 msgstr ""
@@ -1700,11 +1501,6 @@ msgstr ""
 #. module: l10n_ua_hr_contract
 #: model:hr.termination.reason,name:l10n_ua_hr_contract.termination_reason_probation
 msgid "Незадовільний результат випробування"
-msgstr ""
-
-#. module: l10n_ua_hr_contract
-#: model:hr.work.schedule,name:l10n_ua_hr_contract.work_schedule_part_time_20
-msgid "Неповний робочий день (0.5 ставки)"
 msgstr ""
 
 #. module: l10n_ua_hr_contract
@@ -1743,23 +1539,8 @@ msgid "Прогул"
 msgstr ""
 
 #. module: l10n_ua_hr_contract
-#: model:hr.work.schedule,name:l10n_ua_hr_contract.work_schedule_summarized
-msgid "Підсумований облік (місяць)"
-msgstr ""
-
-#. module: l10n_ua_hr_contract
 #: model:hr.termination.reason,name:l10n_ua_hr_contract.termination_reason_systematic
 msgid "Систематичне невиконання обов'язків"
-msgstr ""
-
-#. module: l10n_ua_hr_contract
-#: model:hr.work.schedule,name:l10n_ua_hr_contract.work_schedule_standard_24
-msgid "Скорочений (24 год/тиждень)"
-msgstr ""
-
-#. module: l10n_ua_hr_contract
-#: model:hr.work.schedule,name:l10n_ua_hr_contract.work_schedule_standard_36
-msgid "Скорочений 5-денний (36 год/тиждень)"
 msgstr ""
 
 #. module: l10n_ua_hr_contract
@@ -1770,11 +1551,6 @@ msgstr ""
 #. module: l10n_ua_hr_contract
 #: model:hr.termination.reason,name:l10n_ua_hr_contract.termination_reason_death
 msgid "Смерть працівника"
-msgstr ""
-
-#. module: l10n_ua_hr_contract
-#: model:hr.work.schedule,name:l10n_ua_hr_contract.work_schedule_standard_40
-msgid "Стандартний 5-денний (40 год/тиждень)"
 msgstr ""
 
 #. module: l10n_ua_hr_contract

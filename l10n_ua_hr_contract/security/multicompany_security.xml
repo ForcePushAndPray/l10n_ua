@@ -35,14 +35,5 @@
             </field>
         </record>
 
-        <record id="hr_work_schedule_company_rule" model="ir.rule">
-            <field name="name">Графік роботи: multi-company</field>
-            <field name="model_id" ref="model_hr_work_schedule"/>
-            <field name="global" eval="True"/>
-            <field name="domain_force">
-                ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
-            </field>
-        </record>
-
     </data>
 </odoo>

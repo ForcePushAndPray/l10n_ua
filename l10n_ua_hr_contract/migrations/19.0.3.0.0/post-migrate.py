@@ -153,6 +153,16 @@ def migrate(cr, version):
 
     env = api.Environment(cr, SUPERUSER_ID, {})
 
+    if 'work_schedule_ua_id' not in env['hr.version']._fields:
+        # 19.0.4.0.0 dropped hr.work.schedule and the legacy field, so this
+        # script has nothing left to read. It can only be reached by an
+        # upgrade that jumps over 19.0.3.0.0, which 19.0.4.0.0/pre-migrate
+        # refuses precisely because the mapping below would be lost.
+        _logger.info(
+            "l10n_ua_hr_contract 19.0.3.0.0: legacy work schedules already "
+            "removed, nothing to map")
+        return
+
     cr.execute(
         "SELECT EXISTS (SELECT FROM information_schema.tables "
         "WHERE table_name = 'hr_work_schedule')")
