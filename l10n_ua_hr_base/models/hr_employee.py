@@ -388,27 +388,57 @@ class HrEmployee(models.Model):
                       'Узгодьте з ТЦК.'),
             )
 
+    # A gap of four days or more between two contract periods starts a new
+    # employment spell — the same threshold core uses in
+    # `hr.employee._get_first_version_date()`.
+    UA_EMPLOYMENT_GAP_DAYS = 4
+
+    def _get_ua_first_contract_date(self):
+        """Start of the CURRENT continuous employment spell (hr.version).
+
+        Follows the gap rule of the core helper `_get_first_version_date()`,
+        but reads `contract_date_start` / `contract_date_end` instead of the
+        computed `date_start`. Core falls back to `date_version` when a
+        version carries no contract period, which would report a hire date
+        for every employee — including legacy records imported without any
+        contract data, whose manual `hire_date` must survive.
+
+        Returns False while no version carries a contract start date.
+        """
+        self.ensure_one()
+        versions = self.with_context(active_test=False).version_ids.filtered('contract_date_start')
+        if not versions:
+            return False
+        versions = versions.sorted('contract_date_start', reverse=True)
+        anchor = versions[0].contract_date_start
+        for previous in versions[1:]:
+            # An open-ended previous period never opens a gap, exactly as core
+            # does with its date(2100, 1, 1) sentinel.
+            gap = (anchor - (previous.contract_date_end or date(2100, 1, 1))).days
+            if gap >= self.UA_EMPLOYMENT_GAP_DAYS:
+                break
+            anchor = previous.contract_date_start
+        return anchor
+
     @api.depends('version_ids.contract_date_start', 'version_ids.contract_date_end',
                  'version_ids.date_version', 'version_ids.active')
     def _compute_hire_date(self):
         """Hire date derived from the contract versions (hr.version).
 
-        The contract versions are the single source of truth. The core helper
-        `_get_first_contract_date()` returns the start of the CURRENT
-        continuous employment spell (a gap of 4 days or more between versions
-        opens a new one), which matches Ukrainian practice: a rehire moves the
-        vacation work-year anchor, an uninterrupted transfer does not.
+        The contract versions are the single source of truth. The start of the
+        CURRENT continuous employment spell (a gap of 4 days or more between
+        versions opens a new one) matches Ukrainian practice: a rehire moves
+        the vacation work-year anchor, an uninterrupted transfer does not.
 
         A manual value is NOT overwritten while no version carries a
         contract_date_start (legacy data import) — the same pattern core uses
         for `hr.employee.legal_name`.
 
-        sudo() is required: `_get_first_versions_filtered()` demands
-        hr.group_hr_user and `contract_date_start` is restricted to
+        sudo() is required: `contract_date_start` is restricted to
         groups="hr.group_hr_manager".
         """
         for employee in self:
-            native = employee.sudo()._get_first_contract_date()
+            native = employee.sudo()._get_ua_first_contract_date()
             if native:
                 employee.hire_date = native
             elif not employee.hire_date:

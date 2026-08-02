@@ -2,7 +2,7 @@
 
 `hr.employee.hire_date` is now computed (store=True, readonly=False) from
 `hr.version.contract_date_start` through the core helper
-`_get_first_contract_date()`. The database column already exists, so Odoo
+`_get_ua_first_contract_date()`. The database column already exists, so Odoo
 does NOT recompute it on upgrade by itself — this migration does it
 explicitly.
 
@@ -29,7 +29,7 @@ def _log_divergences(employees):
     """Report employees whose manual hire_date differs from the versions."""
     diverged = 0
     for employee in employees:
-        native = employee.sudo()._get_first_contract_date()
+        native = employee.sudo()._get_ua_first_contract_date()
         if native and employee.hire_date and native != employee.hire_date:
             diverged += 1
             _logger.warning(
@@ -74,7 +74,7 @@ def _backfill_contract_dates(employees):
     for employee in employees:
         if not employee.hire_date:
             continue
-        if employee.sudo()._get_first_contract_date():
+        if employee.sudo()._get_ua_first_contract_date():
             continue
         versions = employee.with_context(active_test=False).version_ids
         if not versions:

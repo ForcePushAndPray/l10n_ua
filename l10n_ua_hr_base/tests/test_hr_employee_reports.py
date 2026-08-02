@@ -1,8 +1,14 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from odoo.tests import tagged
+
 from .common import TestHrUaBase
 
 
+# post_install: hr.version carries required columns added by the modules that
+# depend on this one (l10n_ua_hr_salary.salary_form), whose defaults are not in
+# the registry yet while at_install tests run.
+@tagged('post_install', '-at_install')
 class TestHrEmployeeReports(TestHrUaBase):
 
     def _set_contract_period(self, employee, start, end=False):
