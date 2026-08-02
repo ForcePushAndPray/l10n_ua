@@ -51,15 +51,9 @@ msgid "Activity Type Icon"
 msgstr "Іконка типу активності"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__actual_address
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
-msgid "Actual Address"
-msgstr "Фактична адреса"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_employee__actual_same_as_registration
-msgid "Actual address is the same as registration address"
-msgstr "Фактична адреса співпадає з адресою реєстрації"
+#: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_employee__registration_same_as_actual
+msgid "When checked, registration address fields are automatically copied from native Odoo private_* fields."
+msgstr "Якщо увімкнено, адреса реєстрації автоматично копіюється з приватної адреси проживання та приховується з форми."
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_tcc__address
@@ -1504,6 +1498,7 @@ msgstr "Номер запису"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_tcc__region_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
 msgid "Region"
 msgstr "Область"
 
@@ -1513,7 +1508,6 @@ msgid "Registration"
 msgstr "Реєстрація"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__registration_address
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
 msgid "Registration Address"
 msgstr "Адреса реєстрації"
@@ -1607,9 +1601,9 @@ msgid "Salary:"
 msgstr "Оклад:"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__actual_same_as_registration
-msgid "Same as Registration"
-msgstr "Співпадає з реєстрацією"
+#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__registration_same_as_actual
+msgid "Registration Address Same as Private Address"
+msgstr "Адреса реєстрації збігається з адресою проживання"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_kp2010__section_code
@@ -2025,3 +2019,33 @@ msgstr "Табельний номер працівника згідно з ук�
 #: model:ir.sequence,name:l10n_ua_hr_base.seq_hr_employee_number
 msgid "Employee Personnel Number"
 msgstr "Табельний номер співробітника"
+
+#. module: l10n_ua_hr_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
+msgid "City"
+msgstr "Місто"
+
+#. module: l10n_ua_hr_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
+msgid "ZIP"
+msgstr "Індекс"
+
+#. module: l10n_ua_hr_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
+msgid "Street..."
+msgstr "Вулиця..."
+
+#. module: l10n_ua_hr_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
+msgid "Street 2..."
+msgstr "Вулиця 2..."
+
+#. module: l10n_ua_hr_base
+#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__registration_street
+msgid "Registration Street"
+msgstr "Вулиця реєстрації"
+
+#. module: l10n_ua_hr_base
+#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__registration_street2
+msgid "Registration Street 2"
+msgstr "Вулиця реєстрації 2"

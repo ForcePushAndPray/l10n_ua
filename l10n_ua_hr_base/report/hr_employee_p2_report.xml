@@ -169,18 +169,18 @@
                         <td style="border: 1px solid #000; padding: 3px;">8.</td>
                         <td style="border: 1px solid #000; padding: 3px;">Місце проживання (реєстрації)</td>
                         <td style="border: 1px solid #000; padding: 3px;" colspan="3">
-                            <t t-esc="employee.registration_address or ''"/>
+                            <t t-esc="employee._get_ua_registration_address_display()"/>
                         </td>
                     </tr>
                     <tr>
                         <td style="border: 1px solid #000; padding: 3px;"></td>
                         <td style="border: 1px solid #000; padding: 3px;">Фактичне місце проживання</td>
                         <td style="border: 1px solid #000; padding: 3px;" colspan="3">
-                            <t t-if="employee.actual_same_as_registration">
+                            <t t-if="employee.registration_same_as_actual">
                                 (те саме)
                             </t>
                             <t t-else="">
-                                <t t-esc="employee.actual_address or ''"/>
+                                <t t-esc="employee._get_ua_actual_address_display()"/>
                             </t>
                         </td>
                     </tr>
