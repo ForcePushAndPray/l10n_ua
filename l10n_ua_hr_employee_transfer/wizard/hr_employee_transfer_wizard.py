@@ -95,6 +95,17 @@ class HrEmployeeTransferWizard(models.TransientModel):
         help='Зміни в КЗпП 2022 року: накопичений залишок при переведенні згоряє. '
              'За згодою сторін може переноситися — оберіть "Перенести".',
     )
+    vacation_period_mode = fields.Selection(
+        [
+            ('keep', 'Keep Work Year (preserve hire_date)'),
+            ('reset', 'New Work Year (from transfer date)'),
+        ],
+        string='Vacation Work Year', default='keep',
+        help='For annual (work-year) leaves. "keep": preserve the original '
+             'hire date so the work year continues (same period). "reset": '
+             'start a new work year from the transfer date. Calendar leave '
+             'types are unaffected by this mode.',
+    )
 
     @api.depends('dismissal_date')
     def _compute_hire_date(self):
@@ -128,6 +139,10 @@ class HrEmployeeTransferWizard(models.TransientModel):
         new employee's version in the same transaction, right after the
         record is created. Writing it here as well would make the wizard a
         second source for a date the version already owns.
+
+        The work year carried over in "keep" mode therefore travels in
+        `vacation_anchor_date` instead: the new contract legitimately starts
+        on the transfer date, only the vacation seniority keeps running.
         """
         self.ensure_one()
         source = self.source_employee_id
@@ -145,6 +160,16 @@ class HrEmployeeTransferWizard(models.TransientModel):
                 vals[fname] = value.id if value else False
             else:
                 vals[fname] = value
+        # "keep": the annual (work-year) vacation seniority continues, so the
+        # anchor of the source travels along — its own anchor when it was
+        # itself transferred, its hire date otherwise. "reset": no anchor, the
+        # work year starts from the new hire date (= the transfer date).
+        # The field lives in l10n_ua_hr_holidays, which this module does not
+        # depend on.
+        if 'vacation_anchor_date' in source._fields:
+            vals['vacation_anchor_date'] = (
+                source._get_vacation_anchor_date()
+                if self.vacation_period_mode == 'keep' else False)
         if not self.copy_documents:
             for fname in ('passport_series', 'passport_id', 'passport_expiration_date',
                           'passport_issued_by', 'passport_issued_date',
@@ -250,19 +275,40 @@ class HrEmployeeTransferWizard(models.TransientModel):
         if 'hr.vacation.balance' not in self.env:
             return
         Balance = self.env['hr.vacation.balance']
-        year = self.hire_date.year
+        transfer_date = self.hire_date
+        # Source periods that are CURRENT as of the transfer date (the period
+        # contains it) — one active period per leave type. Replaces the old
+        # year-based lookup so work-year and calendar periods both resolve.
         source_balances = Balance.sudo().search([
             ('employee_id', '=', self.source_employee_id.id),
-            ('year', '=', year),
+            ('period_start', '<=', transfer_date),
+            ('period_end', '>=', transfer_date),
         ])
         for bal in source_balances:
             remaining = (bal.total_available or 0) - (bal.used_days or 0)
             if remaining <= 0:
                 continue
+            leave_type = bal.leave_type_id
+            if (leave_type.period_type == 'work'
+                    and self.vacation_period_mode == 'reset'):
+                # New work year counted from the transfer date (the new
+                # employee's hire_date is the transfer date in this mode).
+                start, end, index = new_employee._get_work_year_for_date(
+                    transfer_date)
+            else:
+                # "keep" (work year continues) or a calendar type: carry the
+                # remaining days into the same period bounds as the source.
+                start, end, index = (
+                    bal.period_start, bal.period_end, bal.period_index)
+            if not start:
+                continue
             Balance.sudo().create({
                 'employee_id': new_employee.id,
-                'leave_type_id': bal.leave_type_id.id,
-                'year': year,
+                'leave_type_id': leave_type.id,
+                'company_id': new_employee.company_id.id,
+                'period_start': start,
+                'period_end': end,
+                'period_index': index,
                 'entitled_days': 0,
                 'carried_over': remaining,
             })

@@ -496,19 +496,30 @@ class HrEmployee(models.Model):
         for employee in self:
             employee.work_experience_company = employee._get_company_experience_years(today)
 
-    def _get_work_year_for_date(self, ref_date):
-        """Return (period_start, period_end, period_index) of the work year
-        containing ref_date, anchored to the employee's hire_date.
+    def _get_vacation_anchor_date(self):
+        """Date the vacation work year is counted from.
 
-        Used by l10n_ua_hr_holidays to accrue annual vacations per the
-        Ukrainian Vacation Law (work year = 12 months from hire_date).
-
-        hire_date itself is derived from the contract versions, so no extra
-        version fallback is needed here. Returns (False, False, 0) when the
-        anchor is missing or ref_date precedes the hire date.
+        Defaults to hire_date, which itself derives from the contract
+        versions. l10n_ua_hr_holidays overrides this to honour a work year
+        carried over from another company (art. 9 §3 of the Vacation Law):
+        there the new contract — and hence hire_date — starts on the transfer
+        date, while the vacation seniority keeps running.
         """
         self.ensure_one()
-        anchor = self.hire_date
+        return self.hire_date
+
+    def _get_work_year_for_date(self, ref_date):
+        """Return (period_start, period_end, period_index) of the work year
+        containing ref_date, anchored to `_get_vacation_anchor_date()`.
+
+        Used by l10n_ua_hr_holidays to accrue annual vacations per the
+        Ukrainian Vacation Law (work year = 12 months from the anchor).
+
+        Returns (False, False, 0) when the anchor is missing or ref_date
+        precedes it.
+        """
+        self.ensure_one()
+        anchor = self._get_vacation_anchor_date()
         if not anchor or not ref_date or ref_date < anchor:
             return (False, False, 0)
         delta = relativedelta(ref_date, anchor)

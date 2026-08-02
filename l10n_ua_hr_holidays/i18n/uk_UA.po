@@ -18,8 +18,8 @@ msgstr ""
 #. module: l10n_ua_hr_holidays
 #. odoo-python
 #: code:addons/l10n_ua_hr_holidays/models/res_company.py:0
-msgid "%d leave types have been created for %s"
-msgstr "%d типів відпусток створено для %s"
+msgid "%(count)d leave types have been created for %(company)s"
+msgstr "Створено %(count)d типів відпусток для %(company)s"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.actions.report,print_report_name:l10n_ua_hr_holidays.action_report_vacation_order
@@ -952,6 +952,28 @@ msgid "Used Days"
 msgstr "Використано днів"
 
 #. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_employee__vacation_anchor_date
+msgid "Vacation Work-Year Anchor"
+msgstr "Анкер робочого року відпустки"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_employee__vacation_anchor_date
+msgid ""
+"Date the annual (work-year) vacation seniority is counted from, when it "
+"differs from the hire date. Set by the inter-company transfer wizard in "
+"\"Keep Work Year\" mode: art. 9 §3 of the Vacation Law lets the previous "
+"employer's seniority continue when the compensation for unused days is "
+"transferred along with the employee. Empty — the work year runs from the "
+"hire date."
+msgstr ""
+"Дата, від якої рахується стаж для щорічної відпустки, якщо вона "
+"відрізняється від дати прийняття. Заповнює майстер переведення в режимі "
+"«Зберегти робочий рік»: ч. 3 ст. 9 Закону «Про відпустки» дозволяє зарахувати "
+"стаж попереднього роботодавця, якщо разом із працівником перераховано "
+"компенсацію за невикористані дні. Порожнє — робочий рік рахується від дати "
+"прийняття."
+
+#. module: l10n_ua_hr_holidays
 #: model:ir.model,name:l10n_ua_hr_holidays.model_hr_vacation_balance
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_form
 msgid "Vacation Balance"
@@ -1064,17 +1086,6 @@ msgid "Vacation Calendar"
 msgstr "Календар відпусток"
 
 #. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave_type__create_order
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_leave_view_form_ua
-msgid "Create Order"
-msgstr "Створювати наказ"
-
-#. module: l10n_ua_hr_holidays
-#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave_type__create_order
-msgid "Automatically create a vacation order (form П-3) when a leave of this type is created"
-msgstr "Автоматично створювати наказ про відпустку (форма П-3) при створенні відпустки цього типу"
-
-#. module: l10n_ua_hr_holidays
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_form
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_balance_view_tree
 msgid "Recalculate"
@@ -1089,8 +1100,10 @@ msgstr "Перерахунок завершено"
 #. module: l10n_ua_hr_holidays
 #. odoo-python
 #: code:addons/l10n_ua_hr_holidays/models/hr_vacation_balance.py:0
-msgid "Vacation balances for %s have been updated for all active employees."
-msgstr "Залишки відпусток на %s рік оновлені для всіх активних співробітників."
+msgid ""
+"Vacation balances for %(year)s have been updated for all active employees."
+msgstr ""
+"Залишки відпусток на %(year)s рік оновлені для всіх активних співробітників."
 
 #. module: l10n_ua_hr_holidays
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_vacation_schedule_line_view_form
@@ -1377,6 +1390,39 @@ msgstr "Перенесення відпустки"
 
 #. module: l10n_ua_hr_holidays
 #: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid "Vacation notice"
+msgstr "Зверніть увагу"
+
+#. module: l10n_ua_hr_holidays
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid ""
+"This leave starts on %(date)s, outside the selected vacation period "
+"\"%(period)s\" (%(start)s – %(end)s). This is allowed, but check that the "
+"period is the one you intended — the days are charged to it."
+msgstr ""
+"Ця відпустка починається %(date)s, поза межами обраного періоду відпустки "
+"\"%(period)s\" (%(start)s – %(end)s). Це дозволено, але перевірте, чи саме "
+"цей період ви мали на увазі — дні списуються з нього."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__period_mismatch_warning
+msgid "Vacation Period Notice"
+msgstr "Примітка щодо періоду відпустки"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave__period_mismatch_warning
+msgid ""
+"Non-blocking notice shown when the leave starts outside the accounting "
+"period it is charged to. Recording a past period with current dates is "
+"allowed; the notice guards against picking the wrong period by mistake."
+msgstr ""
+"Незаблокувальна примітка, яка з'являється, коли відпустка починається поза "
+"межами облікового періоду, до якого вона прив'язана. Оформлення минулого "
+"періоду з поточними датами дозволене; примітка застерігає від випадкового "
+"вибору не того періоду."
+
+#. module: l10n_ua_hr_holidays
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
 msgid ""
 "Leave type \"%(type)s\" does not allow carrying days over: %(lost).1f unused "
 "day(s) from the previous period (%(period)s) will be forfeited."
@@ -1488,3 +1534,136 @@ msgstr "Накази"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_employee_vacation_summary_report_view_form
 msgid "Additional notes..."
 msgstr "Додаткові нотатки..."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave__order_count
+msgid ""
+"Number of vacation orders issued for THIS leave (0 or 1 — the leave "
+"and its order reference each other). Drives the \"Orders\" smart "
+"button."
+msgstr ""
+"Кількість наказів, виданих для ЦІЄЇ відпустки (0 або 1 — відпустка "
+"та її наказ посилаються одне на одного). Керує смарт-кнопкою "
+"«Накази»."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__can_create_order
+msgid "Can Create Order"
+msgstr "Можна створити наказ"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave__can_create_order
+msgid ""
+"Technical: true when the \"New Order\" button should be shown — this "
+"leave has an employee and no order linked yet."
+msgstr ""
+"Технічне: істина, коли слід показати кнопку «Новий наказ» — у цієї "
+"відпустки є співробітник і ще немає прив'язаного наказу."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave__vacation_balance_id
+msgid ""
+"Accounting period this leave is charged against. Chosen manually "
+"(defaults to the period that contains today); the leave dates need "
+"not fall inside the selected period."
+msgstr ""
+"Обліковий період, до якого зараховується ця відпустка. Обирається "
+"вручну (за замовчуванням — період, що містить сьогоднішню дату); "
+"дати відпустки не обов'язково мають потрапляти в обраний період."
+
+#. module: l10n_ua_hr_holidays
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid "Create Vacation Order"
+msgstr "Створити наказ на відпустку"
+
+#. module: l10n_ua_hr_holidays
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid "Vacation Orders"
+msgstr "Накази на відпустку"
+
+#. module: l10n_ua_hr_holidays
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid "This leave already has a linked order."
+msgstr "Ця відпустка вже має прив'язаний наказ."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__leave_id
+msgid ""
+"Planned annual leave this row represents. One row is generated per "
+"leave; empty when the employee has no leave planned yet for the "
+"schedule year."
+msgstr ""
+"Запланована щорічна відпустка, яку представляє цей рядок. "
+"Створюється один рядок на відпустку; порожньо, якщо у працівника ще "
+"немає запланованої відпустки на рік графіка."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__leave_type_id
+msgid "Annual leave type this scheduled line plans for."
+msgstr "Тип щорічної відпустки, який планує цей рядок графіка."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__vacation_balance_id
+msgid ""
+"Accounting period the planned annual leave is charged against."
+msgstr ""
+"Обліковий період, до якого зараховується запланована щорічна "
+"відпустка."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_vacation_schedule_line__vacation_period_display
+msgid ""
+"Dates of the linked leave (dd.mm.yyyy - dd.mm.yyyy), taken from "
+"hr.leave request_date_from / request_date_to."
+msgstr ""
+"Дати прив'язаної відпустки (дд.мм.рррр - дд.мм.рррр) з полів "
+"request_date_from / request_date_to моделі hr.leave."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_employee_vacation_summary_report__report_date
+msgid ""
+"The report shows, per employee and leave type, the vacation period "
+"this date falls into."
+msgstr ""
+"Звіт показує для кожного працівника й типу відпустки той період, у "
+"який потрапляє ця дата."
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_leave__has_confirmed_order
+msgid "Covered by a Confirmed Order"
+msgstr "Покрито підтвердженим наказом"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_leave__has_confirmed_order
+msgid ""
+"Technical: true when a confirmed vacation order covers this leave. "
+"The order obliges the employee to take it, so the leave can no "
+"longer be refused or sent back to approval."
+msgstr ""
+"Технічне: істина, коли цю відпустку покриває підтверджений наказ. "
+"Наказ зобов'язує працівника її взяти, тож відпустку більше не можна "
+"відхилити чи повернути на затвердження."
+
+#. module: l10n_ua_hr_holidays
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid "refused"
+msgstr "відхилити"
+
+#. module: l10n_ua_hr_holidays
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid "sent back to approval"
+msgstr "повернути на затвердження"
+
+#. module: l10n_ua_hr_holidays
+#: code:addons/l10n_ua_hr_holidays/models/hr_leave.py:0
+msgid ""
+"Leave of %(employee)s is covered by confirmed vacation order "
+"%(order)s, so it cannot be %(action)s. Cancel the order first."
+msgstr ""
+"Відпустку %(employee)s покриває підтверджений наказ %(order)s, тому "
+"її не можна %(action)s. Спершу скасуйте наказ."
+
+#. module: l10n_ua_hr_holidays
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.hr_leave_view_form_ua
+msgid "New Order"
+msgstr "Новий наказ"

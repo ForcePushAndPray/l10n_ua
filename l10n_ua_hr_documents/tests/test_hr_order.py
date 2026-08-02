@@ -43,7 +43,6 @@ class TestHrOrder(TransactionCase):
             'name': 'Annual Basic Leave',
             'time_type': 'leave',
             'requires_allocation': 'no',
-            'create_order': True,
             'is_paid': True,
         })
 

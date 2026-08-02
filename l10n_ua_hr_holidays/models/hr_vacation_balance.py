@@ -185,19 +185,23 @@ class HrVacationBalance(models.Model):
     def _allowed_carryover(self, leave_type, prev_remaining):
         """Days carried into the next period.
 
-        A NEGATIVE balance — more days taken than were available (e.g. 26 days
-        used against a 24-day entitlement, leaving -2) — is ALWAYS carried
-        forward in full: an over-use debt cannot be forfeited and must reduce
-        the next period's Total Available (24 + (-2) = 22).
+        Transferability governs ALL movement across periods. A NON-transferable
+        type carries nothing forward — neither positive unused days nor a
+        negative over-use debt: its periods stand on their own, so a deficit in
+        one period does not reduce the next.
 
-        Transfer rules govern only POSITIVE unused days: non-transferable types
-        carry nothing, `max_transfer_days` caps the rest, and days above the cap
-        are forfeited (surfaced as a non-blocking warning on the leave, not
-        enforced here)."""
-        if prev_remaining < 0:
-            return prev_remaining
-        if prev_remaining == 0 or not leave_type.is_transferable:
+        For a TRANSFERABLE type:
+          * a NEGATIVE balance — more days taken than were available (e.g. 26
+            days used against a 24-day entitlement, leaving -2) — is carried
+            forward in full: an over-use debt cannot be forfeited and must
+            reduce the next period's Total Available (24 + (-2) = 22);
+          * positive unused days are carried up to `max_transfer_days` (or in
+            full when no cap is set); days above the cap are forfeited (surfaced
+            as a non-blocking warning on the leave, not enforced here)."""
+        if not leave_type.is_transferable:
             return 0
+        if prev_remaining <= 0:
+            return prev_remaining
         if leave_type.max_transfer_days:
             return min(prev_remaining, leave_type.max_transfer_days)
         return prev_remaining
@@ -207,11 +211,11 @@ class HrVacationBalance(models.Model):
         """Hire date that bounds accounting periods, blocks pre-hire
         leaves/periods and starts the period-chain backfill.
 
-        Single source: employee.hire_date, which itself derives from the
-        contract versions (hr.version.contract_date_start) — so no separate
-        version fallback is needed here or in
-        hr.employee._get_work_year_for_date."""
-        return employee.hire_date if employee else False
+        Single source: employee._get_vacation_anchor_date(), i.e. hire_date
+        (itself derived from hr.version.contract_date_start) unless a work
+        year was carried over from another company — so no separate version
+        fallback is needed here or in hr.employee._get_work_year_for_date."""
+        return employee._get_vacation_anchor_date() if employee else False
 
     @api.model
     def _ref_date_for_year(self, year):
@@ -349,6 +353,34 @@ class HrVacationBalance(models.Model):
             rec.total_available = (rec.entitled_days or 0) + (rec.carried_over or 0)
             rec.remaining_days = rec.total_available - (rec.used_days or 0)
 
+    def _charged_leaves_domain(self):
+        """Domain matching the leaves charged to this period.
+
+        Primary rule: a leave is charged to the period it is EXPLICITLY linked
+        to (vacation_balance_id), chosen manually on the leave/order form —
+        regardless of whether its dates fall inside the period bounds (HR may
+        record a past-period leave with current dates). The days counted are
+        exactly those entered on the leave (calendar_days).
+
+        Safety net: a leave of this employee and leave type that has NO period
+        linked yet still counts against the period its start date falls into.
+        create()/_ensure_vacation_period() normally fill the link, but a leave
+        can slip through (import, a write clearing the field, a type whose
+        period could not be resolved when it was created). Without this
+        fallback such a leave would be charged to NO period at all, understating
+        used_days and overstating the remaining days. This mirrors
+        hr.leave._period_domain, which already treats unlinked leaves this way
+        for the per-leave Balance Before/After chain."""
+        self.ensure_one()
+        return [
+            ('employee_id', '=', self.employee_id.id),
+            ('holiday_status_id', '=', self.leave_type_id.id),
+            '|', ('vacation_balance_id', '=', self.id),
+                 '&', ('vacation_balance_id', '=', False),
+                      '&', ('request_date_from', '>=', self.period_start),
+                           ('request_date_from', '<=', self.period_end),
+        ]
+
     @api.depends('employee_id', 'leave_type_id', 'period_start', 'period_end')
     def _compute_used_days(self):
         HrLeave = self.env['hr.leave']
@@ -359,14 +391,7 @@ class HrVacationBalance(models.Model):
                 rec.planned_days = 0
                 continue
 
-            # A leave is charged to the period it is EXPLICITLY linked to
-            # (vacation_balance_id), chosen manually on the leave/order form.
-            # Used/planned days are the calendar days of the leaves assigned to
-            # this period — regardless of whether the leave dates fall inside
-            # the period bounds (HR may record a past-period leave with current
-            # dates). The days counted are exactly those entered on the leave
-            # (calendar_days).
-            base_domain = [('vacation_balance_id', '=', rec.id)]
+            base_domain = rec._charged_leaves_domain()
 
             used_leaves = HrLeave.search(base_domain + [('state', '=', 'validate')])
             rec.used_days = sum(used_leaves.mapped('calendar_days'))
@@ -757,7 +782,9 @@ class HrVacationBalance(models.Model):
             'tag': 'display_notification',
             'params': {
                 'title': _('Recalculation Complete'),
-                'message': _('Vacation balances for %s have been updated for all active employees.', current_year),
+                'message': _(
+                    'Vacation balances for %(year)s have been updated for all '
+                    'active employees.', year=current_year),
                 'type': 'success',
                 'sticky': False,
                 'next': {

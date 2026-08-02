@@ -261,3 +261,103 @@ class TestEmployeeTransfer(TransactionCase):
         ])
         # Наказ прийняття доповнює створену версію, а не дублює її.
         self.assertEqual(len(versions), 1)
+
+    # ------------------------------------------------------------------
+    # Vacation balance transfer (period-based)
+    # ------------------------------------------------------------------
+
+    def _skip_if_no_balance(self):
+        if 'hr.vacation.balance' not in self.env:
+            self.skipTest('l10n_ua_hr_holidays not installed')
+
+    def _new_balance_of(self, leave_type):
+        return self.env['hr.vacation.balance'].search([
+            ('employee_id', '=', self.source_employee.next_employee_id.id),
+            ('leave_type_id', '=', leave_type.id),
+        ])
+
+    def test_transfer_keep_work_year(self):
+        """keep: the transferred work-year balance keeps the source period
+        bounds, and the seniority anchor travels to the new employee."""
+        self._skip_if_no_balance()
+        annual = self.env.ref('l10n_ua_hr_holidays.leave_type_annual_basic')
+        # Source work-year period that contains the transfer date (2026-05-01).
+        self.env['hr.vacation.balance'].create({
+            'employee_id': self.source_employee.id,
+            'leave_type_id': annual.id,
+            'period_start': date(2026, 1, 10),
+            'period_end': date(2027, 1, 9),
+            'period_index': 7,
+            'entitled_days': 24,
+        })
+        wizard = self._make_wizard(vacation_transfer_mode='transfer',
+                                   vacation_period_mode='keep')
+        wizard.action_transfer()
+
+        new_bal = self._new_balance_of(annual)
+        self.assertTrue(new_bal)
+        self.assertEqual(new_bal.period_start, date(2026, 1, 10))
+        self.assertEqual(new_bal.period_end, date(2027, 1, 9))
+        self.assertEqual(new_bal.carried_over, 24)
+        new_employee = self.source_employee.next_employee_id
+        # The new contract still starts on the transfer date — only the
+        # vacation seniority continues, through the anchor.
+        self.assertEqual(new_employee.hire_date, date(2026, 5, 1))
+        self.assertEqual(new_employee.vacation_anchor_date,
+                         self.source_employee.hire_date)
+        # ...so the next work year lines up with the carried-over period.
+        start, end, _index = new_employee._get_work_year_for_date(
+            date(2026, 6, 1))
+        self.assertEqual(start, date(2026, 1, 10))
+        self.assertEqual(end, date(2027, 1, 9))
+
+    def test_transfer_reset_work_year(self):
+        """reset: the transferred work-year balance starts a new work year at
+        the transfer date (the new employee's hire_date is the transfer date)."""
+        self._skip_if_no_balance()
+        annual = self.env.ref('l10n_ua_hr_holidays.leave_type_annual_basic')
+        self.env['hr.vacation.balance'].create({
+            'employee_id': self.source_employee.id,
+            'leave_type_id': annual.id,
+            'period_start': date(2026, 1, 10),
+            'period_end': date(2027, 1, 9),
+            'period_index': 7,
+            'entitled_days': 24,
+        })
+        wizard = self._make_wizard(vacation_transfer_mode='transfer',
+                                   vacation_period_mode='reset')
+        wizard.action_transfer()
+
+        new_bal = self._new_balance_of(annual)
+        self.assertTrue(new_bal)
+        # New work year anchored to the transfer date (2026-05-01).
+        self.assertEqual(new_bal.period_start, date(2026, 5, 1))
+        self.assertEqual(new_bal.carried_over, 24)
+        new_employee = self.source_employee.next_employee_id
+        self.assertEqual(new_employee.hire_date, date(2026, 5, 1))
+        # No carried anchor: the work year runs from the new hire date.
+        self.assertFalse(new_employee.vacation_anchor_date)
+
+    def test_transfer_calendar_type(self):
+        """A calendar-type balance transfers with the same calendar period,
+        regardless of the work-year mode."""
+        self._skip_if_no_balance()
+        social = self.env.ref(
+            'l10n_ua_hr_holidays.leave_type_social_children')
+        self.env['hr.vacation.balance'].create({
+            'employee_id': self.source_employee.id,
+            'leave_type_id': social.id,
+            'period_start': date(2026, 1, 1),
+            'period_end': date(2026, 12, 31),
+            'period_index': 2026,
+            'entitled_days': 10,
+        })
+        wizard = self._make_wizard(vacation_transfer_mode='transfer',
+                                   vacation_period_mode='reset')
+        wizard.action_transfer()
+
+        new_bal = self._new_balance_of(social)
+        self.assertTrue(new_bal)
+        self.assertEqual(new_bal.period_start, date(2026, 1, 1))
+        self.assertEqual(new_bal.period_end, date(2026, 12, 31))
+        self.assertEqual(new_bal.carried_over, 10)

@@ -8,7 +8,9 @@ Tests cover:
 """
 
 from datetime import date
+from psycopg2 import IntegrityError
 from odoo.tests import tagged
+from odoo.tools import mute_logger
 from .common import ContractTestCase
 
 
@@ -29,12 +31,21 @@ class TestAllowanceType(ContractTestCase):
 
     def test_allowance_type_unique_code(self):
         """Code should be unique."""
-        with self.assertRaises(Exception):
+        # unique(code) is a database constraint: it fires at flush and aborts
+        # the transaction. Wrap the failing insert in a savepoint (so the
+        # transaction stays usable afterwards) and flush inside the block so
+        # the IntegrityError is raised where assertRaises can catch it.
+        # mute_logger silences the expected "bad query" error line.
+        with self.assertRaises(IntegrityError), \
+                mute_logger('odoo.sql_db'), \
+                self.env.cr.savepoint():
             self.env['hr.allowance.type'].create({
                 'name': 'Duplicate',
                 'code': 'TEST_SENIORITY',
                 'category': 'other',
             })
+            self.env.flush_all()
+
 
 
 @tagged('post_install', '-at_install')

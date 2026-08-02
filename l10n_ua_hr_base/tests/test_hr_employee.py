@@ -1,7 +1,9 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+from psycopg2 import IntegrityError
 from odoo.tests import tagged
 from odoo.exceptions import ValidationError
+from odoo.tools import mute_logger
 from datetime import date, timedelta
 from dateutil.relativedelta import relativedelta
 
@@ -63,8 +65,19 @@ class TestHrEmployeeRnokpp(TestHrUaBase):
         unique_rnokpp = self.get_unique_rnokpp()
         self._create_employee(rnokpp=unique_rnokpp)
 
-        with self.assertRaises(Exception):  # IntegrityError or ValidationError
+        # unique(rnokpp, company_id) is a database constraint: it fires at
+        # flush and aborts the transaction. Wrap the failing create in a
+        # savepoint (so the transaction stays usable) and flush inside the
+        # block so the error is raised where assertRaises catches it;
+        # mute_logger silences the expected "bad query" line. Odoo's
+        # assertRaises takes a single class (it calls issubclass on the
+        # argument), and the duplicate is rejected by the database, so assert
+        # IntegrityError.
+        with self.assertRaises(IntegrityError), \
+                mute_logger('odoo.sql_db'), \
+                self.env.cr.savepoint():
             self._create_employee(name='Another Employee', rnokpp=unique_rnokpp)
+            self.env.flush_all()
 
     def test_rnokpp_validation_disabled(self):
         """Test that RNOKPP validation can be disabled via system parameter."""

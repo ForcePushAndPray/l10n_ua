@@ -125,31 +125,94 @@ class HrOrder(models.Model):
     leave_count = fields.Integer(
         string='Time Off',
         compute='_compute_leave_count',
-        help='Number of time off records for this employee. Drives the '
-             '"Time Off" smart button on vacation orders.'
+        help='Number of time off records tied to THIS order (0 or 1 — the '
+             'order and its leave reference each other). Drives the "Time '
+             'Off" smart button on vacation orders.'
     )
 
-    @api.depends('employee_id')
-    def _compute_leave_count(self):
-        Leave = self.env['hr.leave']
+    can_create_leave = fields.Boolean(
+        string='Can Create Time Off',
+        compute='_compute_can_create_leave',
+        help='Technical: true when the "New Time Off" button should be shown — '
+             'a vacation order with all its details filled in and no time off '
+             'linked yet.'
+    )
+
+    @api.depends('order_type', 'leave_id', 'employee_id', 'holiday_status_id',
+                 'vacation_date_from', 'vacation_date_to')
+    def _compute_can_create_leave(self):
         for order in self:
-            order.leave_count = Leave.search_count([
-                ('employee_id', '=', order.employee_id.id),
-            ]) if order.employee_id else 0
+            order.can_create_leave = bool(
+                order.order_type == 'vacation' and not order.leave_id
+                and order.employee_id and order.holiday_status_id
+                and order.vacation_date_from and order.vacation_date_to)
+
+    def action_create_leave(self):
+        """"New Time Off" button. Opens a leave form pre-filled from this
+        order so the user can review and save it — the same explicit flow the
+        leave form uses to issue an order. Nothing is created until they save;
+        default_order_id links the two sides back together."""
+        self.ensure_one()
+        if self.leave_id:
+            raise UserError(_('This order already has a linked time off.'))
+        if self.order_type != 'vacation':
+            raise UserError(_('Only a vacation order records time off.'))
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('New Time Off'),
+            'res_model': 'hr.leave',
+            'view_mode': 'form',
+            'target': 'current',
+            'context': {
+                'default_employee_id': self.employee_id.id,
+                'default_holiday_status_id': self.holiday_status_id.id,
+                'default_request_date_from': self.vacation_date_from,
+                'default_request_date_to': self.vacation_date_to,
+                'default_order_id': self.id,
+            },
+        }
+
+    @api.depends('leave_id')
+    def _compute_leave_count(self):
+        # Elevated: HR officers can read their companies' time off, but a
+        # plain HR user may also open a vacation order, and for them the core
+        # rule hides another employee's leave. A stat number on a smart button
+        # must never make the form unopenable.
+        for order in self:
+            order.leave_count = len(order.sudo()._linked_leaves())
+
+    def _linked_leaves(self):
+        """Leaves tied to THIS order — not the employee's whole time off
+        history. Normally exactly the order's own leave_id; the reverse link
+        (hr.leave.order_id) is unioned in as well so a leave pointing here
+        without the back-link having been written yet is still surfaced."""
+        self.ensure_one()
+        leaves = self.leave_id
+        origin_id = self._origin.id
+        if origin_id:
+            leaves |= self.env['hr.leave'].search(
+                [('order_id', '=', origin_id)])
+        return leaves
 
     def action_view_leaves(self):
-        """Smart button: open all time off records for this order's
-        employee."""
+        """Smart button: open the time off record(s) tied to THIS order —
+        opening the form directly when there is just one (the normal case)."""
         self.ensure_one()
-        return {
+        leaves = self._linked_leaves()
+        action = {
             'type': 'ir.actions.act_window',
             'name': _('Time Off'),
             'res_model': 'hr.leave',
-            'view_mode': 'list,form',
-            'domain': [('employee_id', '=', self.employee_id.id)],
             'context': {'default_employee_id': self.employee_id.id},
         }
-    # Related field — eliminates duplication (рек. №5)
+        if len(leaves) == 1:
+            action.update({'view_mode': 'form', 'res_id': leaves.id})
+        else:
+            action.update({'view_mode': 'list,form',
+                           'domain': [('id', 'in', leaves.ids)]})
+        return action
+
+    # Related field — eliminates duplication 
     holiday_status_id = fields.Many2one(
         'hr.leave.type',
         string='Leave Type',
@@ -215,6 +278,22 @@ class HrOrder(models.Model):
         ('cancelled', 'Cancelled'),
     ], string='Status', default='draft', tracking=True)
 
+    confirmed_by_id = fields.Many2one(
+        'res.users',
+        string='Confirmed By',
+        readonly=True,
+        copy=False,
+        help='User who confirmed this order in the system — the HR officer '
+             'recording that the printed order was signed. Kept as the audit '
+             'trail of the act the order performs (e.g. granting a leave).',
+    )
+    confirmed_date = fields.Datetime(
+        string='Confirmed On',
+        readonly=True,
+        copy=False,
+        help='When the order was confirmed in the system.',
+    )
+
     company_id = fields.Many2one('res.company', string='Company', required=True, index=True,
                                   default=lambda self: self.env.company)
 
@@ -226,27 +305,18 @@ class HrOrder(models.Model):
                 sequence_code = f'hr.order.{order_type}'
                 vals['name'] = self.env['ir.sequence'].next_by_code(sequence_code) or 'New'
 
-        # Collect indices of vacation orders that need a leave auto-created
-        leave_vals_list = []
-        leave_indices = []
-        for idx, vals in enumerate(vals_list):
-            if (vals.get('order_type') == 'vacation'
-                    and not vals.get('leave_id')
-                    and not self.env.context.get('_creating_order_from_leave')):
-                leave_vals_list.append({
-                    'employee_id': vals.get('employee_id'),
-                    'holiday_status_id': vals.get('holiday_status_id'),
-                    'request_date_from': vals.get('vacation_date_from'),
-                    'request_date_to': vals.get('vacation_date_to'),
-                })
-                leave_indices.append(idx)
+        # No time off is auto-created for a vacation order. It is created only
+        # through the "New Time Off" button, which opens a leave form
+        # pre-filled from the order for the user to review and save.
 
-        if leave_vals_list:
-            leaves = self.env['hr.leave'].with_context(
-                _creating_leave_from_order=True
-            ).create(leave_vals_list)
-            for idx, leave in zip(leave_indices, leaves):
-                vals_list[idx]['leave_id'] = leave.id
+        # An order opened from a leave's "New Order" button carries the leave
+        # in the context. Re-apply it: navigating away from the unsaved form
+        # and back can drop the field, which would save an unlinked order and
+        # let the leave offer to create a second one.
+        leave_from_ctx = self.env.context.get('default_leave_id')
+        if leave_from_ctx:
+            for vals in vals_list:
+                vals.setdefault('leave_id', leave_from_ctx)
 
         # Add _sync_order_leave context to prevent duplicate orders on inverse
         # related fields write. leave_skip_state_check lets the order write to
@@ -428,26 +498,37 @@ class HrOrder(models.Model):
                 )
                 raise self._sync_failure(exc) from exc
 
+    def _check_vacation_confirm_rights(self):
+        """Confirming a vacation order records that the printed, signed order
+        was issued — the legal act that obliges the employee to take the leave,
+        and which locks the leave against being refused afterwards.
+
+        HR officers prepare and confirm orders (the director signs the printed
+        document), hence the Ukraine HR Officer group: plain HR users, who may
+        only maintain employee data, cannot issue one."""
+        if self.env.su:
+            return
+        if self.env.user.has_group('l10n_ua_hr_base.group_hr_ua_officer'):
+            return
+        raise UserError(_(
+            'Confirming a vacation order grants the leave, which requires the '
+            '"Ukraine HR: Officer" access rights. Ask an HR officer to confirm '
+            'this order.'))
+
     def action_confirm(self):
-        self.write({'state': 'confirmed'})
+        if self.filtered(lambda o: o.order_type == 'vacation'):
+            self._check_vacation_confirm_rights()
+        self.write({
+            'state': 'confirmed',
+            'confirmed_by_id': self.env.user.id,
+            'confirmed_date': fields.Datetime.now(),
+        })
         for order in self.filtered(lambda o: o.order_type == 'dismissal' and o.employee_id):
             order._apply_dismissal()
-        # Confirming a vacation order approves its leave, so the two stay in
-        # sync (the reverse direction — leave validation confirming the order —
-        # already exists). Guarded by a dedicated key set only when the leave's
-        # own validation is confirming the order, so we skip the redundant
-        # re-approval there. (We must NOT key off _sync_order_leave: hr.order
-        # records created via create() keep that flag in their env context, so
-        # a plain order.action_confirm() call would wrongly be treated as an
-        # internal sync and never approve the leave.)
-        if not self.env.context.get('_order_confirm_skip_leave'):
-            leaves = self.filtered(
-                lambda o: o.order_type == 'vacation' and o.leave_id
-            ).mapped('leave_id')
-            if leaves:
-                leaves.with_context(
-                    _sync_order_leave=True, leave_skip_state_check=True
-                )._approve_from_order()
+        # The linked leave is deliberately NOT touched: leave and order states
+        # are moved only through their own buttons. Confirming the order does
+        # lock the leave though — it can no longer be refused or sent back to
+        # approval (see hr.leave._check_order_allows_cancelling).
 
     def _apply_dismissal(self):
         """Apply a confirmed dismissal order to the employee:

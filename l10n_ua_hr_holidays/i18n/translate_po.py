@@ -154,6 +154,19 @@ TRANSLATIONS = {
     "Unpaid Leave": "Відпустка без збереження зарплати",
     "Used Days": "Використано днів",
     "Vacation Balance": "Залишок відпустки",
+    "Vacation Work-Year Anchor": "Анкер робочого року відпустки",
+    "Date the annual (work-year) vacation seniority is counted from, when it "
+    "differs from the hire date. Set by the inter-company transfer wizard in "
+    "\"Keep Work Year\" mode: art. 9 §3 of the Vacation Law lets the previous "
+    "employer's seniority continue when the compensation for unused days is "
+    "transferred along with the employee. Empty — the work year runs from the "
+    "hire date.":
+        "Дата, від якої рахується стаж для щорічної відпустки, якщо вона "
+        "відрізняється від дати прийняття. Заповнює майстер переведення в "
+        "режимі «Зберегти робочий рік»: ч. 3 ст. 9 Закону «Про відпустки» "
+        "дозволяє зарахувати стаж попереднього роботодавця, якщо разом із "
+        "працівником перераховано компенсацію за невикористані дні. Порожнє — "
+        "робочий рік рахується від дати прийняття.",
     "Vacation balance before this leave": "Залишок відпустки до цієї відпустки",
     "Vacation Balances": "Залишки відпусток",
     "Vacation Order": "Наказ на відпустку",

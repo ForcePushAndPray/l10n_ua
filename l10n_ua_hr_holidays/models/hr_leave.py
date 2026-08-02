@@ -45,38 +45,57 @@ class HrLeave(models.Model):
     order_count = fields.Integer(
         string='Orders',
         compute='_compute_order_count',
-        help='Number of vacation orders issued for this employee. Drives the '
-             '"Orders" smart button.'
+        help='Number of vacation orders issued for THIS leave (0 or 1 — the '
+             'leave and its order reference each other). Drives the "Orders" '
+             'smart button.'
     )
     can_create_order = fields.Boolean(
         string='Can Create Order',
         compute='_compute_can_create_order',
-        help='Technical: true when the "Create Order" button should be shown — '
-             'the leave type issues vacation orders and this leave has none '
-             'yet.'
-    )
-    leave_type_create_order = fields.Boolean(
-        string='Type Issues Orders',
-        related='holiday_status_id.create_order',
-        help='Technical mirror of the leave type\'s "Create Order" flag, used '
-             'to show/hide the order buttons on the form.'
+        help='Technical: true when the "New Order" button should be shown — '
+             'this leave has an employee and no order linked yet.'
     )
 
-    @api.depends('employee_id')
+    @api.depends('order_id')
     def _compute_order_count(self):
-        Order = self.env['hr.order']
         for leave in self:
-            leave.order_count = Order.search_count([
-                ('order_type', '=', 'vacation'),
-                ('employee_id', '=', leave.employee_id.id),
-            ]) if leave.employee_id else 0
+            leave.order_count = len(leave._linked_orders())
 
-    @api.depends('order_id', 'employee_id', 'leave_type_create_order')
+    def _linked_orders(self):
+        """Orders tied to THIS leave — not the employee's whole order history.
+
+        Normally exactly the leave's own order_id; the reverse link
+        (hr.order.leave_id) is unioned in as well so an order that points here
+        without the back-link having been written yet is still surfaced."""
+        self.ensure_one()
+        orders = self.order_id
+        origin_id = self._origin.id
+        if origin_id:
+            orders |= self.env['hr.order'].search(
+                [('leave_id', '=', origin_id)])
+        return orders
+
+    has_confirmed_order = fields.Boolean(
+        string='Covered by a Confirmed Order',
+        compute='_compute_has_confirmed_order',
+        help='Technical: true when a confirmed vacation order covers this '
+             'leave. The order obliges the employee to take it, so the leave '
+             'can no longer be refused or sent back to approval.'
+    )
+
+    @api.depends('order_id', 'order_id.state')
+    def _compute_has_confirmed_order(self):
+        for leave in self:
+            leave.has_confirmed_order = (
+                leave.order_id.state == 'confirmed' if leave.order_id
+                else False)
+
+
+    @api.depends('order_id', 'employee_id')
     def _compute_can_create_order(self):
         for leave in self:
             leave.can_create_order = bool(
-                not leave.order_id and leave.employee_id
-                and leave.leave_type_create_order)
+                not leave.order_id and leave.employee_id)
 
     remaining_days_before = fields.Float(
         string='Balance Before',
@@ -180,16 +199,60 @@ class HrLeave(models.Model):
             max=lt.max_transfer_days, type=lt.name, lost=lost,
             period=prev.period_label)
 
+    period_mismatch_warning = fields.Char(
+        string='Vacation Period Notice',
+        compute='_compute_period_mismatch_warning',
+        help='Non-blocking notice shown when the leave starts outside the '
+             'accounting period it is charged to. Recording a past period '
+             'with current dates is allowed; the notice guards against '
+             'picking the wrong period by mistake.'
+    )
+
+    @api.depends('vacation_balance_id', 'request_date_from')
+    def _compute_period_mismatch_warning(self):
+        for leave in self:
+            leave.period_mismatch_warning = leave._period_mismatch_message()
+
+    def _period_mismatch_message(self):
+        """Return a human-readable notice when the leave's start date falls
+        outside the accounting period it is charged to, or False when the two
+        agree. Purely advisory: charging a leave to a period its dates do not
+        cover is legitimate (e.g. taking last period's days now), so this never
+        blocks saving — it only guards against picking the wrong period by
+        mistake, which would silently distort that period's balance."""
+        self.ensure_one()
+        balance = self.vacation_balance_id
+        start = self.request_date_from
+        if not balance or not start:
+            return False
+        if not balance.period_start or not balance.period_end:
+            return False
+        if balance.period_start <= start <= balance.period_end:
+            return False
+        return _(
+            'This leave starts on %(date)s, outside the selected vacation '
+            'period "%(period)s" (%(start)s – %(end)s). This is allowed, but '
+            'check that the period is the one you intended — the days are '
+            'charged to it.',
+            date=start.strftime('%d.%m.%Y'),
+            period=balance.period_label or '',
+            start=balance.period_start.strftime('%d.%m.%Y'),
+            end=balance.period_end.strftime('%d.%m.%Y'),
+        )
+
     @api.onchange('holiday_status_id', 'request_date_from', 'request_date_to',
-                  'employee_id')
-    def _onchange_carryover_warning(self):
-        """Pop a non-blocking warning on the form as soon as the chosen type
-        and dates would forfeit carried-over days."""
-        message = self._carryover_warning_message()
-        if message:
+                  'employee_id', 'vacation_balance_id')
+    def _onchange_vacation_warnings(self):
+        """Pop a non-blocking warning on the form as soon as the chosen type,
+        dates or accounting period need the user's attention: carried-over days
+        that would be forfeited, and a period that does not cover the leave
+        dates. Both are advisory — neither blocks saving."""
+        messages = [m for m in (self._carryover_warning_message(),
+                                self._period_mismatch_message()) if m]
+        if messages:
             return {'warning': {
-                'title': _('Vacation carry-over'),
-                'message': message,
+                'title': _('Vacation notice'),
+                'message': '\n\n'.join(messages),
             }}
 
     def _compute_display_name(self):
@@ -297,46 +360,6 @@ class HrLeave(models.Model):
                     hire=hire.strftime('%d.%m.%Y'),
                 ))
 
-    @api.onchange('order_id')
-    def _onchange_order_id(self):
-        if self.order_id:
-            self.order_number = self.order_id.name
-            self.order_date = self.order_id.date
-
-    def action_view_order(self):
-        self.ensure_one()
-        return {
-            'type': 'ir.actions.act_window',
-            'res_model': 'hr.order',
-            'res_id': self.order_id.id,
-            'view_mode': 'form',
-            'target': 'current',
-        }
-
-    def _create_vacation_order(self):
-        """Create a *draft* vacation order for this leave and link the two
-        sides together. Shared by the manual "Create Order" button (HR may
-        issue a draft order before the leave is approved) and by validation
-        when no order exists yet. Never creates a second order for a leave that
-        already has one."""
-        self.ensure_one()
-        if self.order_id:
-            return self.order_id
-        order = self.env['hr.order'].with_context(
-            _creating_order_from_leave=True
-        ).create({
-            'order_type': 'vacation',
-            'employee_id': self.employee_id.id,
-            'department_id': self.employee_id.department_id.id,
-            'job_id': self.employee_id.job_id.id,
-            'vacation_date_from': self.request_date_from,
-            'vacation_date_to': self.request_date_to,
-            'subject': 'Про надання відпустки',
-        })
-        self.with_context(_sync_order_leave=True).write({'order_id': order.id})
-        order.with_context(_sync_order_leave=True).write({'leave_id': self.id})
-        return order
-
     def action_create_order(self):
         """Manual "Create Order" button. Opens a new vacation order form with
         every field pre-filled from the leave, so the user can review it and
@@ -347,9 +370,6 @@ class HrLeave(models.Model):
         self.ensure_one()
         if self.order_id:
             raise UserError(_('This leave already has a linked order.'))
-        if not self.holiday_status_id.create_order:
-            raise UserError(_(
-                'The selected leave type does not issue vacation orders.'))
         return {
             'type': 'ir.actions.act_window',
             'name': _('Create Vacation Order'),
@@ -369,18 +389,24 @@ class HrLeave(models.Model):
         }
 
     def action_view_orders(self):
-        """Smart button: open the vacation orders issued for this employee."""
+        """Smart button: open the order(s) issued for THIS leave — opening the
+        form directly when there is just one, which is the normal case."""
         self.ensure_one()
-        return {
+        orders = self._linked_orders()
+        action = {
             'type': 'ir.actions.act_window',
             'name': _('Vacation Orders'),
             'res_model': 'hr.order',
-            'view_mode': 'list,form',
-            'domain': [('order_type', '=', 'vacation'),
-                       ('employee_id', '=', self.employee_id.id)],
             'context': {'default_order_type': 'vacation',
-                        'default_employee_id': self.employee_id.id},
+                        'default_employee_id': self.employee_id.id,
+                        'default_leave_id': self.id},
         }
+        if len(orders) == 1:
+            action.update({'view_mode': 'form', 'res_id': orders.id})
+        else:
+            action.update({'view_mode': 'list,form',
+                           'domain': [('id', 'in', orders.ids)]})
+        return action
 
     @api.model
     def default_get(self, fields_list):
@@ -413,6 +439,14 @@ class HrLeave(models.Model):
                 ], limit=1)
                 if default_lt:
                     vals['holiday_status_id'] = default_lt.id
+        # A leave opened from an order's "New Time Off" button carries the
+        # order in the context. Re-apply it here as well: navigating away from
+        # the unsaved form and back can drop the field, which would silently
+        # save an unlinked leave and let the order offer to create a second one.
+        order_from_ctx = self.env.context.get('default_order_id')
+        if order_from_ctx:
+            for vals in vals_list:
+                vals.setdefault('order_id', order_from_ctx)
 
         # Default the accounting period to the one the leave's FIRST DAY falls
         # into (backfilling every period for the type up to today, and up to
@@ -437,12 +471,17 @@ class HrLeave(models.Model):
                 if period:
                     vals['vacation_balance_id'] = period.id
 
-        # No order is auto-created on save. A vacation order is issued only via
-        # the explicit "Create Order" button (draft, even before approval) or
-        # at validation — see action_create_order / _action_validate. The
-        # reverse direction (an hr.order creating its leave) is unchanged and
-        # still runs from hr.order.create with _creating_leave_from_order.
+        # No order is auto-created on save: one is issued only through the
+        # "New Order" button, which opens a pre-filled order form.
         leaves = super().create(vals_list)
+
+        # A leave opened from an order's "New Time Off" button arrives with
+        # order_id already set; complete the pair so the order points back.
+        for leave in leaves:
+            if leave.order_id and not leave.order_id.leave_id:
+                leave.order_id.with_context(
+                    _sync_order_leave=True, leave_skip_state_check=True
+                ).write({'leave_id': leave.id})
 
         # Per-leave Balance Before/After for subsequent leaves in same year.
         leaves._recompute_subsequent_leaves()
@@ -486,11 +525,10 @@ class HrLeave(models.Model):
              'employee_id', 'holiday_status_id'} & vals.keys()
                 and 'vacation_balance_id' not in vals):
             self._ensure_vacation_period()
-        # Keep an already-linked order's dates in step with the leave (so edits
-        # to a draft order's leave flow through). We never auto-create an order
-        # here — issuing one is explicit (button) or happens at validation.
+        # Keep an already-linked order's dates in step with the leave, so edits
+        # to the leave flow through to its draft order. Only dates travel —
+        # states never do.
         if (not self.env.context.get('_sync_order_leave')
-                and not self.env.context.get('_creating_leave_from_order')
                 and {'date_from', 'date_to', 'request_date_from',
                      'request_date_to'} & vals.keys()):
             for leave in self.filtered(lambda l: l.order_id):
@@ -508,51 +546,44 @@ class HrLeave(models.Model):
         return result
 
     def _action_validate(self, *args, **kwargs):
-        res = super()._action_validate(*args, **kwargs)
-        # The order is issued at approval time. Create it now for order-issuing
-        # leave types that have none yet, then confirm the (draft) order.
-        for leave in self.filtered(lambda l: l.holiday_status_id.create_order):
-            order = leave.order_id or leave._create_vacation_order()
-            if order and order.state == 'draft':
-                # _order_confirm_skip_leave stops the order, in turn, from
-                # re-approving this very leave (which is already validating).
-                order.with_context(
-                    _sync_order_leave=True, _order_confirm_skip_leave=True
-                ).action_confirm()
-        return res
+        # Approval is the moment a leave starts counting as USED, so make sure
+        # it carries its accounting period. Leaves normally get one on create
+        # or on a date/type change; this closes the remaining gaps (import, a
+        # write that cleared the field, a period that could not be resolved
+        # earlier). Done before the state flips, while the record is still
+        # freely writable. Leaves that still cannot resolve a period are left
+        # untouched — the balance's date-based fallback picks them up.
+        self._ensure_vacation_period()
+        # Nothing is done to the order from here: orders are created and
+        # confirmed only through their own buttons. Approving a leave whose
+        # order is already confirmed stays allowed on purpose — the order may
+        # have been issued first and the leave confirmed afterwards.
+        return super()._action_validate(*args, **kwargs)
 
-    def action_back_to_approval(self, *args, **kwargs):
-        res = super().action_back_to_approval(*args, **kwargs)
-        # Returning a leave to approval reverts its confirmed order to draft,
-        # so the order tracks a leave that is no longer approved.
-        for leave in self.filtered(
-                lambda l: l.order_id and l.order_id.state == 'confirmed'):
-            leave.order_id.with_context(_sync_order_leave=True).action_draft()
-        return res
+    def _check_order_allows_cancelling(self, action):
+        """Block undoing a leave that a confirmed order already covers.
+
+        The order is the legal document that obliges the employee to take the
+        leave, so once it is confirmed the leave cannot be refused or sent back
+        to approval — the order would have to be cancelled first."""
+        blocked = self.filtered(
+            lambda l: l.order_id and l.order_id.state == 'confirmed')
+        if blocked:
+            raise UserError(_(
+                'Leave of %(employee)s is covered by confirmed vacation order '
+                '%(order)s, so it cannot be %(action)s. Cancel the order '
+                'first.',
+                employee=blocked[0].employee_id.name,
+                order=blocked[0].order_id.name or '',
+                action=action))
 
     def action_refuse(self, *args, **kwargs):
-        res = super().action_refuse(*args, **kwargs)
-        for leave in self.filtered(lambda l: l.order_id and l.order_id.state != 'cancelled'):
-            leave.order_id.with_context(_sync_order_leave=True).write({'state': 'cancelled'})
-        return res
+        self._check_order_allows_cancelling(_('refused'))
+        return super().action_refuse(*args, **kwargs)
 
-    def _approve_from_order(self):
-        """Drive the leave to its fully-approved state to mirror a confirmed
-        vacation order (the order -> leave direction of the state sync). Runs
-        the standard approval chain, so single- and double-validation leave
-        types both end up validated. Leaves already validated, refused or
-        cancelled are left untouched. Called by hr.order.action_confirm with
-        the _sync_order_leave guard so it does not bounce back to the order."""
-        for leave in self:
-            if leave.state in ('validate', 'refuse', 'cancel'):
-                continue
-            leave = leave.sudo()
-            if leave.state == 'draft':
-                leave.action_confirm()
-            if leave.state in ('confirm', 'validate1'):
-                leave.action_approve()
-            if leave.state == 'validate1':
-                leave.action_validate()
+    def action_back_to_approval(self, *args, **kwargs):
+        self._check_order_allows_cancelling(_('sent back to approval'))
+        return super().action_back_to_approval(*args, **kwargs)
 
     def unlink(self):
         # Capture balance keys before deletion so we can refresh the
@@ -845,8 +876,28 @@ class HrLeave(models.Model):
     def _balance_keys(self):
         """Return ids of the hr.vacation.balance rows charged by leaves in self:
         the period each leave is explicitly linked to (used/planned days are
-        counted by that link, not by the leave dates)."""
-        return set(self.mapped('vacation_balance_id').ids)
+        counted by that link, not by the leave dates).
+
+        A leave with NO period linked is charged, as a safety net, to the period
+        its start date falls into (see
+        hr.vacation.balance._charged_leaves_domain) — include that period too,
+        so editing such a leave refreshes the rollups it feeds."""
+        keys = set(self.mapped('vacation_balance_id').ids)
+        unlinked = self.filtered(
+            lambda l: not l.vacation_balance_id and l.employee_id
+            and l.holiday_status_id and l.request_date_from)
+        if unlinked:
+            Balance = self.env['hr.vacation.balance'].sudo()
+            for leave in unlinked:
+                fallback = Balance.search([
+                    ('employee_id', '=', leave.employee_id.id),
+                    ('leave_type_id', '=', leave.holiday_status_id.id),
+                    ('period_start', '<=', leave.request_date_from),
+                    ('period_end', '>=', leave.request_date_from),
+                ], limit=1)
+                if fallback:
+                    keys.add(fallback.id)
+        return keys
 
     @api.model
     def _recompute_balances_for_keys(self, keys):
