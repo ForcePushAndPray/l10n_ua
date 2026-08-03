@@ -29,10 +29,29 @@ class HrEmployee(models.Model):
         related='current_version_id.work_rate',
         readonly=False
     )
+    # Derived from department_id + job_id, so no longer writable from the card:
+    # the position is entered once, in the native "Job Position" field.
     staffing_line_id = fields.Many2one(
-        related='current_version_id.staffing_line_id',
-        readonly=False
+        related='current_version_id.staffing_line_id'
     )
+    # Details of that line, shown next to the position on the Work tab. No
+    # explicit strings — the labels come from hr.staffing.table, where they are
+    # already translated.
+    staffing_date_from = fields.Date(
+        related='current_version_id.staffing_line_id.date_from')
+    staffing_state = fields.Selection(
+        related='current_version_id.staffing_line_id.state')
+    staffing_currency_id = fields.Many2one(
+        related='current_version_id.staffing_line_id.currency_id')
+    staffing_salary = fields.Monetary(
+        related='current_version_id.staffing_line_id.salary',
+        currency_field='staffing_currency_id')
+    staffing_salary_min = fields.Monetary(
+        related='current_version_id.staffing_line_id.salary_min',
+        currency_field='staffing_currency_id')
+    staffing_salary_max = fields.Monetary(
+        related='current_version_id.staffing_line_id.salary_max',
+        currency_field='staffing_currency_id')
     tariff_grade_id = fields.Many2one(
         related='current_version_id.tariff_grade_id',
         readonly=False

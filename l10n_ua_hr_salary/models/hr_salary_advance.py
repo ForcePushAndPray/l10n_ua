@@ -76,11 +76,15 @@ class HrSalaryAdvance(models.Model):
         store=True, readonly=True,
     )
 
+    # `staffing_line_id.salary` is no longer a dependency: the field is
+    # computed and not stored, so the ORM has no column to walk the path back
+    # through. The fallback in the method body stays; only the moment of
+    # recomputation changes - draft advances are refreshed when the run
+    # regenerates them, and confirmed ones must not change retroactively.
     @api.depends(
         'employee_id', 'wage_percent', 'date',
         'employee_id.current_version_id.wage',
         'employee_id.current_version_id.salary_currency_id',
-        'employee_id.current_version_id.staffing_line_id.salary',
     )
     def _compute_gross_amount(self):
         for advance in self:

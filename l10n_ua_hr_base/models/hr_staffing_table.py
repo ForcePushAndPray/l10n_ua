@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 
@@ -120,6 +122,63 @@ class HrStaffingTable(models.Model):
     def _compute_vacant_units(self):
         for record in self:
             record.vacant_units = max(0.0, record.units - record.filled_units)
+
+    # === Resolution ===
+    # A position is identified by (company, department, job); which line of the
+    # staffing table applies is then a question of date. Everything that needs
+    # "the staffing line of this employee" goes through here, so the rule lives
+    # in one place.
+
+    @api.model
+    def _resolve(self, company, department, job, ref_date):
+        """Approved line in force for this position on `ref_date`.
+
+        Returns an empty recordset when the position is not covered by the
+        staffing table — a legitimate state, not an error: keeping a staffing
+        table is a choice, and civil-law contracts never occupy a staff unit.
+        """
+        if not (company and department and job and ref_date):
+            return self.browse()
+        key = (company.id, department.id, job.id, ref_date)
+        return self._resolve_batch([key]).get(key, self.browse())
+
+    @api.model
+    def _resolve_batch(self, keys):
+        """Resolve many positions at once: {(company, department, job, date): line}.
+
+        Keys carry ids, not recordsets, so they stay hashable. One query serves
+        the whole batch — the callers are computed fields read over a list view,
+        where a query per record would be felt immediately.
+        """
+        keys = [key for key in keys if all(key)]
+        if not keys:
+            return {}
+        lines = self.search([
+            ('company_id', 'in', list({key[0] for key in keys})),
+            ('department_id', 'in', list({key[1] for key in keys})),
+            ('job_id', 'in', list({key[2] for key in keys})),
+            ('state', '=', 'approved'),
+        ], order='date_from desc')
+
+        by_position = defaultdict(list)
+        for line in lines:
+            by_position[(
+                line.company_id.id, line.department_id.id, line.job_id.id,
+            )].append(line)
+
+        resolved = {}
+        for key in keys:
+            ref_date = key[3]
+            for line in by_position.get(key[:3], ()):
+                # Ordered by date_from desc, so the first line whose period
+                # covers the date is the one in force. Overlapping approved
+                # periods are a data defect; picking the latest start keeps the
+                # outcome deterministic until they are cleaned up.
+                if line.date_from <= ref_date and (
+                        not line.date_to or line.date_to >= ref_date):
+                    resolved[key] = line
+                    break
+        return resolved
 
     @api.constrains('units')
     def _check_units(self):

@@ -1,5 +1,9 @@
-from odoo import models, fields, api
+from collections import defaultdict
+from datetime import timedelta
+
+from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
+from odoo.tools import format_date, formatLang
 from dateutil.relativedelta import relativedelta
 
 
@@ -85,7 +89,13 @@ class HrVersion(models.Model):
     staffing_line_id = fields.Many2one(
         'hr.staffing.table',
         string='Staffing Position',
-        groups="hr.group_hr_user"
+        compute='_compute_staffing_line_id',
+        compute_sudo=True,
+        groups="hr.group_hr_user",
+        help='Staffing table line matching the department and the job of this '
+             'version on the date it is in force. Not filled in by hand: the '
+             'position is entered once, in the native Job Position field, and '
+             'the staffing line follows from it.'
     )
     tariff_grade_id = fields.Many2one(
         'hr.tariff.grade',
@@ -268,9 +278,71 @@ class HrVersion(models.Model):
                 days = 7
             version.additional_vacation_days = days
 
-    @api.onchange('staffing_line_id')
-    def _onchange_staffing_line_id(self):
-        """Suggest wage from staffing table based on company setting"""
+    # === Staffing line resolution ===
+
+    @api.depends('company_id', 'department_id', 'job_id', 'date_version',
+                 'contract_date_start', 'contract_date_end',
+                 'employee_id.version_ids.date_version')
+    def _compute_staffing_line_id(self):
+        """Staffing line of the position, as of the date this version is in force.
+
+        A superseded version resolves against the staffing table as it stood at
+        the end of its own period; the current, open-ended version resolves
+        against today. That second half is what makes the field usable for the
+        ordinary Ukrainian case — a permanent contract whose salary is revised
+        every year without a new version ever being created.
+        """
+        today = fields.Date.context_today(self)
+        sibling_dates = defaultdict(list)
+        employees = self.employee_id
+        if employees:
+            for version in self.env['hr.version'].search(
+                    [('employee_id', 'in', employees.ids)]):
+                sibling_dates[version.employee_id.id].append(version.date_version)
+
+        keys = {}
+        for version in self:
+            ref_date = version._staffing_ref_date(
+                sibling_dates.get(version.employee_id.id, ()), today)
+            keys[version.id] = (
+                version.company_id.id, version.department_id.id,
+                version.job_id.id, ref_date,
+            )
+        resolved = self.env['hr.staffing.table']._resolve_batch(list(keys.values()))
+        for version in self:
+            version.staffing_line_id = resolved.get(keys[version.id], False)
+
+    def _staffing_ref_date(self, sibling_dates, today):
+        """Date this version is read against: the end of its period, else today.
+
+        Mirrors the rule core uses for `date_start` / `date_end`
+        (`hr.version._compute_dates`) instead of reading those fields: they are
+        computed one record at a time with a search each, which a batched
+        compute cannot afford.
+        """
+        self.ensure_one()
+        own_date = self.date_version or today
+        start = own_date
+        if self.contract_date_start and self.contract_date_start > start:
+            start = self.contract_date_start
+        following = [d for d in sibling_dates if d > own_date]
+        end = min(following) - timedelta(days=1) if following else False
+        if end and self.contract_date_end:
+            end = min(end, self.contract_date_end)
+        elif not end:
+            end = self.contract_date_end
+        # A version dated in the future is read against the day it takes
+        # effect: by then the staffing table may well be a different one.
+        return end or max(start, today)
+
+    @api.onchange('job_id', 'department_id')
+    def _onchange_job_suggest_wage(self):
+        """Suggest wage from staffing table based on company setting.
+
+        Triggered by the position rather than by `staffing_line_id`: the latter
+        is a computed field now, and an onchange on a computed field is not a
+        trigger worth depending on.
+        """
         if not self.staffing_line_id:
             return
 
@@ -288,24 +360,85 @@ class HrVersion(models.Model):
             if version.work_rate and (version.work_rate <= 0 or version.work_rate > 2):
                 raise ValidationError('Work rate must be between 0 and 2.')
 
-    @api.constrains('wage', 'staffing_line_id')
-    def _check_wage_in_salary_range(self):
+    @api.model_create_multi
+    def create(self, vals_list):
+        versions = super().create(vals_list)
+        versions._warn_wage_out_of_staffing_range()
+        return versions
+
+    def write(self, vals):
+        if 'wage' not in vals:
+            return super().write(vals)
+        # Only versions whose wage actually moves deserve a note: saving the
+        # same form twice must not post the same warning twice.
+        changed = self.filtered(lambda version: version.wage != vals['wage'])
+        result = super().write(vals)
+        changed._warn_wage_out_of_staffing_range()
+        return result
+
+    def _warn_wage_out_of_staffing_range(self):
+        """Note in the employee's chatter when the wage leaves the staffing range.
+
+        Deliberately not a constraint. Ukrainian salaries — and the ranges
+        themselves — are revised far more often than the staffing table is
+        rewritten, so a blocking check would reliably stop the very operation
+        that must not be stopped: a pay rise. The numbers are stated, the
+        decision stays with the HR officer.
+        """
+        today = fields.Date.context_today(self)
         for version in self:
-            if version.staffing_line_id and version.wage:
-                staffing = version.staffing_line_id
-                # Вилка штатного розпису — у валюті компанії, а оклад може
-                # бути у валюті договору. Без перерахунку оклад 1000 USD
-                # порівнювався б із гривневою вилкою й не проходив у неї
-                # ніколи.
-                wage = version._l10n_ua_wage_in_company_currency(
-                    version.date_version)
-                if staffing.salary_min and wage < staffing.salary_min:
-                    raise ValidationError(
-                        'Salary %.2f is below position minimum %.2f for %s' %
-                        (wage, staffing.salary_min, staffing.name)
-                    )
-                if staffing.salary_max and wage > staffing.salary_max:
-                    raise ValidationError(
-                        'Salary %.2f exceeds position maximum %.2f for %s' %
-                        (wage, staffing.salary_max, staffing.name)
-                    )
+            employee = version.employee_id
+            if not (employee and version.wage):
+                continue
+            line = version.sudo().staffing_line_id
+            if not line or not (line.salary_min or line.salary_max):
+                continue
+            wage = version._staffing_comparable_wage(line, today)
+            below = line.salary_min and wage < line.salary_min
+            above = line.salary_max and wage > line.salary_max
+            if not (below or above):
+                continue
+            employee.message_post(body=_(
+                'Wage %(wage)s is outside the staffing table range: the line '
+                'of %(date)s "%(position)s" provides for %(range)s. '
+                'Please review the staffing table.',
+                wage=formatLang(self.env, wage, currency_obj=line.currency_id),
+                date=format_date(self.env, line.date_from),
+                position=line.name,
+                range=version._staffing_range_label(line),
+            ))
+
+    def _staffing_range_label(self, line):
+        """Human-readable salary range of a staffing line ("16 000 - 22 000")."""
+        low = formatLang(self.env, line.salary_min, currency_obj=line.currency_id)
+        high = formatLang(self.env, line.salary_max, currency_obj=line.currency_id)
+        if line.salary_min and line.salary_max:
+            return '%s - %s' % (low, high)
+        if line.salary_min:
+            return _('at least %s', low)
+        return _('at most %s', high)
+
+    def _staffing_comparable_wage(self, line, today):
+        """The wage expressed in the currency of the staffing line.
+
+        The range is denominated in the line's currency while the wage may be
+        set in another one (foreign-currency contracts, Diia.City gigs).
+        Comparing the raw numbers would report a wage of 1 000 USD as falling
+        below a minimum of 16 000 UAH. The conversion is the shared one from
+        l10n_ua_hr_base, so the figure quoted in the note is the figure payroll
+        will work with.
+        """
+        self.ensure_one()
+        company = self.company_id or self.env.company
+        date = self.date_version or today
+        try:
+            wage = self._l10n_ua_wage_in_company_currency(date)
+        except UserError:
+            # No rate for that day. A note is not a blocking check, so the raw
+            # figure beats silence: the wage may well be out of range, and the
+            # missing rate is already reported where it does block - payroll.
+            return self.wage
+        if line.currency_id and line.currency_id != company.currency_id:
+            return company.currency_id._convert(
+                wage, line.currency_id, company, date)
+        return wage

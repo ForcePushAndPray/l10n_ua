@@ -18,8 +18,12 @@ PERSONAL_FIELDS = [
     'private_phone', 'private_email', 'private_street',
     'private_street2', 'private_city', 'private_zip', 'private_state_id',
     'private_country_id',
-    # Work contact info shown directly under the name in the form header
-    'job_title', 'work_phone', 'mobile_phone', 'work_email',
+    # Work contact info shown directly under the name in the form header.
+    # `job_title` is deliberately absent: the transfer sets a new job_id, and
+    # copying the old title would freeze the previous position's wording on the
+    # new card (is_custom_job_title turns True) while every order and form
+    # prints the new one. Core recomputes it from the new position instead.
+    'work_phone', 'mobile_phone', 'work_email',
     # Ukrainian-specific personal data from l10n_ua_hr_base
     'rnokpp', 'document_type', 'passport_series',
     'passport_id', 'passport_expiration_date',

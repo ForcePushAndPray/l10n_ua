@@ -1112,6 +1112,63 @@ msgid "Staffing Position"
 msgstr "Штатна позиція"
 
 #. module: l10n_ua_hr_contract
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_employee__staffing_line_id
+#: model:ir.model.fields,help:l10n_ua_hr_contract.field_hr_version__staffing_line_id
+msgid ""
+"Staffing table line matching the department and the job of this version on "
+"the date it is in force. Not filled in by hand: the position is entered "
+"once, in the native Job Position field, and the staffing line follows from "
+"it."
+msgstr ""
+"Рядок штатного розпису, що відповідає підрозділу й посаді цієї версії на "
+"дату її чинності. Не заповнюється вручну: посада вводиться один раз у "
+"штатному полі «Посада», а рядок розпису виводиться з неї."
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_employee_view_form_version_ua
+msgid "Staffing Version"
+msgstr "Версія штатного розпису"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_employee_view_form_version_ua
+msgid "Staffing Salary"
+msgstr "Оклад за розписом"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_employee_view_form_version_ua
+msgid "Status:"
+msgstr "Статус:"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_employee_view_form_version_ua
+msgid "Salary Range"
+msgstr "Діапазон"
+
+#. module: l10n_ua_hr_contract
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_employee_view_form_version_ua
+msgid "Outside the staffing table"
+msgstr "Поза штатним розписом"
+
+#. module: l10n_ua_hr_contract
+#: code:addons/l10n_ua_hr_contract/models/hr_version.py:0
+msgid ""
+"Wage %(wage)s is outside the staffing table range: the line of %(date)s "
+"\"%(position)s\" provides for %(range)s. Please review the staffing table."
+msgstr ""
+"Оклад %(wage)s виходить за вилку штатного розпису: рядок від %(date)s "
+"«%(position)s» передбачає %(range)s. Перегляньте штатний розпис."
+
+#. module: l10n_ua_hr_contract
+#: code:addons/l10n_ua_hr_contract/models/hr_version.py:0
+msgid "at least %s"
+msgstr "не менше %s"
+
+#. module: l10n_ua_hr_contract
+#: code:addons/l10n_ua_hr_contract/models/hr_version.py:0
+msgid "at most %s"
+msgstr "не більше %s"
+
+#. module: l10n_ua_hr_contract
 #: model:ir.model.fields.selection,name:l10n_ua_hr_contract.selection__resource_calendar__ua_schedule_type__standard
 msgid "Standard (5-day week)"
 msgstr "Стандартний (5-денний тиждень)"
@@ -1556,11 +1613,6 @@ msgstr ""
 #. module: l10n_ua_hr_contract
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_employee_view_form_version_ua
 msgid "Умови праці"
-msgstr ""
-
-#. module: l10n_ua_hr_contract
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_contract.hr_employee_view_form_version_ua
-msgid "Штатний розпис"
 msgstr ""
 
 #. module: l10n_ua_hr_contract
