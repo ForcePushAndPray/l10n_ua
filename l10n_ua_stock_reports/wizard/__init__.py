@@ -1,1 +1,2 @@
-from . import m19_material_report_wizard
+from . import material_report_line
+from . import material_report_wizard
