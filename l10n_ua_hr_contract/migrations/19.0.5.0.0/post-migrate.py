@@ -114,9 +114,3 @@ def migrate(cr, version):
             "a staffing line (ids: %s)",
             len(unresolved), unresolved.ids[:50])
 
-    # The column is dead weight now — the field is computed and never stored.
-    # The snapshot table keeps the old values.
-    cr.execute('ALTER TABLE hr_version DROP COLUMN IF EXISTS staffing_line_id')
-    _logger.info(
-        "l10n_ua_hr_contract 19.0.5.0.0: dropped hr_version.staffing_line_id, "
-        "old values remain in %s", BACKUP)
