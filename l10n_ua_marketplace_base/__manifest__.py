@@ -32,6 +32,7 @@ Supported marketplaces (via specific modules):
         'stock',
         'delivery',
         'account',
+        'phone_validation',
     ],
     'data': [
         # Security

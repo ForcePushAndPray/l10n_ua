@@ -97,8 +97,8 @@
                                     <t t-if="partner.l10n_ua_legal_address">
                                         <br/><span t-field="partner.l10n_ua_legal_address"/>
                                     </t>
-                                    <t t-if="partner.phone or partner.mobile">
-                                        <br/>тел. <span t-esc="partner.phone or partner.mobile"/>
+                                    <t t-if="partner.phone">
+                                        <br/>тел. <span t-esc="partner.phone"/>
                                     </t>
                                 </td>
                             </tr>
@@ -264,8 +264,8 @@
                                     <t t-if="partner.ipn">
                                         , ІПН: <span t-field="partner.ipn"/>
                                     </t>
-                                    <t t-if="partner.phone or partner.mobile">
-                                        <br/>тел. <span t-esc="partner.phone or partner.mobile"/>
+                                    <t t-if="partner.phone">
+                                        <br/>тел. <span t-esc="partner.phone"/>
                                     </t>
                                 </td>
                             </tr>
