@@ -17,7 +17,6 @@
 |----:|----|-------|--------|--------|-------|------|
 | 30 | `menu_hr_payroll_root` | Payroll | group_hr_ua_user ✅ | hr_salary | власний апп | апп (seq→band) |
 | 45 | `menu_marketplace_root` | Marketplaces | group_marketplace_user ✅ | marketplace_base | власний апп | апп |
-| 50 | `menu_hr_timesheet_root` | Timesheet | group_hr_ua_user ✅ | hr_attendance_sheet | власний апп | апп |
 | 51 | `menu_ua_accounting_root` | Accounting | group_ua_accountant | accounting | власний апп | апп |
 | 53 | `menu_ua_bank_root` | Bank | group_ua_accountant | bank_sync | власний апп | апп |
 | 54 | `menu_ua_tax_root` | Taxes UA | group_ua_tax_accountant | tax | власний апп | апп |
@@ -28,6 +27,13 @@
 | 100 | `menu_l10n_ua_budget_root` | Бюджетний облік (UA) | group_ua_budget_user | budget_base | Finance→Config | під Accounting-апп |
 
 > ⚠ = діри/баги, зафіксовані для виправлення (див. [menu_architecture.md](menu_architecture.md)).
+
+**Знятий корінь:** `menu_hr_timesheet_root` (Timesheet, seq 50, `hr_attendance_sheet`)
+видалено — його мітка дублювала core Timesheets (`hr_timesheet`), а українською
+«Табель» vs «Табелі» відрізнялися однією літерою (H2). Домен вкладено в застосунок
+«Співробітники»: листок `menu_hr_timesheet` → `hr.menu_hr_root` (seq 16, мітка
+«Табель П-5»), конфіг → `l10n_ua_hr_base.menu_hr_ua_configuration` (seq 30).
+Seq **50 лишається зарезервованим** — не переприсвоювати (§2).
 
 ## 2. Конвенція `sequence`
 
@@ -65,12 +71,13 @@ vs «Бюджетний облік»).
 **Власний корінь-апп (тайл у лаунчері) — лише** високочастотним операційним
 персонам, що працюють у домені щодня:
 
-> Accounting · Bank · Taxes · Payroll · Timesheet · Marketplaces · Медицина · Освіта
+> Accounting · Bank · Taxes · Payroll · Marketplaces · Медицина · Освіта
 
 **Усе інше — вкладається й НЕ отримує тайл:**
 
 | Домен/фіча | Ціль-батько |
 |-----------|-------------|
+| Табель П-5 (`hr_attendance_sheet`) | під core **Employees** (`hr.menu_hr_root`), конфіг — під `menu_hr_ua_configuration` |
 | FOP / VAT / Кабінет ДПС | під **Taxes** |
 | Основні засоби, Бюджет | під **Accounting**-апп |
 | Delivery | під core **Inventory** |

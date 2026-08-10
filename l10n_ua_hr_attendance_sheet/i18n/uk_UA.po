@@ -86,6 +86,12 @@ msgid "Attachment Count"
 msgstr "Кількість вкладень"
 
 #. module: l10n_ua_hr_attendance_sheet
+#: model:ir.ui.menu,name:l10n_ua_hr_attendance_sheet.menu_hr_timesheet
+#: model:ir.ui.menu,name:l10n_ua_hr_attendance_sheet.menu_hr_timesheet_config
+msgid "Attendance Sheet (P-5)"
+msgstr "Табель П-5"
+
+#. module: l10n_ua_hr_attendance_sheet
 #: model:ir.model.fields.selection,name:l10n_ua_hr_attendance_sheet.selection__hr_timesheet__month__8
 msgid "August"
 msgstr "Серпень"
@@ -121,11 +127,6 @@ msgstr "Колір"
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet__company_id
 msgid "Company"
 msgstr "Компанія"
-
-#. module: l10n_ua_hr_attendance_sheet
-#: model:ir.ui.menu,name:l10n_ua_hr_attendance_sheet.menu_hr_timesheet_config
-msgid "Configuration"
-msgstr "Налаштування"
 
 #. module: l10n_ua_hr_attendance_sheet
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_attendance_sheet.hr_timesheet_view_form
@@ -669,7 +670,6 @@ msgstr "Статус на основі активностей\nПростроч�
 #. module: l10n_ua_hr_attendance_sheet
 #: model:ir.model,name:l10n_ua_hr_attendance_sheet.model_hr_timesheet
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_line__timesheet_id
-#: model:ir.ui.menu,name:l10n_ua_hr_attendance_sheet.menu_hr_timesheet_root
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_attendance_sheet.hr_timesheet_view_form
 msgid "Timesheet"
 msgstr "Табель"
@@ -721,7 +721,6 @@ msgstr "Табель за цей період вже існує!"
 
 #. module: l10n_ua_hr_attendance_sheet
 #: model:ir.actions.act_window,name:l10n_ua_hr_attendance_sheet.action_hr_timesheet
-#: model:ir.ui.menu,name:l10n_ua_hr_attendance_sheet.menu_hr_timesheet
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_attendance_sheet.hr_timesheet_view_tree
 msgid "Timesheets"
 msgstr "Табелі"
