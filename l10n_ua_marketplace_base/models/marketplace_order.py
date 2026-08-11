@@ -342,10 +342,10 @@ class MarketplaceOrder(models.Model):
 
             if backend.partner_search_by in ('phone', 'both') and self.customer_phone:
                 phone = self._normalize_phone(self.customer_phone)
-                domain = ['|',
-                    ('phone', 'ilike', phone),
-                    ('mobile', 'ilike', phone),
-                ]
+                # phone_mobile_search looks through all partner phone fields,
+                # ignoring how the number is formatted in the database
+                if len(phone) >= 3:
+                    domain = [('phone_mobile_search', 'ilike', phone)]
 
             if backend.partner_search_by in ('email', 'both') and self.customer_email:
                 email_domain = [('email', '=ilike', self.customer_email)]

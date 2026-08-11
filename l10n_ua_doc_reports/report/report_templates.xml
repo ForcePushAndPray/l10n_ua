@@ -187,7 +187,7 @@
                 <span>Адреса: <span t-esc="partner.contact_address"/></span><br/>
             </t>
             <t t-if="partner.phone">
-                <span>тел. <span t-esc="partner.phone or partner.mobile or ''"/></span><br/>
+                <span>тел. <span t-esc="partner.phone or ''"/></span><br/>
             </t>
             <t t-if="partner.edrpou">
                 <span>ЄДРПОУ: <span t-field="partner.edrpou"/></span>

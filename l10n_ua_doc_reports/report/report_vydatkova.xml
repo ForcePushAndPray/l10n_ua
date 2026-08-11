@@ -84,8 +84,8 @@
                                     <t t-if="partner.l10n_ua_legal_address">
                                         Адреса: <span t-field="partner.l10n_ua_legal_address"/><br/>
                                     </t>
-                                    <t t-if="partner.phone or partner.mobile">
-                                        тел. <span t-esc="partner.phone or partner.mobile"/><br/>
+                                    <t t-if="partner.phone">
+                                        тел. <span t-esc="partner.phone"/><br/>
                                     </t>
                                     <t t-if="partner.edrpou">
                                         ЄДРПОУ: <span t-field="partner.edrpou"/>
