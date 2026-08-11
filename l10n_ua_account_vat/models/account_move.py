@@ -20,6 +20,26 @@ class AccountMove(models.Model):
         for move in self:
             move.tax_invoice_count = len(move.tax_invoice_ids)
 
+    # Ставки ПДВ, передбачені ПКУ. Ключ — `amount` відсоткового податку.
+    _L10N_UA_VAT_RATES = {20.0: '20', 14.0: '14', 7.0: '7', 0.0: '0'}
+
+    @api.model
+    def _l10n_ua_vat_rate_for_line(self, invoice_line):
+        """Ставка ПДВ рядка ПН за податками рядка документа.
+
+        Повертає 'exempt', якщо ПДВ на рядку немає взагалі. Раніше тут стояв
+        дефолт '20', тобто рядок без ПДВ потрапляв у ПН як оподаткований за
+        основною ставкою — помилка, яка завищує зобовʼязання.
+
+        Розрізнити звільнення (ст. 197) і необ'єкт (ст. 196) за самим фактом
+        відсутності податку неможливо; для цього потрібні окремі податки з
+        явною ознакою.
+        """
+        for tax in invoice_line.tax_ids:
+            if tax.amount_type == 'percent' and tax.amount in self._L10N_UA_VAT_RATES:
+                return self._L10N_UA_VAT_RATES[tax.amount]
+        return 'exempt'
+
     def action_create_tax_invoice(self):
         """Create a tax invoice (ПН) from customer/vendor invoice."""
         self.ensure_one()
@@ -35,26 +55,22 @@ class AccountMove(models.Model):
 
         is_refund = self.move_type in ('out_refund', 'in_refund')
 
-        # Build lines from invoice lines
+        # Build lines from invoice lines.
+        #
+        # Фільтр саме `display_type == 'product'`: у Odoo 17+ звичайний рядок
+        # має display_type 'product', а не порожній, тож умова `not display_type`
+        # (написана під Odoo <=16) відкидала геть усі рядки й ПН виходила
+        # порожньою. `invoice_line_ids` містить ще секції та примітки — їм у ПН
+        # робити нічого.
         line_vals = []
         seq = 10
-        for iline in self.invoice_line_ids.filtered(lambda l: not l.display_type):
-            # Determine VAT rate from tax
-            vat_rate = '20'
-            vat_amount = 0.0
-            for tax in iline.tax_ids:
-                if tax.amount == 20:
-                    vat_rate = '20'
-                elif tax.amount == 14:
-                    vat_rate = '14'
-                elif tax.amount == 7:
-                    vat_rate = '7'
-                elif tax.amount == 0:
-                    vat_rate = '0'
-            # Calculate VAT
-            rates = {'20': 0.20, '14': 0.14, '7': 0.07, '0': 0.0}
-            base = iline.price_subtotal
-            vat_amount = base * rates.get(vat_rate, 0.20)
+        for iline in self.invoice_line_ids.filtered(lambda l: l.display_type == 'product'):
+            # Ціна за одиницю після знижки й без ПДВ. `price_subtotal` уже
+            # враховує знижку і виключає включений у ціну податок, тож база в
+            # ПН збігається з документом. Зберігати сирий `price_unit` не можна:
+            # рядок ПН рахує базу як quantity * price_unit, і знижка зникла б.
+            # Для <CINA> в XML ЄРПН потрібна саме фактична ціна постачання.
+            net_unit_price = iline.price_subtotal / iline.quantity if iline.quantity else 0.0
 
             line_vals.append((0, 0, {
                 'sequence': seq,
@@ -63,8 +79,8 @@ class AccountMove(models.Model):
                 'uktzed_code': iline.product_id.l10n_ua_uktzed if hasattr(iline.product_id, 'l10n_ua_uktzed') else '',
                 'quantity': iline.quantity,
                 'uom_id': iline.product_uom_id.id if iline.product_uom_id else False,
-                'price_unit': iline.price_unit,
-                'vat_rate': vat_rate,
+                'price_unit': net_unit_price,
+                'vat_rate': self._l10n_ua_vat_rate_for_line(iline),
             }))
             seq += 10
 
