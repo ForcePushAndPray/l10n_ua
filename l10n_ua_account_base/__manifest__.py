@@ -62,6 +62,7 @@ This module is required for all other l10n_ua_* modules.
     ],
     'demo': [],
     'images': ['static/description/icon.png'],
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
     'auto_install': False,
