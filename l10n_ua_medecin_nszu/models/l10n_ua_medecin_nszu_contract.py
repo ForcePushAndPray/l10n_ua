@@ -135,15 +135,18 @@ class L10nUaMedecinNszuContractLine(models.Model):
 
     def action_compute_pmd_capitation(self):
         """Перерахувати expected_units на основі активних декларацій з ваговими коефіцієнтами."""
+        Patient = self.env['l10n_ua.medecin.patient']
         for line in self:
             if line.payment_model != 'capitation':
                 continue
-            patients_by_cat = self.env['l10n_ua.medecin.patient'].read_group(
+            # _read_group повертає кортежі (значення_групування..., агрегати...),
+            # тому розпакування позиційне, без ключів на кшталт '<поле>_count'.
+            groups = Patient._read_group(
                 [('company_id', '=', line.company_id.id),
                  ('active_declaration_id', '!=', False)],
-                ['age_category'], ['age_category'])
+                ['age_category'], ['__count'])
             weighted = sum(
-                row['age_category_count'] * AGE_COEFFICIENTS.get(row['age_category'], 1.0)
-                for row in patients_by_cat
+                count * AGE_COEFFICIENTS.get(category, 1.0)
+                for category, count in groups
             )
             line.expected_units = int(round(weighted))
