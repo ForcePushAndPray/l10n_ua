@@ -54,6 +54,40 @@ class AccountMove(models.Model):
                 return self._L10N_UA_VAT_RATES[tax.amount]
         return 'exempt'
 
+    def _l10n_ua_first_payment_date(self):
+        """Дата найранішого зарахованого платежу або False, якщо оплат немає."""
+        self.ensure_one()
+        dates = self.matched_payment_ids.filtered(
+            lambda p: p.state in ('paid', 'in_process')).mapped('date')
+        return min(dates) if dates else False
+
+    def _l10n_ua_tax_invoice_date(self):
+        """Дата ПН за правилом визнання, застосовним до цієї операції.
+
+        Касовий метод (п. 187.10 ПКУ): дата руху коштів. Поки оплати немає,
+        податкове зобовʼязання не виникло і ПН складати нема на що.
+
+        Перша подія (загальне правило, ст. 187): раніша з дати відвантаження
+        і дати оплати. Дату відвантаження беремо як дату документа —
+        окремого обліку відвантажень тут немає, і для післяоплати це та сама
+        дата; для передоплати раніший саме платіж, тому й порівнюємо.
+        """
+        self.ensure_one()
+        payment_date = self._l10n_ua_first_payment_date()
+
+        if self.partner_id.with_company(self.company_id).l10n_ua_vat_cash_method:
+            if not payment_date:
+                raise UserError(_(
+                    'За контрагентом «%s» застосовується касовий метод ПДВ, '
+                    'тож ПН складається за датою оплати. Документ ще не оплачений.',
+                    self.partner_id.display_name))
+            return payment_date
+
+        doc_date = self.invoice_date or self.date
+        if payment_date and payment_date < doc_date:
+            return payment_date
+        return doc_date
+
     def action_create_tax_invoice(self):
         """Create a tax invoice (ПН) from customer/vendor invoice."""
         self.ensure_one()
@@ -113,11 +147,18 @@ class AccountMove(models.Model):
         seq_code = f'l10n_ua.tax.invoice.{invoice_type}'
         number = self.env['ir.sequence'].next_by_code(seq_code) or _('Новий')
 
+        cash_method = self.partner_id.with_company(
+            self.company_id).l10n_ua_vat_cash_method
+
         vals = {
             'invoice_type': invoice_type,
             'doc_type': 'rk' if is_refund else 'pn',
             'number': number,
-            'date': fields.Date.context_today(self),
+            # Дата ПН — дата виникнення податкового зобовʼязання, а не день
+            # натискання кнопки: від неї рахується строк реєстрації в ЄРПН і
+            # період декларації.
+            'date': self._l10n_ua_tax_invoice_date(),
+            'vat_method': 'cash' if cash_method else 'first_event',
             'partner_id': self.partner_id.id,
             'company_id': self.company_id.id,
             'move_id': self.id,

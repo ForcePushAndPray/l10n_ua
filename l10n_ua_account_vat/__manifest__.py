@@ -34,6 +34,7 @@ Requires l10n_ua_tax module.
         'data/ir_sequence_data.xml',
         'report/tax_invoice_report.xml',
         'views/res_company_views.xml',
+        'views/res_partner_views.xml',
         'views/l10n_ua_tax_invoice_views.xml',
         'views/l10n_ua_vat_register_views.xml',
         'views/l10n_ua_vat_declaration_views.xml',

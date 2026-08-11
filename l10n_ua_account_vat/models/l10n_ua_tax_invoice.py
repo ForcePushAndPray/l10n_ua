@@ -50,6 +50,17 @@ class L10nUaTaxInvoice(models.Model):
         default=fields.Date.context_today,
         tracking=True,
     )
+    vat_method = fields.Selection(
+        selection=[
+            ('first_event', 'Перша подія'),
+            ('cash', 'Касовий метод'),
+        ],
+        string='Правило визнання',
+        default='first_event',
+        tracking=True,
+        help='За яким правилом визначено дату складання: загальне правило '
+             'першої події (ст. 187 ПКУ) чи касовий метод (п. 187.10).',
+    )
     invoice_type = fields.Selection(
         selection=[
             ('issued', 'Видана'),
