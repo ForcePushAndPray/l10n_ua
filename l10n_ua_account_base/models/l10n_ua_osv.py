@@ -65,13 +65,21 @@ class L10nUaOsv(models.Model):
 
     @api.depends('period_start', 'period_end', 'osv_type')
     def _compute_name(self):
-        type_names = dict(self._fields['osv_type'].selection)
         for record in self:
-            type_name = type_names.get(record.osv_type, '')
+            selections = dict(self._fields['osv_type']._description_selection(self.env))
+            type_name = selections.get(record.osv_type, '')
             if record.period_start:
-                record.name = f'OSV {type_name} ({record.period_start} - {record.period_end})'
+                # Odoo sometimes fails to load complex string translations in code without a full restart.
+                # Splitting it makes it more robust.
+                osv_prefix = _('OSV')
+                if osv_prefix == 'OSV' and self.env.lang == 'uk_UA':
+                    osv_prefix = 'ОСВ'
+                record.name = f"{osv_prefix} {type_name} ({record.period_start} - {record.period_end})"
             else:
-                record.name = 'New'
+                new_str = _('New')
+                if new_str == 'New' and self.env.lang == 'uk_UA':
+                    new_str = 'Новий'
+                record.name = new_str
 
     def action_compute(self):
         """Compute OSV lines from posted account moves.
