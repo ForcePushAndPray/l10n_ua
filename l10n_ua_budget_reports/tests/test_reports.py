@@ -68,6 +68,11 @@ class TestBudgetReports(TransactionCase):
 
     def test_form_2d_wizard_action_returns_report(self):
         """Wizard's action_print should return a report action dict."""
+        # Без макета документа report_action() для адміна повертає не звіт, а
+        # майстер налаштування макета (ir_actions_report.py:1179). У бойовій базі
+        # макет заданий, у чистій тестовій — ні, тож задаємо його явно, інакше
+        # тест перевіряє стан компанії, а не поведінку майстра.
+        self.env.company.external_report_layout_id = self.env.ref('web.external_layout_standard')
         wizard = self.env['l10n_ua.budget.form_2d.wizard'].create({
             'estimate_id': self.estimate.id,
             'period': 'year',

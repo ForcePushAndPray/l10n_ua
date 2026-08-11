@@ -111,9 +111,11 @@ class BudgetMultiFormWizard(models.TransientModel):
             ]
             if line.kpkvk_id:
                 domain.append(('ua_kpkvk_id', '=', line.kpkvk_id.id))
-            agg = AML.read_group(domain, ['debit:sum', 'credit:sum'], [])
-            debit = (agg[0]['debit'] if agg else 0.0) or 0.0
-            credit = (agg[0]['credit'] if agg else 0.0) or 0.0
+            # Без групування _read_group завжди повертає рівно один кортеж,
+            # а сума над порожньою вибіркою приходить як False, не 0.0.
+            [(debit, credit)] = AML._read_group(domain, [], ['debit:sum', 'credit:sum'])
+            debit = debit or 0.0
+            credit = credit or 0.0
             # Для «інших надходжень» (4-2д) — показуємо кредит (надходження), для видатків — дебет
             actual = credit if self.form_kind == '4_2d' else debit
             plan = line.amount_planned
@@ -142,22 +144,21 @@ class BudgetMultiFormWizard(models.TransientModel):
             ('account_id.account_type', '=', 'liability_payable'),
             ('ua_fund_type', '!=', False),
         ]
-        agg = AML.read_group(domain, ['debit:sum', 'credit:sum'],
-                              ['ua_kekv_id', 'ua_fund_type'], lazy=False)
+        # _read_group віддає групу many2one готовим рекордсетом, тож browse
+        # по (id, name) більше не потрібен.
         out = []
-        Kekv = self.env['l10n_ua.kekv']
-        for row in agg:
-            kekv = Kekv.browse(row['ua_kekv_id'][0]) if row.get('ua_kekv_id') else None
+        for kekv, fund_type, debit, credit in AML._read_group(
+                domain, ['ua_kekv_id', 'ua_fund_type'], ['debit:sum', 'credit:sum']):
             if not kekv:
                 continue
-            balance = (row['credit'] or 0) - (row['debit'] or 0)
+            balance = (credit or 0) - (debit or 0)
             if balance == 0:
                 continue
             out.append({
                 'kekv_code': kekv.code,
                 'kekv_name': kekv.name,
                 'fund': dict([('general', 'Загальний'), ('special', 'Спеціальний')])
-                         .get(row['ua_fund_type'], '—'),
+                         .get(fund_type, '—'),
                 'balance': balance,
             })
         return out
@@ -172,22 +173,19 @@ class BudgetMultiFormWizard(models.TransientModel):
             ('account_id.account_type', '=', 'asset_receivable'),
             ('ua_fund_type', '!=', False),
         ]
-        agg = AML.read_group(domain, ['debit:sum', 'credit:sum'],
-                              ['ua_kekv_id', 'ua_fund_type'], lazy=False)
         out = []
-        Kekv = self.env['l10n_ua.kekv']
-        for row in agg:
-            kekv = Kekv.browse(row['ua_kekv_id'][0]) if row.get('ua_kekv_id') else None
+        for kekv, fund_type, debit, credit in AML._read_group(
+                domain, ['ua_kekv_id', 'ua_fund_type'], ['debit:sum', 'credit:sum']):
             if not kekv:
                 continue
-            balance = (row['debit'] or 0) - (row['credit'] or 0)
+            balance = (debit or 0) - (credit or 0)
             if balance == 0:
                 continue
             out.append({
                 'kekv_code': kekv.code,
                 'kekv_name': kekv.name,
                 'fund': dict([('general', 'Загальний'), ('special', 'Спеціальний')])
-                         .get(row['ua_fund_type'], '—'),
+                         .get(fund_type, '—'),
                 'balance': balance,
             })
         return out

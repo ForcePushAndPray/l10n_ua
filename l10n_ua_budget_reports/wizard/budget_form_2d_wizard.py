@@ -86,8 +86,8 @@ class BudgetForm2DWizard(models.TransientModel):
             ]
             if line.kpkvk_id:
                 domain.append(('ua_kpkvk_id', '=', line.kpkvk_id.id))
-            agg = AML.read_group(domain, ['debit:sum'], [])
-            actual = (agg[0]['debit'] if agg else 0.0) or 0.0
+            [(debit,)] = AML._read_group(domain, [], ['debit:sum'])
+            actual = debit or 0.0
             plan = line.amount_planned
             variance = plan - actual
             out.append({
