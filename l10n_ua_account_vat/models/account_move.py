@@ -115,7 +115,12 @@ class AccountMove(models.Model):
         self.ensure_one()
         if self.move_type in ('in_invoice', 'in_refund', 'out_refund'):
             return 'document'
-        if self.partner_id.with_company(self.company_id).l10n_ua_vat_cash_method:
+        # Прапорець належить самому підприємству, а не його контактам: режим
+        # оподаткування єдиний для юрособи, тож читаємо з комерційного
+        # партнера — інакше рахунок на контакт-дитину пропустив би касовий
+        # метод повз увагу.
+        partner = self.commercial_partner_id.with_company(self.company_id)
+        if partner.l10n_ua_vat_cash_method:
             return 'cash'
         return 'first_event'
 
@@ -136,42 +141,54 @@ class AccountMove(models.Model):
         if rule == 'document':
             return doc_date
 
-        payment_date = self._l10n_ua_first_payment_date()
+        settlements = self._l10n_ua_settlement_dates()
 
         if rule == 'cash':
-            if not payment_date:
+            if not settlements:
                 raise UserError(_(
                     'За контрагентом «%s» застосовується касовий метод ПДВ, '
                     'тож ПН складається за датою оплати. Документ ще не оплачений.',
-                    self.partner_id.display_name))
-            # За п. 187.10 зобов'язання виникає на суму кожного надходження, а
-            # ПН тут одна на весь документ. Коректний результат виходить лише
-            # тоді, коли надходження одне й покриває документ повністю: інакше
-            # ПН вийде на повну суму датою першого платежу — завищене
-            # зобов'язання в одному періоді й жодної ПН у наступному. Поділ по
-            # погашеннях — #255; доти відмова чесніша за мовчазний документ.
-            settlements = self._l10n_ua_settlement_dates()
-            if len(settlements) > 1:
-                raise UserError(_(
-                    'Документ погашений кількома надходженнями (%(count)s). За '
-                    'касовим методом на кожне з них складається окрема ПН на його '
-                    'суму, а такий поділ ще не реалізовано — вийшла б одна ПН на '
-                    'повну суму документа датою першого надходження. Заведіть ПН '
-                    'вручну.',
-                    count=len(settlements)))
-            if not self.currency_id.is_zero(self.amount_residual):
-                raise UserError(_(
-                    'Документ оплачений частково: залишок %(residual)s. За касовим '
-                    'методом ПН складається на суму надходження, а не документа, і '
-                    'такий поділ ще не реалізовано. Складіть ПН після повної оплати '
-                    'або заведіть її вручну.',
-                    residual=formatLang(self.env, self.amount_residual,
-                                        currency_obj=self.currency_id)))
-            return payment_date
+                    self.commercial_partner_id.display_name))
+            self._l10n_ua_check_single_tax_invoice_fits()
+            return settlements[0]
 
-        if payment_date and payment_date < doc_date:
-            return payment_date
-        return doc_date
+        # Перша подія. Післяоплата дати не зсуває: перша подія — відвантаження,
+        # і одна ПН на повну суму документа його описує.
+        if not settlements or settlements[0] >= doc_date:
+            return doc_date
+
+        # Передоплата стала першою подією. Одна ПН тут правильна тільки якщо
+        # аванс покриває документ повністю; часткова передоплата вимагає двох
+        # ПН — на аванс і на відвантаження решти.
+        self._l10n_ua_check_single_tax_invoice_fits()
+        return settlements[0]
+
+    def _l10n_ua_check_single_tax_invoice_fits(self):
+        """Відмовитись, якщо однією ПН операцію коректно не описати.
+
+        ПН тут одна на весь документ, а ПКУ прив'язує зобов'язання до події
+        і її суми. Збігається це лише тоді, коли подія одна й покриває
+        документ повністю. Інакше вийшла б ПН на повну суму датою першої
+        події — завищене зобов'язання в одному періоді й порожнеча в
+        наступному. Поділ по подіях — #255; доти відмова з поясненням чесніша
+        за мовчки виданий некоректний податковий документ.
+        """
+        self.ensure_one()
+        settlements = self._l10n_ua_settlement_dates()
+        if len(settlements) > 1:
+            raise UserError(_(
+                'Документ погашений кількома надходженнями (%(count)s). На кожну '
+                'подію складається окрема ПН на її суму, а такого поділу ще не '
+                'реалізовано — вийшла б одна ПН на повну суму документа датою '
+                'першого надходження. Заведіть ПН вручну.',
+                count=len(settlements)))
+        if not self.currency_id.is_zero(self.amount_residual):
+            raise UserError(_(
+                'Документ оплачений частково: залишок %(residual)s. ПН складається '
+                'на суму події, а не документа, і такого поділу ще не реалізовано. '
+                'Складіть ПН після повної оплати або заведіть її вручну.',
+                residual=formatLang(self.env, self.amount_residual,
+                                    currency_obj=self.currency_id)))
 
     def action_create_tax_invoice(self):
         """Create a tax invoice (ПН) from customer/vendor invoice."""

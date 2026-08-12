@@ -64,6 +64,37 @@ class TestVatCashMethod(AccountTestInvoicingCommon):
 
         self.assertEqual(move._l10n_ua_tax_invoice_date(), fields.Date.to_date('2025-03-10'))
 
+    def test_first_event_refuses_on_partial_prepayment(self):
+        """Часткова передоплата — це дві ПН: на аванс і на відвантаження.
+
+        Без перевірки вийшла б одна ПН на всю тисячу датою авансу: завищене
+        зобов'язання в березні й нуль на дату відвантаження. Поділ — #255.
+        """
+        move = self._invoice(self.customer, '2025-03-10')
+        self._pay(move, '2025-03-04', amount=300.0)
+
+        with self.assertRaises(UserError):
+            move._l10n_ua_tax_invoice_date()
+
+    def test_first_event_ignores_partial_postpayment(self):
+        """Недоплата після відвантаження нічого не зсуває — ПН на дату документа."""
+        move = self._invoice(self.customer, '2025-03-10')
+        self._pay(move, '2025-04-02', amount=300.0)
+
+        self.assertEqual(move._l10n_ua_tax_invoice_date(), fields.Date.to_date('2025-03-10'))
+
+    def test_cash_method_reads_flag_from_commercial_partner(self):
+        """Режим оподаткування — властивість юрособи, а не її контактів."""
+        contact = self.env['res.partner'].create({
+            'name': 'Бухгалтерія', 'type': 'invoice',
+            'parent_id': self.customer_cash.id,
+        })
+        move = self._invoice(contact, '2025-03-10')
+
+        self.assertFalse(contact.with_company(self.env.company).l10n_ua_vat_cash_method,
+                         'на самому контакті прапорця немає — на це й тест')
+        self.assertEqual(move._l10n_ua_tax_invoice_rule(), 'cash')
+
     # --------------------------------------------------------- касовий метод
 
     def test_cash_method_uses_payment_date(self):
