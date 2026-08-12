@@ -16,7 +16,7 @@ const cogMenuRegistry = registry.category("cogMenu");
  * left-hand panel, so the paper repeats the screen.
  */
 export class MaterialReportPrintMenu extends Component {
-    static template = "l10n_ua_stock_reports.MaterialReportPrintMenu";
+    static template = "l10n_ua_stock_forms.MaterialReportPrintMenu";
     static components = { DropdownItem };
     static props = {};
 

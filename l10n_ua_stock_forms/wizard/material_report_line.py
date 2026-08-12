@@ -200,7 +200,7 @@ class L10nUaMaterialReportLine(models.TransientModel):
         wizard = lines.wizard_id
         wizard.printed_line_ids = self._collapsed(lines)
         return self.env.ref(
-            'l10n_ua_stock_reports.action_report_material_report'
+            'l10n_ua_stock_forms.action_report_material_report'
         ).report_action(wizard)
 
     @api.model

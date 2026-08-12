@@ -7,7 +7,7 @@
          the state — "the report is currently for this period" — and the
          question never arises. Changing it is a job for the dialog behind the
          button, where the two dates are ordinary form fields. -->
-    <t t-name="l10n_ua_stock_reports.MaterialReportPeriodRange">
+    <t t-name="l10n_ua_stock_forms.MaterialReportPeriodRange">
         <div t-if="state.available"
              class="o_l10n_ua_material_report_period d-print-none">
             <button class="btn btn-secondary text-nowrap"

@@ -182,13 +182,13 @@ class L10nUaMaterialReportWizard(models.TransientModel):
         self._materialize_lines()
 
         action = self.env['ir.actions.actions']._for_xml_id(
-            'l10n_ua_stock_reports.action_material_report_lines')
+            'l10n_ua_stock_forms.action_material_report_lines')
         views = [
             (self.env.ref(
-                'l10n_ua_stock_reports.view_material_report_line_list').id,
+                'l10n_ua_stock_forms.view_material_report_line_list').id,
              'list'),
             (self.env.ref(
-                'l10n_ua_stock_reports.view_material_report_line_pivot').id,
+                'l10n_ua_stock_forms.view_material_report_line_pivot').id,
              'pivot'),
         ]
         action.update({
@@ -236,7 +236,7 @@ class L10nUaMaterialReportWizard(models.TransientModel):
             'res_id': self.id,
             'view_mode': 'form',
             'views': [(self.env.ref(
-                'l10n_ua_stock_reports.view_material_report_period_form').id,
+                'l10n_ua_stock_forms.view_material_report_period_form').id,
                 'form')],
             'target': 'new',
         }

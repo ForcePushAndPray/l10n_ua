@@ -11,7 +11,7 @@ from odoo.models import READ_GROUP_DISPLAY_FORMAT
 from odoo.tests import tagged
 from odoo.tools.safe_eval import safe_eval
 
-from odoo.addons.l10n_ua_stock_reports.wizard.material_report_line import (
+from odoo.addons.l10n_ua_stock_forms.wizard.material_report_line import (
     STANDALONE_MONTH_FORMAT,
 )
 
@@ -129,7 +129,7 @@ class TestMaterialReportViews(MaterialReportCase):
         second.action_view_report()
 
         action = self.env['ir.actions.actions']._for_xml_id(
-            'l10n_ua_stock_reports.action_material_report_lines')
+            'l10n_ua_stock_forms.action_material_report_lines')
         # What the client does with the string when it comes back: evaluate it
         # against the context, where `active_id` is the report being read.
         domain = safe_eval(action['domain'], {'active_id': second.id})
@@ -211,7 +211,7 @@ class TestMaterialReportViews(MaterialReportCase):
         ]
         arch = {
             view: etree.fromstring(self.env.ref(
-                f'l10n_ua_stock_reports.view_material_report_line_{view}').arch)
+                f'l10n_ua_stock_forms.view_material_report_line_{view}').arch)
             for view in ('list', 'pivot')
         }
         in_pivot = [node.get('name') for node in arch['pivot'].iter('field')

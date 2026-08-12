@@ -14,7 +14,7 @@ import { materialReportSearchModel } from "./search_model";
  * view registry lacks the required js_class (`web/static/src/views/view.js:346`).
  */
 export class MaterialReportPivotController extends PivotController {
-    static template = "l10n_ua_stock_reports.MaterialReportPivotView";
+    static template = "l10n_ua_stock_forms.MaterialReportPivotView";
     static components = { ...PivotController.components, MaterialReportPeriodRange };
 
     get materialReportPeriodProps() {

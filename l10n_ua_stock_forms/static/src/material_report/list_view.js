@@ -6,7 +6,7 @@ import { MaterialReportPeriodRange, materialReportPeriodProps } from "./period_r
 import { materialReportSearchModel } from "./search_model";
 
 export class MaterialReportListController extends ListController {
-    static template = "l10n_ua_stock_reports.MaterialReportListView";
+    static template = "l10n_ua_stock_forms.MaterialReportListView";
     static components = { ...ListController.components, MaterialReportPeriodRange };
 
     get materialReportPeriodProps() {

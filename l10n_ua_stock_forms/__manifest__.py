@@ -41,23 +41,23 @@ charge has not, so the form is still what Ukrainian accountants ask for.
     # where both can see it.
     'assets': {
         'web.assets_backend': [
-            'l10n_ua_stock_reports/static/src/material_report/search_model.js',
-            'l10n_ua_stock_reports/static/src/material_report/period_range.js',
-            'l10n_ua_stock_reports/static/src/material_report/period_range.xml',
-            'l10n_ua_stock_reports/static/src/material_report/period_range.scss',
-            'l10n_ua_stock_reports/static/src/material_report/list_view.js',
-            'l10n_ua_stock_reports/static/src/material_report/list_view.xml',
-            'l10n_ua_stock_reports/static/src/material_report/list_view.scss',
-            'l10n_ua_stock_reports/static/src/material_report/print_menu.js',
-            'l10n_ua_stock_reports/static/src/material_report/print_menu.xml',
+            'l10n_ua_stock_forms/static/src/material_report/search_model.js',
+            'l10n_ua_stock_forms/static/src/material_report/period_range.js',
+            'l10n_ua_stock_forms/static/src/material_report/period_range.xml',
+            'l10n_ua_stock_forms/static/src/material_report/period_range.scss',
+            'l10n_ua_stock_forms/static/src/material_report/list_view.js',
+            'l10n_ua_stock_forms/static/src/material_report/list_view.xml',
+            'l10n_ua_stock_forms/static/src/material_report/list_view.scss',
+            'l10n_ua_stock_forms/static/src/material_report/print_menu.js',
+            'l10n_ua_stock_forms/static/src/material_report/print_menu.xml',
         ],
         # The tour bundle: loaded only when tests run.
         'web.assets_tests': [
-            'l10n_ua_stock_reports/static/tests/tours/*.js',
+            'l10n_ua_stock_forms/static/tests/tours/*.js',
         ],
         'web.assets_backend_lazy': [
-            'l10n_ua_stock_reports/static/src/material_report/pivot_view.js',
-            'l10n_ua_stock_reports/static/src/material_report/pivot_view.xml',
+            'l10n_ua_stock_forms/static/src/material_report/pivot_view.js',
+            'l10n_ua_stock_forms/static/src/material_report/pivot_view.xml',
         ],
     },
     'installable': True,

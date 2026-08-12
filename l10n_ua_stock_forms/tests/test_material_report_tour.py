@@ -30,7 +30,7 @@ class TestMaterialReportTour(MaterialReportCase, HttpCase):
                    fields.Datetime.now())
 
         self.start_tour(
-            '/odoo/action-l10n_ua_stock_reports.action_material_report_open',
+            '/odoo/action-l10n_ua_stock_forms.action_material_report_open',
             'l10n_ua_material_report',
             login='admin',
             timeout=90,

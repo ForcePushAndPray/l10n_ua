@@ -28,7 +28,7 @@ class TestMaterialReportPrinting(MaterialReportCase):
 
         self.assertEqual(action['type'], 'ir.actions.report')
         self.assertEqual(
-            action['report_name'], 'l10n_ua_stock_reports.report_material_report')
+            action['report_name'], 'l10n_ua_stock_forms.report_material_report')
         # The wizard is printed so that the file can be named after it; the
         # rows that were on screen travel on the field.
         self.assertEqual(action['context']['active_ids'], wizard.ids)
@@ -172,7 +172,7 @@ class TestMaterialReportPrinting(MaterialReportCase):
             [('wizard_id', '=', wizard.id)])
 
         html = self.env['ir.actions.report']._render_qweb_html(
-            'l10n_ua_stock_reports.report_material_report',
+            'l10n_ua_stock_forms.report_material_report',
             wizard.ids,
         )[0].decode()
 
@@ -190,7 +190,7 @@ class TestMaterialReportPrinting(MaterialReportCase):
         field. No binding either: it would print ticked rows straight from the
         client, past the collapsing and the checks."""
         report = self.env.ref(
-            'l10n_ua_stock_reports.action_report_material_report')
+            'l10n_ua_stock_forms.action_report_material_report')
         self.assertEqual(report.model, 'l10n_ua.material.report.wizard')
         self.assertFalse(report.binding_model_id)
         self.assertTrue(report.print_report_name)
@@ -205,7 +205,7 @@ class TestMaterialReportPrinting(MaterialReportCase):
             [('wizard_id', '=', wizard.id)])
 
         report = self.env.ref(
-            'l10n_ua_stock_reports.action_report_material_report')
+            'l10n_ua_stock_forms.action_report_material_report')
         name = safe_eval(report.print_report_name, {'object': wizard, 'time': None})
 
         self.assertIn('Material Report', name)

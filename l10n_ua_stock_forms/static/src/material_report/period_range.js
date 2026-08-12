@@ -52,7 +52,7 @@ export function materialReportPeriodProps(controller, reload) {
  * change of period, would show a stale value when switching List ↔ Pivot.
  */
 export class MaterialReportPeriodRange extends Component {
-    static template = "l10n_ua_stock_reports.MaterialReportPeriodRange";
+    static template = "l10n_ua_stock_forms.MaterialReportPeriodRange";
     static props = {
         wizardId: { type: [Number, Boolean], optional: true },
         onPeriodChanged: Function,
