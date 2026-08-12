@@ -66,17 +66,19 @@ class HrKp2010(models.Model):
         окремими рядками немає, вони виводяться з коду: 2132.2 належить
         класу 213, підрозділу 21 і розділу 2.
 
-        Досі це робила лише міграція `19.0.1.1.0`, а міграції на чистій
+        Досі це робила лише міграція `19.0.1.0.5`, а міграції на чистій
         установці не виконуються — тобто в кожній новій базі класифікатор
         лишався плоским списком з дев'яти тисяч позицій, де вибір посади
         зводиться до пошуку по підрядку. Метод викликає й хук установки, і
         міграція, тож обидва шляхи дають однаковий результат.
 
-        Ідемпотентний: створює лише відсутні рівні й переписує `parent_id`
-        тим самим значенням, тож повторний запуск нічого не дублює.
+        Ідемпотентний і тихий на повторному запуску: створює лише відсутні
+        рівні й пише `parent_id` тільки тим записам, у яких він інший, —
+        інакше кожне оновлення модуля переписувало б дев'ять тисяч рядків
+        заради тих самих значень.
         """
         records = self.with_context(active_test=False).search_read(
-            [], ['code'], load='')
+            [], ['code', 'parent_id'], load='')
         if not records:
             return
 
@@ -84,8 +86,10 @@ class HrKp2010(models.Model):
             return (code or '').split('.')[0].split('-')[0]
 
         by_code = {}
+        current_parent = {}
         for record in records:
             by_code.setdefault(record['code'], []).append(record['id'])
+            current_parent[record['id']] = record['parent_id'] or False
 
         # Рівні, яких бракує: усі власні префікси наявних кодів.
         needed = set()
@@ -104,6 +108,7 @@ class HrKp2010(models.Model):
             for code in missing
         ]):
             by_code.setdefault(created.code, []).append(created.id)
+            current_parent[created.id] = False
 
         # Батько — найдовший наявний префікс, коротший за сам код. Один код
         # може мати кілька записів (у класифікаторі є однакові коди різних
@@ -121,7 +126,9 @@ class HrKp2010(models.Model):
         children_of_parent = {}
         for code, parent_id in parent_of_code.items():
             children_of_parent.setdefault(parent_id, []).extend(
-                child_id for child_id in by_code[code] if child_id != parent_id)
+                child_id for child_id in by_code[code]
+                if child_id != parent_id
+                and current_parent.get(child_id) != parent_id)
         for parent_id, child_ids in children_of_parent.items():
             self.browse(child_ids).write({'parent_id': parent_id})
 
