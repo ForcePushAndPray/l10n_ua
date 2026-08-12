@@ -854,10 +854,6 @@ msgid "Additional notes..."
 msgstr "Додаткові примітки..."
 
 #. module: l10n_ua_accounting
-msgid "Service Acts"
-msgstr "Акти наданих послуг"
-
-#. module: l10n_ua_accounting
 #: model_terms:ir.actions.act_window,help:l10n_ua_accounting.action_service_act
 msgid "Create your first Service Act"
 msgstr "Створіть свій перший Акт наданих послуг"
@@ -4897,3 +4893,37 @@ msgid ""
 "⚠️ Увага! Залишок каси (%(balance)s %(currency)s) перевищує ліміт (%(limit)s"
 " %(currency)s)."
 msgstr ""
+
+#. Повернуто після регенерації з POT: рядки існують у коді, але не
+#. потрапили в експорт, і разом із застарілими записами зникли б
+#. переклади, які працювали.
+#. module: l10n_ua_accounting
+msgid "Ukraine - Accounting Suite"
+msgstr "Україна - Бухгалтерський облік"
+
+#. module: l10n_ua_accounting
+msgid "Ukrainian accounting: PKO/VKO, Cash Book, Balance Sheet, P&L"
+msgstr ""
+"Бухгалтерія України: ПКО/ВКО, Касова книга, Баланс, Звіт про фін. результати"
+
+#. module: l10n_ua_accounting
+msgid "Period Start"
+msgstr "Початок періоду"
+
+#. module: l10n_ua_accounting
+msgid "Service Act Sequence"
+msgstr "Послідовність актів наданих послуг"
+
+#. module: l10n_ua_accounting
+msgid "Advance Report Sequence"
+msgstr "Послідовність авансових звітів"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_vat
+msgid "VAT"
+msgstr "ПДВ"
+
+#. module: l10n_ua_accounting
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_assets
+msgid "Fixed Assets"
+msgstr "Основні засоби"
