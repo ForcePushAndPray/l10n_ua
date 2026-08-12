@@ -25,14 +25,21 @@ class TestTaxInvoiceLines(AccountTestInvoicingCommon):
             'name': 'ПДВ 7% (тест)', 'amount': 7.0, 'amount_type': 'percent',
             'type_tax_use': 'sale', 'company_id': cls.env.company.id,
         })
+        cls.vat_20_group = cls.env['account.tax'].create({
+            'name': 'ПДВ 20% у групі (тест)', 'amount_type': 'group',
+            'type_tax_use': 'sale', 'company_id': cls.env.company.id,
+            'children_tax_ids': [(6, 0, cls.vat_20.ids)],
+        })
+        cls.other_currency = cls.setup_other_currency('EUR')
 
-    def _invoice(self, lines):
+    def _invoice(self, lines, **move_vals):
         move = self.env['account.move'].create({
             'move_type': 'out_invoice',
             'partner_id': self.customer.id,
             'invoice_date': '2025-05-05',
             'date': '2025-05-05',
             'invoice_line_ids': [(0, 0, vals) for vals in lines],
+            **move_vals,
         })
         move.action_post()
         return move
@@ -138,8 +145,44 @@ class TestTaxInvoiceLines(AccountTestInvoicingCommon):
         self.assertEqual(by_name['без ПДВ'].vat_rate, 'exempt')
         self.assertAlmostEqual(tax_invoice.total_vat, 27.0, places=2)
 
+    def test_grouped_tax_is_not_mistaken_for_exempt(self):
+        """ПДВ у складі групи податків — це все одно ПДВ."""
+        move = self._invoice([
+            {'name': 'товар', 'quantity': 1, 'price_unit': 100.0,
+             'tax_ids': [(6, 0, self.vat_20_group.ids)]},
+        ])
+
+        tax_invoice = self._tax_invoice(move)
+
+        self.assertEqual(tax_invoice.line_ids.vat_rate, '20')
+        self.assertAlmostEqual(tax_invoice.line_ids.vat_amount, 20.0, places=2)
+
+    def test_amounts_are_converted_to_company_currency(self):
+        """ПН завжди у гривні, навіть якщо документ — у валюті."""
+        move = self._invoice(
+            [{'name': 'товар', 'quantity': 2, 'price_unit': 500.0,
+              'tax_ids': [(6, 0, self.vat_20.ids)]}],
+            currency_id=self.other_currency.id,
+        )
+        invoice_line = move.invoice_line_ids
+        # Проводка вже перерахована в валюту компанії — беремо її як еталон,
+        # щоб тест не залежав від курсу тестової фікстури.
+        expected_base = abs(invoice_line.balance)
+
+        tax_invoice = self._tax_invoice(move)
+
+        self.assertEqual(tax_invoice.currency_id, self.env.company.currency_id)
+        self.assertNotEqual(expected_base, invoice_line.price_subtotal,
+                            'фікстура має давати курс, відмінний від 1:1')
+        self.assertAlmostEqual(tax_invoice.line_ids.base_amount, expected_base, places=2,
+                               msg='база ПН лишилась у валюті документа')
+
     def test_total_vat_matches_the_document(self):
-        """Сума ПДВ у ПН має збігатися з податком документа."""
+        """Сума ПДВ у ПН має збігатися з податком документа.
+
+        Кількість 3 і знижка дають базу 379.99, що не ділиться на копійки —
+        саме тут округлення ціни до двох знаків давало 126.66 × 3 = 379.98.
+        """
         move = self._invoice([
             {'name': 'товар', 'quantity': 3, 'price_unit': 133.33, 'discount': 5.0,
              'tax_ids': [(6, 0, self.vat_20.ids)]},
@@ -147,4 +190,6 @@ class TestTaxInvoiceLines(AccountTestInvoicingCommon):
 
         tax_invoice = self._tax_invoice(move)
 
-        self.assertAlmostEqual(tax_invoice.total_vat, move.amount_tax, places=2)
+        self.assertEqual(move.invoice_line_ids.price_subtotal, 379.99)
+        self.assertEqual(tax_invoice.line_ids.base_amount, 379.99)
+        self.assertEqual(tax_invoice.total_vat, move.amount_tax)

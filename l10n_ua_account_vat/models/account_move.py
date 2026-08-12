@@ -35,8 +35,22 @@ class AccountMove(models.Model):
         відсутності податку неможливо; для цього потрібні окремі податки з
         явною ознакою.
         """
-        for tax in invoice_line.tax_ids:
-            if tax.amount_type == 'percent' and tax.amount in self._L10N_UA_VAT_RATES:
+        return self._l10n_ua_vat_rate_from_taxes(invoice_line.tax_ids)
+
+    @api.model
+    def _l10n_ua_vat_rate_from_taxes(self, taxes):
+        """Перший відсотковий податок зі ставкою ПКУ, інакше 'exempt'.
+
+        Групу податків розкриваємо: ПДВ часто входить до групи разом з іншим
+        податком (акциз, збір), і без цього кроку оподаткований рядок мовчки
+        ставав би звільненим з нульовою сумою.
+        """
+        for tax in taxes:
+            if tax.amount_type == 'group':
+                rate = self._l10n_ua_vat_rate_from_taxes(tax.children_tax_ids)
+                if rate != 'exempt':
+                    return rate
+            elif tax.amount_type == 'percent' and tax.amount in self._L10N_UA_VAT_RATES:
                 return self._L10N_UA_VAT_RATES[tax.amount]
         return 'exempt'
 
@@ -62,6 +76,18 @@ class AccountMove(models.Model):
         # (написана під Odoo <=16) відкидала геть усі рядки й ПН виходила
         # порожньою. `invoice_line_ids` містить ще секції та примітки — їм у ПН
         # робити нічого.
+        # ПН завжди у гривні: `currency_id` ПН — related на валюту компанії,
+        # тоді як суми документа можуть бути у будь-якій валюті. Курс беремо
+        # на дату документа, як і бухгалтерська проводка.
+        company_currency = self.company_id.currency_id
+        rate_date = self.invoice_date or self.date or fields.Date.context_today(self)
+
+        def in_company_currency(amount):
+            if not amount or self.currency_id == company_currency:
+                return amount
+            return self.currency_id._convert(
+                amount, company_currency, self.company_id, rate_date)
+
         line_vals = []
         seq = 10
         for iline in self.invoice_line_ids.filtered(lambda l: l.display_type == 'product'):
@@ -70,7 +96,8 @@ class AccountMove(models.Model):
             # ПН збігається з документом. Зберігати сирий `price_unit` не можна:
             # рядок ПН рахує базу як quantity * price_unit, і знижка зникла б.
             # Для <CINA> в XML ЄРПН потрібна саме фактична ціна постачання.
-            net_unit_price = iline.price_subtotal / iline.quantity if iline.quantity else 0.0
+            subtotal = in_company_currency(iline.price_subtotal)
+            net_unit_price = subtotal / iline.quantity if iline.quantity else 0.0
 
             line_vals.append((0, 0, {
                 'sequence': seq,
