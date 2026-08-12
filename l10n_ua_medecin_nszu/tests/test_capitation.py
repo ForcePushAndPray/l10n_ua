@@ -53,18 +53,20 @@ class TestPmdCapitation(TransactionCase):
         self._make_patient(3)     # 0_5   -> 4.0
         self._make_patient(10)    # 6_17  -> 2.2
         self._make_patient(30)    # 18_39 -> 1.0
+        self._make_patient(50)    # 40_64 -> 1.2
         self._make_patient(70)    # 65+   -> 2.5
         expected = round(2 * AGE_COEFFICIENTS['0_5']
                           + AGE_COEFFICIENTS['6_17']
                           + AGE_COEFFICIENTS['18_39']
+                          + AGE_COEFFICIENTS['40_64']
                           + AGE_COEFFICIENTS['65+'])
 
         line = self._make_line(self.package_pmd)
         line.action_compute_pmd_capitation()
 
         self.assertEqual(line.expected_units, expected)
-        # Проста кількість пацієнтів дала б 5 - саме цю помилку тест і стереже.
-        self.assertNotEqual(line.expected_units, 5)
+        # Проста кількість пацієнтів дала б 6 — саме цю помилку тест і стереже.
+        self.assertNotEqual(line.expected_units, 6)
         self.assertEqual(line.expected_amount, expected * 1000.0)
 
     def test_ignores_patients_without_active_declaration(self):
@@ -94,3 +96,44 @@ class TestPmdCapitation(TransactionCase):
         line.action_compute_pmd_capitation()
 
         self.assertEqual(line.expected_units, 0)
+
+    def test_patient_without_birthdate_is_not_counted_as_adult(self):
+        """Без дати народження вікової категорії немає — коефіцієнт не вгадуємо.
+
+        Раніше `.get(category, 1.0)` мовчки зараховував таку декларацію як
+        18–39. Для капітації це гроші НСЗУ за пацієнта, якого не можна
+        віднести до жодної групи.
+        """
+        self._make_patient(30)
+        self._make_patient(None)
+
+        line = self._make_line(self.package_pmd)
+        line.action_compute_pmd_capitation()
+
+        self.assertEqual(line.expected_units, round(AGE_COEFFICIENTS['18_39']))
+
+    def test_stale_age_category_is_refreshed_by_cron(self):
+        """Пацієнти старішають без жодної події — категорію оновлює крон.
+
+        `age_category` збережене й рахується від сьогоднішньої дати, тож без
+        перерахунку дитина назавжди лишається в тій групі, у якій її завели:
+        база капітації тримала б коефіцієнт 4.0 замість 2.2.
+        """
+        patient = self._make_patient(3)
+        self.assertEqual(patient.age_category, '0_5')
+        # Заднім числом «дорослішаємо» пацієнта в обхід compute — саме так це
+        # виглядає в базі, де запис лежить із минулого року.
+        self.env.cr.execute(
+            "UPDATE l10n_ua_medecin_patient SET birthdate = %s WHERE id = %s",
+            (self.today - relativedelta(years=10), patient.id))
+        patient.invalidate_recordset(['birthdate', 'age_category'])
+        self.assertEqual(patient.age_category, '0_5', 'збережена категорія застаріла')
+
+        self.env['l10n_ua.medecin.patient']._cron_refresh_age_category()
+
+        self.assertEqual(patient.age_category, '6_17')
+
+        line = self._make_line(self.package_pmd)
+        line.action_compute_pmd_capitation()
+
+        self.assertEqual(line.expected_units, round(AGE_COEFFICIENTS['6_17']))

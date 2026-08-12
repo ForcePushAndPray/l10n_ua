@@ -94,6 +94,26 @@ class L10nUaMedecinPatient(models.Model):
             else:
                 rec.age_category = '65+'
 
+    @api.model
+    def _cron_refresh_age_category(self):
+        """Перерахувати вікові категорії: пацієнти старішають без жодної події.
+
+        `age_category` збережене й залежить лише від `birthdate`, а рахується
+        від сьогоднішньої дати. Без цього крону категорія назавжди лишається
+        такою, якою була на момент заведення пацієнта: дитині виповнюється
+        шість, а в базі вона й далі 0–5 із коефіцієнтом 4.0 замість 2.2.
+
+        Для капітації НСЗУ це не косметика — це сума договору. Причому
+        помилка одностороння: категорії тільки «дорослішають», тож із часом
+        база систематично завищується на дитячих групах і занижується на
+        65+, куди ніхто сам не переходить.
+        """
+        patients = self.search([('birthdate', '!=', False)])
+        if not patients:
+            return
+        self.env.add_to_compute(self._fields['age_category'], patients)
+        patients.flush_recordset(['age_category'])
+
     @api.depends('declaration_ids.state', 'declaration_ids.date_start')
     def _compute_active_declaration(self):
         for rec in self:

@@ -32,6 +32,7 @@ Ukraine Medecin Patient
         'security/ir.model.access.csv',
         'security/multicompany_security.xml',
         'data/ir_sequence_data.xml',
+        'data/ir_cron_data.xml',
         'views/l10n_ua_medecin_patient_views.xml',
         'views/l10n_ua_medecin_declaration_views.xml',
         'views/menu_views.xml',
