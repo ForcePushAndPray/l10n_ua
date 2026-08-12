@@ -845,7 +845,11 @@ class HrPayslip(models.Model):
                     'payslip_id': self.id,
                     'accrual_type_id': allowance_type.id,
                     'quantity': 1,
-                    'amount': allowance.calculated_amount,
+                    # Не збережене `calculated_amount`, а сума на дату цього
+                    # періоду: воно пораховане на дату початку надбавки, і
+                    # для відсотка від валютного окладу це курс, якому може
+                    # бути рік. Оклад у цьому ж листку йде за курсом місяця.
+                    'amount': allowance._l10n_ua_amount_at(self.date_to),
                     'notes': allowance.allowance_type_id.name,
                     'is_auto_generated': True,
                 })

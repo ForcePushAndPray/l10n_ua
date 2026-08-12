@@ -103,3 +103,62 @@ class TestAdvanceCurrency(SalaryTestCase):
         paid = run.advance_ids.mapped('employee_id')
         self.assertIn(other, paid, 'решта працівників мають отримати аванс')
         self.assertNotIn(self.employee, paid)
+
+
+@tagged('post_install', '-at_install')
+class TestAllowanceCurrency(SalaryTestCase):
+    """Надбавка у відсотках від валютного окладу — теж у гривні (#266)."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.usd = cls.env.ref('base.USD')
+        cls.env['res.currency.rate'].create([
+            {'name': '2026-01-01', 'currency_id': cls.usd.id,
+             'company_id': cls.company.id, 'inverse_company_rate': 42.3532},
+            {'name': '2026-06-01', 'currency_id': cls.usd.id,
+             'company_id': cls.company.id, 'inverse_company_rate': 44.2680},
+        ])
+        cls.allowance_type = cls.env['hr.allowance.type'].search([], limit=1) \
+            or cls.env['hr.allowance.type'].create({'name': 'Надбавка (тест)'})
+
+    def _allowance(self, method, **vals):
+        return self.env['hr.version.allowance'].create({
+            'version_id': self.version.id,
+            'allowance_type_id': self.allowance_type.id,
+            'calculation_method': method,
+            **vals,
+        })
+
+    def test_percent_of_foreign_wage_is_converted(self):
+        """10% від 1000 USD — це 4235 грн на січень, а не 100."""
+        self.version.write({'salary_currency_id': self.usd.id, 'wage': 1000.0})
+
+        allowance = self._allowance(
+            'percent_salary', percent=10.0, date_from=date(2026, 1, 10))
+
+        self.assertAlmostEqual(allowance.calculated_amount, 4235.32, places=2)
+        self.assertNotAlmostEqual(allowance.calculated_amount, 100.0, places=2)
+
+    def test_fixed_amount_is_left_alone(self):
+        """Фіксована сума вводиться в гривні й перерахунку не потребує."""
+        self.version.write({'salary_currency_id': self.usd.id, 'wage': 1000.0})
+
+        allowance = self._allowance('fixed', amount=1500.0)
+
+        self.assertAlmostEqual(allowance.calculated_amount, 1500.0, places=2)
+
+    def test_payslip_takes_the_allowance_at_its_own_rate(self):
+        """У листку надбавка йде за курсом періоду, а не датою її початку.
+
+        Інакше в одному документі оклад рахувався б за курсом місяця, а
+        надбавка до нього — за курсом позаминулого року.
+        """
+        self.version.write({'salary_currency_id': self.usd.id, 'wage': 1000.0})
+        allowance = self._allowance(
+            'percent_salary', percent=10.0, date_from=date(2026, 1, 10))
+        self.assertAlmostEqual(allowance.calculated_amount, 4235.32, places=2)
+
+        # Червневий курс вищий за січневий — сума в листку має це відбити.
+        self.assertAlmostEqual(
+            allowance._l10n_ua_amount_at(date(2026, 6, 30)), 4426.80, places=2)
