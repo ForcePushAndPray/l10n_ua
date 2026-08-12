@@ -996,7 +996,9 @@ class HrLeave(models.Model):
             # Fallback to version wage (Odoo 19 uses version_ids instead of contract_id)
             version = self.employee_id.current_version_id
             if version and version.wage:
-                return round(version.wage / 29.3, 2)
+                # Оклад може бути у валюті — курс на початок відпустки.
+                wage = version._l10n_ua_wage_in_company_currency(date_to)
+                return round(wage / 29.3, 2)
             return 0.0
 
         # Calculate total earnings from payslip lines

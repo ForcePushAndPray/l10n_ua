@@ -8,3 +8,4 @@ from . import test_multicompany
 from . import test_vacation_period_balance
 from . import test_vacation_schedule_report
 from . import test_sick_leave_documents
+from . import test_leave_wage_currency

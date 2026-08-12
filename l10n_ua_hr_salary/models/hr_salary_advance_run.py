@@ -69,7 +69,9 @@ class HrSalaryAdvanceRun(models.Model):
         version = employee.current_version_id
         if not version:
             return 0.0
-        wage = version.wage or 0.0
+        # Валютний оклад — у гривню за курсом на дату виплати; штатний
+        # розпис уже у валюті компанії.
+        wage = version._l10n_ua_wage_in_company_currency(self.date)
         if not wage and hasattr(version, 'staffing_line_id') and version.staffing_line_id:
             wage = version.staffing_line_id.salary or 0.0
         return wage

@@ -10,3 +10,4 @@ from . import test_hr_kp2010
 from . import test_multicompany
 from . import test_military_tcc
 from . import test_military_citizenship
+from . import test_wage_currency

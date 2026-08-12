@@ -283,13 +283,19 @@ class HrVersion(models.Model):
         for version in self:
             if version.staffing_line_id and version.wage:
                 staffing = version.staffing_line_id
-                if staffing.salary_min and version.wage < staffing.salary_min:
+                # Вилка штатного розпису — у валюті компанії, а оклад може
+                # бути у валюті договору. Без перерахунку оклад 1000 USD
+                # порівнювався б із гривневою вилкою й не проходив у неї
+                # ніколи.
+                wage = version._l10n_ua_wage_in_company_currency(
+                    version.date_version)
+                if staffing.salary_min and wage < staffing.salary_min:
                     raise ValidationError(
                         'Salary %.2f is below position minimum %.2f for %s' %
-                        (version.wage, staffing.salary_min, staffing.name)
+                        (wage, staffing.salary_min, staffing.name)
                     )
-                if staffing.salary_max and version.wage > staffing.salary_max:
+                if staffing.salary_max and wage > staffing.salary_max:
                     raise ValidationError(
                         'Salary %.2f exceeds position maximum %.2f for %s' %
-                        (version.wage, staffing.salary_max, staffing.name)
+                        (wage, staffing.salary_max, staffing.name)
                     )
