@@ -84,8 +84,8 @@ class HrVersionAllowance(models.Model):
         )
         return float(param)
 
-    def _l10n_ua_amount_at(self, date=None):
-        """Сума надбавки у валюті компанії на задану дату.
+    def _l10n_ua_amount_at(self, date=None, rate=None):
+        """Сума надбавки у валюті компанії на задану дату або за курсом.
 
         Поле `calculated_amount` гривневе — не за домовленістю, а за
         побудовою: фіксована сума вводиться в гривні (валюта поля — валюта
@@ -100,6 +100,13 @@ class HrVersionAllowance(models.Model):
         листок питає ту саму суму на дату свого періоду — інакше в одному
         листку оклад ішов би за курсом місяця, а надбавка до нього за
         курсом позаминулого року.
+
+        `rate` важить більше за `date`, і саме тому існує: у листку курс
+        живе в полі `salary_rate`, яке бухгалтер може виправити руками або
+        вписати туди курс, якого в довіднику немає взагалі. Шукати курс
+        самостійно означало б, що оклад і надбавка в одному документі
+        рахуються за різними курсами, а в другому випадку — що надбавка
+        падає з помилкою там, де оклад порахувався.
         """
         self.ensure_one()
         if self.calculation_method == 'fixed':
@@ -108,8 +115,11 @@ class HrVersionAllowance(models.Model):
             return self._get_minimum_wage() * (self.percent or 0) / 100
         if self.calculation_method == 'percent_salary':
             version = self.version_id
-            wage = version._l10n_ua_wage_in_company_currency(
-                date or self.date_from or version.date_version)
+            if rate is not None:
+                wage = (version.wage or 0.0) * rate
+            else:
+                wage = version._l10n_ua_wage_in_company_currency(
+                    date or self.date_from or version.date_version)
             return wage * (self.percent or 0) / 100
         return 0.0
 

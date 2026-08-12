@@ -162,3 +162,37 @@ class TestAllowanceCurrency(SalaryTestCase):
         # Червневий курс вищий за січневий — сума в листку має це відбити.
         self.assertAlmostEqual(
             allowance._l10n_ua_amount_at(date(2026, 6, 30)), 4426.80, places=2)
+
+    def test_manual_payslip_rate_reaches_the_allowance(self):
+        """Курс, виправлений у листку, діє й на надбавку.
+
+        `salary_rate` існує саме для ручного виправлення; якби надбавка
+        шукала курс сама, оклад ішов би за виправленим курсом, а надбавка
+        до нього — за довідниковим. А коли запису курсу немає взагалі й
+        його вписано лише в листок, надбавка ще й падала б із помилкою
+        там, де оклад порахувався.
+        """
+        self.version.write({'salary_currency_id': self.usd.id, 'wage': 1000.0})
+        self._allowance('percent_salary', percent=10.0, date_from=date(2026, 1, 10))
+
+        slip = self.env['hr.payslip'].create({
+            'employee_id': self.employee.id,
+            'version_id': self.version.id,
+            'date_from': date(2026, 6, 1),
+            'date_to': date(2026, 6, 30),
+        })
+        slip.write({
+            'scheduled_hours': 160.0, 'scheduled_days': 20,
+            'worked_days': 20, 'worked_hours': 160.0,
+        })
+        slip.salary_rate = 50.0
+        slip._generate_accruals()
+
+        allowance_type = self.env['hr.accrual.type'].search(
+            [('code', '=', 'ALLOWANCE')], limit=1)
+        if not allowance_type:
+            self.skipTest('немає типу нарахування ALLOWANCE')
+        accrual = slip.accrual_ids.filtered(
+            lambda a: a.accrual_type_id == allowance_type)
+        # 1000 × 50 × 10% = 5000, а не 4235 за довідниковим курсом січня.
+        self.assertAlmostEqual(accrual.amount, 5000.0, places=2)
