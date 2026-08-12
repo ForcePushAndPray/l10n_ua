@@ -1,4 +1,4 @@
-"""Перерахувати суми, збережені за неконвертованим валютним окладом.
+"""Перерахувати чернетки авансів, збережені за неконвертованим окладом.
 
 `gross_amount` — збережене обчислюване поле, тож суми, пораховані до
 переходу на курс, лишаються в базі як є: працівник із окладом 1000 USD має
@@ -50,36 +50,3 @@ def migrate(cr, version):
             'l10n_ua_hr_salary 19.0.1.4.0: %s чернеток авансу лишились із '
             'сумою за неконвертованим окладом — для них немає курсу валюти. '
             'Внесіть курс і перевідкрийте нарахування.', skipped)
-
-    _recompute_contract_amounts(env)
-
-
-def _recompute_contract_amounts(env):
-    """Надбавки й підсумковий оклад у версіях договорів.
-
-    Живуть вони в `l10n_ua_hr_contract`, а перераховуються звідси навмисно:
-    валюту окладу оголошує цей модуль, і в момент міграції contract його
-    ще не завантажено — `getattr(version, 'salary_currency_id')` там
-    поверне False, оклад візьметься як гривневий, і поля перепишуться тим
-    самим неконвертованим числом. Тобто міграція в «своєму» модулі була б
-    тихою неоперацією.
-    """
-    Allowance = env['hr.version.allowance']
-    allowances = Allowance.search([
-        ('calculation_method', '=', 'percent_salary')])
-    if allowances:
-        env.add_to_compute(Allowance._fields['calculated_amount'], allowances)
-        allowances.flush_recordset(['calculated_amount'])
-        _logger.info(
-            'l10n_ua_hr_salary 19.0.1.4.0: перераховано %s надбавок '
-            '«відсоток від окладу»', len(allowances))
-
-    # `total_wage` додає оклад до надбавок, тож застаріває з тієї ж причини.
-    Version = env['hr.version']
-    versions = Version.search([('wage', '>', 0)])
-    if versions:
-        env.add_to_compute(Version._fields['total_wage'], versions)
-        versions.flush_recordset(['total_wage'])
-        _logger.info(
-            'l10n_ua_hr_salary 19.0.1.4.0: перераховано total_wage у %s '
-            'версіях договорів', len(versions))

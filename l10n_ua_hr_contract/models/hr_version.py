@@ -217,9 +217,10 @@ class HrVersion(models.Model):
                 wage = version._l10n_ua_wage_in_company_currency(
                     version.date_version)
             except UserError:
-                # Курсу немає: показуємо самі надбавки, а не суму з окладом
-                # за вигаданим курсом. Голосно про це каже розрахунок.
-                wage = 0.0
+                # Курсу немає — беремо оклад як є, тим самим фолбеком, що й
+                # надбавка. Обнуляти не можна: у картці договору вийшло б,
+                # що підсумок менший за самі надбавки.
+                wage = version.wage or 0.0
             version.total_wage = wage + version.total_allowances
 
     @api.depends('work_rate',
