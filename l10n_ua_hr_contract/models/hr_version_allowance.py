@@ -1,4 +1,9 @@
+import logging
+
 from odoo import models, fields, api
+from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 
 class HrVersionAllowance(models.Model):
@@ -79,18 +84,72 @@ class HrVersionAllowance(models.Model):
         )
         return float(param)
 
-    @api.depends('calculation_method', 'amount', 'percent', 'version_id.wage')
-    def _compute_calculated_amount(self):
-        min_wage = self._get_minimum_wage()
-        for allowance in self:
-            if allowance.calculation_method == 'fixed':
-                allowance.calculated_amount = allowance.amount
-            elif allowance.calculation_method == 'percent_salary':
-                allowance.calculated_amount = (allowance.version_id.wage or 0) * (allowance.percent or 0) / 100
-            elif allowance.calculation_method == 'percent_min_wage':
-                allowance.calculated_amount = min_wage * (allowance.percent or 0) / 100
+    def _l10n_ua_amount_at(self, date=None, rate=None):
+        """Сума надбавки у валюті компанії на задану дату або за курсом.
+
+        Поле `calculated_amount` гривневе — не за домовленістю, а за
+        побудовою: фіксована сума вводиться в гривні (валюта поля — валюта
+        компанії), а відсоток від мінімалки рахується від гривневого
+        законодавчого порога. Випадав лише відсоток від окладу: він
+        успадковував валюту договору й давав 100 грн замість 4400 при
+        окладі 1000 USD.
+
+        Дата потрібна тільки цьому третьому методу, і саме тому розрахунок
+        винесено в метод: збережене поле рахує його на дату початку
+        надбавки (для картки договору й друкованої форми), а розрахунковий
+        листок питає ту саму суму на дату свого періоду — інакше в одному
+        листку оклад ішов би за курсом місяця, а надбавка до нього за
+        курсом позаминулого року.
+
+        `rate` важить більше за `date`, і саме тому існує: у листку курс
+        живе в полі `salary_rate`, яке бухгалтер може виправити руками або
+        вписати туди курс, якого в довіднику немає взагалі. Шукати курс
+        самостійно означало б, що оклад і надбавка в одному документі
+        рахуються за різними курсами, а в другому випадку — що надбавка
+        падає з помилкою там, де оклад порахувався.
+        """
+        self.ensure_one()
+        if self.calculation_method == 'fixed':
+            return self.amount or 0.0
+        if self.calculation_method == 'percent_min_wage':
+            return self._get_minimum_wage() * (self.percent or 0) / 100
+        if self.calculation_method == 'percent_salary':
+            version = self.version_id
+            if rate is not None:
+                wage = (version.wage or 0.0) * rate
             else:
-                allowance.calculated_amount = 0
+                wage = version._l10n_ua_wage_in_company_currency(
+                    date or self.date_from or version.date_version)
+            return wage * (self.percent or 0) / 100
+        return 0.0
+
+    # `version_id.salary_currency_id` у залежностях бути не може: поле
+    # оголошує l10n_ua_hr_salary, а цей модуль про нього не знає — реєстр
+    # впаде ще на завантаженні. Зміна валюти окладу тягне за собою зміну
+    # самого окладу в переважній більшості випадків, а надбавку в листку
+    # однаково перераховують на дату періоду.
+    @api.depends('calculation_method', 'amount', 'percent', 'version_id.wage',
+                 'date_from')
+    def _compute_calculated_amount(self):
+        for allowance in self:
+            try:
+                allowance.calculated_amount = allowance._l10n_ua_amount_at()
+            except UserError:
+                # Курсу на дату надбавки немає взагалі. Обнуляти не можна:
+                # це поле бачить бухгалтер у картці договору, і нуль там
+                # виглядав би як «надбавки немає». Лишаємо відсоток від
+                # окладу як є — для гривневого окладу (тобто майже завжди)
+                # це і є правильна сума, а для валютного платити за цим
+                # числом ніхто не дасть: листок на відсутній курс
+                # скаржиться голосно й розрахунок зупиняє.
+                allowance.calculated_amount = (
+                    (allowance.version_id.wage or 0) * (allowance.percent or 0) / 100)
+                _logger.warning(
+                    'Надбавка %s (%s): курсу валюти окладу на %s немає — '
+                    'у картці договору сума без перерахунку',
+                    allowance.allowance_type_id.name or allowance.id,
+                    allowance.version_id.employee_id.name or '',
+                    allowance.date_from or allowance.version_id.date_version)
 
     @api.depends('date_from', 'date_to')
     def _compute_is_active(self):
