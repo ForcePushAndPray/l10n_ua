@@ -46,6 +46,23 @@ class TestAdvanceCurrency(SalaryTestCase):
 
         self.assertAlmostEqual(january.gross_amount, 21176.6, places=2)
 
+    def test_moving_the_advance_recomputes_the_amount(self):
+        """Перенесення авансу на інший місяць змінює й курс.
+
+        `gross_amount` збережене, тож без `date` у залежностях у базі лишався
+        б курс дня створення — а це живі гроші на картку.
+        """
+        advance = self.env['hr.salary.advance'].create({
+            'employee_id': self.employee.id,
+            'date': date(2026, 6, 15),
+            'wage_percent': 50.0,
+        })
+        self.assertAlmostEqual(advance.gross_amount, 22134.0, places=2)
+
+        advance.date = date(2026, 1, 20)
+
+        self.assertAlmostEqual(advance.gross_amount, 21176.6, places=2)
+
     def test_advance_run_converts_the_wage(self):
         """Пакетне нарахування має ту саму ваду й те саме лікування."""
         run = self.env['hr.salary.advance.run'].create({
@@ -56,3 +73,33 @@ class TestAdvanceCurrency(SalaryTestCase):
 
         self.assertAlmostEqual(
             run._get_employee_wage(self.employee), 44268.0, places=2)
+
+    def test_run_skips_employees_without_a_rate_instead_of_dying(self):
+        """Один працівник без курсу не має лишати без авансу всю установу.
+
+        Пропущені не зникають мовчки: їхні імена йдуть у попередження, а
+        повторний запуск підхопить їх, щойно курс внесуть.
+        """
+        # Період, на який курсу немає взагалі.
+        run = self.env['hr.salary.advance.run'].create({
+            'name': 'Аванс 12/2025',
+            'date': date(2025, 12, 20),
+            'company_id': self.company.id,
+        })
+        other = self.env['hr.employee'].create({
+            'name': 'Гривневий працівник',
+            'company_id': self.company.id,
+        })
+        other.current_version_id.write({
+            'wage': 20000.0,
+            'contract_date_start': date(2024, 1, 15),
+        })
+
+        result = run.action_generate_advances()
+
+        self.assertEqual(result.get('tag'), 'display_notification',
+                         'пропуск має бути видимим, а не тихим')
+        self.assertIn(self.employee.name, result['params']['message'])
+        paid = run.advance_ids.mapped('employee_id')
+        self.assertIn(other, paid, 'решта працівників мають отримати аванс')
+        self.assertNotIn(self.employee, paid)

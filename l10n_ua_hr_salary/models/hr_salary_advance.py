@@ -77,8 +77,9 @@ class HrSalaryAdvance(models.Model):
     )
 
     @api.depends(
-        'employee_id', 'wage_percent',
+        'employee_id', 'wage_percent', 'date',
         'employee_id.current_version_id.wage',
+        'employee_id.current_version_id.salary_currency_id',
         'employee_id.current_version_id.staffing_line_id.salary',
     )
     def _compute_gross_amount(self):
