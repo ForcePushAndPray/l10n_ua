@@ -206,6 +206,21 @@ class L10nUaTaxInvoice(models.Model):
         string='Ім\'я XML файлу',
     )
 
+    @api.onchange('invoice_type', 'doc_type')
+    def _onchange_vat_method(self):
+        """Вхідна ПН і РК датуються самим документом, а не нашим правилом.
+
+        З рахунка це проставляє `action_create_tax_invoice`; при ручному
+        заведенні поле інакше лишалося б дефолтним 'first_event' — тобто
+        стверджувало б про документ те саме, що міграція виправляє для
+        історичних записів.
+        """
+        for rec in self:
+            if rec.invoice_type == 'received' or rec.doc_type == 'rk':
+                rec.vat_method = 'document'
+            elif rec.vat_method == 'document':
+                rec.vat_method = 'first_event'
+
     @api.depends('doc_type', 'number', 'date')
     def _compute_name(self):
         for rec in self:

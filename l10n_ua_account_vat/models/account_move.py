@@ -149,7 +149,7 @@ class AccountMove(models.Model):
                     'За контрагентом «%s» застосовується касовий метод ПДВ, '
                     'тож ПН складається за датою оплати. Документ ще не оплачений.',
                     self.commercial_partner_id.display_name))
-            self._l10n_ua_check_single_tax_invoice_fits()
+            self._l10n_ua_check_single_tax_invoice_fits(settlements)
             return settlements[0]
 
         # Перша подія. Післяоплата дати не зсуває: перша подія — відвантаження,
@@ -160,10 +160,10 @@ class AccountMove(models.Model):
         # Передоплата стала першою подією. Одна ПН тут правильна тільки якщо
         # аванс покриває документ повністю; часткова передоплата вимагає двох
         # ПН — на аванс і на відвантаження решти.
-        self._l10n_ua_check_single_tax_invoice_fits()
+        self._l10n_ua_check_single_tax_invoice_fits(settlements)
         return settlements[0]
 
-    def _l10n_ua_check_single_tax_invoice_fits(self):
+    def _l10n_ua_check_single_tax_invoice_fits(self, settlements):
         """Відмовитись, якщо однією ПН операцію коректно не описати.
 
         ПН тут одна на весь документ, а ПКУ прив'язує зобов'язання до події
@@ -174,7 +174,6 @@ class AccountMove(models.Model):
         за мовчки виданий некоректний податковий документ.
         """
         self.ensure_one()
-        settlements = self._l10n_ua_settlement_dates()
         if len(settlements) > 1:
             raise UserError(_(
                 'Документ погашений кількома надходженнями (%(count)s). На кожну '
@@ -258,7 +257,11 @@ class AccountMove(models.Model):
             # період декларації.
             'date': self._l10n_ua_tax_invoice_date(),
             'vat_method': self._l10n_ua_tax_invoice_rule(),
-            'partner_id': self.partner_id.id,
+            # Стороною операції в ПН є юрособа, а не її контакт: ІПН і назва
+            # для ЄРПН належать саме їй. Рахунок можна виставити на
+            # «Бухгалтерію» чи адресу доставки — у ПН має піти підприємство,
+            # інакше <BUYER_IPN> вийде порожнім і документ не зареєструється.
+            'partner_id': self.commercial_partner_id.id,
             'company_id': self.company_id.id,
             'move_id': self.id,
             'line_ids': line_vals,

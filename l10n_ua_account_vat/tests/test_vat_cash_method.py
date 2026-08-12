@@ -95,6 +95,13 @@ class TestVatCashMethod(AccountTestInvoicingCommon):
                          'на самому контакті прапорця немає — на це й тест')
         self.assertEqual(move._l10n_ua_tax_invoice_rule(), 'cash')
 
+        self._pay(move, '2025-04-02')
+        move.action_create_tax_invoice()
+
+        # Стороною операції в ПН має бути юрособа: ІПН для ЄРПН належить їй,
+        # а не контакту, на який виставлено рахунок.
+        self.assertEqual(move.tax_invoice_ids.partner_id, self.customer_cash)
+
     # --------------------------------------------------------- касовий метод
 
     def test_cash_method_uses_payment_date(self):
