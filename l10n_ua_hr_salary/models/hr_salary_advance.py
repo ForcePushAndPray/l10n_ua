@@ -77,8 +77,9 @@ class HrSalaryAdvance(models.Model):
     )
 
     @api.depends(
-        'employee_id', 'wage_percent',
+        'employee_id', 'wage_percent', 'date',
         'employee_id.current_version_id.wage',
+        'employee_id.current_version_id.salary_currency_id',
         'employee_id.current_version_id.staffing_line_id.salary',
     )
     def _compute_gross_amount(self):
@@ -87,8 +88,12 @@ class HrSalaryAdvance(models.Model):
             if advance.employee_id:
                 version = advance.employee_id.current_version_id
                 if version:
-                    wage = version.wage or 0.0
+                    # Курс — на дату виплати авансу: аванс середини місяця й
+                    # зарплата в кінці рахуються кожне за своїм.
+                    wage = version._l10n_ua_wage_in_company_currency(advance.date)
                     if not wage and hasattr(version, 'staffing_line_id') and version.staffing_line_id:
+                        # Штатний розпис ведеться у валюті компанії, тож
+                        # перераховувати тут нема чого.
                         wage = version.staffing_line_id.salary or 0.0
             advance.gross_amount = round(wage * advance.wage_percent / 100, 2)
 

@@ -186,11 +186,21 @@ class HrCertificate(models.Model):
             else:
                 record.valid_until = False
 
-    @api.depends('employee_id', 'employee_id.current_version_id', 'employee_id.current_version_id.wage')
+    # `salary_currency_id` у залежностях бути не може: поле оголошує
+    # l10n_ua_hr_salary, а цей модуль про нього не знає — реєстр падає з
+    # «Dependency field not found» ще на завантаженні. Тому валюта окладу
+    # тут не тригер: сума перераховується при зміні самого окладу або дати
+    # запиту, а зміна валюти договору без зміни суми — випадок, коли
+    # довідку однаково перевиписують.
+    @api.depends('employee_id', 'employee_id.current_version_id',
+                 'employee_id.current_version_id.wage', 'request_date')
     def _compute_salary_info(self):
         for record in self:
             version = record._get_employee_version()
-            record.salary_amount = version.wage if version else 0
+            # Оклад може бути у валюті: у довідці має стояти гривнева сума на
+            # дату запиту, а не число з договору як є.
+            record.salary_amount = version._l10n_ua_wage_in_company_currency(
+                record.request_date) if version else 0
 
     @api.depends('certificate_type_id', 'request_date')
     def _compute_period_defaults(self):
@@ -355,7 +365,8 @@ class HrCertificate(models.Model):
             'is_fixed_term': is_fixed_term,
             'hire_order_number': version.hire_order_number if version and 'hire_order_number' in version._fields else '',
             'hire_order_date': version.hire_order_date if version and 'hire_order_date' in version._fields else False,
-            'wage': version.wage if version else 0,
+            'wage': version._l10n_ua_wage_in_company_currency(
+                self.request_date) if version else 0,
             'work_experience': work_experience,
             'monthly_breakdown': self._get_monthly_breakdown(),
             'destination': self.destination or 'за місцем вимоги',

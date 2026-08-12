@@ -1,10 +1,64 @@
-from odoo import models, api
+import logging
+
+from odoo import models, api, fields, _
+from odoo.exceptions import UserError
 
 from .hr_employee import REGISTRATION_ADDRESS_MAP
+
+_logger = logging.getLogger(__name__)
 
 
 class HrVersion(models.Model):
     _inherit = 'hr.version'
+
+    def _l10n_ua_wage_in_company_currency(self, date=None):
+        """Оклад у валюті компанії на задану дату.
+
+        `wage` зберігається в тій валюті, яку задано у версії, а всі
+        українські розрахунки — гривневі. Хто читає `wage` напряму, той
+        мовчки вважає число гривнями: оклад 1000 USD давав аванс 500 грн,
+        середньоденну для відпустки 34 грн і таку саму довідку про доходи.
+
+        Хелпер живе тут, у `l10n_ua_hr_base`, хоча поле валюти оголошує
+        `l10n_ua_hr_salary`: модуль відпусток про зарплату не знає (спільний
+        предок у них саме цей), а шість копій `hasattr` по місцях виклику —
+        це шість місць, де наступна копія з'явиться непоміченою. Без модуля
+        зарплати валюта окладу одна, тож `getattr` тут не хитрість, а
+        єдиний чесний спосіб спитати «а чи є взагалі валютний оклад».
+
+        Дата потрібна, бо курс змінюється: аванс середини місяця, відпустка
+        в липні та довідка за минулий рік мають рахуватись кожне за своїм
+        курсом, а не за сьогоднішнім.
+        """
+        self.ensure_one()
+        wage = self.wage or 0.0
+        currency = getattr(self, 'salary_currency_id', False)
+        company = self.company_id or self.env.company
+        company_currency = company.currency_id
+        if not wage or not currency or not company_currency \
+                or currency == company_currency:
+            return wage
+
+        date = date or fields.Date.context_today(self)
+        latest_rate = self.env['res.currency.rate'].search([
+            ('currency_id', '=', currency.id),
+            ('company_id', 'in', [company.id, False]),
+            ('name', '<=', date),
+        ], order='name desc', limit=1)
+        if not latest_rate:
+            raise UserError(_(
+                'Оклад %(employee)s встановлено в %(currency)s, але курс цієї '
+                'валюти на %(date)s не заданий. Без курсу оклад потрапив би в '
+                'розрахунок як гривневий. Внесіть курс у довідник валют.',
+                employee=self.employee_id.name or '',
+                currency=currency.name,
+                date=fields.Date.to_string(date)))
+
+        # round=False з тієї ж причини, що й у розрахунковому листку:
+        # інакше курс стискається до копійки й дає похибку на кожній
+        # тисячі окладу.
+        return currency._convert(
+            wage, company_currency, company, date, round=False)
 
     @api.constrains('country_id')
     def _check_ua_military_citizenship(self):

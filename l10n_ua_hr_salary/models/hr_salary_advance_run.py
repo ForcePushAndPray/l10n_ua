@@ -1,6 +1,11 @@
+import logging
+
 from odoo import models, fields, api, _
+from odoo.exceptions import UserError
 from dateutil.relativedelta import relativedelta
-from odoo.addons.l10n_ua_account_base.tools.formatters import MONTHS_UA 
+from odoo.addons.l10n_ua_account_base.tools.formatters import MONTHS_UA
+
+_logger = logging.getLogger(__name__)
 
 
 
@@ -69,7 +74,9 @@ class HrSalaryAdvanceRun(models.Model):
         version = employee.current_version_id
         if not version:
             return 0.0
-        wage = version.wage or 0.0
+        # Валютний оклад — у гривню за курсом на дату виплати; штатний
+        # розпис уже у валюті компанії.
+        wage = version._l10n_ua_wage_in_company_currency(self.date)
         if not wage and hasattr(version, 'staffing_line_id') and version.staffing_line_id:
             wage = version.staffing_line_id.salary or 0.0
         return wage
@@ -85,10 +92,21 @@ class HrSalaryAdvanceRun(models.Model):
             ('company_id', '=', self.company_id.id),
             ('version_ids.contract_date_start', '!=', False),
         ])
+        # Працівник із валютним окладом без курсу зриває перерахунок винятком.
+        # У пакеті це означало б, що через одну незаповнену дату в довіднику
+        # без авансу лишається вся установа. Тому такого пропускаємо, але
+        # мовчки не забуваємо: імена йдуть у повідомлення й у лог, а
+        # повторний запуск (він перестворює чернетки) підхопить їх, щойно
+        # курс внесуть.
+        skipped = []
         for employee in employees:
             if employee.id in existing_employee_ids:
                 continue
-            wage = self._get_employee_wage(employee)
+            try:
+                wage = self._get_employee_wage(employee)
+            except UserError:
+                skipped.append(employee.name or str(employee.id))
+                continue
             if not wage:
                 continue
             self.env['hr.salary.advance'].create({
@@ -98,6 +116,28 @@ class HrSalaryAdvanceRun(models.Model):
                 'company_id': self.company_id.id,
                 'wage_percent': self.wage_percent,
             })
+
+        if skipped:
+            _logger.warning(
+                'Аванс %s: пропущено %s працівник(ів) без курсу валюти окладу '
+                'на %s: %s', self.name, len(skipped),
+                fields.Date.to_string(self.date), ', '.join(skipped))
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Аванс нараховано частково'),
+                    'message': _(
+                        'Без авансу лишились %(count)s працівник(ів): курс '
+                        'валюти їхнього окладу на %(date)s не заданий. '
+                        'Внесіть курс і повторіть нарахування. %(names)s',
+                        count=len(skipped),
+                        date=fields.Date.to_string(self.date),
+                        names=', '.join(skipped)),
+                    'type': 'warning',
+                    'sticky': True,
+                },
+            }
         return True
 
     def action_confirm_all(self):
