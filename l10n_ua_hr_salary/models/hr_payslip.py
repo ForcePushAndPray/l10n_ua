@@ -2,6 +2,9 @@ from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
 from dateutil.relativedelta import relativedelta
 import calendar
+import logging
+
+_logger = logging.getLogger(__name__)
 
 
 class HrPayslip(models.Model):
@@ -633,20 +636,92 @@ class HrPayslip(models.Model):
             cur = slip.salary_currency_id
             comp_cur = slip.company_id.currency_id
             if cur and comp_cur and cur != comp_cur and slip.date_to:
+                # `round=False`: інакше курс округлюється до копійки, бо
+                # `_convert` заокруглює результат за валютою призначення.
+                # Поле оголошене на шість знаків не з примхи — офіційний курс
+                # НБУ має чотири, і 44.2680, стиснутий до 44.27, дає зайві дві
+                # гривні на кожній тисячі доларів окладу.
                 slip.salary_rate = cur._convert(
-                    1.0, comp_cur, slip.company_id, slip.date_to)
+                    1.0, comp_cur, slip.company_id, slip.date_to, round=False)
             else:
                 slip.salary_rate = 1.0
 
+    def _check_salary_rate_known(self):
+        """Не рахувати валютний оклад, поки курс невідомий.
+
+        `_convert` за відсутності запису курсу мовчки бере 1.0, тож оклад
+        1000 USD виплатився б як 1000 грн — помилка в сорок разів, і не в
+        бік працівника. Валютний оклад без курсу — не нуль і не «як є», а
+        незаповнений довідник: краще зупинити розрахунок і сказати, чого
+        бракує.
+
+        Курс може прийти двома шляхами, і обидва тут законні: з довідника
+        валют або руками в поле «Курс окладу» (воно `readonly=False` саме
+        для цього). Тому відмовляємо лише коли жоден зі шляхів не спрацював:
+        у довіднику запису немає **і** в полі лишилась одиниця, яку туди
+        поклав обчислювач за відсутності курсу. Вписаний руками курс
+        перевірку проходить — інакше повідомлення радило б те, чого сам код
+        не приймає.
+
+        Нуль у полі — окремий випадок: це не «курс один до одного», а
+        стертий курс, і множення на нього дало б нульову зарплату.
+        """
+        self.ensure_one()
+        cur = self.salary_currency_id
+        comp_cur = self.company_id.currency_id
+        if not cur or not comp_cur or cur == comp_cur:
+            return
+
+        if not self.salary_rate:
+            raise UserError(_(
+                'Курс окладу для %(employee)s дорівнює нулю. Оклад у '
+                '%(currency)s не можна перерахувати в гривню — вкажіть курс '
+                'у полі «Курс окладу» або внесіть його в довідник валют.',
+                employee=self.employee_id.name or '',
+                currency=cur.name))
+
+        latest_rate = self.env['res.currency.rate'].search([
+            ('currency_id', '=', cur.id),
+            ('company_id', 'in', [self.company_id.id, False]),
+            ('name', '<=', self.date_to),
+        ], order='name desc', limit=1)
+
+        if not latest_rate and self.salary_rate == 1.0:
+            raise UserError(_(
+                'Оклад працівника %(employee)s встановлено в %(currency)s, але '
+                'курс цієї валюти на %(date)s не заданий. Без курсу оклад '
+                'потрапив би в розрахунок як гривневий. Внесіть курс у '
+                'довідник валют або вкажіть курс у полі «Курс окладу».',
+                employee=self.employee_id.name or '',
+                currency=cur.name,
+                date=fields.Date.to_string(self.date_to)))
+
+        # Застарілий курс не блокуємо: у довіднику законно тримати лише дати
+        # зміни, і курс з 1 числа чинний до кінця місяця. Але курс, старший за
+        # сам період, — це вже забутий довідник, і мовчати про це не варто:
+        # розрахунок піде за ціною позаминулого разу.
+        if latest_rate and self.date_from and latest_rate.name < self.date_from:
+            _logger.warning(
+                'Розрахунковий листок %s: курс %s узято з %s — раніше за '
+                'початок періоду (%s). Перевірте, чи довідник курсів свіжий.',
+                self.name or self.id, cur.name,
+                fields.Date.to_string(latest_rate.name),
+                fields.Date.to_string(self.date_from))
+
     def _convert_salary_to_company(self, amount):
-        """Перерахувати суму окладу з валюти окладу у валюту компанії."""
+        """Перерахувати суму окладу з валюти окладу у валюту компанії.
+
+        Без запасного `or 1.0`: нульовий курс — це не «один до одного», а
+        привід зупинитись, і саме це робить `_check_salary_rate_known` перед
+        нарахуванням.
+        """
         self.ensure_one()
         if not amount:
             return amount
         cur = self.salary_currency_id
         comp_cur = self.company_id.currency_id
         if cur and comp_cur and cur != comp_cur:
-            return amount * (self.salary_rate or 1.0)
+            return amount * self.salary_rate
         return amount
 
     def _get_effective_wage(self, version):
@@ -682,6 +757,8 @@ class HrPayslip(models.Model):
 
         if not self.version_id:
             return
+
+        self._check_salary_rate_known()
 
         version = self.version_id
 
