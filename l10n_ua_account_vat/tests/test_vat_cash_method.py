@@ -79,8 +79,15 @@ class TestVatCashMethod(AccountTestInvoicingCommon):
         with self.assertRaises(UserError):
             move._l10n_ua_tax_invoice_date()
 
-    def test_cash_method_takes_earliest_of_several_payments(self):
-        """Часткові оплати: зобовʼязання виникає з першої."""
+    def test_cash_method_uses_first_payment_while_split_is_unsupported(self):
+        """Часткові оплати: поки що одна ПН від дати першого надходження.
+
+        Це фіксація наявного обмеження, а не бажаної поведінки: за п. 187.10
+        зобов'язання виникає на суму **кожного** надходження, тобто тут мали б
+        бути дві ПН — 400 грн від 02.04 і 600 грн від 06.05. Розбиття потребує
+        привʼязки ПН до погашення й розподілу сум по номенклатурі, тому
+        винесене окремо (#255).
+        """
         move = self._invoice(self.customer_cash, '2025-03-10')
         self._pay(move, '2025-04-02', amount=400.0)
         self._pay(move, '2025-05-06', amount=600.0)
