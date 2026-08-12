@@ -36,9 +36,15 @@ class TestBudgetDebtForms(TransactionCase):
         self.assertTrue(account, f'No {account_type} account available for test')
         return account
 
-    def _post_entry(self, account_type, kekv, fund_type, debit, credit):
+    def _post_entry(self, account_type, kekv, fund_type, debit, credit, kpkvk=None):
         """Проводка з аналітикою КЕКВ/фонд на рахунку заданого типу."""
         counterpart = self._account('expense' if debit else 'income')
+        analytics = {
+            'ua_kekv_id': kekv.id if kekv else False,
+            'ua_fund_type': fund_type,
+        }
+        if kpkvk is not None:
+            analytics['ua_kpkvk_id'] = kpkvk.id
         move = self.env['account.move'].create({
             'move_type': 'entry',
             'date': '2025-06-15',
@@ -48,15 +54,13 @@ class TestBudgetDebtForms(TransactionCase):
                     'account_id': self._account(account_type).id,
                     'name': 'debt line',
                     'debit': debit, 'credit': credit,
-                    'ua_kekv_id': kekv.id,
-                    'ua_fund_type': fund_type,
+                    **analytics,
                 }),
                 (0, 0, {
                     'account_id': counterpart.id,
                     'name': 'counterpart',
                     'debit': credit, 'credit': debit,
-                    'ua_kekv_id': kekv.id,
-                    'ua_fund_type': fund_type,
+                    **analytics,
                 }),
             ],
         })
@@ -109,3 +113,56 @@ class TestBudgetDebtForms(TransactionCase):
         self.assertTrue(rows, 'кошторис має загальнофондовий рядок')
         self.assertEqual(rows[0]['actual'], 0.0)
         self.assertIsInstance(rows[0]['actual'], float)
+
+    def test_debt_of_another_programme_stays_out(self):
+        """Кошторис складається під програму — чужа заборгованість не його."""
+        other = self.env['l10n_ua.kpkvk'].create({
+            'code': '9999999', 'name': 'Інша програма', 'year': 2025})
+        self._post_entry('liability_payable', self.kekv_2111, 'general',
+                         debit=0, credit=2500, kpkvk=other)
+
+        rows = self._wizard('7d').get_report_data()
+
+        self.assertFalse([r for r in rows if r['kekv_code'] == self.kekv_2111.code],
+                         'у форму потрапила заборгованість чужої бюджетної програми')
+
+    def test_debt_without_programme_is_kept(self):
+        """Рядок без КПКВК лишається у формі, а не зникає мовчки.
+
+        Програму часто проставляють на видатковому рядку, а не на рядку
+        розрахунків. Загублена заборгованість гірша за помітну.
+        """
+        self._post_entry('liability_payable', self.kekv_2111, 'general',
+                         debit=0, credit=2500)
+
+        rows = self._wizard('7d').get_report_data()
+
+        matching = [r for r in rows if r['kekv_code'] == self.kekv_2111.code]
+        self.assertEqual(len(matching), 1, f'очікували один рядок, маємо: {rows}')
+        self.assertEqual(matching[0]['balance'], 2500.0)
+
+    def test_debt_without_kekv_is_kept_and_marked(self):
+        """Аналітику КЕКВ теж часто несе не рядок розрахунків — не викидаємо."""
+        self._post_entry('liability_payable', None, 'general', debit=0, credit=900)
+
+        rows = self._wizard('7d').get_report_data()
+
+        unclassified = [r for r in rows if not r['kekv_code']]
+        self.assertEqual(len(unclassified), 1, f'очікували рядок без КЕКВ, маємо: {rows}')
+        self.assertEqual(unclassified[0]['balance'], 900.0)
+        self.assertEqual(unclassified[0]['kekv_name'], 'Без КЕКВ')
+
+    def test_plan_follows_the_selected_period(self):
+        """План квартальної форми — з місячної розкладки, а не річний.
+
+        Факт рахується за датами періоду, тож річний план у знаменнику давав
+        би «% виконання» вчетверо занижений. У кошторисі 1000 лише в січні:
+        за I квартал план 1000, за II — нуль.
+        """
+        first_quarter = self._wizard('2m')
+        first_quarter.period = 'q1'
+        second_quarter = self._wizard('2m')
+        second_quarter.period = 'q2'
+
+        self.assertEqual(first_quarter.get_report_data()[0]['plan'], 1000.0)
+        self.assertEqual(second_quarter.get_report_data()[0]['plan'], 0.0)
