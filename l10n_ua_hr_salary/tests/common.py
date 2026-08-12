@@ -13,6 +13,14 @@ class SalaryTestCase(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.env.company
+        # Тестова компанія Odoo за замовчуванням у доларах, а весь цей набір
+        # тестів — про українську зарплату: мінімалка 8000, прожитковий
+        # мінімум 3028, ПСП і ЄСВ рахуються від гривневих порогів. Найгірше
+        # це збивало тести валютного окладу: в доларовій компанії оклад у
+        # доларах не іноземний, конвертувати нема чого, і три тести падали
+        # на продукті, який працює правильно.
+        cls.uah = cls.env.ref('base.UAH')
+        cls.company.write({'currency_id': cls.uah.id})
 
         cls.department = cls.env['hr.department'].create({
             'name': 'Відділ розробки',

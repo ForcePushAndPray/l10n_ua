@@ -2,6 +2,7 @@
 
 from datetime import date
 
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 from .common import SalaryTestCase
 
@@ -14,6 +15,29 @@ class TestSalaryCurrency(SalaryTestCase):
         super().setUpClass()
         cls.psp_params.write({'min_hourly_wage': 0.0})
         cls.usd = cls.env.ref('base.USD')
+        # Курс потрібен не лише щоб отримати число: без жодного запису курсу
+        # розрахунок тепер відмовляється рахувати валютний оклад.
+        #
+        # Червень 2025 — рівні 40.0, щоб очікувані суми в тестах читались
+        # усно (1000 USD → 40 000 грн), а не звірялись із калькулятором.
+        cls.env['res.currency.rate'].create({
+            'name': '2025-06-01',
+            'currency_id': cls.usd.id,
+            'company_id': cls.company.id,
+            'inverse_company_rate': 40.0,
+        })
+        # 2026-й — офіційні курси НБУ на 1 число місяця. Вересня й далі тут
+        # немає навмисно: на момент написання їх ще не існувало, і саме на
+        # цьому тримається тест про місяць без курсу.
+        cls.env['res.currency.rate'].create([
+            {'name': f'2026-{month:02d}-01',
+             'currency_id': cls.usd.id,
+             'company_id': cls.company.id,
+             'inverse_company_rate': rate}
+            for month, rate in enumerate(
+                (42.3532, 42.8483, 43.2081, 43.9175,
+                 43.9630, 44.2680, 44.7917, 44.6916), start=1)
+        ])
         # Тип нарахування SALARY (окладна форма)
         if not cls.env['hr.accrual.type'].search([('code', '=', 'SALARY')], limit=1):
             cls.env['hr.accrual.type'].create({
@@ -82,3 +106,51 @@ class TestSalaryCurrency(SalaryTestCase):
         acc = self._salary_accrual(slip)
         # 1000 × 40 × 10/20 = 20000
         self.assertAlmostEqual(acc.amount, 20000.0, places=2)
+
+    def _payslip_for(self, date_from, date_to):
+        slip = self.env['hr.payslip'].create({
+            'employee_id': self.employee.id,
+            'version_id': self.version.id,
+            'date_from': date_from,
+            'date_to': date_to,
+        })
+        slip.write({
+            'scheduled_hours': 160.0, 'scheduled_days': 20,
+            'worked_days': 20, 'worked_hours': 160.0,
+        })
+        return slip
+
+    def test_rate_comes_from_the_currency_table(self):
+        """Курс береться з довідника, а не тільки з ручного поля.
+
+        Решта тестів проставляють `salary_rate` руками, тож ланка «знайти
+        курс на дату» лишалась непокритою — а саме вона працює в реальному
+        розрахунку. Червень 2026: офіційний курс НБУ 44.2680.
+        """
+        self.version.write({
+            'salary_currency_id': self.usd.id, 'wage': 1000.0})
+
+        slip = self._payslip_for(date(2026, 6, 1), date(2026, 6, 30))
+
+        self.assertAlmostEqual(slip.salary_rate, 44.2680, places=4)
+        slip._generate_accruals()
+        self.assertAlmostEqual(self._salary_accrual(slip).amount, 44268.0, places=2)
+
+    def test_missing_rate_stops_the_payslip(self):
+        """Місяць без курсу — це відмова, а не мовчазна виплата гривнями.
+
+        `_convert` без запису курсу повертає 1.0, тож оклад 1000 USD пішов
+        би у відомість як 1000 грн — помилка в сорок разів, і не на користь
+        працівника. Жовтень 2026: курсу на цю дату в довіднику немає.
+        """
+        self.version.write({
+            'salary_currency_id': self.usd.id, 'wage': 1000.0})
+        self.env['res.currency.rate'].search([
+            ('currency_id', '=', self.usd.id),
+            ('name', '<=', '2026-10-31'),
+        ]).unlink()
+
+        slip = self._payslip_for(date(2026, 10, 1), date(2026, 10, 31))
+
+        with self.assertRaises(UserError):
+            slip._generate_accruals()

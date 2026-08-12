@@ -633,10 +633,48 @@ class HrPayslip(models.Model):
             cur = slip.salary_currency_id
             comp_cur = slip.company_id.currency_id
             if cur and comp_cur and cur != comp_cur and slip.date_to:
+                # `round=False`: інакше курс округлюється до копійки, бо
+                # `_convert` заокруглює результат за валютою призначення.
+                # Поле оголошене на шість знаків не з примхи — офіційний курс
+                # НБУ має чотири, і 44.2680, стиснутий до 44.27, дає зайві дві
+                # гривні на кожній тисячі доларів окладу.
                 slip.salary_rate = cur._convert(
-                    1.0, comp_cur, slip.company_id, slip.date_to)
+                    1.0, comp_cur, slip.company_id, slip.date_to, round=False)
             else:
                 slip.salary_rate = 1.0
+
+    def _check_salary_rate_known(self):
+        """Не рахувати валютний оклад, поки курс на період не заданий.
+
+        `_convert` за відсутності запису курсу мовчки бере 1.0, тож оклад
+        1000 USD виплатився б як 1000 грн — помилка в сорок разів, і не в
+        бік працівника. Валютний оклад без курсу — не нуль і не «як є», а
+        незаповнений довідник: краще зупинити розрахунок і сказати, чого
+        бракує.
+
+        Перевіряємо саме наявність запису курсу, а не рівність одиниці:
+        курс 1.0 буває законним для прив'язаної валюти, а от порожній
+        довідник — ніколи.
+        """
+        self.ensure_one()
+        cur = self.salary_currency_id
+        comp_cur = self.company_id.currency_id
+        if not cur or not comp_cur or cur == comp_cur:
+            return
+        has_rate = self.env['res.currency.rate'].search_count([
+            ('currency_id', '=', cur.id),
+            ('company_id', 'in', [self.company_id.id, False]),
+            ('name', '<=', self.date_to),
+        ])
+        if not has_rate:
+            raise UserError(_(
+                'Оклад працівника %(employee)s встановлено в %(currency)s, але '
+                'курс цієї валюти на %(date)s не заданий. Без курсу оклад '
+                'потрапив би в розрахунок як гривневий. Внесіть курс у '
+                'довідник валют або вкажіть курс у полі «Курс окладу».',
+                employee=self.employee_id.name or '',
+                currency=cur.name,
+                date=fields.Date.to_string(self.date_to)))
 
     def _convert_salary_to_company(self, amount):
         """Перерахувати суму окладу з валюти окладу у валюту компанії."""
@@ -682,6 +720,8 @@ class HrPayslip(models.Model):
 
         if not self.version_id:
             return
+
+        self._check_salary_rate_known()
 
         version = self.version_id
 
