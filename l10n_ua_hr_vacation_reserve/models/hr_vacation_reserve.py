@@ -398,9 +398,11 @@ class HrVacationReserveLine(models.Model):
                 ('date_to', '<=', period_end),
             ])
             if not payslips:
-                # Fallback to contract wage
+                # Fallback to contract wage. Оклад може бути у валюті —
+                # курс на кінець періоду резерву.
                 contract = line.employee_id.version_id
-                wage = contract.wage if contract else 0.0
+                wage = contract._l10n_ua_wage_in_company_currency(
+                    period_end) if contract else 0.0
                 line.daily_average = round(wage / 29.3, 2)
                 continue
             total = sum(payslips.mapped('total_net') or [0.0])

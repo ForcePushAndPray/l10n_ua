@@ -13,6 +13,7 @@
 import logging
 
 from odoo import SUPERUSER_ID, api
+from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -25,8 +26,27 @@ def migrate(cr, version):
     drafts = Advance.search([('state', '=', 'draft')])
     if not drafts:
         return
-    env.add_to_compute(Advance._fields['gross_amount'], drafts)
-    drafts.flush_recordset(['gross_amount'])
+
+    # Кожна чернетка окремо, і кожна у своїй точці збереження. Перерахунок
+    # валютного окладу без курсу кидає UserError — одним махом він зірвав би
+    # оновлення модуля цілком, а невдале оновлення гірше за занижену суму в
+    # чернетці, яку однаково перерахує перше ж редагування.
+    recomputed = skipped = 0
+    for advance in drafts:
+        try:
+            with env.cr.savepoint():
+                env.add_to_compute(Advance._fields['gross_amount'], advance)
+                advance.flush_recordset(['gross_amount'])
+        except UserError:
+            skipped += 1
+        else:
+            recomputed += 1
+
     _logger.info(
         'l10n_ua_hr_salary 19.0.1.4.0: перераховано %s чернеток авансу',
-        len(drafts))
+        recomputed)
+    if skipped:
+        _logger.warning(
+            'l10n_ua_hr_salary 19.0.1.4.0: %s чернеток авансу лишились із '
+            'сумою за неконвертованим окладом — для них немає курсу валюти. '
+            'Внесіть курс і перевідкрийте нарахування.', skipped)

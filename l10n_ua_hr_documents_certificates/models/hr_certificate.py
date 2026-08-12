@@ -186,6 +186,12 @@ class HrCertificate(models.Model):
             else:
                 record.valid_until = False
 
+    # `salary_currency_id` у залежностях бути не може: поле оголошує
+    # l10n_ua_hr_salary, а цей модуль про нього не знає — реєстр падає з
+    # «Dependency field not found» ще на завантаженні. Тому валюта окладу
+    # тут не тригер: сума перераховується при зміні самого окладу або дати
+    # запиту, а зміна валюти договору без зміни суми — випадок, коли
+    # довідку однаково перевиписують.
     @api.depends('employee_id', 'employee_id.current_version_id',
                  'employee_id.current_version_id.wage', 'request_date')
     def _compute_salary_info(self):
