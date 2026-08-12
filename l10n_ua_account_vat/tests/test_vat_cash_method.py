@@ -79,6 +79,14 @@ class TestVatCashMethod(AccountTestInvoicingCommon):
         with self.assertRaises(UserError):
             move._l10n_ua_tax_invoice_date()
 
+    def test_cash_method_refuses_on_partial_payment(self):
+        """Часткова оплата: відмова замість мовчазної ПН на повну суму (#255)."""
+        move = self._invoice(self.customer_cash, '2025-03-10')
+        self._pay(move, '2025-04-02', amount=400.0)
+
+        with self.assertRaises(UserError):
+            move._l10n_ua_tax_invoice_date()
+
     def test_cash_method_uses_first_payment_while_split_is_unsupported(self):
         """Часткові оплати: поки що одна ПН від дати першого надходження.
 
