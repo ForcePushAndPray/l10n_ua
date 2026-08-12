@@ -154,3 +154,62 @@ class TestSalaryCurrency(SalaryTestCase):
 
         with self.assertRaises(UserError):
             slip._generate_accruals()
+
+    def test_manual_rate_is_enough_without_the_table(self):
+        """Курс, вписаний руками, — законний шлях, а не обхід перевірки.
+
+        Повідомлення про відсутній курс радить саме це, тож перевірка не має
+        відмовляти тому, хто пораду виконав.
+        """
+        self.version.write({
+            'salary_currency_id': self.usd.id, 'wage': 1000.0})
+        self.env['res.currency.rate'].search([
+            ('currency_id', '=', self.usd.id),
+            ('name', '<=', '2026-10-31'),
+        ]).unlink()
+        slip = self._payslip_for(date(2026, 10, 1), date(2026, 10, 31))
+
+        slip.salary_rate = 45.0
+        slip._generate_accruals()
+
+        self.assertAlmostEqual(self._salary_accrual(slip).amount, 45000.0, places=2)
+
+    def test_zeroed_rate_stops_the_payslip(self):
+        """Нуль у курсі — стертий курс, а не «один до одного».
+
+        Доти множення йшло через `salary_rate or 1.0`, тобто обнулений курс
+        мовчки повертав ту саму одиницю, від якої цей PR і рятує.
+        """
+        self.version.write({
+            'salary_currency_id': self.usd.id, 'wage': 1000.0})
+        slip = self._payslip_for(date(2026, 6, 1), date(2026, 6, 30))
+
+        slip.salary_rate = 0.0
+
+        with self.assertRaises(UserError):
+            slip._generate_accruals()
+
+    def test_stale_rate_is_used_but_reported(self):
+        """Курс, старший за період, не блокує розрахунок, але лишає слід.
+
+        У довіднику законно тримати лише дати зміни, і курс з 1 числа чинний
+        до кінця місяця. А от курс, старший за сам період, — це забутий
+        довідник: рахувати за ним можна, мовчати про це не варто.
+        """
+        self.version.write({
+            'salary_currency_id': self.usd.id, 'wage': 1000.0})
+        self.env['res.currency.rate'].search([
+            ('currency_id', '=', self.usd.id),
+            ('name', '>', '2026-01-01'),
+        ]).unlink()
+
+        slip = self._payslip_for(date(2026, 7, 1), date(2026, 7, 31))
+
+        with self.assertLogs('odoo.addons.l10n_ua_hr_salary.models.hr_payslip',
+                             level='WARNING') as logged:
+            slip._generate_accruals()
+
+        self.assertTrue(any('2026-01-01' in line for line in logged.output),
+                        f'у попередженні має бути дата застарілого курсу: {logged.output}')
+        # Січневий курс — 42.3532, і саме за ним рахується липень.
+        self.assertAlmostEqual(self._salary_accrual(slip).amount, 42353.2, places=1)
