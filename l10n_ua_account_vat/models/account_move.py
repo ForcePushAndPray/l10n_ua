@@ -76,27 +76,25 @@ class AccountMove(models.Model):
         # (написана під Odoo <=16) відкидала геть усі рядки й ПН виходила
         # порожньою. `invoice_line_ids` містить ще секції та примітки — їм у ПН
         # робити нічого.
-        # ПН завжди у гривні: `currency_id` ПН — related на валюту компанії,
-        # тоді як суми документа можуть бути у будь-якій валюті. Курс беремо
-        # на дату документа, як і бухгалтерська проводка.
-        company_currency = self.company_id.currency_id
-        rate_date = self.invoice_date or self.date or fields.Date.context_today(self)
-
-        def in_company_currency(amount):
-            if not amount or self.currency_id == company_currency:
-                return amount
-            return self.currency_id._convert(
-                amount, company_currency, self.company_id, rate_date)
+        # РК зменшує зобов'язання: за Порядком 1307 у гр. 6 стоїть від'ємна
+        # кількість при незмінній ціні. Доки цикл не виконувався, гілка refund
+        # була безпечно порожньою; тепер вона створює документ, і без знаку РК
+        # збільшував би зобов'язання замість зменшувати.
+        sign = -1 if is_refund else 1
 
         line_vals = []
         seq = 10
         for iline in self.invoice_line_ids.filtered(lambda l: l.display_type == 'product'):
-            # Ціна за одиницю після знижки й без ПДВ. `price_subtotal` уже
-            # враховує знижку і виключає включений у ціну податок, тож база в
-            # ПН збігається з документом. Зберігати сирий `price_unit` не можна:
-            # рядок ПН рахує базу як quantity * price_unit, і знижка зникла б.
-            # Для <CINA> в XML ЄРПН потрібна саме фактична ціна постачання.
-            subtotal = in_company_currency(iline.price_subtotal)
+            # Суму беремо з проводки, а не з `price_subtotal`: ПН завжди у
+            # гривні (`currency_id` — related на валюту компанії), а проводка
+            # вже перерахована за курсом документа. Перераховувати кожен рядок
+            # окремо не варто — округлення дало б копійчаний дрейф від суми
+            # документа. `direction_sign` знімає знак дебету/кредиту.
+            subtotal = iline.balance * self.direction_sign
+            # Ціна за одиницю після знижки й без ПДВ. Зберігати сирий
+            # `price_unit` не можна: рядок ПН рахує базу як quantity *
+            # price_unit, і знижка зникла б. Для <CINA> в XML ЄРПН потрібна
+            # саме фактична ціна постачання.
             net_unit_price = subtotal / iline.quantity if iline.quantity else 0.0
 
             line_vals.append((0, 0, {
@@ -104,7 +102,7 @@ class AccountMove(models.Model):
                 'product_id': iline.product_id.id if iline.product_id else False,
                 'name': iline.name or iline.product_id.display_name or '',
                 'uktzed_code': iline.product_id.l10n_ua_uktzed if hasattr(iline.product_id, 'l10n_ua_uktzed') else '',
-                'quantity': iline.quantity,
+                'quantity': sign * iline.quantity,
                 'uom_id': iline.product_uom_id.id if iline.product_uom_id else False,
                 'price_unit': net_unit_price,
                 'vat_rate': self._l10n_ua_vat_rate_for_line(iline),
@@ -125,6 +123,15 @@ class AccountMove(models.Model):
             'move_id': self.id,
             'line_ids': line_vals,
         }
+        if is_refund:
+            # РК без посилання на оригінал ЄРПН не приймає. Знаходимо ПН
+            # сторнованого документа; якщо її немає (ПН виписана поза
+            # системою), поле лишається порожнім для ручного заповнення.
+            original = self.reversed_entry_id.tax_invoice_ids[:1]
+            vals.update({
+                'original_invoice_id': original.id,
+                'reason': self.ref or '',
+            })
 
         tax_invoice = self.env['l10n_ua.tax.invoice'].create(vals)
 

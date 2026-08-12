@@ -165,9 +165,11 @@ class TestTaxInvoiceLines(AccountTestInvoicingCommon):
             currency_id=self.other_currency.id,
         )
         invoice_line = move.invoice_line_ids
-        # Проводка вже перерахована в валюту компанії — беремо її як еталон,
-        # щоб тест не залежав від курсу тестової фікстури.
-        expected_base = abs(invoice_line.balance)
+        # Еталон рахуємо перерахунком курсу — незалежно від того, що код
+        # бере суму з проводки, і без прив'язки до курсу тестової фікстури.
+        expected_base = self.other_currency._convert(
+            invoice_line.price_subtotal, self.env.company.currency_id,
+            self.env.company, move.invoice_date)
 
         tax_invoice = self._tax_invoice(move)
 
@@ -176,6 +178,35 @@ class TestTaxInvoiceLines(AccountTestInvoicingCommon):
                             'фікстура має давати курс, відмінний від 1:1')
         self.assertAlmostEqual(tax_invoice.line_ids.base_amount, expected_base, places=2,
                                msg='база ПН лишилась у валюті документа')
+
+    def test_credit_note_reduces_liability(self):
+        """РК має зменшувати зобов'язання й посилатися на оригінальну ПН.
+
+        Доти цикл не виконувався й РК виходив порожній, тож знак ніде не
+        проявлявся; тепер порожня гілка стала документом.
+        """
+        move = self._invoice([
+            {'name': 'товар', 'quantity': 2, 'price_unit': 100.0,
+             'tax_ids': [(6, 0, self.vat_20.ids)]},
+        ])
+        original = self._tax_invoice(move)
+
+        refund = move._reverse_moves([{
+            'invoice_date': '2025-05-10',
+            'date': '2025-05-10',
+            'ref': 'повернення товару',
+        }])
+        refund.action_post()
+        correction = self._tax_invoice(refund)
+
+        self.assertEqual(correction.doc_type, 'rk')
+        self.assertEqual(correction.line_ids.quantity, -2.0)
+        self.assertAlmostEqual(correction.line_ids.price_unit, 100.0, places=2,
+                               msg='ціна в РК не змінюється — змінюється кількість')
+        self.assertAlmostEqual(correction.total_vat, -40.0, places=2,
+                               msg='РК зменшує зобов\'язання, а не збільшує')
+        self.assertEqual(correction.original_invoice_id, original)
+        self.assertEqual(correction.reason, 'повернення товару')
 
     def test_total_vat_matches_the_document(self):
         """Сума ПДВ у ПН має збігатися з податком документа.
