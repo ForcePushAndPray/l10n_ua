@@ -66,8 +66,29 @@ class TestBudgetReports(TransactionCase):
         self.assertEqual(rows[0]['kekv_code'], '2111')
         self.assertEqual(rows[0]['plan'], 6000.0)
 
+    def test_form_2d_plan_follows_the_period(self):
+        """Той самий фікс, що й у мультиформі: план за період, а не річний.
+
+        Кошторис: 1000 у січні, 2000 у червні, 3000 у грудні. За II квартал
+        план — рівно 2000, тоді як річний дав би 6000 і «% виконання» втричі
+        занижений.
+        """
+        wizard = self.env['l10n_ua.budget.form_2d.wizard'].create({
+            'estimate_id': self.estimate.id,
+            'period': 'q2',
+        })
+
+        rows = wizard.get_report_data()
+
+        self.assertEqual(rows[0]['plan'], 2000.0)
+
     def test_form_2d_wizard_action_returns_report(self):
         """Wizard's action_print should return a report action dict."""
+        # Без макета документа report_action() для адміна повертає не звіт, а
+        # майстер налаштування макета (ir_actions_report.py:1179). У бойовій базі
+        # макет заданий, у чистій тестовій — ні, тож задаємо його явно, інакше
+        # тест перевіряє стан компанії, а не поведінку майстра.
+        self.env.company.external_report_layout_id = self.env.ref('web.external_layout_standard')
         wizard = self.env['l10n_ua.budget.form_2d.wizard'].create({
             'estimate_id': self.estimate.id,
             'period': 'year',

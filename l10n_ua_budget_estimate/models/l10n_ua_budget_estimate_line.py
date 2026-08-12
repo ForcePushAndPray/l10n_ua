@@ -107,9 +107,11 @@ class L10nUaBudgetEstimateLine(models.Model):
             ]
             if line.kpkvk_id:
                 domain.append(('ua_kpkvk_id', '=', line.kpkvk_id.id))
-            # Sum debit (expenditures) by convention for budget execution
-            data = AML.read_group(domain, ['debit:sum'], [])
-            line.amount_actual = data[0]['debit'] if data else 0.0
+            # Sum debit (expenditures) by convention for budget execution.
+            # Без групування _read_group завжди повертає рівно один кортеж,
+            # а сума над порожньою вибіркою приходить як False, не 0.0.
+            [(debit,)] = AML._read_group(domain, [], ['debit:sum'])
+            line.amount_actual = debit or 0.0
 
     @api.depends('amount_planned', 'amount_actual')
     def _compute_variance(self):

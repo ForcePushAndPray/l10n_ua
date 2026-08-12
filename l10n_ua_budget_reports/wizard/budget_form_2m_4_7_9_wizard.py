@@ -7,7 +7,7 @@
   залишком (debit - credit) > 0
 * 9д: дебіторська заборгованість на `asset_receivable` рахунках
 """
-from odoo import api, fields, models, _
+from odoo import fields, models, _
 from odoo.exceptions import UserError
 
 
@@ -20,48 +20,12 @@ FORM_KIND = [
 ]
 
 
-PERIOD_SELECTION = [
-    ('q1', 'I квартал'),
-    ('q2', 'II квартал'),
-    ('q3', 'III квартал'),
-    ('q4', 'IV квартал'),
-    ('h1', 'I півріччя'),
-    ('9m', '9 місяців'),
-    ('year', 'Рік'),
-]
-
-
 class BudgetMultiFormWizard(models.TransientModel):
     _name = 'l10n_ua.budget.multi_form.wizard'
     _description = 'Параметри: 2м / 4-1д / 4-2д / 7д / 9д'
+    _inherit = ['l10n_ua.budget.period.mixin']
 
     form_kind = fields.Selection(FORM_KIND, required=True, default='4_1d')
-    estimate_id = fields.Many2one(
-        'l10n_ua.budget.estimate', string='Кошторис', required=True,
-        domain="[('state', 'in', ('approved', 'executed', 'closed'))]")
-    period = fields.Selection(PERIOD_SELECTION, default='year', required=True)
-    date_from = fields.Date(compute='_compute_dates', store=True, readonly=False)
-    date_to = fields.Date(compute='_compute_dates', store=True, readonly=False)
-
-    @api.depends('estimate_id', 'period')
-    def _compute_dates(self):
-        for w in self:
-            if not w.estimate_id:
-                w.date_from = w.date_to = False
-                continue
-            year = w.estimate_id.year
-            mapping = {
-                'q1': (f'{year}-01-01', f'{year}-03-31'),
-                'q2': (f'{year}-04-01', f'{year}-06-30'),
-                'q3': (f'{year}-07-01', f'{year}-09-30'),
-                'q4': (f'{year}-10-01', f'{year}-12-31'),
-                'h1': (f'{year}-01-01', f'{year}-06-30'),
-                '9m': (f'{year}-01-01', f'{year}-09-30'),
-                'year': (f'{year}-01-01', f'{year}-12-31'),
-            }
-            df, dt = mapping.get(w.period, mapping['year'])
-            w.date_from = fields.Date.from_string(df)
-            w.date_to = fields.Date.from_string(dt)
 
     def action_print(self):
         self.ensure_one()
@@ -111,12 +75,14 @@ class BudgetMultiFormWizard(models.TransientModel):
             ]
             if line.kpkvk_id:
                 domain.append(('ua_kpkvk_id', '=', line.kpkvk_id.id))
-            agg = AML.read_group(domain, ['debit:sum', 'credit:sum'], [])
-            debit = (agg[0]['debit'] if agg else 0.0) or 0.0
-            credit = (agg[0]['credit'] if agg else 0.0) or 0.0
+            # Без групування _read_group завжди повертає рівно один кортеж,
+            # а сума над порожньою вибіркою приходить як False, не 0.0.
+            [(debit, credit)] = AML._read_group(domain, [], ['debit:sum', 'credit:sum'])
+            debit = debit or 0.0
+            credit = credit or 0.0
             # Для «інших надходжень» (4-2д) — показуємо кредит (надходження), для видатків — дебет
             actual = credit if self.form_kind == '4_2d' else debit
-            plan = line.amount_planned
+            plan = self._planned_for_period(line)
             variance = plan - actual
             out.append({
                 'kekv_code': line.kekv_code,
@@ -129,65 +95,57 @@ class BudgetMultiFormWizard(models.TransientModel):
         return out
 
     def _data_payable_debt(self):
-        """Форма 7д — заборгованість за бюджетними коштами.
-
-        Підраховуємо незакриті зобов'язання на рахунках liability_payable за
-        обраний період.
-        """
-        AML = self.env['account.move.line']
-        domain = [
-            ('parent_state', '=', 'posted'),
-            ('company_id', '=', self.estimate_id.company_id.id),
-            ('date', '<=', self.date_to),
-            ('account_id.account_type', '=', 'liability_payable'),
-            ('ua_fund_type', '!=', False),
-        ]
-        agg = AML.read_group(domain, ['debit:sum', 'credit:sum'],
-                              ['ua_kekv_id', 'ua_fund_type'], lazy=False)
-        out = []
-        Kekv = self.env['l10n_ua.kekv']
-        for row in agg:
-            kekv = Kekv.browse(row['ua_kekv_id'][0]) if row.get('ua_kekv_id') else None
-            if not kekv:
-                continue
-            balance = (row['credit'] or 0) - (row['debit'] or 0)
-            if balance == 0:
-                continue
-            out.append({
-                'kekv_code': kekv.code,
-                'kekv_name': kekv.name,
-                'fund': dict([('general', 'Загальний'), ('special', 'Спеціальний')])
-                         .get(row['ua_fund_type'], '—'),
-                'balance': balance,
-            })
-        return out
+        """Форма 7д — кредиторська заборгованість за бюджетними коштами."""
+        return self._debt_rows('liability_payable')
 
     def _data_receivable_debt(self):
         """Форма 9д — дебіторська заборгованість."""
+        return self._debt_rows('asset_receivable')
+
+    def _debt_rows(self, account_type):
+        """Сальдо розрахунків по КЕКВ і фонду на дату `date_to`.
+
+        7д і 9д відрізняються лише рахунками й знаком сальдо, тож і збираємо
+        їх одним місцем: інакше кожна правка тут потребує двох однакових.
+        """
+        self.ensure_one()
+        receivable = account_type == 'asset_receivable'
         AML = self.env['account.move.line']
         domain = [
             ('parent_state', '=', 'posted'),
             ('company_id', '=', self.estimate_id.company_id.id),
             ('date', '<=', self.date_to),
-            ('account_id.account_type', '=', 'asset_receivable'),
+            ('account_id.account_type', '=', account_type),
             ('ua_fund_type', '!=', False),
         ]
-        agg = AML.read_group(domain, ['debit:sum', 'credit:sum'],
-                              ['ua_kekv_id', 'ua_fund_type'], lazy=False)
+        # Кошторис складається під конкретну бюджетну програму, тож без цього
+        # у звіт потрапляла б заборгованість за всіма програмами установи.
+        # Рядки без КПКВК лишаємо: програму часто проставляють на видатковому
+        # рядку, а не на рядку розрахунків, і викинути таку заборгованість
+        # мовчки гірше, ніж показати її бухгалтеру.
+        if self.estimate_id.kpkvk_id:
+            domain.append(
+                ('ua_kpkvk_id', 'in', [self.estimate_id.kpkvk_id.id, False]))
+
+        currency = self.estimate_id.currency_id
+        funds = dict(general='Загальний', special='Спеціальний')
         out = []
-        Kekv = self.env['l10n_ua.kekv']
-        for row in agg:
-            kekv = Kekv.browse(row['ua_kekv_id'][0]) if row.get('ua_kekv_id') else None
-            if not kekv:
-                continue
-            balance = (row['debit'] or 0) - (row['credit'] or 0)
-            if balance == 0:
+        # _read_group віддає групу many2one готовим рекордсетом, тож browse
+        # по (id, name) більше не потрібен.
+        for kekv, fund_type, debit, credit in AML._read_group(
+                domain, ['ua_kekv_id', 'ua_fund_type'], ['debit:sum', 'credit:sum']):
+            debit, credit = debit or 0.0, credit or 0.0
+            balance = (debit - credit) if receivable else (credit - debit)
+            if currency.is_zero(balance):
                 continue
             out.append({
-                'kekv_code': kekv.code,
-                'kekv_name': kekv.name,
-                'fund': dict([('general', 'Загальний'), ('special', 'Спеціальний')])
-                         .get(row['ua_fund_type'], '—'),
+                # Рядок без КЕКВ не викидаємо: аналітику часто несе видатковий
+                # рядок, а не рядок розрахунків, і мовчки загублена
+                # заборгованість гірша за помітну — бухгалтер має побачити, що
+                # її треба рознести.
+                'kekv_code': kekv.code if kekv else '',
+                'kekv_name': kekv.name if kekv else _('Без КЕКВ'),
+                'fund': funds.get(fund_type, '—'),
                 'balance': balance,
             })
         return out
