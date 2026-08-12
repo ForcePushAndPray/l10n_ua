@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - HR Base',
-    'version': '19.0.1.1.3',
+    'version': '19.0.1.1.4',
     'category': 'Human Resources/Localization',
     'summary': 'Ukrainian HR localization base module',
     'description': """
@@ -68,6 +68,7 @@ This module is required for all other l10n_ua_hr_* modules.
         'demo/hr_demo_data.xml',
     ],
     'images': ['static/description/banner.png'],
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
     'auto_install': False,
