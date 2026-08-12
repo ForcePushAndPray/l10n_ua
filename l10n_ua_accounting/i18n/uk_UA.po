@@ -4894,10 +4894,10 @@ msgid ""
 " %(currency)s)."
 msgstr ""
 
+#. module: l10n_ua_accounting
 #. Повернуто після регенерації з POT: рядки існують у коді, але не
 #. потрапили в експорт, і разом із застарілими записами зникли б
 #. переклади, які працювали.
-#. module: l10n_ua_accounting
 msgid "Ukraine - Accounting Suite"
 msgstr "Україна - Бухгалтерський облік"
 
