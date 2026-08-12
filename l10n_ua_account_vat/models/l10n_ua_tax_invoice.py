@@ -356,7 +356,7 @@ class L10nUaTaxInvoice(models.Model):
                 f'<KODP>{line.dkpp_code or ""}</KODP>'
                 f'<ODINICI>{line.uom_id.name if line.uom_id else "шт."}</ODINICI>'
                 f'<KILK>{line.quantity:.6f}</KILK>'
-                f'<CINA>{line.price_unit:.2f}</CINA>'
+                f'<CINA>{line.price_unit:.6f}</CINA>'
                 f'<KOD_STAVKI>{rate_code}</KOD_STAVKI>'
                 f'<KOD_PILGI>{line.benefit_code or ""}</KOD_PILGI>'
                 f'<OBSAG_BEZ_PDV>{line.base_amount:.2f}</OBSAG_BEZ_PDV>'
@@ -437,9 +437,13 @@ class L10nUaTaxInvoiceLine(models.Model):
         'uom.uom',
         string='Одиниця виміру',
     )
-    price_unit = fields.Monetary(
+    price_unit = fields.Float(
         string='Ціна без ПДВ',
-        currency_field='currency_id',
+        digits=(16, 6),
+        help='Ціна постачання одиниці без ПДВ (гр. 7 ПН). Не Monetary: '
+             'округлення до копійки розсинхронізує базу з документом — '
+             '379.99 на 3 одиниці дало б 126.66 × 3 = 379.98. Графа 7 '
+             'допускає потрібну кількість знаків після коми.',
     )
     base_amount = fields.Monetary(
         string='База оподаткування',
@@ -458,15 +462,33 @@ class L10nUaTaxInvoiceLine(models.Model):
         store=True,
         currency_field='currency_id',
     )
+    price_unit_display = fields.Char(
+        string='Ціна без ПДВ (для друку)',
+        compute='_compute_price_unit_display',
+    )
     currency_id = fields.Many2one(
         'res.currency',
         related='tax_invoice_id.currency_id',
     )
 
+    @api.depends('price_unit')
+    def _compute_price_unit_display(self):
+        """Копійки друкуємо завжди, зайві нулі — ні.
+
+        Округлити гр. 7 до копійки не можна: тоді кількість × ціна перестане
+        дорівнювати базі й друкована ПН суперечитиме сама собі.
+        """
+        for line in self:
+            text = f'{line.price_unit:.6f}'.rstrip('0')
+            decimals = len(text.partition('.')[2])
+            line.price_unit_display = text + '0' * max(0, 2 - decimals)
+
     @api.depends('quantity', 'price_unit', 'vat_rate')
     def _compute_amounts(self):
         rates = {'20': 0.20, '14': 0.14, '7': 0.07, '0': 0.0}
         for line in self:
-            line.base_amount = line.quantity * line.price_unit
-            rate = rates.get(line.vat_rate, 0.0)
-            line.vat_amount = line.base_amount * rate
+            currency = line.currency_id
+            base = line.quantity * line.price_unit
+            line.base_amount = currency.round(base) if currency else base
+            vat = line.base_amount * rates.get(line.vat_rate, 0.0)
+            line.vat_amount = currency.round(vat) if currency else vat

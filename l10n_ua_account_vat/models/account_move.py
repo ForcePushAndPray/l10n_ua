@@ -20,6 +20,40 @@ class AccountMove(models.Model):
         for move in self:
             move.tax_invoice_count = len(move.tax_invoice_ids)
 
+    # Ставки ПДВ, передбачені ПКУ. Ключ — `amount` відсоткового податку.
+    _L10N_UA_VAT_RATES = {20.0: '20', 14.0: '14', 7.0: '7', 0.0: '0'}
+
+    @api.model
+    def _l10n_ua_vat_rate_for_line(self, invoice_line):
+        """Ставка ПДВ рядка ПН за податками рядка документа.
+
+        Повертає 'exempt', якщо ПДВ на рядку немає взагалі. Раніше тут стояв
+        дефолт '20', тобто рядок без ПДВ потрапляв у ПН як оподаткований за
+        основною ставкою — помилка, яка завищує зобовʼязання.
+
+        Розрізнити звільнення (ст. 197) і необ'єкт (ст. 196) за самим фактом
+        відсутності податку неможливо; для цього потрібні окремі податки з
+        явною ознакою.
+        """
+        return self._l10n_ua_vat_rate_from_taxes(invoice_line.tax_ids)
+
+    @api.model
+    def _l10n_ua_vat_rate_from_taxes(self, taxes):
+        """Перший відсотковий податок зі ставкою ПКУ, інакше 'exempt'.
+
+        Групу податків розкриваємо: ПДВ часто входить до групи разом з іншим
+        податком (акциз, збір), і без цього кроку оподаткований рядок мовчки
+        ставав би звільненим з нульовою сумою.
+        """
+        for tax in taxes:
+            if tax.amount_type == 'group':
+                rate = self._l10n_ua_vat_rate_from_taxes(tax.children_tax_ids)
+                if rate != 'exempt':
+                    return rate
+            elif tax.amount_type == 'percent' and tax.amount in self._L10N_UA_VAT_RATES:
+                return self._L10N_UA_VAT_RATES[tax.amount]
+        return 'exempt'
+
     def action_create_tax_invoice(self):
         """Create a tax invoice (ПН) from customer/vendor invoice."""
         self.ensure_one()
@@ -35,36 +69,43 @@ class AccountMove(models.Model):
 
         is_refund = self.move_type in ('out_refund', 'in_refund')
 
-        # Build lines from invoice lines
+        # Build lines from invoice lines.
+        #
+        # Фільтр саме `display_type == 'product'`: у Odoo 17+ звичайний рядок
+        # має display_type 'product', а не порожній, тож умова `not display_type`
+        # (написана під Odoo <=16) відкидала геть усі рядки й ПН виходила
+        # порожньою. `invoice_line_ids` містить ще секції та примітки — їм у ПН
+        # робити нічого.
+        # РК зменшує зобов'язання: за Порядком 1307 у гр. 6 стоїть від'ємна
+        # кількість при незмінній ціні. Доки цикл не виконувався, гілка refund
+        # була безпечно порожньою; тепер вона створює документ, і без знаку РК
+        # збільшував би зобов'язання замість зменшувати.
+        sign = -1 if is_refund else 1
+
         line_vals = []
         seq = 10
-        for iline in self.invoice_line_ids.filtered(lambda l: not l.display_type):
-            # Determine VAT rate from tax
-            vat_rate = '20'
-            vat_amount = 0.0
-            for tax in iline.tax_ids:
-                if tax.amount == 20:
-                    vat_rate = '20'
-                elif tax.amount == 14:
-                    vat_rate = '14'
-                elif tax.amount == 7:
-                    vat_rate = '7'
-                elif tax.amount == 0:
-                    vat_rate = '0'
-            # Calculate VAT
-            rates = {'20': 0.20, '14': 0.14, '7': 0.07, '0': 0.0}
-            base = iline.price_subtotal
-            vat_amount = base * rates.get(vat_rate, 0.20)
+        for iline in self.invoice_line_ids.filtered(lambda l: l.display_type == 'product'):
+            # Суму беремо з проводки, а не з `price_subtotal`: ПН завжди у
+            # гривні (`currency_id` — related на валюту компанії), а проводка
+            # вже перерахована за курсом документа. Перераховувати кожен рядок
+            # окремо не варто — округлення дало б копійчаний дрейф від суми
+            # документа. `direction_sign` знімає знак дебету/кредиту.
+            subtotal = iline.balance * self.direction_sign
+            # Ціна за одиницю після знижки й без ПДВ. Зберігати сирий
+            # `price_unit` не можна: рядок ПН рахує базу як quantity *
+            # price_unit, і знижка зникла б. Для <CINA> в XML ЄРПН потрібна
+            # саме фактична ціна постачання.
+            net_unit_price = subtotal / iline.quantity if iline.quantity else 0.0
 
             line_vals.append((0, 0, {
                 'sequence': seq,
                 'product_id': iline.product_id.id if iline.product_id else False,
                 'name': iline.name or iline.product_id.display_name or '',
                 'uktzed_code': iline.product_id.l10n_ua_uktzed if hasattr(iline.product_id, 'l10n_ua_uktzed') else '',
-                'quantity': iline.quantity,
+                'quantity': sign * iline.quantity,
                 'uom_id': iline.product_uom_id.id if iline.product_uom_id else False,
-                'price_unit': iline.price_unit,
-                'vat_rate': vat_rate,
+                'price_unit': net_unit_price,
+                'vat_rate': self._l10n_ua_vat_rate_for_line(iline),
             }))
             seq += 10
 
@@ -82,6 +123,15 @@ class AccountMove(models.Model):
             'move_id': self.id,
             'line_ids': line_vals,
         }
+        if is_refund:
+            # РК без посилання на оригінал ЄРПН не приймає. Знаходимо ПН
+            # сторнованого документа; якщо її немає (ПН виписана поза
+            # системою), поле лишається порожнім для ручного заповнення.
+            original = self.reversed_entry_id.tax_invoice_ids[:1]
+            vals.update({
+                'original_invoice_id': original.id,
+                'reason': self.ref or '',
+            })
 
         tax_invoice = self.env['l10n_ua.tax.invoice'].create(vals)
 
