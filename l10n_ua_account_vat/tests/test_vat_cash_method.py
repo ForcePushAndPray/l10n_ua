@@ -87,20 +87,25 @@ class TestVatCashMethod(AccountTestInvoicingCommon):
         with self.assertRaises(UserError):
             move._l10n_ua_tax_invoice_date()
 
-    def test_cash_method_uses_first_payment_while_split_is_unsupported(self):
-        """Часткові оплати: поки що одна ПН від дати першого надходження.
+    def test_cash_method_refuses_on_several_settlements(self):
+        """Кілька надходжень — кілька ПН; однією на всю суму не відбутися.
 
-        Це фіксація наявного обмеження, а не бажаної поведінки: за п. 187.10
-        зобов'язання виникає на суму **кожного** надходження, тобто тут мали б
-        бути дві ПН — 400 грн від 02.04 і 600 грн від 06.05. Розбиття потребує
-        привʼязки ПН до погашення й розподілу сум по номенклатурі, тому
-        винесене окремо (#255).
+        Найшкідливіший випадок саме тут: документ погашений повністю, залишку
+        немає, і без цієї перевірки вийшла б одна ПН на 1000 грн від 02.04 —
+        завищене зобов'язання у квітні й нуль у травні замість 600 грн.
+        За п. 187.10 має бути дві ПН; поділ — #255.
         """
         move = self._invoice(self.customer_cash, '2025-03-10')
         self._pay(move, '2025-04-02', amount=400.0)
         self._pay(move, '2025-05-06', amount=600.0)
 
-        self.assertEqual(move._l10n_ua_tax_invoice_date(), fields.Date.to_date('2025-04-02'))
+        self.assertTrue(move.currency_id.is_zero(move.amount_residual),
+                        'документ оплачений повністю — перевірка залишку тут не спрацює')
+        with self.assertRaises(UserError):
+            move._l10n_ua_tax_invoice_date()
+        self.assertEqual(move._l10n_ua_first_payment_date(),
+                         fields.Date.to_date('2025-04-02'),
+                         'сама дата першого надходження визначається правильно')
 
     def test_settlement_without_payment_object_counts(self):
         """Залік кредит-ноти — теж погашення, хоч account.payment там немає."""
