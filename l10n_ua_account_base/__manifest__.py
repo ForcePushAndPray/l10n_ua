@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Account Base Localization',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Accounting/Localization',
     'summary': 'Ukrainian localization base module with accounting',
     'description': """
@@ -62,6 +62,7 @@ This module is required for all other l10n_ua_* modules.
     ],
     'demo': [],
     'images': ['static/description/icon.png'],
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
     'auto_install': False,
