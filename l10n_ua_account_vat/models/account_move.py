@@ -82,11 +82,14 @@ class AccountMove(models.Model):
         settlement_lines = self.line_ids.filtered(
             lambda l: l.account_id.account_type in (
                 'asset_receivable', 'liability_payable'))
-        partials = (settlement_lines.matched_debit_ids
-                    | settlement_lines.matched_credit_ids)
-        counterparts = (partials.debit_move_id
-                        | partials.credit_move_id) - settlement_lines
-        return sorted(counterparts.mapped('date'))
+        # Курсова різниця — окремий документ із рядком на тому ж рахунку, і
+        # він теж зіставляється з рахунком. Без цього відсіювання валютний
+        # рахунок, погашений одним платежем, виглядав би як два надходження.
+        # Ядро вже вміє це рахувати — беремо його поле, а не свій фільтр.
+        counterparts = settlement_lines.reconciled_lines_excluding_exchange_diff_ids
+        # Кілька зіставлень однією датою — це одне надходження для ПН: одна
+        # накладна на цю дату опише їх коректно.
+        return sorted(set(counterparts.mapped('date')))
 
     def _l10n_ua_first_payment_date(self):
         """Дата найранішого фактичного погашення або False, якщо його немає."""

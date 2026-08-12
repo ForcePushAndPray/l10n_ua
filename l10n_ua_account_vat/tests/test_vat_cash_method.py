@@ -15,6 +15,7 @@ class TestVatCashMethod(AccountTestInvoicingCommon):
         cls.customer = cls.env['res.partner'].create({'name': 'Покупець (перша подія)'})
         cls.customer_cash = cls.env['res.partner'].create({'name': 'Покупець (касовий)'})
         cls.customer_cash.with_company(cls.env.company).l10n_ua_vat_cash_method = True
+        cls.other_currency = cls.setup_other_currency('EUR')
 
     def _invoice(self, partner, invoice_date):
         move = self.env['account.move'].create({
@@ -125,6 +126,34 @@ class TestVatCashMethod(AccountTestInvoicingCommon):
 
         self.assertFalse(move.matched_payment_ids,
                          'у цьому сценарії платіжного документа немає — на це й тест')
+        self.assertEqual(move._l10n_ua_tax_invoice_date(), fields.Date.to_date('2025-04-02'))
+
+    def test_exchange_difference_is_not_a_second_settlement(self):
+        """Курсова різниця — не друге надходження, а технічна проводка."""
+        self.env['res.currency.rate'].create({
+            'name': '2025-04-02',
+            'rate': 4.0,
+            'currency_id': self.other_currency.id,
+            'company_id': self.env.company.id,
+        })
+        move = self.env['account.move'].create({
+            'move_type': 'out_invoice',
+            'partner_id': self.customer_cash.id,
+            'invoice_date': '2025-03-10',
+            'date': '2025-03-10',
+            'currency_id': self.other_currency.id,
+            'invoice_line_ids': [(0, 0, {
+                'name': 'послуга', 'quantity': 1, 'price_unit': 1000.0, 'tax_ids': []})],
+        })
+        move.action_post()
+        self._pay(move, '2025-04-02')
+
+        # Курс на дату оплати інший, тож Odoo проводить курсову різницю
+        # окремим документом на тому ж рахунку розрахунків.
+        self.assertTrue(move.currency_id.is_zero(move.amount_residual))
+        self.assertEqual(move._l10n_ua_settlement_dates(),
+                         [fields.Date.to_date('2025-04-02')],
+                         'курсова різниця не має рахуватись окремим надходженням')
         self.assertEqual(move._l10n_ua_tax_invoice_date(), fields.Date.to_date('2025-04-02'))
 
     # -------------------------------------------------- чужі й коригуючі ПН
