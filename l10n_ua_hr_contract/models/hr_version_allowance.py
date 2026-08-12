@@ -135,13 +135,18 @@ class HrVersionAllowance(models.Model):
             try:
                 allowance.calculated_amount = allowance._l10n_ua_amount_at()
             except UserError:
-                # Курсу на дату надбавки немає. Показати нуль чесніше, ніж
-                # суму за вигаданим курсом; гроші однаково рахує листок, і
-                # він на відсутній курс скаржиться голосно.
-                allowance.calculated_amount = 0.0
+                # Курсу на дату надбавки немає взагалі. Обнуляти не можна:
+                # це поле бачить бухгалтер у картці договору, і нуль там
+                # виглядав би як «надбавки немає». Лишаємо відсоток від
+                # окладу як є — для гривневого окладу (тобто майже завжди)
+                # це і є правильна сума, а для валютного платити за цим
+                # числом ніхто не дасть: листок на відсутній курс
+                # скаржиться голосно й розрахунок зупиняє.
+                allowance.calculated_amount = (
+                    (allowance.version_id.wage or 0) * (allowance.percent or 0) / 100)
                 _logger.warning(
-                    'Надбавка %s (%s): курсу валюти окладу на %s немає, '
-                    'сума в картці договору лишається нульовою',
+                    'Надбавка %s (%s): курсу валюти окладу на %s немає — '
+                    'у картці договору сума без перерахунку',
                     allowance.allowance_type_id.name or allowance.id,
                     allowance.version_id.employee_id.name or '',
                     allowance.date_from or allowance.version_id.date_version)
