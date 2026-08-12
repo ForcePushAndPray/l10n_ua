@@ -1,4 +1,8 @@
+import logging
+
 from odoo import models, fields, api
+
+_logger = logging.getLogger(__name__)
 
 
 class HrKp2010(models.Model):
@@ -129,8 +133,21 @@ class HrKp2010(models.Model):
                 child_id for child_id in by_code[code]
                 if child_id != parent_id
                 and current_parent.get(child_id) != parent_id)
+        reparented = 0
         for parent_id, child_ids in children_of_parent.items():
+            # Батько виводиться з коду, тож ручне перепідпорядкування тут
+            # перекривається — інакше запис із чужим батьком назавжди лишався
+            # б поза своєю гілкою. Але тихо цього робити не варто: скільки
+            # записів переїхало, видно в лозі.
+            existing = [child_id for child_id in child_ids
+                        if current_parent.get(child_id)]
+            reparented += len(existing)
             self.browse(child_ids).write({'parent_id': parent_id})
+        if reparented:
+            _logger.info(
+                'КП-2010: %s запис(ів) перепідпорядковано за кодом — '
+                'попереднього батька, зокрема виставленого вручну, замінено',
+                reparented)
 
     @api.depends('code', 'name')
     def _compute_display_name(self):
