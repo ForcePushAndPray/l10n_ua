@@ -1,5 +1,5 @@
 from odoo import models, fields, api
-from odoo.exceptions import ValidationError
+from odoo.exceptions import ValidationError, UserError
 from dateutil.relativedelta import relativedelta
 
 
@@ -211,7 +211,17 @@ class HrVersion(models.Model):
     @api.depends('wage', 'total_allowances')
     def _compute_total_wage(self):
         for version in self:
-            version.total_wage = version.wage + version.total_allowances
+            # Надбавки гривневі, оклад може бути у валюті — без перерахунку
+            # це сума різних валют під однією гривневою міткою.
+            try:
+                wage = version._l10n_ua_wage_in_company_currency(
+                    version.date_version)
+            except UserError:
+                # Курсу немає — беремо оклад як є, тим самим фолбеком, що й
+                # надбавка. Обнуляти не можна: у картці договору вийшло б,
+                # що підсумок менший за самі надбавки.
+                wage = version.wage or 0.0
+            version.total_wage = wage + version.total_allowances
 
     @api.depends('work_rate',
                  'resource_calendar_id.hours_per_week',
