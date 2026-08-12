@@ -8,6 +8,11 @@
 
 Ідемпотентно: рахунок з таким кодом у компанії створюється лише якщо його ще
 немає, тож повторне оновлення модуля нічого не дублює.
+
+`post_init_hook` спрацьовує тільки при встановленні модуля (`loading.py`,
+`update_operation == 'install'`). Для баз, де модуль уже стоїть, те саме
+викликає `migrations/19.0.1.1.0/post-migration.py` — без нього саме ті
+компанії, заради яких цей файл написано, класу 0 так і не отримали б.
 """
 import logging
 
@@ -16,11 +21,14 @@ from .models.template_ua_psbo import OFFBALANCE_ACCOUNTS
 _logger = logging.getLogger(__name__)
 
 
-def post_init_hook(env):
+def ensure_offbalance_accounts(env):
+    """Створити відсутні рахунки класу 0 всім компаніям на плані `ua_psbo`."""
     Account = env['account.account']
     # Коди в плані доповнюються нулями до code_digits (для ua_psbo це 6), тож
     # рахунок 01 має стати 010000 — інакше хук наплодив би дублікати поруч із
-    # тими, що прийшли шаблоном.
+    # тими, що прийшли шаблоном. Полегшений `_get_chart_template_model_data`
+    # тут не годиться: для 'template_data' функції повертають плаский словник
+    # значень, а не xmlid → значення, і він на ньому падає.
     digits = int(env['account.chart.template']._get_chart_template_data('ua_psbo')
                  ['template_data'].get('code_digits') or 6)
 
@@ -45,3 +53,7 @@ def post_init_hook(env):
         } for code, (name, analytics) in missing.items()])
         _logger.info('l10n_ua_account_base: додано %s позабалансових рахунків для %s',
                      len(missing), company.display_name)
+
+
+def post_init_hook(env):
+    ensure_offbalance_accounts(env)

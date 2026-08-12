@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Account Base Localization',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Accounting/Localization',
     'summary': 'Ukrainian localization base module with accounting',
     'description': """

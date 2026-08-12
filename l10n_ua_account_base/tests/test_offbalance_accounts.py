@@ -4,20 +4,12 @@
 базі компанія лишається на `generic_coa`, тож без цього перевірялося б що
 завгодно, тільки не український план.
 """
+import os
+
+from odoo.modules.module import get_manifest, get_module_path
 from odoo.tests import TransactionCase, tagged
 
 from ..models.template_ua_psbo import OFFBALANCE_ACCOUNTS
-
-
-# Odoo доповнює коди нулями до `code_digits` плану (для ua_psbo це 6), тож
-# рахунок 01 живе в базі як 010000 — рівно як стоковий 631 як 631000. Очікувані
-# коди виводимо з довжини, а не хардкодимо, щоб тест не зламався при її зміні.
-CODE_DIGITS = 6
-OFFBALANCE_CODES = sorted(code.ljust(CODE_DIGITS, '0')
-                           for code, _name, _analytics in OFFBALANCE_ACCOUNTS)
-PARTNER_ANALYTICS_CODES = [code.ljust(CODE_DIGITS, '0')
-                            for code, _name, analytics in OFFBALANCE_ACCOUNTS
-                            if analytics == 'partner']
 
 
 @tagged('post_install', '-at_install', 'l10n_ua_account_base')
@@ -34,19 +26,36 @@ class TestOffBalanceAccounts(TransactionCase):
             'ua_psbo', company=cls.company, install_demo=False)
         cls.env.user.company_ids |= cls.company
 
+        # Odoo доповнює коди нулями до `code_digits` плану (для ua_psbo це 6),
+        # тож рахунок 01 живе в базі як 010000 — рівно як стоковий 631 як
+        # 631000. Ширину беремо з самого плану: зашита константа розійшлася б
+        # із ним мовчки, і тест перевіряв би неіснуючі коди.
+        cls.code_digits = int(
+            cls.env['account.chart.template']._get_chart_template_data('ua_psbo')
+            ['template_data'].get('code_digits') or 6)
+        cls.offbalance_codes = sorted(cls._padded(code)
+                                      for code, _name, _analytics in OFFBALANCE_ACCOUNTS)
+        cls.partner_analytics_codes = [cls._padded(code)
+                                       for code, _name, analytics in OFFBALANCE_ACCOUNTS
+                                       if analytics == 'partner']
+
+    @classmethod
+    def _padded(cls, code):
+        return code.ljust(cls.code_digits, '0')
+
     def _accounts(self, codes):
         return self.env['account.account'].with_company(self.company).search(
             [('code', 'in', codes),
              ('company_ids', 'parent_of', self.company.id)])
 
     def test_all_nine_offbalance_accounts_loaded(self):
-        found = self._accounts(OFFBALANCE_CODES)
+        found = self._accounts(self.offbalance_codes)
         self.assertEqual(
-            sorted(found.mapped('code')), OFFBALANCE_CODES,
+            sorted(found.mapped('code')), self.offbalance_codes,
             'план має містити всі 9 позабалансових рахунків Наказу № 291')
 
     def test_offbalance_accounts_have_correct_type(self):
-        accounts = self._accounts(OFFBALANCE_CODES)
+        accounts = self._accounts(self.offbalance_codes)
         self.assertTrue(accounts)
         for account in accounts:
             self.assertEqual(account.account_type, 'off_balance',
@@ -69,7 +78,7 @@ class TestOffBalanceAccounts(TransactionCase):
             self.assertTrue(found, f'стоковий рахунок {prefix} зник з плану')
 
     def test_partner_analytics_where_counterparty_matters(self):
-        for account in self._accounts(PARTNER_ANALYTICS_CODES):
+        for account in self._accounts(self.partner_analytics_codes):
             self.assertEqual(account.ua_analytics_type, 'partner',
                               f'рахунок {account.code} має аналітику за контрагентом')
 
@@ -80,8 +89,8 @@ class TestOffBalanceAccounts(TransactionCase):
         застосовується до будь-якої проводки, тож орендоване майно ведеться парою
         рахунків класу 0. Тест фіксує обмеження, щоб воно не з'їхало непоміченим.
         """
-        rented = self._accounts(['010000'])
-        contra = self._accounts(['090000'])
+        rented = self._accounts([self._padded('01')])
+        contra = self._accounts([self._padded('09')])
         journal = self.env['account.journal'].search(
             [('type', '=', 'general'), ('company_id', '=', self.company.id)], limit=1)
         self.assertTrue(journal, 'план рахунків має створити загальний журнал')
@@ -107,22 +116,39 @@ class TestOffBalanceAccounts(TransactionCase):
         коли на компанію ставиться локалізація, тож у будь-якій наявній базі
         `l10n_ua` стоїть раніше за цей модуль і нових рахунків там не буде.
         """
-        from ..hooks import post_init_hook
+        from ..hooks import ensure_offbalance_accounts
 
-        self._accounts(OFFBALANCE_CODES).unlink()
-        self.assertFalse(self._accounts(OFFBALANCE_CODES))
+        self._accounts(self.offbalance_codes).unlink()
+        self.assertFalse(self._accounts(self.offbalance_codes))
 
-        post_init_hook(self.env)
+        ensure_offbalance_accounts(self.env)
 
-        self.assertEqual(sorted(self._accounts(OFFBALANCE_CODES).mapped('code')),
-                          OFFBALANCE_CODES)
-        self.assertEqual(self._accounts(['050000']).ua_analytics_type, 'partner')
+        self.assertEqual(sorted(self._accounts(self.offbalance_codes).mapped('code')),
+                          self.offbalance_codes)
+        self.assertEqual(self._accounts([self._padded('05')]).ua_analytics_type, 'partner')
+
+    def test_migration_ships_for_the_current_version(self):
+        """Наявні бази добирає міграція, а не хук — і вона має бути «свіжою».
+
+        `post_init_hook` виконується лише при install, тож для баз, де модуль
+        уже стоїть, єдиний шлях — каталог міграції з поточною версією модуля.
+        Якщо версію бампнуть, а каталог лишиться зі старим номером, оновлення
+        мовчки пройде повз нього — тест ловить саме це розходження.
+        """
+        version = get_manifest('l10n_ua_account_base')['version']
+        migrations = os.path.join(
+            get_module_path('l10n_ua_account_base'), 'migrations', version)
+
+        self.assertTrue(
+            os.path.isfile(os.path.join(migrations, 'post-migration.py')),
+            f'немає migrations/{version}/post-migration.py — наявні бази '
+            f'лишаться без класу 0')
 
     def test_hook_is_idempotent(self):
-        from ..hooks import post_init_hook
+        from ..hooks import ensure_offbalance_accounts
 
-        post_init_hook(self.env)
-        post_init_hook(self.env)
+        ensure_offbalance_accounts(self.env)
+        ensure_offbalance_accounts(self.env)
 
-        self.assertEqual(len(self._accounts(['010000'])), 1,
+        self.assertEqual(len(self._accounts([self._padded('01')])), 1,
                           'повторний запуск хука не має дублювати рахунки')
