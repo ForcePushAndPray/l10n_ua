@@ -87,6 +87,59 @@ class TestVatCashMethod(AccountTestInvoicingCommon):
 
         self.assertEqual(move._l10n_ua_tax_invoice_date(), fields.Date.to_date('2025-04-02'))
 
+    def test_settlement_without_payment_object_counts(self):
+        """Залік кредит-ноти — теж погашення, хоч account.payment там немає."""
+        move = self._invoice(self.customer_cash, '2025-03-10')
+        credit_note = self.env['account.move'].create({
+            'move_type': 'out_refund',
+            'partner_id': self.customer_cash.id,
+            'invoice_date': '2025-04-02',
+            'date': '2025-04-02',
+            'invoice_line_ids': [(0, 0, {
+                'name': 'залік', 'quantity': 1, 'price_unit': 1000.0, 'tax_ids': []})],
+        })
+        credit_note.action_post()
+        receivable = (move.line_ids | credit_note.line_ids).filtered(
+            lambda l: l.account_id.account_type == 'asset_receivable')
+        receivable.reconcile()
+
+        self.assertFalse(move.matched_payment_ids,
+                         'у цьому сценарії платіжного документа немає — на це й тест')
+        self.assertEqual(move._l10n_ua_tax_invoice_date(), fields.Date.to_date('2025-04-02'))
+
+    # -------------------------------------------------- чужі й коригуючі ПН
+
+    def test_vendor_bill_keeps_supplier_date(self):
+        """Дату вхідної ПН визначає постачальник, а не наше правило визнання."""
+        bill = self.env['account.move'].create({
+            'move_type': 'in_invoice',
+            'partner_id': self.customer_cash.id,
+            'invoice_date': '2025-03-10',
+            'date': '2025-03-10',
+            'invoice_line_ids': [(0, 0, {
+                'name': 'послуга', 'quantity': 1, 'price_unit': 1000.0, 'tax_ids': []})],
+        })
+        bill.action_post()
+
+        # Неоплачений рахунок від контрагента на касовому методі: раніше тут
+        # був UserError, тобто вже отриману ПН неможливо було завести взагалі.
+        self.assertEqual(bill._l10n_ua_tax_invoice_date(), fields.Date.to_date('2025-03-10'))
+        self.assertEqual(bill._l10n_ua_tax_invoice_rule(), 'document')
+
+    def test_credit_note_uses_its_own_date(self):
+        """РК складається на дату коригуючої події, а не першої події оригіналу."""
+        move = self._invoice(self.customer, '2025-03-10')
+        self._pay(move, '2025-03-04')  # передоплата зсунула дату оригінальної ПН
+        refund = move._reverse_moves([
+            {'invoice_date': '2025-05-20', 'date': '2025-05-20'}])
+        refund.action_post()
+
+        refund.action_create_tax_invoice()
+        correction = refund.tax_invoice_ids
+
+        self.assertEqual(correction.date, fields.Date.to_date('2025-05-20'))
+        self.assertEqual(correction.vat_method, 'document')
+
     # ------------------------------------------------------------------- ПН
 
     def test_created_tax_invoice_records_date_and_method(self):

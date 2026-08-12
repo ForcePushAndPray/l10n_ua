@@ -55,11 +55,53 @@ class AccountMove(models.Model):
         return 'exempt'
 
     def _l10n_ua_first_payment_date(self):
-        """Дата найранішого зарахованого платежу або False, якщо оплат немає."""
+        """Дата найранішого фактичного погашення або False, якщо його немає.
+
+        Рахуємо із зіставлення рядків розрахунків, а не з
+        `matched_payment_ids`: погашення випискою напряму, залік кредит-ноти
+        чи взаємозалік не мають об'єкта `account.payment`, і касовий метод
+        вважав би такий документ неоплаченим — з відмовою створити ПН на
+        операцію, за якою зобов'язання вже виникло.
+
+        Дата — це дата проводки з того боку зіставлення, тобто самого
+        платежу. Не `max_date` часткового зіставлення: там пізніша з двох
+        дат, і передоплата отримала б дату рахунка замість дати грошей.
+
+        Критерій — саме факт погашення рядка розрахунків, а не стан платежу:
+        чернетка нічого не зіставляє й сюди не потрапляє в принципі.
+        """
         self.ensure_one()
-        dates = self.matched_payment_ids.filtered(
-            lambda p: p.state in ('paid', 'in_process')).mapped('date')
+        settlement_lines = self.line_ids.filtered(
+            lambda l: l.account_id.account_type in (
+                'asset_receivable', 'liability_payable'))
+        partials = (settlement_lines.matched_debit_ids
+                    | settlement_lines.matched_credit_ids)
+        counterparts = (partials.debit_move_id
+                        | partials.credit_move_id) - settlement_lines
+        dates = counterparts.mapped('date')
         return min(dates) if dates else False
+
+    def _l10n_ua_tax_invoice_rule(self):
+        """Правило, за яким визначається дата ПН для цієї операції.
+
+        Правило визнання визначає дату лише **наших власних** ПН:
+
+        * вхідна ПН — чужий документ, її дату склав постачальник за своїм
+          правилом. Наша неоплата не може бути перешкодою: ПН від
+          постачальника вже існує, а касовий метод впливає на період
+          податкового кредиту, а не на її дату;
+        * РК складається на дату коригуючої події — повернення товару чи
+          коштів, зміни ціни. Дата першої події оригіналу тут ні до чого,
+          бо від дати РК рахується власний строк реєстрації в ЄРПН.
+
+        В обох випадках дата береться з документа ('document').
+        """
+        self.ensure_one()
+        if self.move_type in ('in_invoice', 'in_refund', 'out_refund'):
+            return 'document'
+        if self.partner_id.with_company(self.company_id).l10n_ua_vat_cash_method:
+            return 'cash'
+        return 'first_event'
 
     def _l10n_ua_tax_invoice_date(self):
         """Дата ПН за правилом визнання, застосовним до цієї операції.
@@ -73,9 +115,14 @@ class AccountMove(models.Model):
         дата; для передоплати раніший саме платіж, тому й порівнюємо.
         """
         self.ensure_one()
+        rule = self._l10n_ua_tax_invoice_rule()
+        doc_date = self.invoice_date or self.date
+        if rule == 'document':
+            return doc_date
+
         payment_date = self._l10n_ua_first_payment_date()
 
-        if self.partner_id.with_company(self.company_id).l10n_ua_vat_cash_method:
+        if rule == 'cash':
             if not payment_date:
                 raise UserError(_(
                     'За контрагентом «%s» застосовується касовий метод ПДВ, '
@@ -83,7 +130,6 @@ class AccountMove(models.Model):
                     self.partner_id.display_name))
             return payment_date
 
-        doc_date = self.invoice_date or self.date
         if payment_date and payment_date < doc_date:
             return payment_date
         return doc_date
@@ -147,9 +193,6 @@ class AccountMove(models.Model):
         seq_code = f'l10n_ua.tax.invoice.{invoice_type}'
         number = self.env['ir.sequence'].next_by_code(seq_code) or _('Новий')
 
-        cash_method = self.partner_id.with_company(
-            self.company_id).l10n_ua_vat_cash_method
-
         vals = {
             'invoice_type': invoice_type,
             'doc_type': 'rk' if is_refund else 'pn',
@@ -158,7 +201,7 @@ class AccountMove(models.Model):
             # натискання кнопки: від неї рахується строк реєстрації в ЄРПН і
             # період декларації.
             'date': self._l10n_ua_tax_invoice_date(),
-            'vat_method': 'cash' if cash_method else 'first_event',
+            'vat_method': self._l10n_ua_tax_invoice_rule(),
             'partner_id': self.partner_id.id,
             'company_id': self.company_id.id,
             'move_id': self.id,
