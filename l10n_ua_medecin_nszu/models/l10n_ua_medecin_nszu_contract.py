@@ -1,5 +1,9 @@
+import logging
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+
+_logger = logging.getLogger(__name__)
 
 
 STATE_SELECTION = [
@@ -135,15 +139,34 @@ class L10nUaMedecinNszuContractLine(models.Model):
 
     def action_compute_pmd_capitation(self):
         """Перерахувати expected_units на основі активних декларацій з ваговими коефіцієнтами."""
+        Patient = self.env['l10n_ua.medecin.patient']
         for line in self:
             if line.payment_model != 'capitation':
                 continue
-            patients_by_cat = self.env['l10n_ua.medecin.patient'].read_group(
+            # _read_group повертає кортежі (значення_групування..., агрегати...),
+            # тому розпакування позиційне, без ключів на кшталт '<поле>_count'.
+            groups = Patient._read_group(
                 [('company_id', '=', line.company_id.id),
                  ('active_declaration_id', '!=', False)],
-                ['age_category'], ['age_category'])
-            weighted = sum(
-                row['age_category_count'] * AGE_COEFFICIENTS.get(row['age_category'], 1.0)
-                for row in patients_by_cat
-            )
+                ['age_category'], ['__count'])
+            weighted = 0.0
+            unclassified = 0
+            for category, count in groups:
+                # Пацієнт без дати народження не має вікової категорії, і
+                # `.get(category, 1.0)` мовчки рахував би його як 18–39.
+                # Вгадувати коефіцієнт для капітації не можна: це гроші НСЗУ
+                # за декларацію, яку не можна віднести до жодної групи. Так
+                # само з категорією, якій не задано коефіцієнта — краще
+                # недорахувати й сказати про це, ніж підставити 1.0 навмання.
+                coefficient = AGE_COEFFICIENTS.get(category)
+                if not coefficient:
+                    unclassified += count
+                    continue
+                weighted += count * coefficient
+            if unclassified:
+                _logger.warning(
+                    'Капітація ПМД (%s): %s декларацій не враховано — у '
+                    'пацієнтів немає дати народження або їхній віковій '
+                    'категорії не задано коефіцієнта',
+                    line.contract_id.display_name, unclassified)
             line.expected_units = int(round(weighted))
