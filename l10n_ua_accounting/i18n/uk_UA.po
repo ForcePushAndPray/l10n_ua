@@ -1859,7 +1859,7 @@ msgstr "Звіт про заборгованість (AR/AP)"
 #: model:ir.model,name:l10n_ua_accounting.model_account_account
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_period_closing_line__account_id
 msgid "Account"
-msgstr ""
+msgstr "Рахунок"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_balance_report_line__account_codes
@@ -1873,6 +1873,8 @@ msgid ""
 "Account debited for this expense when the report is posted. If empty, the "
 "company default expense account is used."
 msgstr ""
+"Рахунок витрат, на який списується ця сума при проведенні звіту. Якщо не "
+"заповнено, використовується типовий рахунок витрат компанії."
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_advance_report__message_needaction
@@ -1884,7 +1886,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__message_needaction
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__message_needaction
 msgid "Action Needed"
-msgstr ""
+msgstr "Необхідна дія"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_advance_report__activity_ids
@@ -1896,7 +1898,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__activity_ids
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__activity_ids
 msgid "Activities"
-msgstr ""
+msgstr "Дії"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_advance_report__activity_exception_decoration
@@ -1908,7 +1910,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__activity_exception_decoration
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__activity_exception_decoration
 msgid "Activity Exception Decoration"
-msgstr ""
+msgstr "Оформлення виключення дії"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_advance_report__activity_state
@@ -1920,7 +1922,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__activity_state
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__activity_state
 msgid "Activity State"
-msgstr ""
+msgstr "Стан дії"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_advance_report__activity_type_icon
@@ -1932,7 +1934,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__activity_type_icon
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__activity_type_icon
 msgid "Activity Type Icon"
-msgstr ""
+msgstr "Іконка типу дії"
 
 #. module: l10n_ua_accounting
 #: model_terms:ir.actions.act_window,help:l10n_ua_accounting.action_advance_report
@@ -2085,7 +2087,7 @@ msgstr "Створіть свій перший звіт про фінансов�
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__create_uid
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act_line__create_uid
 msgid "Created by"
-msgstr ""
+msgstr "Створив"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_advance_report__create_date
@@ -2109,7 +2111,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__create_date
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act_line__create_date
 msgid "Created on"
-msgstr ""
+msgstr "Створено"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_period_closing_line__credit
@@ -2196,7 +2198,7 @@ msgstr "Рахунок витрат"
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__message_follower_ids
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__message_follower_ids
 msgid "Followers"
-msgstr ""
+msgstr "Підписники"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_advance_report__message_partner_ids
@@ -2208,7 +2210,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__message_partner_ids
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__message_partner_ids
 msgid "Followers (Partners)"
-msgstr ""
+msgstr "Підписники (Партнери)"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_advance_report__activity_type_icon
@@ -2220,7 +2222,7 @@ msgstr ""
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_pnl_report__activity_type_icon
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_service_act__activity_type_icon
 msgid "Font awesome icon e.g. fa-tasks"
-msgstr ""
+msgstr "Іконка Font Awesome, напр. fa-tasks"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_advance_report__has_message
@@ -2232,7 +2234,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__has_message
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__has_message
 msgid "Has Message"
-msgstr ""
+msgstr "Є повідомлення"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_account_account__id
@@ -2261,7 +2263,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_tax_period__id
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_res_company__id
 msgid "ID"
-msgstr ""
+msgstr "ID"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_advance_report__activity_exception_icon
@@ -2273,7 +2275,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__activity_exception_icon
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__activity_exception_icon
 msgid "Icon"
-msgstr ""
+msgstr "Значок"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_advance_report__activity_exception_icon
@@ -2285,7 +2287,7 @@ msgstr ""
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_pnl_report__activity_exception_icon
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_service_act__activity_exception_icon
 msgid "Icon to indicate an exception activity."
-msgstr ""
+msgstr "Іконка для визначення виключення дії."
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_advance_report__message_needaction
@@ -2297,7 +2299,7 @@ msgstr ""
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_pnl_report__message_needaction
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_service_act__message_needaction
 msgid "If checked, new messages require your attention."
-msgstr ""
+msgstr "Якщо позначено, то нові повідомлення будуть потребувати вашої уваги."
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_advance_report__message_has_error
@@ -2309,7 +2311,7 @@ msgstr ""
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_pnl_report__message_has_error
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_service_act__message_has_error
 msgid "If checked, some messages have a delivery error."
-msgstr ""
+msgstr "Якщо позначено, деякі повідомлення мають помилку доставки."
 
 #. module: l10n_ua_accounting
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_balance_report_form
@@ -2327,12 +2329,12 @@ msgstr "Внутрішні примітки..."
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__message_is_follower
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__message_is_follower
 msgid "Is Follower"
-msgstr ""
+msgstr "Стежить"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_account_payment__is_ua_payment_order
 msgid "Is Payment Order"
-msgstr ""
+msgstr "Є платіжним дорученням"
 
 #. module: l10n_ua_accounting
 #: model:ir.model,name:l10n_ua_accounting.model_account_journal
@@ -2362,7 +2364,7 @@ msgstr "Журнал"
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__write_uid
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act_line__write_uid
 msgid "Last Updated by"
-msgstr ""
+msgstr "Востаннє оновив"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_advance_report__write_date
@@ -2386,7 +2388,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__write_date
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act_line__write_date
 msgid "Last Updated on"
-msgstr ""
+msgstr "Останнє оновлення"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_balance_report_line__name
@@ -2420,7 +2422,7 @@ msgstr "Довгострокові зобов'язання"
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__message_has_error
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__message_has_error
 msgid "Message Delivery error"
-msgstr ""
+msgstr "Помилка доставлення повідомлення"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_advance_report__message_ids
@@ -2444,7 +2446,7 @@ msgstr "Повідомлення"
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__my_activity_date_deadline
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__my_activity_date_deadline
 msgid "My Activity Deadline"
-msgstr ""
+msgstr "Дедлайн моєї дії"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__net_profit
@@ -2466,7 +2468,7 @@ msgstr "Чистий результат"
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__activity_calendar_event_id
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__activity_calendar_event_id
 msgid "Next Activity Calendar Event"
-msgstr ""
+msgstr "Наступна подія календаря дій"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_advance_report__activity_date_deadline
@@ -2478,7 +2480,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__activity_date_deadline
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__activity_date_deadline
 msgid "Next Activity Deadline"
-msgstr ""
+msgstr "Дедлайн наступної дії"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_advance_report__activity_summary
@@ -2490,7 +2492,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__activity_summary
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__activity_summary
 msgid "Next Activity Summary"
-msgstr ""
+msgstr "Підсумок наступної дії"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_advance_report__activity_type_id
@@ -2502,7 +2504,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__activity_type_id
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__activity_type_id
 msgid "Next Activity Type"
-msgstr ""
+msgstr "Тип наступної дії"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields.selection,name:l10n_ua_accounting.selection__l10n_ua_balance_report_line__section__asset_noncurrent
@@ -2519,7 +2521,7 @@ msgstr "Необоротні активи"
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__message_needaction_counter
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__message_needaction_counter
 msgid "Number of Actions"
-msgstr ""
+msgstr "Кількість дій"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_advance_report__message_has_error_counter
@@ -2531,7 +2533,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__message_has_error_counter
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__message_has_error_counter
 msgid "Number of errors"
-msgstr ""
+msgstr "Кількість помилок"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_advance_report__message_needaction_counter
@@ -2543,7 +2545,7 @@ msgstr ""
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_pnl_report__message_needaction_counter
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_service_act__message_needaction_counter
 msgid "Number of messages requiring action"
-msgstr ""
+msgstr "Кількість повідомлень, які вимагають дії"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_advance_report__message_has_error_counter
@@ -2555,7 +2557,7 @@ msgstr ""
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_pnl_report__message_has_error_counter
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_service_act__message_has_error_counter
 msgid "Number of messages with delivery error"
-msgstr ""
+msgstr "Кількість повідомлень з помилкою доставки"
 
 #. module: l10n_ua_accounting
 #: model:ir.model,name:l10n_ua_accounting.model_l10n_ua_pnl_report_line
@@ -2602,7 +2604,7 @@ msgstr "Тип платіжного доручення"
 #. module: l10n_ua_accounting
 #: model:ir.model,name:l10n_ua_accounting.model_l10n_ua_payment_order_wizard_line
 msgid "Payment Order Wizard Line"
-msgstr ""
+msgstr "Рядок майстра платіжних доручень"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_account_payment__ua_payment_purpose
@@ -2630,7 +2632,7 @@ msgstr ""
 #. module: l10n_ua_accounting
 #: model:ir.model,name:l10n_ua_accounting.model_l10n_ua_period_closing_line
 msgid "Period Closing Line"
-msgstr ""
+msgstr "Рядок закриття періоду"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_advance_report__rating_ids
@@ -2642,7 +2644,7 @@ msgstr ""
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__rating_ids
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__rating_ids
 msgid "Ratings"
-msgstr ""
+msgstr "Оцінювання"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_payment_order_wizard_line__partner_bank_id
@@ -2670,7 +2672,7 @@ msgstr "Відповідальний"
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_period_closing__retained_move_id
 msgid "Retained Earnings Entry"
-msgstr ""
+msgstr "Проведення нерозподіленого прибутку"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_currency_revaluation_line__revaluation_id
@@ -2714,11 +2716,15 @@ msgid ""
 "Service acts confirm the provision of services to customers\n"
 "                and serve as the basis for issuing invoices."
 msgstr ""
+"Акти наданих послуг підтверджують надання послуг клієнтам\n"
+"                та є підставою для виставлення рахунків."
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_period_closing__lock_period
 msgid "Set period lock date on company to prevent backdated entries"
 msgstr ""
+"Встановити дату блокування періоду в компанії, щоб унеможливити проведення "
+"записів минулою датою"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_advance_report__activity_state
@@ -2735,6 +2741,10 @@ msgid ""
 "Today: Activity date is today\n"
 "Planned: Future activities."
 msgstr ""
+"Етап заснований на діях\n"
+"Протерміновано: термін виконання вже минув\n"
+"Сьогодні: дата дії сьогодні\n"
+"Заплановано: майбутні дії."
 
 #. module: l10n_ua_accounting
 #: model:ir.model,name:l10n_ua_accounting.model_l10n_ua_tax_period
@@ -2801,12 +2811,14 @@ msgstr "Тип"
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_pnl_report__activity_exception_decoration
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_service_act__activity_exception_decoration
 msgid "Type of the exception activity on record."
-msgstr ""
+msgstr "Тип дії виключення на записі."
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,help:l10n_ua_accounting.field_account_payment__ua_payment_order_number
 msgid "Ukrainian payment order number (auto-generated for bank journals)"
 msgstr ""
+"Номер платіжного доручення (генерується автоматично для банківських "
+"журналів)"
 
 #. module: l10n_ua_accounting
 #: model_terms:ir.actions.act_window,help:l10n_ua_accounting.action_balance_report
@@ -2837,7 +2849,7 @@ msgstr "Рахунок від постачальника"
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report__website_message_ids
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act__website_message_ids
 msgid "Website Messages"
-msgstr ""
+msgstr "Повідомлення з веб-сайту"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_advance_report__website_message_ids
@@ -2849,7 +2861,7 @@ msgstr ""
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_pnl_report__website_message_ids
 #: model:ir.model.fields,help:l10n_ua_accounting.field_l10n_ua_service_act__website_message_ids
 msgid "Website communication history"
-msgstr ""
+msgstr "Історія бесіди на сайті"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_payment_order_wizard_line__wizard_id
@@ -4894,29 +4906,16 @@ msgid ""
 " %(currency)s)."
 msgstr ""
 
-#. Повернуто після регенерації з POT: рядки існують у коді, але не
-#. потрапили в експорт, і разом із застарілими записами зникли б
-#. переклади, які працювали.
 #. module: l10n_ua_accounting
+#: model:ir.module.module,shortdesc:base.module_l10n_ua_accounting
 msgid "Ukraine - Accounting Suite"
 msgstr "Україна - Бухгалтерський облік"
 
 #. module: l10n_ua_accounting
+#: model:ir.module.module,summary:base.module_l10n_ua_accounting
 msgid "Ukrainian accounting: PKO/VKO, Cash Book, Balance Sheet, P&L"
 msgstr ""
 "Бухгалтерія України: ПКО/ВКО, Касова книга, Баланс, Звіт про фін. результати"
-
-#. module: l10n_ua_accounting
-msgid "Period Start"
-msgstr "Початок періоду"
-
-#. module: l10n_ua_accounting
-msgid "Service Act Sequence"
-msgstr "Послідовність актів наданих послуг"
-
-#. module: l10n_ua_accounting
-msgid "Advance Report Sequence"
-msgstr "Послідовність авансових звітів"
 
 #. module: l10n_ua_accounting
 #: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_vat
