@@ -4895,28 +4895,15 @@ msgid ""
 msgstr ""
 
 #. module: l10n_ua_accounting
-#. Повернуто після регенерації з POT: рядки існують у коді, але не
-#. потрапили в експорт, і разом із застарілими записами зникли б
-#. переклади, які працювали.
+#: model:ir.module.module,shortdesc:base.module_l10n_ua_accounting
 msgid "Ukraine - Accounting Suite"
 msgstr "Україна - Бухгалтерський облік"
 
 #. module: l10n_ua_accounting
+#: model:ir.module.module,summary:base.module_l10n_ua_accounting
 msgid "Ukrainian accounting: PKO/VKO, Cash Book, Balance Sheet, P&L"
 msgstr ""
 "Бухгалтерія України: ПКО/ВКО, Касова книга, Баланс, Звіт про фін. результати"
-
-#. module: l10n_ua_accounting
-msgid "Period Start"
-msgstr "Початок періоду"
-
-#. module: l10n_ua_accounting
-msgid "Service Act Sequence"
-msgstr "Послідовність актів наданих послуг"
-
-#. module: l10n_ua_accounting
-msgid "Advance Report Sequence"
-msgstr "Послідовність авансових звітів"
 
 #. module: l10n_ua_accounting
 #: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_vat
