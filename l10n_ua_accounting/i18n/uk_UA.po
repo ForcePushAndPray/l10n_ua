@@ -98,8 +98,10 @@ msgid "Is Cash Order"
 msgstr "Є касовим ордером"
 
 #. module: l10n_ua_accounting
+#: model:ir.actions.report,name:l10n_ua_accounting.action_report_service_act
 #: model:ir.model,name:l10n_ua_accounting.model_l10n_ua_service_act
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act_line__act_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_service_act_form
 msgid "Service Act"
 msgstr "Акт наданих послуг"
 
@@ -389,8 +391,10 @@ msgid "Tax"
 msgstr "Податок"
 
 #. module: l10n_ua_accounting
+#: model:ir.actions.report,name:l10n_ua_accounting.action_report_advance_report
 #: model:ir.model,name:l10n_ua_accounting.model_l10n_ua_advance_report
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_advance_report_line__report_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_advance_report_form
 msgid "Advance Report"
 msgstr "Авансовий звіт"
 
@@ -736,35 +740,45 @@ msgstr "Рахунки"
 
 #. module: l10n_ua_accounting
 #: model:ir.actions.act_window,name:l10n_ua_accounting.action_service_act
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_docs_service_acts
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_service_act_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_service_act_search
 msgid "Service Acts"
 msgstr "Акти наданих послуг"
 
 #. module: l10n_ua_accounting
 #: model:ir.actions.act_window,name:l10n_ua_accounting.action_advance_report
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_docs_advance_reports
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_advance_report_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_advance_report_search
 msgid "Advance Reports"
 msgstr "Авансові звіти"
 
 #. module: l10n_ua_accounting
 #: model:ir.actions.act_window,name:l10n_ua_accounting.action_account_payment_pko
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_cash_pko
+#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_account_payment_pko_list
 msgid "Income Cash Orders (PKO)"
 msgstr "ПКО (Прибуткові)"
 
 #. module: l10n_ua_accounting
 #: model:ir.actions.act_window,name:l10n_ua_accounting.action_account_payment_vko
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_cash_vko
+#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_account_payment_vko_list
 msgid "Expense Cash Orders (VKO)"
 msgstr "ВКО (Видаткові)"
 
 #. module: l10n_ua_accounting
 #: model:ir.actions.act_window,name:l10n_ua_accounting.action_cash_book_wizard
 #: model:ir.actions.report,name:l10n_ua_accounting.action_report_cash_book
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_cash_book
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_cash_book_wizard_form
 msgid "Cash Book"
 msgstr "Касова книга"
 
 #. module: l10n_ua_accounting
 #: model:ir.actions.report,name:l10n_ua_accounting.action_report_balance_sheet
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_reports_balance
 msgid "Balance Sheet (Form No.1)"
 msgstr "Баланс (Форма №1)"
 
@@ -892,6 +906,7 @@ msgid "Export XLSX"
 msgstr "Експорт XLSX"
 
 #. module: l10n_ua_accounting
+#: model:ir.actions.act_window,name:l10n_ua_accounting.action_reconciliation_act_wizard
 #: model:ir.actions.report,name:l10n_ua_accounting.action_report_reconciliation_act
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_reconciliation_act_wizard_form
 msgid "Reconciliation Statement"
@@ -899,6 +914,7 @@ msgstr "Акт звірки взаєморозрахунків"
 
 #. module: l10n_ua_accounting
 #: model:ir.actions.report,name:l10n_ua_accounting.action_report_pnl
+#: model:ir.model,name:l10n_ua_accounting.model_l10n_ua_pnl_report
 msgid "P&L Statement (Form №2)"
 msgstr "Звіт про фінансові результати (Форма №2)"
 
