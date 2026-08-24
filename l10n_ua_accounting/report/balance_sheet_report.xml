@@ -3,7 +3,7 @@
 
     <!-- Balance Sheet Report Action -->
     <record id="action_report_balance_sheet" model="ir.actions.report">
-        <field name="name">Баланс (Форма №1)</field>
+        <field name="name">Balance Sheet (Form No.1)</field>
         <field name="model">l10n_ua.balance.report</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">l10n_ua_accounting.report_balance_sheet_document</field>

@@ -6,7 +6,7 @@
         <field name="name">l10n_ua.advance.report.form</field>
         <field name="model">l10n_ua.advance.report</field>
         <field name="arch" type="xml">
-            <form string="Авансовий звіт">
+            <form string="Advance Report">
                 <header>
                     <button name="action_submit" type="object"
                             string="Submit" class="btn-primary"
@@ -100,7 +100,7 @@
         <field name="name">l10n_ua.advance.report.list</field>
         <field name="model">l10n_ua.advance.report</field>
         <field name="arch" type="xml">
-            <list string="Авансові звіти" decoration-muted="state == 'cancelled'">
+            <list string="Advance Reports" decoration-muted="state == 'cancelled'">
                 <field name="name"/>
                 <field name="date"/>
                 <field name="employee_id"/>
@@ -145,7 +145,7 @@
 
     <!-- Advance Report Action -->
     <record id="action_advance_report" model="ir.actions.act_window">
-        <field name="name">Авансові звіти</field>
+        <field name="name">Advance Reports</field>
         <field name="res_model">l10n_ua.advance.report</field>
         <field name="view_mode">list,form</field>
         <field name="context">{'search_default_filter_draft': 1}</field>

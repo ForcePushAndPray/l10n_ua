@@ -43,8 +43,8 @@ class AccountPayment(models.Model):
     )
     ua_cash_order_type = fields.Selection(
         selection=[
-            ('pko', 'ПКО (Прибутковий)'),
-            ('vko', 'ВКО (Видатковий)'),
+            ('pko', 'PKO (Receipt)'),
+            ('vko', 'VKO (Disbursement)'),
             ('other', 'Other'),
         ],
         string='Cash Order Type',

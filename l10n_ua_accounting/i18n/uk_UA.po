@@ -14,7 +14,8 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_account_journal__ua_pko_sequence_id
@@ -97,8 +98,10 @@ msgid "Is Cash Order"
 msgstr "Є касовим ордером"
 
 #. module: l10n_ua_accounting
+#: model:ir.actions.report,name:l10n_ua_accounting.action_report_service_act
 #: model:ir.model,name:l10n_ua_accounting.model_l10n_ua_service_act
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_service_act_line__act_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_service_act_form
 msgid "Service Act"
 msgstr "Акт наданих послуг"
 
@@ -388,8 +391,10 @@ msgid "Tax"
 msgstr "Податок"
 
 #. module: l10n_ua_accounting
+#: model:ir.actions.report,name:l10n_ua_accounting.action_report_advance_report
 #: model:ir.model,name:l10n_ua_accounting.model_l10n_ua_advance_report
 #: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_advance_report_line__report_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_advance_report_form
 msgid "Advance Report"
 msgstr "Авансовий звіт"
 
@@ -730,41 +735,51 @@ msgstr "Кінець порівняльного періоду"
 #. module: l10n_ua_accounting
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.l10n_ua_currency_exchange_view_form
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.l10n_ua_period_closing_view_form
-msgid "Рахунки"
+msgid "Accounts"
 msgstr "Рахунки"
 
 #. module: l10n_ua_accounting
 #: model:ir.actions.act_window,name:l10n_ua_accounting.action_service_act
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_docs_service_acts
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_service_act_list
-msgid "Акти наданих послуг"
+#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_service_act_search
+msgid "Service Acts"
 msgstr "Акти наданих послуг"
 
 #. module: l10n_ua_accounting
 #: model:ir.actions.act_window,name:l10n_ua_accounting.action_advance_report
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_docs_advance_reports
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_advance_report_list
-msgid "Авансові звіти"
+#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_advance_report_search
+msgid "Advance Reports"
 msgstr "Авансові звіти"
 
 #. module: l10n_ua_accounting
 #: model:ir.actions.act_window,name:l10n_ua_accounting.action_account_payment_pko
-msgid "ПКО (Прибуткові)"
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_cash_pko
+#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_account_payment_pko_list
+msgid "Income Cash Orders (PKO)"
 msgstr "ПКО (Прибуткові)"
 
 #. module: l10n_ua_accounting
 #: model:ir.actions.act_window,name:l10n_ua_accounting.action_account_payment_vko
-msgid "ВКО (Видаткові)"
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_cash_vko
+#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_account_payment_vko_list
+msgid "Expense Cash Orders (VKO)"
 msgstr "ВКО (Видаткові)"
 
 #. module: l10n_ua_accounting
 #: model:ir.actions.act_window,name:l10n_ua_accounting.action_cash_book_wizard
 #: model:ir.actions.report,name:l10n_ua_accounting.action_report_cash_book
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_cash_book
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_cash_book_wizard_form
-msgid "Касова книга"
+msgid "Cash Book"
 msgstr "Касова книга"
 
 #. module: l10n_ua_accounting
 #: model:ir.actions.report,name:l10n_ua_accounting.action_report_balance_sheet
-msgid "Баланс (Форма №1)"
+#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_reports_balance
+msgid "Balance Sheet (Form No.1)"
 msgstr "Баланс (Форма №1)"
 
 #. module: l10n_ua_accounting
@@ -778,16 +793,6 @@ msgid "Print ВКО"
 msgstr "Друк ВКО"
 
 #. module: l10n_ua_accounting
-#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_account_payment_pko_list
-msgid "ПКО (Прибуткові касові ордери)"
-msgstr "ПКО (Прибуткові касові ордери)"
-
-#. module: l10n_ua_accounting
-#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_account_payment_vko_list
-msgid "ВКО (Видаткові касові ордери)"
-msgstr "ВКО (Видаткові касові ордери)"
-
-#. module: l10n_ua_accounting
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_account_journal_form_ua
 msgid "Ukrainian Cash Orders"
 msgstr "Українські касові ордери"
@@ -796,12 +801,6 @@ msgstr "Українські касові ордери"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_account_journal_form_ua
 msgid "Create UA Sequences"
 msgstr "Створити UA послідовності"
-
-#. module: l10n_ua_accounting
-#: model:ir.actions.report,name:l10n_ua_accounting.action_report_service_act
-#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_service_act_form
-msgid "Акт наданих послуг"
-msgstr "Акт наданих послуг"
 
 #. module: l10n_ua_accounting
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_balance_report_form
@@ -859,12 +858,6 @@ msgid "Create your first Service Act"
 msgstr "Створіть свій перший Акт наданих послуг"
 
 #. module: l10n_ua_accounting
-#: model:ir.actions.report,name:l10n_ua_accounting.action_report_advance_report
-#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_advance_report_form
-msgid "Авансовий звіт"
-msgstr "Авансовий звіт"
-
-#. module: l10n_ua_accounting
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_advance_report_form
 msgid "Submit"
 msgstr "Подати"
@@ -890,12 +883,6 @@ msgid "Approval"
 msgstr "Затвердження"
 
 #. module: l10n_ua_accounting
-#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_docs_advance_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_advance_report_search
-msgid "Advance Reports"
-msgstr "Авансові звіти"
-
-#. module: l10n_ua_accounting
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_advance_report_search
 msgid "To Approve"
 msgstr "На затвердження"
@@ -919,39 +906,36 @@ msgid "Export XLSX"
 msgstr "Експорт XLSX"
 
 #. module: l10n_ua_accounting
+#: model:ir.actions.act_window,name:l10n_ua_accounting.action_reconciliation_act_wizard
 #: model:ir.actions.report,name:l10n_ua_accounting.action_report_reconciliation_act
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_reconciliation_act_wizard_form
-msgid "Акт звірки взаєморозрахунків"
+msgid "Reconciliation Statement"
 msgstr "Акт звірки взаєморозрахунків"
 
 #. module: l10n_ua_accounting
-#: model:ir.actions.act_window,name:l10n_ua_accounting.action_reconciliation_act_wizard
-msgid "Акт звірки"
-msgstr "Акт звірки"
-
-#. module: l10n_ua_accounting
 #: model:ir.actions.report,name:l10n_ua_accounting.action_report_pnl
-msgid "Звіт про фінансові результати (Форма №2)"
+#: model:ir.model,name:l10n_ua_accounting.model_l10n_ua_pnl_report
+msgid "P&L Statement (Form №2)"
 msgstr "Звіт про фінансові результати (Форма №2)"
 
 #. module: l10n_ua_accounting
 #: model:ir.actions.report,name:l10n_ua_accounting.action_report_pko
-msgid "ПКО (Прибутковий касовий ордер)"
+msgid "PKO (Cash Receipt Order)"
 msgstr "ПКО (Прибутковий касовий ордер)"
 
 #. module: l10n_ua_accounting
 #: model:ir.actions.report,name:l10n_ua_accounting.action_report_vko
-msgid "ВКО (Видатковий касовий ордер)"
+msgid "VKO (Cash Disbursement Order)"
 msgstr "ВКО (Видатковий касовий ордер)"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields.selection,name:l10n_ua_accounting.selection__account_payment__ua_cash_order_type__pko
-msgid "ПКО (Прибутковий)"
+msgid "PKO (Receipt)"
 msgstr "ПКО (Прибутковий)"
 
 #. module: l10n_ua_accounting
 #: model:ir.model.fields.selection,name:l10n_ua_accounting.selection__account_payment__ua_cash_order_type__vko
-msgid "ВКО (Видатковий)"
+msgid "VKO (Disbursement)"
 msgstr "ВКО (Видатковий)"
 
 #. module: l10n_ua_accounting
@@ -974,23 +958,23 @@ msgstr "Назва"
 
 #. module: l10n_ua_accounting
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_account_payment_pko_list
-msgid "№ ПКО"
+msgid "PKO No."
 msgstr "№ ПКО"
 
 #. module: l10n_ua_accounting
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_account_payment_pko_list
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_account_payment_vko_list
-msgid "Підстава"
+msgid "Basis"
 msgstr "Підстава"
 
 #. module: l10n_ua_accounting
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_account_payment_vko_list
-msgid "№ ВКО"
+msgid "VKO No."
 msgstr "№ ВКО"
 
 #. module: l10n_ua_accounting
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_account_payment_vko_list
-msgid "Отримав"
+msgid "Received By"
 msgstr "Отримав"
 
 #. module: l10n_ua_accounting
@@ -1010,12 +994,6 @@ msgid "Invoices"
 msgstr "Рахунки"
 
 #. module: l10n_ua_accounting
-#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_docs_service_acts
-#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_service_act_search
-msgid "Service Acts"
-msgstr "Акти наданих послуг"
-
-#. module: l10n_ua_accounting
 #: model:ir.actions.act_window,name:l10n_ua_accounting.action_ua_vendor_bills
 #: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_docs_vendor_bills
 msgid "Vendor Bills"
@@ -1025,21 +1003,6 @@ msgstr "Рахунки постачальників"
 #: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_cash_bank
 msgid "Cash and Bank"
 msgstr "Каса та банк"
-
-#. module: l10n_ua_accounting
-#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_cash_pko
-msgid "Income Cash Orders (PKO)"
-msgstr "ПКО (Прибуткові)"
-
-#. module: l10n_ua_accounting
-#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_cash_vko
-msgid "Expense Cash Orders (VKO)"
-msgstr "ВКО (Видаткові)"
-
-#. module: l10n_ua_accounting
-#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_cash_book
-msgid "Cash Book"
-msgstr "Касова книга"
 
 #. module: l10n_ua_accounting
 #: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_reconciliation
@@ -1075,11 +1038,6 @@ msgstr "Головна книга"
 #: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_reports_aging
 msgid "Aging Reports"
 msgstr "Заборгованість"
-
-#. module: l10n_ua_accounting
-#: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_reports_balance
-msgid "Balance Sheet (Form No.1)"
-msgstr "Баланс (Форма №1)"
 
 #. module: l10n_ua_accounting
 #: model:ir.ui.menu,name:l10n_ua_accounting.menu_ua_reports_pnl
@@ -1275,8 +1233,8 @@ msgid ""
 "No accountable-persons settlement account (372) found. Configure it in the "
 "company settings (Ukrainian accounting)."
 msgstr ""
-"Не знайдено рахунок розрахунків з підзвітними особами (372). Налаштуйте його"
-" в налаштуваннях компанії (Бухгалтерія України)."
+"Не знайдено рахунок розрахунків з підзвітними особами (372). Налаштуйте його "
+"в налаштуваннях компанії (Бухгалтерія України)."
 
 #. module: l10n_ua_accounting
 #. odoo-python
@@ -1285,8 +1243,8 @@ msgid ""
 "No journal for advance reports. Configure a general journal for company "
 "\"%s\"."
 msgstr ""
-"Немає журналу для авансових звітів. Налаштуйте загальний журнал для компанії"
-" \"%s\"."
+"Немає журналу для авансових звітів. Налаштуйте загальний журнал для компанії "
+"\"%s\"."
 
 #. module: l10n_ua_accounting
 #. odoo-python
@@ -1405,8 +1363,10 @@ msgstr "xlsxwriter не встановлено. Виконайте: pip install 
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.report_vko_document
 msgid ""
 "\"<span class=\"signature-line\" style=\"min-width: 30px;\"/>\"\n"
-"                                <span class=\"signature-line\" style=\"min-width: 80px;\"/>\n"
-"                                20<span class=\"signature-line\" style=\"min-width: 30px;\"/> р."
+"                                <span class=\"signature-line\" style=\"min-"
+"width: 80px;\"/>\n"
+"                                20<span class=\"signature-line\" style=\"min-"
+"width: 30px;\"/> р."
 msgstr ""
 
 #. module: l10n_ua_accounting
@@ -1629,8 +1589,10 @@ msgid ""
 "<span>Видав касир</span>\n"
 "                                <span class=\"signature-line\"/>\n"
 "                                <span class=\"small\">(підпис)</span>\n"
-"                                <span class=\"signature-line\" style=\"min-width: 100px;\"/>\n"
-"                                <span class=\"small\">(прізвище, ініціали)</span>"
+"                                <span class=\"signature-line\" style=\"min-"
+"width: 100px;\"/>\n"
+"                                <span class=\"small\">(прізвище, ініціали)</"
+"span>"
 msgstr ""
 
 #. module: l10n_ua_accounting
@@ -1652,7 +1614,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.report_pko_document
 msgid ""
 "<span>Головний бухгалтер</span>\n"
-"                                    <span class=\"signature-line\" style=\"min-width: 50px;\"/>"
+"                                    <span class=\"signature-line\" "
+"style=\"min-width: 50px;\"/>"
 msgstr ""
 
 #. module: l10n_ua_accounting
@@ -1669,8 +1632,10 @@ msgid ""
 "<span>Головний бухгалтер</span>\n"
 "                                <span class=\"signature-line\"/>\n"
 "                                <span class=\"small\">(підпис)</span>\n"
-"                                <span class=\"signature-line\" style=\"min-width: 100px;\"/>\n"
-"                                <span class=\"small\">(прізвище, ініціали)</span>"
+"                                <span class=\"signature-line\" style=\"min-"
+"width: 100px;\"/>\n"
+"                                <span class=\"small\">(прізвище, ініціали)</"
+"span>"
 msgstr ""
 
 #. module: l10n_ua_accounting
@@ -1692,7 +1657,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.report_pko_document
 msgid ""
 "<span>Касир</span>\n"
-"                                    <span class=\"signature-line\" style=\"min-width: 50px;\"/>"
+"                                    <span class=\"signature-line\" "
+"style=\"min-width: 50px;\"/>"
 msgstr ""
 
 #. module: l10n_ua_accounting
@@ -1708,8 +1674,10 @@ msgid ""
 "<span>Касир</span>\n"
 "                                <span class=\"signature-line\"/>\n"
 "                                <span class=\"small\">(підпис)</span>\n"
-"                                <span class=\"signature-line\" style=\"min-width: 100px;\"/>\n"
-"                                <span class=\"small\">(прізвище, ініціали)</span>"
+"                                <span class=\"signature-line\" style=\"min-"
+"width: 100px;\"/>\n"
+"                                <span class=\"small\">(прізвище, ініціали)</"
+"span>"
 msgstr ""
 
 #. module: l10n_ua_accounting
@@ -1718,8 +1686,10 @@ msgid ""
 "<span>Керівник підприємства</span>\n"
 "                                <span class=\"signature-line\"/>\n"
 "                                <span class=\"small\">(підпис)</span>\n"
-"                                <span class=\"signature-line\" style=\"min-width: 100px;\"/>\n"
-"                                <span class=\"small\">(прізвище, ініціали)</span>"
+"                                <span class=\"signature-line\" style=\"min-"
+"width: 100px;\"/>\n"
+"                                <span class=\"small\">(прізвище, ініціали)</"
+"span>"
 msgstr ""
 
 #. module: l10n_ua_accounting
@@ -1741,12 +1711,15 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.report_vko_document
 msgid ""
 "<span>Назва документа </span>\n"
-"                                <span class=\"signature-line\" style=\"min-width: 200px;\"/>\n"
+"                                <span class=\"signature-line\" style=\"min-"
+"width: 200px;\"/>\n"
 "                                <br/>\n"
 "                                <span>№ </span>\n"
-"                                <span class=\"signature-line\" style=\"min-width: 100px;\"/>\n"
+"                                <span class=\"signature-line\" style=\"min-"
+"width: 100px;\"/>\n"
 "                                <span> від </span>\n"
-"                                <span class=\"signature-line\" style=\"min-width: 100px;\"/>"
+"                                <span class=\"signature-line\" style=\"min-"
+"width: 100px;\"/>"
 msgstr ""
 
 #. module: l10n_ua_accounting
@@ -1776,8 +1749,10 @@ msgid ""
 "<span>Перевірив бухгалтер</span>\n"
 "                                <span class=\"signature-line\"/>\n"
 "                                <span class=\"small\">(підпис)</span>\n"
-"                                <span class=\"signature-line\" style=\"min-width: 100px;\"/>\n"
-"                                <span class=\"small\">(прізвище, ініціали)</span>"
+"                                <span class=\"signature-line\" style=\"min-"
+"width: 100px;\"/>\n"
+"                                <span class=\"small\">(прізвище, ініціали)</"
+"span>"
 msgstr ""
 
 #. module: l10n_ua_accounting
@@ -1799,7 +1774,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.report_vko_document
 msgid ""
 "<span>Підпис </span>\n"
-"                                <span class=\"signature-line\" style=\"min-width: 150px;\"/>"
+"                                <span class=\"signature-line\" style=\"min-"
+"width: 150px;\"/>"
 msgstr ""
 
 #. module: l10n_ua_accounting
@@ -2570,11 +2546,6 @@ msgid "P&L Statement"
 msgstr "Звіт про фінансові результати"
 
 #. module: l10n_ua_accounting
-#: model:ir.model,name:l10n_ua_accounting.model_l10n_ua_pnl_report
-msgid "P&L Statement (Form №2)"
-msgstr "Звіт про фінансові результати (Форма №2)"
-
-#. module: l10n_ua_accounting
 #: model:ir.actions.act_window,name:l10n_ua_accounting.action_pnl_report
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_pnl_report_list
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_pnl_report_search
@@ -2817,8 +2788,7 @@ msgstr "Тип дії виключення на записі."
 #: model:ir.model.fields,help:l10n_ua_accounting.field_account_payment__ua_payment_order_number
 msgid "Ukrainian payment order number (auto-generated for bank journals)"
 msgstr ""
-"Номер платіжного доручення (генерується автоматично для банківських "
-"журналів)"
+"Номер платіжного доручення (генерується автоматично для банківських журналів)"
 
 #. module: l10n_ua_accounting
 #: model_terms:ir.actions.act_window,help:l10n_ua_accounting.action_balance_report
@@ -3111,9 +3081,12 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.report_inventory_act
 msgid ""
 "Всі товарно-матеріальні цінності, пойменовані в цьому\n"
-"                                    інвентаризаційному описі, комісією перевірені в натурі\n"
-"                                    в моїй (нашій) присутності і внесені в опис, у зв'язку\n"
-"                                    з чим претензій до інвентаризаційної комісії не маю (не маємо)."
+"                                    інвентаризаційному описі, комісією "
+"перевірені в натурі\n"
+"                                    в моїй (нашій) присутності і внесені в "
+"опис, у зв'язку\n"
+"                                    з чим претензій до інвентаризаційної "
+"комісії не маю (не маємо)."
 msgstr ""
 
 #. module: l10n_ua_accounting
@@ -4517,8 +4490,8 @@ msgstr ""
 #. module: l10n_ua_accounting
 #: model:ir.model.fields,help:l10n_ua_accounting.field_account_payment__analytic_distribution
 msgid ""
-"Стаття руху грошових коштів та інша аналітика. Передається на counterpart та"
-" write-off рядки журнальних проводок при підтвердженні платежу. Не "
+"Стаття руху грошових коштів та інша аналітика. Передається на counterpart та "
+"write-off рядки журнальних проводок при підтвердженні платежу. Не "
 "передається на ліквідну (cash) сторону."
 msgstr ""
 
@@ -4894,16 +4867,16 @@ msgstr ""
 #. odoo-python
 #: code:addons/l10n_ua_accounting/models/account_journal.py:0
 msgid ""
-"⚠️ Ліміт каси перевищено! Залишок: %(balance)s %(currency)s, ліміт: "
-"%(limit)s %(currency)s."
+"⚠️ Ліміт каси перевищено! Залишок: %(balance)s %(currency)s, ліміт: %(limit)s "
+"%(currency)s."
 msgstr ""
 
 #. module: l10n_ua_accounting
 #. odoo-python
 #: code:addons/l10n_ua_accounting/models/account_payment.py:0
 msgid ""
-"⚠️ Увага! Залишок каси (%(balance)s %(currency)s) перевищує ліміт (%(limit)s"
-" %(currency)s)."
+"⚠️ Увага! Залишок каси (%(balance)s %(currency)s) перевищує ліміт (%(limit)s %"
+"(currency)s)."
 msgstr ""
 
 #. module: l10n_ua_accounting

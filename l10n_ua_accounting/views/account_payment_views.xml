@@ -64,11 +64,11 @@
         <field name="name">account.payment.pko.list</field>
         <field name="model">account.payment</field>
         <field name="arch" type="xml">
-            <list string="ПКО (Прибуткові касові ордери)">
-                <field name="ua_cash_order_number" string="№ ПКО"/>
+            <list string="Income Cash Orders (PKO)">
+                <field name="ua_cash_order_number" string="PKO No."/>
                 <field name="date"/>
                 <field name="partner_id"/>
-                <field name="ua_payment_basis" string="Підстава"/>
+                <field name="ua_payment_basis" string="Basis"/>
                 <field name="amount" sum="Total"/>
                 <field name="currency_id" column_invisible="True"/>
                 <field name="state" widget="badge"
@@ -83,12 +83,12 @@
         <field name="name">account.payment.vko.list</field>
         <field name="model">account.payment</field>
         <field name="arch" type="xml">
-            <list string="ВКО (Видаткові касові ордери)">
-                <field name="ua_cash_order_number" string="№ ВКО"/>
+            <list string="Expense Cash Orders (VKO)">
+                <field name="ua_cash_order_number" string="VKO No."/>
                 <field name="date"/>
                 <field name="partner_id"/>
-                <field name="ua_cash_person" string="Отримав"/>
-                <field name="ua_payment_basis" string="Підстава"/>
+                <field name="ua_cash_person" string="Received By"/>
+                <field name="ua_payment_basis" string="Basis"/>
                 <field name="amount" sum="Total"/>
                 <field name="currency_id" column_invisible="True"/>
                 <field name="state" widget="badge"
@@ -100,7 +100,7 @@
 
     <!-- PKO Action -->
     <record id="action_account_payment_pko" model="ir.actions.act_window">
-        <field name="name">ПКО (Прибуткові)</field>
+        <field name="name">Income Cash Orders (PKO)</field>
         <field name="res_model">account.payment</field>
         <field name="view_mode">list,form</field>
         <field name="domain">[('journal_id.type', '=', 'cash'), ('payment_type', '=', 'inbound')]</field>
@@ -117,7 +117,7 @@
 
     <!-- VKO Action -->
     <record id="action_account_payment_vko" model="ir.actions.act_window">
-        <field name="name">ВКО (Видаткові)</field>
+        <field name="name">Expense Cash Orders (VKO)</field>
         <field name="res_model">account.payment</field>
         <field name="view_mode">list,form</field>
         <field name="domain">[('journal_id.type', '=', 'cash'), ('payment_type', '=', 'outbound')]</field>

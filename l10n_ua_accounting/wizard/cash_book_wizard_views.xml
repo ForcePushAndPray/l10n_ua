@@ -6,7 +6,7 @@
         <field name="name">l10n_ua.cash.book.wizard.form</field>
         <field name="model">l10n_ua.cash.book.wizard</field>
         <field name="arch" type="xml">
-            <form string="Касова книга">
+            <form string="Cash Book">
                 <group>
                     <group>
                         <field name="company_id" groups="base.group_multi_company"/>
@@ -28,7 +28,7 @@
 
     <!-- Cash Book Wizard Action -->
     <record id="action_cash_book_wizard" model="ir.actions.act_window">
-        <field name="name">Касова книга</field>
+        <field name="name">Cash Book</field>
         <field name="res_model">l10n_ua.cash.book.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>
