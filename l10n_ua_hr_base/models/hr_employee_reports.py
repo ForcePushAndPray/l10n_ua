@@ -295,19 +295,6 @@ class HrEmployeeMilitaryReport(models.Model):
             return excluded_on.year == as_of.year
         return _was_employed_on(employee, as_of)
 
-    def _is_retained_after_leaving(self, employee):
-        """Чи лишається у Списках той, хто вже не працює (п. 44 № 1487).
-
-        Звільнені, відраховані та призвані на військову службу зберігаються у
-        Списках до кінця поточного року — з відміткою у графі 18. Ознакою
-        служить сама відмітка: без неї запис у формі був би незрозумілим.
-        """
-        self.ensure_one()
-        if not employee.military_exclusion_mark:
-            return False
-        marked_on = employee.military_exclusion_date
-        return bool(marked_on and self.date and marked_on.year == self.date.year)
-
     def action_draft(self):
         self.write({'state': 'draft'})
 
