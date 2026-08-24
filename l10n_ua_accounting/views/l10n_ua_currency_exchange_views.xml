@@ -49,7 +49,7 @@
                             <field name="nbu_value"/>
                             <field name="fx_result"/>
                         </group>
-                        <group string="Рахунки">
+                        <group string="Accounts">
                             <field name="journal_id"/>
                             <field name="foreign_account_id"/>
                             <field name="current_account_id"/>

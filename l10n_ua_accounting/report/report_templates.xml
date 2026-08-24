@@ -9,7 +9,7 @@
 
     <!-- Report action for PKO -->
     <record id="action_report_pko" model="ir.actions.report">
-        <field name="name">ПКО (Прибутковий касовий ордер)</field>
+        <field name="name">PKO (Cash Receipt Order)</field>
         <field name="model">account.payment</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">l10n_ua_accounting.report_pko_document</field>
@@ -22,7 +22,7 @@
 
     <!-- Report action for VKO -->
     <record id="action_report_vko" model="ir.actions.report">
-        <field name="name">ВКО (Видатковий касовий ордер)</field>
+        <field name="name">VKO (Cash Disbursement Order)</field>
         <field name="model">account.payment</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">l10n_ua_accounting.report_vko_document</field>
