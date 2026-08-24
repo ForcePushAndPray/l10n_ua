@@ -13,7 +13,16 @@ class TestCurrencyExchange(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.env.company
-        cls.usd = cls.env.ref('base.USD')
+        # Валюта операції має відрізнятися від валюти компанії — цього вимагає
+        # і домен самого поля (`[('id', '!=', currency_id)]`), і Odoo: для
+        # рядка у валюті компанії balance нормалізується до amount_currency,
+        # тож Дт 312 став би 1000 замість 40000 і проводка розбалансувалась би.
+        # У типовій `My Company` валюта компанії — USD, тож просто взяти
+        # `base.USD` не можна (перепризначити валюту компанії теж: account
+        # забороняє це, щойно в базі є хоч один рядок проводки).
+        cls.fx_currency = cls.env.ref('base.USD')
+        if cls.fx_currency == cls.company.currency_id:
+            cls.fx_currency = cls.env.ref('base.EUR')
 
         def acc(code, name, atype):
             return cls.env['account.account'].create({
@@ -32,7 +41,7 @@ class TestCurrencyExchange(TransactionCase):
         vals = {
             'operation_type': op,
             'date': date(2025, 6, 10),
-            'foreign_currency_id': self.usd.id,
+            'foreign_currency_id': self.fx_currency.id,
             'fc_amount': 1000.0,
             'commercial_rate': 41.0,
             'nbu_rate': 40.0,
@@ -75,7 +84,7 @@ class TestCurrencyExchange(TransactionCase):
         line_312 = move.line_ids.filtered(lambda l: l.account_id == self.acc_312)
         self.assertAlmostEqual(line_312.debit, 40000.0, places=2)
         self.assertAlmostEqual(line_312.amount_currency, 1000.0, places=2)
-        self.assertEqual(line_312.currency_id, self.usd)
+        self.assertEqual(line_312.currency_id, self.fx_currency)
         line_311 = move.line_ids.filtered(lambda l: l.account_id == self.acc_311)
         self.assertAlmostEqual(line_311.credit, 41200.0, places=2)
         line_loss = move.line_ids.filtered(lambda l: l.account_id == self.acc_942)
