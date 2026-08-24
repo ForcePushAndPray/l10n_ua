@@ -47,6 +47,84 @@ class TestScholarship(TransactionCase):
         })
         self.assertEqual(payment.kekv_id, self.kekv_2720)
 
+    def _create_defaulted_line(self, scholarship_type, year, month):
+        payment = self.env['l10n_ua.scholarship.payment'].create({
+            'scholarship_type_id': scholarship_type.id,
+            'period_year': year,
+            'period_month': str(month),
+        })
+        return self.env['l10n_ua.scholarship.payment.line'].create({
+            'payment_id': payment.id,
+            'member_id': self.member1.id,
+        })
+
+    def test_higher_education_rate_changes_from_september_2026(self):
+        self.env.company.l10n_ua_education_type = 'zvo_3_4'
+
+        august = self._create_defaulted_line(
+            self.scholarship_type, 2026, 8)
+        september = self._create_defaulted_line(
+            self.scholarship_type, 2026, 9)
+
+        self.assertEqual(august.amount, 2000)
+        self.assertEqual(september.amount, 4000)
+
+    def test_pre_higher_advanced_rate_is_date_aware(self):
+        self.env.company.l10n_ua_education_type = 'zvo_1_2'
+        advanced = self.env.ref(
+            'l10n_ua_education_scholarship.'
+            'scholarship_type_academic_advanced')
+
+        august = self._create_defaulted_line(advanced, 2026, 8)
+        september = self._create_defaulted_line(advanced, 2026, 9)
+
+        self.assertEqual(august.amount, 2197)
+        self.assertEqual(september.amount, 4394)
+
+    def test_professional_basic_rate_from_september_2026(self):
+        self.env.company.l10n_ua_education_type = 'pto'
+
+        september = self._create_defaulted_line(
+            self.scholarship_type, 2026, 9)
+
+        self.assertEqual(september.amount, 2500)
+
+    def test_manual_amount_overrides_statutory_rate(self):
+        self.env.company.l10n_ua_education_type = 'zvo_3_4'
+        payment = self.env['l10n_ua.scholarship.payment'].create({
+            'scholarship_type_id': self.scholarship_type.id,
+            'period_year': 2026,
+            'period_month': '9',
+        })
+        line = self.env['l10n_ua.scholarship.payment.line'].create({
+            'payment_id': payment.id,
+            'member_id': self.member1.id,
+            'amount': 4500,
+        })
+
+        self.assertEqual(line.amount, 4500)
+
+    def test_inline_line_gets_statutory_rate_before_insert(self):
+        self.env.company.l10n_ua_education_type = 'zvo_3_4'
+
+        payment = self.env['l10n_ua.scholarship.payment'].create({
+            'scholarship_type_id': self.scholarship_type.id,
+            'period_year': 2026,
+            'period_month': '9',
+            'line_ids': [(0, 0, {'member_id': self.member1.id})],
+        })
+
+        self.assertEqual(payment.line_ids.amount, 4000)
+
+    def test_fallback_amount_for_unmapped_institution(self):
+        self.env.company.l10n_ua_education_type = 'other'
+        self.scholarship_type.monthly_amount = 1234
+
+        line = self._create_defaulted_line(
+            self.scholarship_type, 2026, 9)
+
+        self.assertEqual(line.amount, 1234)
+
     def test_lifecycle(self):
         payment = self.env['l10n_ua.scholarship.payment'].create({
             'scholarship_type_id': self.scholarship_type.id,

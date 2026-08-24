@@ -1,3 +1,5 @@
+from datetime import date
+
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 
@@ -227,7 +229,7 @@ class L10nUaScholarshipPaymentLine(models.Model):
     group_id = fields.Many2one(related='member_id.group_id', store=True, readonly=True)
     amount = fields.Monetary(string='Сума (брутто)', currency_field='currency_id',
                               compute='_compute_amount', store=True, readonly=False,
-                              required=True)
+                              required=True, precompute=True)
     amount_pdfo = fields.Monetary(string='ПДФО', currency_field='currency_id',
                                     compute='_compute_taxes', store=True,
                                     help='Податок на доходи фізосіб. Розраховується, '
@@ -241,11 +243,20 @@ class L10nUaScholarshipPaymentLine(models.Model):
         store=True, readonly=True)
     note = fields.Char(string='Примітка')
 
-    @api.depends('payment_id.scholarship_type_id')
+    @api.depends(
+        'payment_id.scholarship_type_id',
+        'payment_id.period_year',
+        'payment_id.period_month',
+        'payment_id.company_id',
+    )
     def _compute_amount(self):
         for line in self:
             if not line.amount and line.payment_id.scholarship_type_id:
-                line.amount = line.payment_id.scholarship_type_id.monthly_amount
+                payment = line.payment_id
+                effective_date = date(
+                    payment.period_year, int(payment.period_month), 1)
+                line.amount = payment.scholarship_type_id._get_monthly_amount(
+                    effective_date, payment.company_id)
 
     @api.depends('amount', 'is_taxable', 'payment_id.pdfo_rate', 'payment_id.vz_rate')
     def _compute_taxes(self):
