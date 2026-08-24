@@ -24,6 +24,12 @@ class ResCompany(models.Model):
     hr_manager_id = fields.Many2one(
         'hr.employee', string='HR Manager',
         help='HR department head for document signing')
+    military_officer_id = fields.Many2one(
+        'hr.employee', string='Відповідальний за військовий облік',
+        help='Особа, відповідальна за ведення військового обліку. Підписує '
+             'Списки персонального військового обліку та відомість '
+             'оперативного обліку (п. 40 Порядку № 1487), і саме її кадровий '
+             'модуль підставляє у друковані форми за замовчуванням.')
     tax_office_code = fields.Char(
         string='Tax Office Code',
         help='Code of the tax office (DPI)')

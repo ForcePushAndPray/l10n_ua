@@ -17,6 +17,37 @@ REGISTRATION_ADDRESS_MAP = {
 }
 REGISTRATION_SYNC_TRIGGERS = set(REGISTRATION_ADDRESS_MAP) | {'registration_same_as_actual'}
 
+# Граничний вік перебування в запасі (ст. 28 Закону № 2232-XII). Після нього
+# особа виключається з військового обліку засобами Реєстру, а роботодавець
+# протягом семи днів робить відмітку у Списках (п. 35 Порядку № 1487).
+MILITARY_RESERVE_AGE_LIMIT = 60
+MILITARY_RESERVE_AGE_LIMIT_GENERAL = 65
+
+# Графа 13 Списків (додаток 5): підстава відстрочки. Ключ — тип відстрочки,
+# значення — текст, який друкується у графі. Норми навмисно цитуються до
+# рівня частини/статті, а не абзацу: абзаци ст. 23 Закону № 3543-XII
+# перенумеровуються майже з кожною правкою, і закріплений у коді номер
+# застаріє швидше, ніж сам перелік підстав.
+MILITARY_DEFERMENT_BASIS = {
+    'unfit': 'визнаний непридатним (тимчасово непридатним) за станом здоров\'я — '
+             'ч. 1 ст. 23 Закону № 3543-XII',
+    'children_three': 'утримання трьох і більше дітей віком до 18 років — '
+                      'ч. 1 ст. 23 Закону № 3543-XII',
+    'single_parent': 'самостійне виховання дитини (дітей) віком до 18 років — '
+                     'ч. 1 ст. 23 Закону № 3543-XII',
+    'disabled_child': 'утримання дитини з інвалідністю — '
+                      'ч. 1 ст. 23 Закону № 3543-XII',
+    'care': 'постійний догляд за особою з інвалідністю I (II) групи — '
+            'ч. 1 ст. 23 Закону № 3543-XII',
+    'student': 'здобуття освіти за денною (дуальною) формою — '
+               'ч. 1 ст. 23 Закону № 3543-XII',
+    'teacher': 'педагогічний (науково-педагогічний) працівник за основним '
+               'місцем роботи — ч. 1 ст. 23 Закону № 3543-XII',
+    'conscript_basic': 'відстрочка від призову на базову військову службу — '
+                       'ст. 17 Закону № 2232-XII',
+    'other': '',
+}
+
 
 def _join_address_parts(parts):
     """Join non-empty address components into a single printable line."""
@@ -174,6 +205,130 @@ class HrEmployee(models.Model):
              'flags employees whose military booking must be renewed (CMU Resolution 1608).')
     military_reservplus_id = fields.Char(string='Reserv+ ID',
                                           help='Ідентифікатор у системі Резерв+')
+
+    # === Списки персонального військового обліку (додаток 5 до Порядку № 1487) ===
+    # Форма — в редакції ПКМУ № 916 від 30.07.2025 (нею ж скасовано додаток 6),
+    # зі змінами ПКМУ № 812 від 10.06.2026. Поля нижче закривають ті графи
+    # бланка, яких не було у попередній редакції; решта граф читається з уже
+    # наявних реквізитів картки (ПІБ, дата народження, РНОКПП, паспорт, адреса,
+    # звання, ВОС, ТЦК, бронювання, посада).
+    gender = fields.Selection([
+        ('male', 'Чоловіча'),
+        ('female', 'Жіноча'),
+    ], string='Стать',
+        help='Стать потрібна для поділу Списків персонального військового '
+             'обліку на групи (п. 36 Порядку № 1487): військовозобов\'язані '
+             'жінки виокремлюються в окрему, третю групу. Ядро Odoo 19 поля '
+             'статі не має, тому воно живе тут.')
+    military_list_group = fields.Selection([
+        ('officers', 'I — офіцерський склад'),
+        ('soldiers', 'II — рядовий, сержантський та старшинський склад'),
+        ('women', 'III — військовозобов\'язані та резервісти з числа жінок'),
+        ('conscripts', 'IV — призовники'),
+    ], string='Група Списку',
+        compute='_compute_military_list_group', store=True,
+        help='Група Списків персонального військового обліку за п. 36 Порядку '
+             '№ 1487. Обчислюється з категорії обліку, статі та категорії '
+             'військового звання: жінки-військовозобов\'язані завжди у III '
+             'групі, призовники — у IV, решта — за званням.')
+    # гр. 6
+    military_vin_code = fields.Char(
+        string='Реєстраційний номер запису в ЄДР', size=32,
+        help='Графа 6 Списків: реєстраційний номер облікового запису в Єдиному '
+             'державному реєстрі призовників, військовозобов\'язаних та '
+             'резервістів — 21 цифра. У військово-обліковому документі цей '
+             'номер підписаний як VIN-код.')
+    # гр. 9
+    military_document_type = fields.Selection([
+        ('military_card', 'Військовий квиток'),
+        ('officer_card', 'Посвідчення офіцера запасу'),
+        ('temp_certificate', 'Тимчасове посвідчення військовозобов\'язаного'),
+        ('conscript_card', 'Посвідчення про приписку до призовної дільниці'),
+        ('electronic', 'Військово-обліковий документ в електронній формі'),
+    ], string='Тип військово-облікового документа',
+        help='Графа 9 Списків — разом із номером і датою формування документа.')
+    military_document_date = fields.Date(
+        string='Дата ВОД',
+        help='Дата видачі військово-облікового документа у паперовій формі '
+             'або дата і час формування документа в електронній формі '
+             '(графа 9 Списків).')
+    # гр. 13
+    military_deferment_type = fields.Selection([
+        ('unfit', 'За станом здоров\'я'),
+        ('children_three', 'Троє і більше дітей до 18 років'),
+        ('single_parent', 'Самостійне виховання дитини'),
+        ('disabled_child', 'Дитина з інвалідністю'),
+        ('care', 'Догляд за особою з інвалідністю I (II) групи'),
+        ('student', 'Здобуття освіти (денна / дуальна форма)'),
+        ('teacher', 'Педагогічний (науково-педагогічний) працівник'),
+        ('conscript_basic', 'Від призову на базову військову службу'),
+        ('other', 'Інша підстава'),
+    ], string='Підстава відстрочки', tracking=True,
+        help='Графа 13 Списків — усі відстрочки, КРІМ бронювання. '
+             'Бронювання показується окремо у графі 14.')
+    military_deferment_until = fields.Date(
+        string='Відстрочка до', tracking=True,
+        help='Строк дії відстрочки (графа 13 Списків).')
+    military_deferment_basis = fields.Char(
+        string='Норма закону (відстрочка)',
+        compute='_compute_military_deferment_basis',
+        store=True, readonly=False,
+        help='Текст, який друкується у графі 13 поряд зі строком. '
+             'Підставляється з обраного типу відстрочки, але лишається '
+             'редагованим — формулювання підстави з часом змінюються.')
+    # гр. 15
+    military_service_status = fields.Selection([
+        ('none', 'Не проходить'),
+        ('serving', 'Проходить військову службу'),
+    ], string='Наявність військової служби', default='none', tracking=True,
+        help='Графа 15 Списків. «Проходить» — для осіб, призваних '
+             '(прийнятих) на військову службу під час особливого періоду; '
+             'вони лишаються у Списках із відміткою «Військовослужбовець з ...».')
+    military_service_since = fields.Date(
+        string='Військовослужбовець з',
+        help='Дата початку військової служби (графи 15 і 18 Списків).')
+    # гр. 16
+    military_mob_order_number = fields.Char(
+        string='Мобілізаційне розпорядження №',
+        help='Графа 16 Списків: номер мобілізаційного розпорядження.')
+    military_mob_order_date = fields.Date(
+        string='Дата моброзпорядження',
+        help='Графа 16 Списків: дата видачі мобілізаційного розпорядження.')
+    military_mob_team = fields.Char(
+        string='Команда', size=16,
+        help='Номер команди за мобілізаційним розпорядженням. У кожній групі '
+             'Списків такі особи друкуються окремо, у послідовності зростання '
+             'нумерації команд (п. 36 Порядку № 1487).')
+    # гр. 17
+    military_position_order = fields.Char(
+        string='Акт про призначення на посаду',
+        help='Графа 17 Списків: реквізити наказу про призначення на посаду '
+             '(або звільнення з посади) — друкується поряд із назвою посади.')
+    # гр. 18
+    military_notification_ids = fields.One2many(
+        'hr.military.notification', 'employee_id',
+        string='Повідомлення до ТЦК')
+    military_notice_ref_manual = fields.Char(
+        string='Повідомлення до ТЦК (з паперового обліку)',
+        help='Реквізити повідомлення, поданого до впровадження системи. '
+             'Друкується у графі 18, доки за працівником немає жодного '
+             'поданого повідомлення в Odoo.')
+    military_notice_ref = fields.Char(
+        string='Повідомлення до ТЦК (реквізити)',
+        compute='_compute_military_notice_ref', store=True,
+        help='Графа 18 Списків: номер і дата останнього поданого до ТЦК та СП '
+             'повідомлення про зміну облікових даних (додаток 4).')
+    military_exclusion_mark = fields.Selection([
+        ('age', 'Виключено з військового обліку за віком'),
+        ('left', 'Звільнено з роботи, завершено навчання (відраховано)'),
+        ('serviceman', 'Військовослужбовець'),
+    ], string='Відмітка у Списках', tracking=True,
+        help='Відмітка у графі 18 Списків за п. 35 Порядку № 1487 та '
+             'роз\'ясненнями до ПКМУ № 812 від 10.06.2026. Записи з відміткою '
+             'зберігаються у Списках до кінця поточного року (п. 44).')
+    military_exclusion_date = fields.Date(
+        string='Дата відмітки',
+        help='Дата події, зазначеної у відмітці графи 18.')
 
     # === Benefits ===
     benefit_ids = fields.Many2many('hr.employee.benefit', string='Benefits')
@@ -351,6 +506,218 @@ class HrEmployee(models.Model):
                 continue
             delta = (employee.military_mlk_retest_date - today).days
             employee.military_mlk_retest_due_soon = 0 <= delta <= 14
+
+    @api.depends('military_register_category', 'gender', 'military_rank_id.category')
+    def _compute_military_list_group(self):
+        """Група Списків персонального військового обліку (п. 36 Порядку № 1487).
+
+        Порядок перевірок відтворює порядок груп у бланку: призовник ніколи не
+        потрапляє до «жіночої» групи (жінки не є призовниками за ст. 15 Закону
+        № 2232-XII), тому категорія обліку перевіряється першою.
+        """
+        for employee in self:
+            category = employee.military_register_category
+            if category not in ('conscript', 'liable', 'reservist'):
+                employee.military_list_group = False
+            elif category == 'conscript':
+                employee.military_list_group = 'conscripts'
+            elif employee.gender == 'female':
+                employee.military_list_group = 'women'
+            elif employee.military_rank_id.category in ('officer', 'general'):
+                employee.military_list_group = 'officers'
+            else:
+                employee.military_list_group = 'soldiers'
+
+    @api.depends('military_deferment_type')
+    def _compute_military_deferment_basis(self):
+        """Підставити типове формулювання норми закону для графи 13.
+
+        Поле readonly=False: кадровик може дописати або замінити текст, і
+        перерахунок не затре правку доти, доки не зміниться сам тип відстрочки.
+        """
+        for employee in self:
+            employee.military_deferment_basis = MILITARY_DEFERMENT_BASIS.get(
+                employee.military_deferment_type, '')
+
+    @api.depends('military_notification_ids.state',
+                 'military_notification_ids.submitted_date',
+                 'military_notification_ids.name')
+    def _compute_military_notice_ref(self):
+        for employee in self:
+            submitted = employee.military_notification_ids.filtered(
+                lambda n: n.state == 'submitted').sorted(
+                    key=lambda n: (n.submitted_date or date.min, n.id))
+            last = submitted[-1] if submitted else None
+            if last and last.submitted_date:
+                employee.military_notice_ref = '%s від %s' % (
+                    last.name or '', last.submitted_date.strftime('%d.%m.%Y'))
+            elif last:
+                employee.military_notice_ref = last.name or ''
+            else:
+                employee.military_notice_ref = False
+
+    # --- Текст граф Списків (додаток 5) ---------------------------------
+    # Кожна графа бланка збирається з кількох реквізитів картки. Складання
+    # винесено з QWeb у методи: тією самою логікою користуються і друкована
+    # форма, і CSV для звіряння з ТЦК, і модуль обліку здобувачів освіти.
+
+    def _military_document_label(self):
+        """Графа 9: тип, номер і дата військово-облікового документа."""
+        self.ensure_one()
+        doc_type = dict(self._fields['military_document_type'].selection).get(
+            self.military_document_type, '')
+        parts = [doc_type, self.military_document_number or '']
+        if self.military_document_date:
+            parts.append('від %s' % self.military_document_date.strftime('%d.%m.%Y'))
+        return ' '.join(part for part in parts if part).strip()
+
+    def _military_passport_label(self):
+        """Графа 10: паспортні дані (паспорт-книжечка або ID-картка)."""
+        self.ensure_one()
+        number = ' '.join(part for part in (
+            self.passport_series or '', self.passport_id or '') if part)
+        parts = [number]
+        if self.passport_issued_by:
+            parts.append('вид. %s' % self.passport_issued_by)
+        if self.passport_issued_date:
+            parts.append(self.passport_issued_date.strftime('%d.%m.%Y'))
+        if self.document_type == 'id_card' and self.passport_record_number:
+            parts.append('запис № %s' % self.passport_record_number)
+        return ', '.join(part for part in parts if part)
+
+    def _military_address_label(self):
+        """Графа 11: адреса задекларованого місця проживання (інакше — фактична)."""
+        self.ensure_one()
+        registration = _join_address_parts([
+            self.registration_zip,
+            self.registration_region_id.name,
+            self.registration_city,
+            self.registration_street,
+            self.registration_street2,
+        ])
+        if registration:
+            return registration
+        return _join_address_parts([
+            self.private_zip,
+            self.private_state_id.name,
+            self.private_city,
+            self.private_street,
+            self.private_street2,
+        ])
+
+    def _military_deferment_label(self):
+        """Графа 13: строк відстрочки і норма закону (без бронювання)."""
+        self.ensure_one()
+        if not self.military_deferment_type:
+            return ''
+        parts = []
+        if self.military_deferment_until:
+            parts.append('до %s' % self.military_deferment_until.strftime('%d.%m.%Y'))
+        if self.military_deferment_basis:
+            parts.append(self.military_deferment_basis)
+        return ' — '.join(parts) if parts else dict(
+            self._fields['military_deferment_type'].selection).get(
+                self.military_deferment_type, '')
+
+    def _military_special_register_label(self):
+        """Графа 14: відомості про перебування на спеціальному обліку.
+
+        На спеціальному військовому обліку перебувають заброньовані на період
+        мобілізації та на воєнний час, тому графа читається з бронювання.
+        Порожньою її не лишають — у бланку пишуть «ні».
+        """
+        self.ensure_one()
+        if not self.military_reservation:
+            return 'ні'
+        if self.military_reservation_until:
+            return 'так, до %s' % self.military_reservation_until.strftime('%d.%m.%Y')
+        return 'так'
+
+    def _military_service_label(self):
+        """Графа 15: наявність військової служби."""
+        self.ensure_one()
+        if self.military_service_status != 'serving':
+            return 'ні'
+        if self.military_service_since:
+            return 'так, з %s' % self.military_service_since.strftime('%d.%m.%Y')
+        return 'так'
+
+    def _military_position_label(self):
+        """Графа 17: посада і реквізити акта про призначення.
+
+        Посада береться зі штатної позиції, а якщо її не заведено — з поля
+        «Посада» на версії договору. Кадровий облік часто ведуть без довідника
+        посад, і графа не має лишатися порожньою через це.
+        """
+        self.ensure_one()
+        position = self.job_id.name or self.job_title or ''
+        return ', '.join(part for part in (position, self.military_position_order or '')
+                         if part)
+
+    def _military_mob_order_label(self):
+        """Графа 16: реквізити мобілізаційного розпорядження і команда."""
+        self.ensure_one()
+        parts = []
+        if self.military_mob_order_number:
+            parts.append('№ %s' % self.military_mob_order_number)
+        if self.military_mob_order_date:
+            parts.append('від %s' % self.military_mob_order_date.strftime('%d.%m.%Y'))
+        if self.military_mob_team:
+            parts.append('команда %s' % self.military_mob_team)
+        return ', '.join(parts)
+
+    def _military_notice_label(self):
+        """Графа 18: реквізити повідомлення до ТЦК та відмітка про вибуття."""
+        self.ensure_one()
+        parts = []
+        # Повідомлення, подані в Odoo, витісняють паперову позначку: вони
+        # актуальніші за те, що перенесли з попереднього обліку.
+        if self.military_notice_ref:
+            parts.append(self.military_notice_ref)
+        elif self.military_notice_ref_manual:
+            parts.append(self.military_notice_ref_manual)
+        if self.military_exclusion_mark:
+            mark = dict(self._fields['military_exclusion_mark'].selection).get(
+                self.military_exclusion_mark, '')
+            # «Військовослужбовець» друкується з датою призову — саме таке
+            # формулювання вимагають роз'яснення до ПКМУ № 812 від 10.06.2026.
+            if self.military_exclusion_mark == 'serviceman':
+                service_start = (self.military_service_since
+                                 or self.military_exclusion_date)
+                if service_start:
+                    mark = '%s з %s' % (mark, service_start.strftime('%d.%m.%Y'))
+            elif self.military_exclusion_date:
+                mark = '%s (%s)' % (
+                    mark, self.military_exclusion_date.strftime('%d.%m.%Y'))
+            parts.append(mark)
+        return '; '.join(parts)
+
+    @api.model
+    def _cron_mark_military_age_excluded(self):
+        """Щоденний cron: відмітка «Виключено з військового обліку за віком».
+
+        За п. 35 Порядку № 1487 Реєстр знімає особу з обліку в день досягнення
+        граничного віку перебування в запасі, а роботодавець протягом семи днів
+        робить відповідну відмітку у Списках. Cron ставить її автоматично і
+        ніколи не перетирає вже наявну відмітку (звільнення чи призов мають
+        пріоритет — вони сталися раніше).
+        """
+        today = date.today()
+        candidates = self.search([
+            ('military_register_category', 'in', ['liable', 'reservist']),
+            ('military_exclusion_mark', '=', False),
+            ('birthday', '!=', False),
+        ])
+        for employee in candidates:
+            limit = (MILITARY_RESERVE_AGE_LIMIT_GENERAL
+                     if employee.military_rank_id.category == 'general'
+                     else MILITARY_RESERVE_AGE_LIMIT)
+            excluded_on = employee.birthday + relativedelta(years=limit)
+            if excluded_on <= today:
+                employee.write({
+                    'military_exclusion_mark': 'age',
+                    'military_exclusion_date': excluded_on,
+                })
 
     @api.model
     def _cron_check_military_reservation_expired(self):

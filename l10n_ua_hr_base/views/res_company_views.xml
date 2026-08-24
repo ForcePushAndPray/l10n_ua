@@ -26,6 +26,7 @@
                             <field name="director_id"/>
                             <field name="accountant_id"/>
                             <field name="hr_manager_id"/>
+                            <field name="military_officer_id"/>
                         </group>
                         <group string="Legal Address">
                             <field name="legal_address"/>
