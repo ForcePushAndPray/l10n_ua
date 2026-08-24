@@ -42,6 +42,19 @@
                     <group string="Опис / нормативне обґрунтування">
                         <field name="description" nolabel="1"/>
                     </group>
+                    <notebook>
+                        <page string="Розміри за періодами">
+                            <field name="rate_ids">
+                                <list editable="bottom">
+                                    <field name="institution_type"/>
+                                    <field name="date_from"/>
+                                    <field name="amount"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="legal_basis" optional="show"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
                 </sheet>
             </form>
         </field>
