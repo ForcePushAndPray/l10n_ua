@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - HR Base',
-    'version': '19.0.1.1.4',
+    'version': '19.0.1.2.1',
     'category': 'Human Resources/Localization',
     'summary': 'Ukrainian HR localization base module',
     'description': """
@@ -12,7 +12,9 @@ Base module for Ukrainian HR localization providing:
 * Employee personal documents (RNOKPP/IPN, passport, ID card)
 * Registration and actual addresses
 * Education information
-* Military accounting
+* Military accounting: Списки персонального військового обліку (додаток 5
+  до Порядку № 1487 у редакції ПКМУ № 916 від 30.07.2025), відомість
+  оперативного обліку (додаток 12), повідомлення до ТЦК зі строками подання
 * Benefits and disability tracking
 * Family members and children
 * Department extensions (KOATUU, separate units)
@@ -61,6 +63,8 @@ This module is required for all other l10n_ua_hr_* modules.
         'report/hr_employee_p2_report.xml',
         'report/hr_employee_list_report.xml',
         'report/hr_employee_military_report.xml',
+        'report/hr_employee_military_form5_report.xml',
+        'report/hr_military_operational_report.xml',
         'report/hr_employee_benefits_report.xml',
         'report/hr_vacancies_report.xml',
     ],

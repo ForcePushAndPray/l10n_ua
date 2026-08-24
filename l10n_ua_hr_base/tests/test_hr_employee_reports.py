@@ -103,6 +103,57 @@ class TestHrEmployeeReports(TestHrUaBase):
         self.assertEqual(report.employee_count, 2)
         self.assertEqual(report.reserved_count, 1)
 
+    def test_military_report_retains_excluded_only_through_current_year(self):
+        employee = self._create_employee(
+            name='Excluded Employee',
+            military_register_category='liable',
+            military_exclusion_mark='age',
+            military_exclusion_date='2025-08-24',
+            hire_date='2020-01-01')
+        self._set_contract_period(employee, '2020-01-01')
+
+        report = self.env['hr.employee.military.report'].create({
+            'company_id': self.company.id,
+            'date': '2025-12-31',
+        })
+        report.action_generate()
+        self.assertIn(employee, report.with_context(
+            active_test=False).employee_ids)
+
+        report.date = '2026-01-01'
+        report.action_generate()
+        self.assertNotIn(employee, report.with_context(
+            active_test=False).employee_ids)
+
+    def test_operational_totals_are_snapshot_not_historical_headcount(self):
+        current = self._create_employee(
+            name='Current Liable', military_register_category='liable',
+            hire_date='2026-01-10')
+        self._set_contract_period(current, '2026-01-10')
+        dismissed = self._create_employee(
+            name='Dismissed Liable', military_register_category='liable',
+            hire_date='2026-02-01')
+        self._set_contract_period(dismissed, '2026-02-01', '2026-03-31')
+        excluded = self._create_employee(
+            name='Excluded Liable', military_register_category='liable',
+            military_exclusion_mark='age',
+            military_exclusion_date='2025-08-24',
+            hire_date='2020-01-01')
+        self._set_contract_period(excluded, '2020-01-01')
+
+        report = self.env[
+            'hr.employee.military.operational.report'].create({
+                'company_id': self.company.id,
+                'date_from': '2026-01-01',
+                'date_to': '2026-12-31',
+            })
+        soldiers = next(row for row in report._get_operational_rows()
+                        if row['number'] == '1.2')
+
+        self.assertEqual(soldiers['total'], 1)
+        self.assertEqual(soldiers['hired'], 2)
+        self.assertEqual(soldiers['dismissed'], 1)
+
     def test_hr_employee_military_operational_report(self):
         """#92 — оперативний облік: журнал змін за період."""
         employee = self._create_employee(

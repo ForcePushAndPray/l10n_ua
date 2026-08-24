@@ -1,7 +1,9 @@
 import base64
 import csv
 import io
-from datetime import date
+from datetime import date, timedelta
+
+from dateutil.relativedelta import relativedelta
 
 from odoo import models, fields, api, _
 
@@ -64,6 +66,21 @@ def _was_employed_on(employee, as_of):
 
     departure = employee.departure_date if has(employee, 'departure_date') else False
     return not departure or departure >= as_of
+
+
+def _employment_event_dates(employee, event):
+    """Return dated hires or departures from contract-version history."""
+    employee = employee.sudo().with_context(active_test=False)
+    version_field = (
+        'contract_date_start' if event == 'hire' else 'contract_date_end')
+    dates = [getattr(version, version_field, False)
+             for version in employee.version_ids]
+    dates = [value for value in dates if value]
+    if dates:
+        return dates
+    fallback = 'hire_date' if event == 'hire' else 'departure_date'
+    value = getattr(employee, fallback, False)
+    return [value] if value else []
 
 class HrEmployeeListReport(models.Model):
     """Employee List Report (Список працівників).
@@ -183,6 +200,21 @@ class HrEmployeeMilitaryReport(models.Model):
         tracking=True,
     )
     notes = fields.Text()
+    # Підписанти Списків за п. 40 Порядку № 1487: щороку до 25 січня (станом
+    # на 1 січня) Списки підписують керівник і особа, відповідальна за ведення
+    # військового обліку, після чого їх реєструє служба діловодства.
+    director_id = fields.Many2one(
+        'hr.employee', string='Керівник',
+        default=lambda self: self.env.company.director_id,
+    )
+    military_officer_id = fields.Many2one(
+        'hr.employee', string='Відповідальний за військовий облік',
+        default=lambda self: self.env.company.military_officer_id,
+    )
+    registration_ref = fields.Char(
+        string='Реєстраційний номер',
+        help='Номер, під яким Списки зареєстровано у службі діловодства '
+             '(п. 40 Порядку № 1487).')
 
     @api.depends('date')
     def _compute_name(self):
@@ -191,6 +223,39 @@ class HrEmployeeMilitaryReport(models.Model):
                 rec.name = f"Військовозобов'язані станом на {rec.date.strftime('%d.%m.%Y')}"
             else:
                 rec.name = "Військовозобов'язані"
+
+    def _get_form5_groups(self):
+        """Розкласти працівників по чотирьох групах Списків (п. 36 № 1487).
+
+        Повертає список кортежів (код, назва, працівники) у порядку груп
+        бланка; порожні групи не пропускаються — у формі має бути видно всі
+        чотири, навіть якщо в якійсь із них нікого немає.
+
+        Усередині групи спершу йдуть особи з мобілізаційними розпорядженнями,
+        у послідовності зростання номерів команд, далі — решта за абеткою.
+        """
+        self.ensure_one()
+        employees = self.with_context(active_test=False).employee_ids
+        labels = dict(
+            self.env['hr.employee']._fields['military_list_group'].selection)
+
+        def sort_key(employee):
+            team = (employee.military_mob_team or '').strip()
+            # Команди сортуються як числа, коли це числа: '10' має йти після
+            # '9', а не між '1' і '2'.
+            return (
+                0 if team else 1,
+                (0, int(team)) if team.isdigit() else (1, team.lower()),
+                (employee.name or '').lower(),
+            )
+
+        groups = []
+        for code in ('officers', 'soldiers', 'women', 'conscripts'):
+            members = employees.filtered(
+                lambda e: e.military_list_group == code)
+            groups.append((code, labels.get(code, code),
+                           members.sorted(key=sort_key)))
+        return groups
 
     @api.depends('employee_ids', 'employee_ids.military_reservation')
     def _compute_employee_count(self):
@@ -209,12 +274,39 @@ class HrEmployeeMilitaryReport(models.Model):
             ])
             as_of = rec.date
             employees = candidates.filtered(
-                lambda e: _was_employed_on(e, as_of))
+                lambda e: rec._is_listed_on(e, as_of))
             rec.write({
                 'employee_ids': [(6, 0, employees.ids)],
                 'state': 'generated',
             })
         return True
+
+    def _is_listed_on(self, employee, as_of):
+        """Whether an employee belongs in Form 5 on the report date.
+
+        Paragraph 44 keeps an excluded person in the Lists only until the end
+        of the exclusion year.  Without this guard an active employee marked
+        as excluded by age remained in every later annual List because the
+        employment-period check continued to return true.
+        """
+        self.ensure_one()
+        excluded_on = employee.military_exclusion_date
+        if excluded_on and as_of and excluded_on <= as_of:
+            return excluded_on.year == as_of.year
+        return _was_employed_on(employee, as_of)
+
+    def _is_retained_after_leaving(self, employee):
+        """Чи лишається у Списках той, хто вже не працює (п. 44 № 1487).
+
+        Звільнені, відраховані та призвані на військову службу зберігаються у
+        Списках до кінця поточного року — з відміткою у графі 18. Ознакою
+        служить сама відмітка: без неї запис у формі був би незрозумілим.
+        """
+        self.ensure_one()
+        if not employee.military_exclusion_mark:
+            return False
+        marked_on = employee.military_exclusion_date
+        return bool(marked_on and self.date and marked_on.year == self.date.year)
 
     def action_draft(self):
         self.write({'state': 'draft'})
@@ -225,39 +317,65 @@ class HrEmployeeMilitaryReport(models.Model):
             'l10n_ua_hr_base.action_report_hr_employee_military'
         ).report_action(self)
 
+    def action_print_form5(self):
+        """Друк Списків за офіційним бланком (додаток 5 до Порядку № 1487)."""
+        self.ensure_one()
+        return self.env.ref(
+            'l10n_ua_hr_base.action_report_hr_employee_military_form5'
+        ).report_action(self)
+
     # --- Експорт списку персонального військового обліку для ТЦК (#156) ---
     export_data = fields.Binary(string='Export File', readonly=True, copy=False)
     export_filename = fields.Char(string='Export File Name', readonly=True, copy=False)
 
     def action_export_csv(self):
-        """Сформувати CSV-список персонального військового обліку для ТЦК.
+        """Вивантажити Списки у CSV — граф у графу з бланком додатка 5.
 
-        Склад даних — за Постановою КМУ № 1487 (персональний облік): РНОКПП,
-        ПІБ, дата народження, категорія обліку, ВОС, звання, ТЦК, документ,
-        бронювання. Файл — windows-1251 (для держсистем/Excel UA).
+        Використовується для звіряння облікових даних з ТЦК та СП (п. 34
+        Порядку № 1487): колонки повторюють 18 граф форми в редакції ПКМУ
+        № 916 від 30.07.2025, тож рядки можна зіставляти напряму.
+        Файл — windows-1251 (для держсистем / Excel UA).
         """
         self.ensure_one()
         buf = io.StringIO()
         writer = csv.writer(buf, delimiter=';')
         writer.writerow([
-            'РНОКПП', 'ПІБ', 'Дата народження', 'Категорія обліку',
-            'ВОС', 'Звання', 'ТЦК та СП', 'Військовий документ',
-            'Заброньований', 'Бронювання до'])
-        for emp in self.with_context(active_test=False).employee_ids:
-            writer.writerow([
-                emp.rnokpp or '',
-                emp.name or '',
-                emp.birthday.strftime('%d.%m.%Y') if emp.birthday else '',
-                dict(emp._fields['military_register_category'].selection).get(
-                    emp.military_register_category, ''),
-                emp.military_specialty or '',
-                emp.military_rank_id.name or '',
-                emp.military_tcc_id.name or '',
-                emp.military_document_number or '',
-                'так' if emp.military_reservation else 'ні',
-                emp.military_reservation_until.strftime('%d.%m.%Y')
-                if emp.military_reservation_until else '',
-            ])
+            '№', 'Категорія військового обліку', 'Військове звання',
+            'Прізвище, власне ім\'я та по батькові', 'Дата народження',
+            'Реєстраційний номер запису в ЄДР', 'РНОКПП', 'ВОС',
+            'Реквізити військово-облікового документа',
+            'Реквізити паспорта', 'Адреса місця проживання', 'ТЦК та СП',
+            'Відстрочка', 'Спеціальний облік', 'Військова служба',
+            'Мобілізаційне розпорядження', 'Посада, акт про призначення',
+            'Реквізити повідомлення'])
+        row_number = 0
+        for _code, group_label, employees in self._get_form5_groups():
+            if not employees:
+                continue
+            writer.writerow([group_label])
+            for emp in employees:
+                row_number += 1
+                writer.writerow([
+                    row_number,
+                    dict(emp._fields['military_register_category'].selection).get(
+                        emp.military_register_category, ''),
+                    emp.military_rank_id.name or '',
+                    emp.name or '',
+                    emp.birthday.strftime('%d.%m.%Y') if emp.birthday else '',
+                    emp.military_vin_code or '',
+                    emp.rnokpp or '',
+                    emp.military_specialty or '',
+                    emp._military_document_label(),
+                    emp._military_passport_label(),
+                    emp._military_address_label(),
+                    emp.military_tcc_id.name or '',
+                    emp._military_deferment_label(),
+                    emp._military_special_register_label(),
+                    emp._military_service_label(),
+                    emp._military_mob_order_label(),
+                    emp._military_position_label(),
+                    emp._military_notice_label(),
+                ])
         content = buf.getvalue().encode('cp1251', 'replace')
         self.export_data = base64.b64encode(content)
         self.export_filename = 'vijskovyj_oblik_%s.csv' % (
@@ -298,6 +416,64 @@ class HrMilitaryNotification(models.Model):
         ('submitted', 'Submitted'),
     ], string='Status', default='draft', tracking=True)
     submitted_date = fields.Date(string='Submitted On', readonly=True)
+    deadline_date = fields.Date(
+        string='Подати до', compute='_compute_deadline_date', store=True,
+        help='Строк подання за п. 34 Порядку № 1487: сім днів з дня видання '
+             'наказу про прийняття на роботу (навчання) чи звільнення; для '
+             'змін облікових даних — до 5 числа наступного місяця.')
+    is_overdue = fields.Boolean(
+        string='Прострочено', compute='_compute_is_overdue', store=True,
+        help='Повідомлення не подане, а строк уже минув.')
+
+    @api.depends('notification_type', 'event_date')
+    def _compute_deadline_date(self):
+        for rec in self:
+            if not rec.event_date:
+                rec.deadline_date = False
+            elif rec.notification_type == 'data_change':
+                # «Щомісяця до 5 числа» — тобто до 5-го числа місяця,
+                # наступного за місяцем, у якому зміну внесено.
+                first_next_month = (rec.event_date.replace(day=1)
+                                    + relativedelta(months=1))
+                rec.deadline_date = first_next_month.replace(day=5)
+            else:
+                rec.deadline_date = rec.event_date + timedelta(days=7)
+
+    @api.depends('deadline_date', 'state')
+    def _compute_is_overdue(self):
+        today = date.today()
+        for rec in self:
+            rec.is_overdue = bool(
+                rec.state == 'draft'
+                and rec.deadline_date
+                and rec.deadline_date < today
+            )
+
+    @api.model
+    def _cron_check_notification_deadlines(self):
+        """Щоденний cron: підняти прапорець на прострочених повідомленнях.
+
+        Обчислюване поле залежить від дат, а не від плину часу, тож саме воно
+        на зміну календаря не перерахується — cron переписує його напряму й
+        нагадує у чатері про кожне протерміноване повідомлення.
+        """
+        today = date.today()
+        overdue = self.search([
+            ('state', '=', 'draft'),
+            ('deadline_date', '!=', False),
+            ('deadline_date', '<', today),
+            ('is_overdue', '=', False),
+        ])
+        if not overdue:
+            return
+        overdue.write({'is_overdue': True})
+        for rec in overdue:
+            rec.message_post(body=_(
+                'Повідомлення до ТЦК та СП щодо %(employee)s не подане: строк '
+                'сплив %(deadline)s (п. 34 Порядку № 1487).',
+                employee=rec.employee_id.name,
+                deadline=rec.deadline_date.strftime('%d.%m.%Y'),
+            ))
     # Snapshot реквізитів на момент подання (аудит).
     snapshot_rnokpp = fields.Char(string='RNOKPP (snapshot)', readonly=True)
     snapshot_data = fields.Text(string='Data (snapshot)', readonly=True)
@@ -482,6 +658,103 @@ class HrEmployeeMilitaryOperationalReport(models.Model):
     def action_draft(self):
         self.line_ids.unlink()
         self.write({'state': 'draft'})
+
+    # --- Відомість оперативного обліку (додаток 12 до Порядку № 1487) ------
+    # Журнал змін вище — робочий інструмент кадровика. Сама ж відомість, яка
+    # за п. 33 зберігається разом зі Списками, — це зведення чисельностей за
+    # тими самими групами, що й Списки. Обидва подання будуються з одних даних.
+    director_id = fields.Many2one(
+        'hr.employee', string='Керівник',
+        default=lambda self: self.env.company.director_id,
+    )
+    military_officer_id = fields.Many2one(
+        'hr.employee', string='Відповідальний за військовий облік',
+        default=lambda self: self.env.company.military_officer_id,
+    )
+
+    def _get_operational_rows(self):
+        """Порахувати рядки відомості оперативного обліку.
+
+        Колонки — за бланком додатка 12: усього, мають мобілізаційні
+        розпорядження, заброньовані, не заброньовані й без розпоряджень,
+        прийнято та звільнено з 1 січня. Останні дві рахуються від початку
+        року до кінця періоду відомості, а не за сам період: бланк вимагає
+        накопичувальний підсумок з 1 січня.
+        """
+        self.ensure_one()
+        # hire_date / departure_date живуть на hr.version за групою
+        # hr.group_hr_user, а відомість відкрита і кадровому офіцеру без неї —
+        # тому читаємо від суперюзера, як і `_was_employed_on` вище. Назовні
+        # виходять лише знеособлені підсумки.
+        employees = self.env['hr.employee'].sudo().with_context(
+            active_test=False).search([
+                ('company_id', '=', self.company_id.id),
+                ('military_register_category', 'in',
+                 ['conscript', 'liable', 'reservist']),
+            ])
+        year_start = date(self.date_to.year, 1, 1) if self.date_to else None
+
+        def counts(records):
+            # Totals in Appendix 12 are a snapshot as of date_to.  Historical
+            # records remain available solely for the cumulative hired and
+            # dismissed columns; otherwise archived or already excluded staff
+            # inflated the current headcount forever.
+            current = records.filtered(
+                lambda e: _was_employed_on(e, self.date_to)
+                and not (e.military_exclusion_date
+                         and e.military_exclusion_date <= self.date_to))
+            with_mob = current.filtered('military_mob_order_number')
+            reserved = current.filtered(
+                lambda e: e.military_reservation
+                and not e.military_reservation_expired)
+            hired = dismissed = 0
+            if year_start:
+                hired = len(records.filtered(
+                    lambda e: any(
+                        year_start <= value <= self.date_to
+                        for value in _employment_event_dates(e, 'hire'))))
+                dismissed = len(records.filtered(
+                    lambda e: any(
+                        year_start <= value <= self.date_to
+                        for value in _employment_event_dates(e, 'dismissal'))))
+            return {
+                'total': len(current),
+                'with_mob': len(with_mob),
+                'reserved': len(reserved),
+                'free': len(current - with_mob - reserved),
+                'hired': hired,
+                'dismissed': dismissed,
+            }
+
+        by_group = {
+            code: employees.filtered(lambda e: e.military_list_group == code)
+            for code in ('officers', 'soldiers', 'women', 'conscripts')
+        }
+        liable = by_group['officers'] + by_group['soldiers'] + by_group['women']
+        rows = [
+            {'number': '1', 'label': 'Військовозобов\'язані (у тому числі '
+                                     'резервісти), із них:', **counts(liable)},
+            {'number': '1.1', 'label': 'Військовозобов\'язані офіцерського '
+                                       'складу (у тому числі резервісти)',
+             **counts(by_group['officers'])},
+            {'number': '1.2', 'label': 'Військовозобов\'язані рядового, '
+                                       'сержантського та старшинського складу '
+                                       '(у тому числі резервісти)',
+             **counts(by_group['soldiers'])},
+            {'number': '1.3', 'label': 'Військовозобов\'язані-жінки '
+                                       '(у тому числі резервісти)',
+             **counts(by_group['women'])},
+            {'number': '2', 'label': 'Призовники',
+             **counts(by_group['conscripts'])},
+        ]
+        return rows
+
+    def action_print(self):
+        """Друк відомості оперативного обліку (додаток 12)."""
+        self.ensure_one()
+        return self.env.ref(
+            'l10n_ua_hr_base.action_report_hr_military_operational'
+        ).report_action(self)
 
 
 class HrEmployeeMilitaryOperationalReportLine(models.Model):
