@@ -153,6 +153,11 @@ class TestHrEmployeeReports(TestHrUaBase):
         self.assertEqual(soldiers['total'], 1)
         self.assertEqual(soldiers['hired'], 2)
         self.assertEqual(soldiers['dismissed'], 1)
+        report_action = self.env.ref(
+            'l10n_ua_hr_base.action_report_hr_military_operational')
+        html, _content_type = report_action._render_qweb_html(
+            report_action.report_name, report.ids)
+        self.assertIn('ВІДОМІСТЬ', html.decode())
 
     def test_hr_employee_military_operational_report(self):
         """#92 — оперативний облік: журнал змін за період."""

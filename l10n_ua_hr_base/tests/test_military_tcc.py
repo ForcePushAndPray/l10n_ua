@@ -34,6 +34,11 @@ class TestMilitaryTcc(TestHrUaBase):
         self.assertIn('РНОКПП', text)
         self.assertIn(emp.rnokpp, text)
         self.assertIn('Військовий Іван', text)
+        report_action = self.env.ref(
+            'l10n_ua_hr_base.action_report_hr_employee_military_form5')
+        html, _content_type = report_action._render_qweb_html(
+            report_action.report_name, report.ids)
+        self.assertIn('СПИСКИ', html.decode())
 
     def test_notification_submit(self):
         emp = self._military_employee()
