@@ -125,6 +125,23 @@ class TestScholarship(TransactionCase):
 
         self.assertEqual(line.amount, 1234)
 
+    def test_incomplete_period_falls_back_to_default_amount(self):
+        """Очищений «Рік» у формі не має валити розрахунок суми."""
+        self.env.company.l10n_ua_education_type = 'zvo_3_4'
+        self.scholarship_type.monthly_amount = 1500
+
+        payment = self.env['l10n_ua.scholarship.payment'].new({
+            'scholarship_type_id': self.scholarship_type.id,
+            'period_year': False,
+            'period_month': '9',
+        })
+        line = self.env['l10n_ua.scholarship.payment.line'].new({
+            'payment_id': payment.id,
+            'member_id': self.member1.id,
+        })
+
+        self.assertEqual(line.amount, 1500)
+
     def test_lifecycle(self):
         payment = self.env['l10n_ua.scholarship.payment'].create({
             'scholarship_type_id': self.scholarship_type.id,

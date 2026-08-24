@@ -253,8 +253,10 @@ class L10nUaScholarshipPaymentLine(models.Model):
         for line in self:
             if not line.amount and line.payment_id.scholarship_type_id:
                 payment = line.payment_id
-                effective_date = date(
-                    payment.period_year, int(payment.period_month), 1)
+                effective_date = None
+                if payment.period_year and payment.period_month:
+                    effective_date = date(
+                        payment.period_year, int(payment.period_month), 1)
                 line.amount = payment.scholarship_type_id._get_monthly_amount(
                     effective_date, payment.company_id)
 
