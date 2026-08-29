@@ -70,20 +70,10 @@ class L10nUaTaxRequest(models.Model):
             rec.state = 'generated'
         return True
 
-    # ЄДРПОУ і код ДПІ компанії оголошує `l10n_ua_hr_base` — кадровий модуль,
-    # якого цей не вимагає й вимагати не має. Доки поля живуть там, обидва
-    # звертання мусять питати реєстр полів, інакше модуль без кадрів падає
-    # AttributeError замість зрозумілого повідомлення. Правильне місце для цих
-    # реквізитів — спільний нижній шар; заведено окремо.
     @staticmethod
-    def _company_field(company, name):
-        return company[name] if name in company._fields else False
-
-    @classmethod
-    def _request_edrpou(cls, company):
-        """Код ЄДРПОУ компанії, стійко до набору встановлених модулів."""
-        return (cls._company_field(company, 'edrpou')
-                or company.company_registry or company.vat or '')
+    def _request_edrpou(company):
+        """Код ЄДРПОУ компанії; `company_registry`/`vat` — запасні джерела."""
+        return company.edrpou or company.company_registry or company.vat or ''
 
     def _request_vals(self):
         """Зібрати реквізити запиту (компанія + період). Відсутні обов'язкові —
@@ -91,7 +81,7 @@ class L10nUaTaxRequest(models.Model):
         self.ensure_one()
         company = self.company_id
         edrpou = re.sub(r'\D', '', self._request_edrpou(company))
-        office = self._company_field(company, 'tax_office_code') or ''
+        office = company.tax_office_code or ''
         missing = []
         if not edrpou:
             missing.append(_('код ЄДРПОУ компанії'))
