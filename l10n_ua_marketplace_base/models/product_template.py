@@ -26,10 +26,6 @@ class ProductTemplate(models.Model):
         string='Marketplace Categories',
         help='Default marketplace categories for this product',
     )
-    uktzed_code = fields.Char(
-        string='UKTZED Code',
-        help='Ukrainian Classification of Foreign Economic Activity',
-    )
 
     def _compute_marketplace_item_count(self):
         for product in self:

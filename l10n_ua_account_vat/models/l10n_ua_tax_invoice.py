@@ -345,6 +345,21 @@ class L10nUaTaxInvoice(models.Model):
         if self.state != 'draft':
             raise UserError(_('XML можна генерувати тільки для чернеток.'))
 
+        # Гр. 3.1 (УКТ ЗЕД) для товару і гр. 3.3 (ДКПП) для послуги —
+        # обов'язкові за Порядком 1307 п. 16: ЄРПН не реєструє рядок без коду.
+        # Доки код підтягувався з поля, якого не існувало, документ виходив
+        # порожнім і помилка спливала аж у квитанції ДПС. Хай уже тут.
+        uncoded = self.line_ids.filtered(
+            lambda line: not line.uktzed_code and not line.dkpp_code)
+        if uncoded:
+            raise UserError(_(
+                'Рядки без коду УКТ ЗЕД або ДКПП — ЄРПН таку ПН не '
+                'зареєструє:\n%(lines)s\n\nКод береться з номенклатури; '
+                'заповніть його на товарі й перестворіть ПН або впишіть у '
+                'рядок вручну.',
+                lines='\n'.join('— %s' % (line.name or '?') for line in uncoded),
+            ))
+
         xml = self._build_xml()
         xml_bytes = xml.encode('windows-1251')
         self.write({

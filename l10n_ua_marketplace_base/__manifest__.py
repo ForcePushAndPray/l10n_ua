@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Marketplace Base',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Sales/Sales',
     'summary': 'Ukrainian marketplace integrations base module',
     'description': """
@@ -33,6 +33,7 @@ Supported marketplaces (via specific modules):
         'delivery',
         'account',
         'phone_validation',
+        'l10n_ua_product_base',
     ],
     'data': [
         # Security

@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - PRRO Base',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Accounting/Localization',
     'summary': 'Ukrainian PRRO (fiscal registrar) base module',
     'description': """
@@ -21,6 +21,7 @@ Requires l10n_ua_account_base module.
     'license': 'LGPL-3',
     'depends': [
         'l10n_ua_account_base',
+        'l10n_ua_product_base',
         'point_of_sale',
     ],
     'data': [
