@@ -192,6 +192,23 @@ class L10nUaPrroReceiptLine(models.Model):
         related='receipt_id.currency_id',
     )
 
+    @api.onchange('product_id')
+    def _onchange_product_id(self):
+        """Take the description and the УКТ ЗЕД code from the product.
+
+        The code is mandatory in a receipt for excisable and for imported
+        goods, and it belongs to the product — typing it per line, as this
+        model used to require, is how a receipt ends up without one.
+        Only an empty field is filled: a line edited by hand keeps its value.
+        """
+        for line in self:
+            if not line.product_id:
+                continue
+            if not line.name:
+                line.name = line.product_id.display_name
+            if not line.uktzed_code:
+                line.uktzed_code = line.product_id.uktzed_code
+
     @api.depends('quantity', 'price_unit', 'discount')
     def _compute_subtotal(self):
         for line in self:

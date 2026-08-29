@@ -95,7 +95,9 @@ class HrStaffingTable(models.Model):
                 total_rate = 0.0
                 for emp in employees:
                     version = emp.current_version_id
-                    if version and hasattr(version, 'work_rate') and version.work_rate:
+                    # `work_rate` додає l10n_ua_hr_contract, який залежить
+                    # від цього модуля, а не навпаки — тож поля може не бути.
+                    if version and 'work_rate' in version._fields and version.work_rate:
                         total_rate += version.work_rate
                     else:
                         total_rate += 1.0  # Default full-time

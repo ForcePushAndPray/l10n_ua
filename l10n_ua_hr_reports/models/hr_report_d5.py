@@ -138,7 +138,7 @@ class HrReportD5(models.Model):
                     category = '2'  # Gig contract treated as civil
 
             # Check for disability benefits
-            if hasattr(employee, 'benefit_ids') and employee.benefit_ids:
+            if employee.benefit_ids:
                 disability_benefits = employee.benefit_ids.filtered(
                     lambda b: 'disability' in b.code.lower() or 'інвалід' in b.name.lower()
                 )

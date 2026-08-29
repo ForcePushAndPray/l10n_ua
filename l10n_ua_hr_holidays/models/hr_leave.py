@@ -985,12 +985,14 @@ class HrLeave(models.Model):
         date_from = date_to - relativedelta(months=12) + relativedelta(days=1)
 
         # Get payslips for the period
+        # Розрахунковий листок дає `l10n_ua_hr_salary`, якого цей модуль не
+        # вимагає, — перевіряємо модель, а не поля на ній (див. hr_sick_leave).
         payslips = self.env['hr.payslip'].search([
             ('employee_id', '=', self.employee_id.id),
             ('date_from', '>=', date_from),
             ('date_to', '<=', date_to),
             ('state', '=', 'done'),
-        ])
+        ]) if 'hr.payslip' in self.env else None
 
         if not payslips:
             # Fallback to version wage (Odoo 19 uses version_ids instead of contract_id)
@@ -1006,26 +1008,10 @@ class HrLeave(models.Model):
         excluded_days = 0
 
         for payslip in payslips:
-            # Check if payslip has line_ids (Odoo payroll module structure)
-            if hasattr(payslip, 'line_ids') and payslip.line_ids:
-                for line in payslip.line_ids:
-                    # Check if salary rule has is_basic_salary attribute
-                    if hasattr(line, 'salary_rule_id') and line.salary_rule_id:
-                        rule = line.salary_rule_id
-                        # Include if marked as basic salary or if it's a base category
-                        if getattr(rule, 'is_basic_salary', False) or \
-                           getattr(rule, 'category_id', False) and \
-                           rule.category_id.code in ('BASIC', 'ALW', 'GROSS'):
-                            total_earnings += line.total or 0
-                    else:
-                        # Fallback: include all positive lines
-                        total_earnings += max(0, line.total or 0)
-            else:
-                # Fallback: use gross_salary if available, else net
-                if hasattr(payslip, 'gross_salary'):
-                    total_earnings += payslip.gross_salary or 0
-                elif hasattr(payslip, 'net_wage'):
-                    total_earnings += payslip.net_wage or 0
+            # УВАГА: береться весь нарахований дохід — див. коментар-близнюк
+            # у `hr_sick_leave.py`. Відбір за `is_basic_salary` тут не
+            # застосовується й ніколи не застосовувався.
+            total_earnings += payslip.gross_salary or 0
 
         # Calculate excluded days from sick leave and unpaid leave in the period
         sick_leave_type = self.env['hr.leave.type'].search([

@@ -42,7 +42,7 @@ class TestErpnRegister(TransactionCase):
             'company_id': self.company.id,
             'line_ids': [(0, 0, {
                 'name': 'Послуги', 'quantity': 1, 'price_unit': 10000,
-                'vat_rate': '20'})],
+                'vat_rate': '20', 'dkpp_code': '62.01.11-00.00'})],
         }
         vals.update(kwargs)
         return self.env['l10n_ua.tax.invoice'].create(vals)

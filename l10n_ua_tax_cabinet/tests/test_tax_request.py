@@ -28,6 +28,19 @@ class TestTaxRequest(TransactionCase):
         super().setUpClass()
         cls.company = cls.env.company
         cls.company.write({'edrpou': '12345678', 'tax_office_code': '1716'})
+        # Конфігурація кабінету потрібна для подання, і тест має заводити її
+        # сам: доти вона бралася з бази, тобто ці два тести проходили лише
+        # там, де конфіг лишив по собі хтось інший (тести l10n_ua_account_vat).
+        # UNIQUE(company_id) — переуживаємо наявний рядок, якщо він є.
+        config = cls.env['l10n_ua.tax.cabinet.config'].with_context(
+            active_test=False).search([('company_id', '=', cls.company.id)], limit=1)
+        vals = {'name': 'Кабінет (тест запиту)', 'taxpayer_code': '12345678',
+                'active': True}
+        if config:
+            config.write(vals)
+        else:
+            cls.env['l10n_ua.tax.cabinet.config'].create(
+                {**vals, 'company_id': cls.company.id})
 
     def _request(self, **kw):
         vals = {

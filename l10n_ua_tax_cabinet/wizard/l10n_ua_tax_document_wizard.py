@@ -130,8 +130,9 @@ class L10nUaTaxDocumentWizard(models.TransientModel):
 
         # Find and call the specific generation method
         method_name = f'_generate_xml_{self.document_type_code}'
-        if hasattr(self, method_name):
-            xml_content, filename = getattr(self, method_name)()
+        generator = getattr(self, method_name, None)
+        if generator:
+            xml_content, filename = generator()
         else:
             raise UserError(_(
                 "Document type '%s' is not supported yet. "

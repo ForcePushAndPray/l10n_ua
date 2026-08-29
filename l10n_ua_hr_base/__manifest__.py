@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - HR Base',
-    'version': '19.0.1.2.1',
+    'version': '19.0.1.3.0',
     'category': 'Human Resources/Localization',
     'summary': 'Ukrainian HR localization base module',
     'description': """
@@ -29,6 +29,7 @@ This module is required for all other l10n_ua_hr_* modules.
     'license': 'LGPL-3',
     'depends': [
         'hr',
+        'l10n_ua_company_base',
     ],
     'data': [
         'security/hr_ua_security.xml',

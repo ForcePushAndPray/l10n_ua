@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Account VAT',
-    'version': '19.0.5.0.0',
+    'version': '19.0.5.1.0',
     'category': 'Accounting/Localization',
     'summary': 'Ukrainian VAT: tax invoices, registers, declaration',
     'description': """
@@ -24,6 +24,7 @@ Requires l10n_ua_tax module.
     'license': 'LGPL-3',
     'depends': [
         'account',
+        'l10n_ua_product_base',
         'l10n_ua_tax',
         'l10n_ua_sign',
         'l10n_ua_tax_cabinet',

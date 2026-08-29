@@ -294,7 +294,9 @@ class MarketplacePricelist(models.Model):
             etree.SubElement(offer, 'description').text = description
 
         # Brand
-        if hasattr(product, 'product_brand_id') and product.product_brand_id:
+        # `product_brand_id` дає OCA-модуль `product_brand`, якого немає ні в
+        # ядрі, ні в залежностях: питаємо реєстр полів, а не об'єкт.
+        if 'product_brand_id' in product._fields and product.product_brand_id:
             etree.SubElement(offer, 'vendor').text = product.product_brand_id.name
 
         # Stock quantity

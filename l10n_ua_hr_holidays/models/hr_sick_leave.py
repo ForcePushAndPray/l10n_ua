@@ -250,12 +250,16 @@ class HrSickLeave(models.Model):
         date_to = self.date_from.replace(day=1) - relativedelta(days=1)
         date_from = (date_to - relativedelta(months=11)).replace(day=1)
 
+        # Розрахунковий листок дає `l10n_ua_hr_salary`, якого цей модуль не
+        # вимагає: відпустки й лікарняні ведуть і без нарахування зарплати.
+        # Тому перевіряємо модель, а не поля на ній — усередині гілки склад
+        # `hr.payslip` уже відомий і гадати про нього не треба.
         payslips = self.env['hr.payslip'].search([
             ('employee_id', '=', self.employee_id.id),
             ('date_from', '>=', date_from),
             ('date_to', '<=', date_to),
             ('state', '=', 'done'),
-        ])
+        ]) if 'hr.payslip' in self.env else None
 
         if not payslips:
             # Fallback to contract wage (version in Odoo 19)
@@ -277,26 +281,12 @@ class HrSickLeave(models.Model):
             payslip_days = (payslip.date_to - payslip.date_from).days + 1
             total_calendar_days += payslip_days
 
-            # Check if payslip has line_ids (Odoo payroll module structure)
-            if hasattr(payslip, 'line_ids') and payslip.line_ids:
-                for line in payslip.line_ids:
-                    # Check if salary rule has is_basic_salary attribute
-                    if hasattr(line, 'salary_rule_id') and line.salary_rule_id:
-                        rule = line.salary_rule_id
-                        # Include if marked as basic salary or if it's a base category
-                        if getattr(rule, 'is_basic_salary', False) or \
-                           getattr(rule, 'category_id', False) and \
-                           rule.category_id.code in ('BASIC', 'ALW', 'GROSS'):
-                            total_earnings += line.total or 0
-                    else:
-                        # Fallback: include all positive lines
-                        total_earnings += max(0, line.total or 0)
-            else:
-                # Fallback: use gross_salary if available, else net
-                if hasattr(payslip, 'gross_salary'):
-                    total_earnings += payslip.gross_salary or 0
-                elif hasattr(payslip, 'net_wage'):
-                    total_earnings += payslip.net_wage or 0
+            # УВАГА: береться весь нарахований дохід. `hr.accrual.type` має
+            # прапорець `is_basic_salary` («Include in average salary
+            # calculation»), і саме за ним мав би йти відбір — але тут він
+            # ніколи не застосовувався, тож зміна одразу зрушила б суми
+            # лікарняних. Питання відбору за П. 100 / № 1266 заведено окремо.
+            total_earnings += payslip.gross_salary or 0
 
         if total_calendar_days > 0:
             return round(total_earnings / total_calendar_days, 2)

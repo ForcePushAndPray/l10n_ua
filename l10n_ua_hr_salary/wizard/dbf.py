@@ -5,6 +5,7 @@
 кодування українських банк-файлів); мовний драйвер у заголовку — 0xC9.
 """
 import struct
+from datetime import date
 
 
 def build_dbf(field_defs, rows, encoding='cp1251', language_driver=0xC9):
@@ -55,7 +56,7 @@ def build_dbf(field_defs, rows, encoding='cp1251', language_driver=0xC9):
                     text = str(int(value or 0))
                 text = text[:length].rjust(length)
             elif ftype == 'D':
-                if hasattr(value, 'strftime'):
+                if isinstance(value, date):
                     text = value.strftime('%Y%m%d')
                 else:
                     text = (str(value or '')[:8]).ljust(8)
