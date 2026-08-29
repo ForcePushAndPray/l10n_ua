@@ -257,8 +257,10 @@ class HrTimesheetLine(models.Model):
         # Get employee version (contract) info
         version = self.employee_id.current_version_id
         contract_start = version.contract_date_start if version else None
-        contract_end = getattr(version, 'contract_date_end', None) if version else None
-        work_rate = version.work_rate if version and hasattr(version, 'work_rate') else 1.0
+        contract_end = version.contract_date_end if version else None
+        # `work_rate` додає l10n_ua_hr_contract, якого цей модуль не вимагає.
+        work_rate = (version.work_rate
+                     if version and 'work_rate' in version._fields else 1.0)
 
         # Calculate standard hours based on work_rate
         standard_hours = 8.0 * work_rate

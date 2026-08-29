@@ -275,7 +275,7 @@ class HrVersion(models.Model):
             return
 
         company = self.env.company
-        setting = company.wage_from_staffing if hasattr(company, 'wage_from_staffing') else 'both'
+        setting = company.wage_from_staffing or 'both'
 
         if setting in ('suggest', 'both'):
             staffing = self.staffing_line_id

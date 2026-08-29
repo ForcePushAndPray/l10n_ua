@@ -183,15 +183,14 @@ class HrReportWageFund(models.Model):
                 'net_salary': slip.net_salary,
                 'pdfo_amount': slip.pdfo_amount,
                 'military_amount': slip.military_tax_amount,
-                'esv_amount': slip.esv_amount if hasattr(slip, 'esv_amount') else 0,
+                'esv_amount': slip.esv_amount,
             })
 
             total_gross += slip.gross_salary
             total_net += slip.net_salary
             total_pdfo += slip.pdfo_amount
             total_military += slip.military_tax_amount
-            if hasattr(slip, 'esv_amount'):
-                total_esv += slip.esv_amount
+            total_esv += slip.esv_amount
 
             # Analyze accruals by type
             for accrual in slip.accrual_ids:

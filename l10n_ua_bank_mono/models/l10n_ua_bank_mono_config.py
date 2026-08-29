@@ -169,7 +169,7 @@ class L10nUaBankSyncConfig(models.Model):
         self.ensure_one()
 
         if self.provider != 'mono':
-            return super().action_test_connection() if hasattr(super(), 'action_test_connection') else None
+            return super().action_test_connection()
 
         if not self.mono_api_token:
             raise UserError(_("Please configure API Token"))
