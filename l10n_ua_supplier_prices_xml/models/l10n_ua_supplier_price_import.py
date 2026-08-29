@@ -121,7 +121,7 @@ class L10nUaSupplierPriceImport(models.Model):
             first = result[0]
             if isinstance(first, str):
                 return first.strip() or None
-            if hasattr(first, 'text'):
+            if etree.iselement(first):
                 return (first.text or '').strip() or None
             return str(first) if first is not None else None
         return None

@@ -41,10 +41,8 @@ class AccountingTestCase(TransactionCase):
                 'company_id': cls.company.id,
             })
         # Ensure UA sequences exist on journals
-        if hasattr(cls.cash_journal, 'action_create_ua_sequences'):
-            cls.cash_journal.action_create_ua_sequences()
-        if hasattr(cls.bank_journal, 'action_create_ua_sequences'):
-            cls.bank_journal.action_create_ua_sequences()
+        cls.cash_journal.action_create_ua_sequences()
+        cls.bank_journal.action_create_ua_sequences()
 
         # General journal for period closing
         cls.misc_journal = cls.env['account.journal'].search([

@@ -10,6 +10,7 @@
 
 import base64
 import os
+import unittest
 from datetime import date
 
 from lxml import etree
@@ -27,7 +28,32 @@ class TestTaxRequest(TransactionCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.company = cls.env.company
-        cls.company.write({'edrpou': '12345678', 'tax_office_code': '1716'})
+        # Код ДПІ оголошує `l10n_ua_hr_base`, якого цей модуль не вимагає, —
+        # без нього запит не сформувати взагалі. Тест це не приховує: раніше
+        # він просто падав `Invalid field 'edrpou' in 'res.company'` на будь-якій
+        # базі без кадрового блоку, і зеленим був лише випадково.
+        if 'tax_office_code' not in cls.env['res.company']._fields:
+            raise unittest.SkipTest(
+                "res.company.tax_office_code дає l10n_ua_hr_base — без нього "
+                "реквізити запиту недосяжні (див. issue про шар реквізитів "
+                "компанії)")
+        # ЄДРПОУ беремо через штатне `company_registry`: у `_request_edrpou`
+        # воно і так наступне в ланцюжку, тож тест не залежить від того, чи
+        # встановлено кадровий модуль заради самого коду.
+        cls.company.write({'company_registry': '12345678', 'tax_office_code': '1716'})
+        # Конфігурація кабінету потрібна для подання, і тест має заводити її
+        # сам: доти вона бралася з бази, тобто ці два тести проходили лише
+        # там, де конфіг лишив по собі хтось інший (тести l10n_ua_account_vat).
+        # UNIQUE(company_id) — переуживаємо наявний рядок, якщо він є.
+        config = cls.env['l10n_ua.tax.cabinet.config'].with_context(
+            active_test=False).search([('company_id', '=', cls.company.id)], limit=1)
+        vals = {'name': 'Кабінет (тест запиту)', 'taxpayer_code': '12345678',
+                'active': True}
+        if config:
+            config.write(vals)
+        else:
+            cls.env['l10n_ua.tax.cabinet.config'].create(
+                {**vals, 'company_id': cls.company.id})
 
     def _request(self, **kw):
         vals = {
