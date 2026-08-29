@@ -130,7 +130,7 @@ msgstr "Офіційні курси Національного банку Укр
 
 #. module: l10n_ua_bank_currency_sync
 #: model_terms:ir.ui.view,arch_db:l10n_ua_bank_currency_sync.res_currency_rate_provider_view_form
-#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.field_res_currency_rate_provider__code__privatbank
+#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.selection__res_currency_rate_provider__code__privatbank
 msgid "PrivatBank"
 msgstr "ПриватБанк"
 
@@ -141,7 +141,7 @@ msgstr "Курси комерційного банку (готівкові аб�
 
 #. module: l10n_ua_bank_currency_sync
 #: model_terms:ir.ui.view,arch_db:l10n_ua_bank_currency_sync.res_currency_rate_provider_view_form
-#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.field_res_currency_rate_provider__code__monobank
+#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.selection__res_currency_rate_provider__code__monobank
 msgid "Monobank"
 msgstr "Монобанк"
 
@@ -239,7 +239,7 @@ msgid "Name"
 msgstr "Назва"
 
 #. module: l10n_ua_bank_currency_sync
-#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.field_res_currency_rate_provider__code__nbu
+#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.selection__res_currency_rate_provider__code__nbu
 msgid "NBU (National Bank of Ukraine)"
 msgstr "НБУ (Національний банк України)"
 
@@ -279,12 +279,12 @@ msgid "Cash rate (5) or Non-cash/Card rate (11)"
 msgstr "Готівковий курс (5) або безготівковий/картковий курс (11)"
 
 #. module: l10n_ua_bank_currency_sync
-#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.field_res_currency_rate_provider__privat_rate_type__5
+#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.selection__res_currency_rate_provider__privat_rate_type__5
 msgid "Cash Rate"
 msgstr "Готівковий курс"
 
 #. module: l10n_ua_bank_currency_sync
-#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.field_res_currency_rate_provider__privat_rate_type__11
+#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.selection__res_currency_rate_provider__privat_rate_type__11
 msgid "Non-cash Rate"
 msgstr "Безготівковий курс"
 
@@ -294,52 +294,52 @@ msgid "Only one provider of each type per company!"
 msgstr "Тільки один провайдер кожного типу на компанію!"
 
 #. module: l10n_ua_bank_currency_sync
-#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.field_l10n_ua_currency_sync_wizard__period_type__today
+#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.selection__l10n_ua_currency_sync_wizard__period_type__today
 msgid "Today"
 msgstr "Сьогодні"
 
 #. module: l10n_ua_bank_currency_sync
-#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.field_l10n_ua_currency_sync_wizard__period_type__yesterday
+#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.selection__l10n_ua_currency_sync_wizard__period_type__yesterday
 msgid "Yesterday"
 msgstr "Вчора"
 
 #. module: l10n_ua_bank_currency_sync
-#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.field_l10n_ua_currency_sync_wizard__period_type__current_week
+#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.selection__l10n_ua_currency_sync_wizard__period_type__current_week
 msgid "Current Week"
 msgstr "Поточний тиждень"
 
 #. module: l10n_ua_bank_currency_sync
-#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.field_l10n_ua_currency_sync_wizard__period_type__previous_week
+#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.selection__l10n_ua_currency_sync_wizard__period_type__previous_week
 msgid "Previous Week"
 msgstr "Попередній тиждень"
 
 #. module: l10n_ua_bank_currency_sync
-#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.field_l10n_ua_currency_sync_wizard__period_type__current_month
+#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.selection__l10n_ua_currency_sync_wizard__period_type__current_month
 msgid "Current Month"
 msgstr "Поточний місяць"
 
 #. module: l10n_ua_bank_currency_sync
-#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.field_l10n_ua_currency_sync_wizard__period_type__previous_month
+#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.selection__l10n_ua_currency_sync_wizard__period_type__previous_month
 msgid "Previous Month"
 msgstr "Попередній місяць"
 
 #. module: l10n_ua_bank_currency_sync
-#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.field_l10n_ua_currency_sync_wizard__period_type__current_quarter
+#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.selection__l10n_ua_currency_sync_wizard__period_type__current_quarter
 msgid "Current Quarter"
 msgstr "Поточний квартал"
 
 #. module: l10n_ua_bank_currency_sync
-#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.field_l10n_ua_currency_sync_wizard__period_type__previous_quarter
+#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.selection__l10n_ua_currency_sync_wizard__period_type__previous_quarter
 msgid "Previous Quarter"
 msgstr "Попередній квартал"
 
 #. module: l10n_ua_bank_currency_sync
-#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.field_l10n_ua_currency_sync_wizard__period_type__current_year
+#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.selection__l10n_ua_currency_sync_wizard__period_type__current_year
 msgid "Current Year"
 msgstr "Поточний рік"
 
 #. module: l10n_ua_bank_currency_sync
-#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.field_l10n_ua_currency_sync_wizard__period_type__custom
+#: model:ir.model.fields.selection,name:l10n_ua_bank_currency_sync.selection__l10n_ua_currency_sync_wizard__period_type__custom
 msgid "Custom Period"
 msgstr "Довільний період"
 
