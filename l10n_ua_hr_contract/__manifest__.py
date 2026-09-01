@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - HR Contracts',
-    'version': '19.0.5.0.0',
+    'version': '19.0.6.0.0',
     'category': 'Human Resources/Localization',
     'summary': 'Ukrainian HR contracts localization (extends hr.version)',
     'description': """
@@ -54,6 +54,7 @@ Requires l10n_ua_hr_base module.
     ],
     'demo': [
     ],
+    'post_init_hook': 'post_init_hook',
     'images': ['static/description/banner.png'],
     'installable': True,
     'application': False,
