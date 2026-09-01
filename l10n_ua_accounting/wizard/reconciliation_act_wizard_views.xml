@@ -6,7 +6,7 @@
         <field name="name">l10n_ua.reconciliation.act.wizard.form</field>
         <field name="model">l10n_ua.reconciliation.act.wizard</field>
         <field name="arch" type="xml">
-            <form string="Акт звірки взаєморозрахунків">
+            <form string="Reconciliation Statement">
                 <group>
                     <group>
                         <field name="company_id" groups="base.group_multi_company"/>
@@ -32,7 +32,7 @@
 
     <!-- Reconciliation Act Wizard Action -->
     <record id="action_reconciliation_act_wizard" model="ir.actions.act_window">
-        <field name="name">Акт звірки</field>
+        <field name="name">Reconciliation Statement</field>
         <field name="res_model">l10n_ua.reconciliation.act.wizard</field>
         <field name="view_mode">form</field>
         <field name="target">new</field>

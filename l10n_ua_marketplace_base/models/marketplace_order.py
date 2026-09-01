@@ -613,7 +613,7 @@ class MarketplaceOrder(models.Model):
             return {
                 'type': 'ir.actions.act_window',
                 'res_model': 'account.payment',
-                'res_id': payment.id if hasattr(payment, 'id') else payment[0].id,
+                'res_id': payment[:1].id,
                 'view_mode': 'form',
             }
         else:

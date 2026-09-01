@@ -91,7 +91,7 @@ class HrSalaryAdvance(models.Model):
                     # Курс — на дату виплати авансу: аванс середини місяця й
                     # зарплата в кінці рахуються кожне за своїм.
                     wage = version._l10n_ua_wage_in_company_currency(advance.date)
-                    if not wage and hasattr(version, 'staffing_line_id') and version.staffing_line_id:
+                    if not wage and version.staffing_line_id:
                         # Штатний розпис ведеться у валюті компанії, тож
                         # перераховувати тут нема чого.
                         wage = version.staffing_line_id.salary or 0.0
@@ -111,8 +111,8 @@ class HrSalaryAdvance(models.Model):
                 version = advance.employee_id.current_version_id
                 if version:
                     is_gig = (
-                        (hasattr(version, 'contract_type_ua') and version.contract_type_ua == 'gig')
-                        or (hasattr(version, 'diia_city_employee') and version.diia_city_employee)
+                        version.contract_type_ua == 'gig'
+                        or version.diia_city_employee
                     )
                     if is_gig:
                         pdfo_rate = 5.0

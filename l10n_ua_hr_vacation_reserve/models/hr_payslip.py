@@ -34,8 +34,6 @@ class HrPayslip(models.Model):
     def _get_vacation_accrual_amount(self):
         """Сума нарахованих відпускних у поточному payslip."""
         self.ensure_one()
-        if not hasattr(self, 'accrual_ids'):
-            return 0.0
         vacation_accruals = self.accrual_ids.filtered(
             lambda a: a.accrual_type_id.category == 'vacation'
         )

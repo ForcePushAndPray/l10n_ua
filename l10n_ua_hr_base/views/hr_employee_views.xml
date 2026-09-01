@@ -141,6 +141,37 @@
                             <field name="military_reservation_expired" invisible="not military_accounting_applicable or not military_reservation"/>
                             <field name="military_reservplus_id" invisible="not military_accounting_applicable or not military_reservation"/>
                         </group>
+                        <!-- Реквізити, потрібні для Списків персонального
+                             військового обліку (додаток 5 до Порядку № 1487
+                             у редакції ПКМУ № 916 від 30.07.2025). Блок
+                             видимий лише тим, хто справді на обліку. -->
+                        <group string="Дані для Списків (додаток 5)"
+                               invisible="not military_accounting_applicable or military_register_category == 'not_applicable'">
+                            <field name="gender"/>
+                            <field name="military_list_group" readonly="1"/>
+                            <field name="military_vin_code"/>
+                            <field name="military_document_type"/>
+                            <field name="military_document_date"/>
+                            <field name="military_deferment_type"/>
+                            <field name="military_deferment_until"
+                                   invisible="not military_deferment_type"/>
+                            <field name="military_deferment_basis"
+                                   invisible="not military_deferment_type"/>
+                            <field name="military_service_status"/>
+                            <field name="military_service_since"
+                                   invisible="military_service_status != 'serving'"/>
+                            <field name="military_mob_order_number"/>
+                            <field name="military_mob_order_date"
+                                   invisible="not military_mob_order_number"/>
+                            <field name="military_mob_team"
+                                   invisible="not military_mob_order_number"/>
+                            <field name="military_position_order"/>
+                            <field name="military_exclusion_mark"/>
+                            <field name="military_exclusion_date"
+                                   invisible="not military_exclusion_mark"/>
+                            <field name="military_notice_ref" readonly="1"/>
+                            <field name="military_notice_ref_manual"/>
+                        </group>
                         <group string="Пільги">
                             <field name="benefit_ids" widget="many2many_tags"/>
                             <field name="veteran_status"/>
@@ -198,6 +229,8 @@
                 <filter string="Резервісти" name="military_reservists" domain="[('military_register_category', '=', 'reservist')]"/>
                 <filter string="Reservation expired" name="military_res_expired" domain="[('military_reservation_expired', '=', True)]"/>
                 <filter string="ВЛК скоро (14 днів)" name="military_mlk_due_soon" domain="[('military_mlk_retest_due_soon', '=', True)]"/>
+                <filter string="Мають відстрочку" name="military_deferment" domain="[('military_deferment_type', '!=', False)]"/>
+                <filter string="Мають моброзпорядження" name="military_mob_order" domain="[('military_mob_order_number', '!=', False)]"/>
                 <separator/>
                 <filter string="With Disability" name="with_disability" domain="[('disability_group', '!=', 'none')]"/>
                 <filter string="Veterans" name="veterans" domain="[('veteran_status', '!=', 'none')]"/>

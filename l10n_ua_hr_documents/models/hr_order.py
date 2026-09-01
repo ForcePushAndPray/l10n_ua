@@ -550,16 +550,15 @@ class HrOrder(models.Model):
                 'termination_order_number': self.name,
                 'termination_order_date': self.date,
             })
-        if hasattr(employee, 'departure_date'):
-            # Back up the previous value once per apply/revert cycle so revert
-            # restores exactly what was there before this order — independent of
-            # later manual edits.
-            if not self.previous_departure_date_saved:
-                self.write({
-                    'previous_departure_date': employee.departure_date or False,
-                    'previous_departure_date_saved': True,
-                })
-            employee.departure_date = dismissal_date
+        # Back up the previous value once per apply/revert cycle so revert
+        # restores exactly what was there before this order — independent of
+        # later manual edits.
+        if not self.previous_departure_date_saved:
+            self.write({
+                'previous_departure_date': employee.departure_date or False,
+                'previous_departure_date_saved': True,
+            })
+        employee.departure_date = dismissal_date
         if employee.active:
             employee.active = False
 
@@ -590,7 +589,7 @@ class HrOrder(models.Model):
                 'termination_order_number': False,
                 'termination_order_date': False,
             })
-        if hasattr(employee, 'departure_date') and self.previous_departure_date_saved:
+        if self.previous_departure_date_saved:
             employee.with_context(active_test=False).departure_date = \
                 self.previous_departure_date or False
             self.write({

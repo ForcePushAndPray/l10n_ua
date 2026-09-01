@@ -183,7 +183,3 @@ msgstr "UA000000000000000000000000000"
 #: model:ir.model,name:l10n_ua_bank_privat.model_l10n_ua_bank_statement
 msgid "Ukrainian Bank Statement"
 msgstr "Українська банківська виписка"
-
-#. module: l10n_ua_bank_privat
-#: model:ir.model.fields,field_description:l10n_ua_bank_privat.field_l10n_ua_bank_sync_config__privat_api_token
-msgid "API Token"

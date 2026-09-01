@@ -142,12 +142,12 @@ class ReconciliationActWizard(models.TransientModel):
         return {
             'partner': {
                 'name': self.partner_id.name,
-                'edrpou': self.partner_id.edrpou if hasattr(self.partner_id, 'edrpou') else '',
+                'edrpou': self.partner_id.edrpou or '',
                 'address': self.partner_id.contact_address or '',
             },
             'company': {
                 'name': self.company_id.name,
-                'edrpou': self.company_id.partner_id.edrpou if hasattr(self.company_id.partner_id, 'edrpou') else '',
+                'edrpou': self.company_id.partner_id.edrpou or '',
             },
             'date_from': self.date_from,
             'date_to': self.date_to,

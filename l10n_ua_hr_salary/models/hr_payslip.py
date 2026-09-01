@@ -279,7 +279,7 @@ class HrPayslip(models.Model):
 
             if payslip.employee_id:
                 # Check for disability benefits
-                if hasattr(payslip.employee_id, 'benefit_ids') and payslip.employee_id.benefit_ids:
+                if payslip.employee_id.benefit_ids:
                     for benefit in payslip.employee_id.benefit_ids:
                         code_lower = (benefit.code or '').lower()
                         name_lower = (benefit.name or '').lower()
@@ -289,11 +289,9 @@ class HrPayslip(models.Model):
 
                 # Check for Diia.City status from contract version
                 version = payslip.version_id or payslip.employee_id.current_version_id
-                if version and hasattr(version, 'diia_city_employee'):
-                    is_diia_city = version.diia_city_employee or False
-                if version and hasattr(version, 'contract_type_ua'):
-                    if version.contract_type_ua == 'gig':
-                        is_diia_city = True
+                if version:
+                    is_diia_city = bool(version.diia_city_employee) or \
+                        version.contract_type_ua == 'gig'
 
             payslip.is_disability = is_disability
             payslip.is_diia_city = is_diia_city
@@ -735,10 +733,9 @@ class HrPayslip(models.Model):
 
         if wage <= 0:
             # Check company setting for staffing table fallback
-            setting = self.company_id.wage_from_staffing \
-                if hasattr(self.company_id, 'wage_from_staffing') else 'both'
+            setting = self.company_id.wage_from_staffing or 'both'
             if setting in ('fallback', 'both'):
-                if hasattr(version, 'staffing_line_id') and version.staffing_line_id:
+                if version.staffing_line_id:
                     staffing = version.staffing_line_id
                     if staffing.salary:
                         wage = staffing.salary
@@ -777,7 +774,7 @@ class HrPayslip(models.Model):
 
         if salary_type and not has_manual_salary and not is_piece:
             # tariff grade calculations
-            if hasattr(version, 'tariff_grade_id') and version.tariff_grade_id:
+            if version.tariff_grade_id:
 
                 if self.worked_hours > 0:                                   # Guard clause
                     min_hourly_wage = params.min_hourly_wage if params else 52.0
@@ -839,7 +836,7 @@ class HrPayslip(models.Model):
 
         # Version allowances
         allowance_type = self.env['hr.accrual.type'].search([('code', '=', 'ALLOWANCE')], limit=1)
-        if allowance_type and hasattr(version, 'allowance_ids'):
+        if allowance_type:
             for allowance in version.allowance_ids.filtered('is_active'):
                 self.env['hr.payslip.accrual'].create({
                     'payslip_id': self.id,

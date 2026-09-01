@@ -5,3 +5,4 @@ from . import test_multicompany
 from . import test_erpn_register
 from . import test_tax_invoice_lines
 from . import test_vat_cash_method
+from . import test_tax_invoice_product_codes

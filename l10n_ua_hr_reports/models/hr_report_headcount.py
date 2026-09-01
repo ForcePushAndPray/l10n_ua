@@ -191,11 +191,11 @@ class HrReportHeadcount(models.Model):
                 continue
 
             work_rate = 1.0
-            if hasattr(version, 'work_rate') and version.work_rate:
+            if version.work_rate:
                 work_rate = version.work_rate
-            elif hasattr(version, 'staffing_line_id') and version.staffing_line_id:
+            elif version.staffing_line_id:
                 staffing = version.staffing_line_id
-                if hasattr(staffing, 'units') and staffing.units:
+                if staffing.units:
                     work_rate = staffing.units
 
             if work_rate >= 1.0:

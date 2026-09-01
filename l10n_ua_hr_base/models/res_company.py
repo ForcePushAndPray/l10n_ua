@@ -4,17 +4,12 @@ from odoo import models, fields
 class ResCompany(models.Model):
     _inherit = 'res.company'
 
-    edrpou = fields.Char(
-        string='EDRPOU', size=8,
-        help='Unified State Register of Enterprises and Organizations of Ukraine code')
-    koatuu = fields.Char(
-        string='KOATUU', size=10,
-        help='Code of the Classification of Administrative-Territorial Units of Ukraine')
-    katottg = fields.Char(
-        string='KATOTTG', size=19,
-        help='Код КАТОТТГ (кодифікатор адміністративно-територіальних одиниць), '
-             'формат UA + 17 цифр. Потрібен для звітності 4ДФ/об\'єднаного розрахунку.')
-    legal_address = fields.Text(string='Legal Address')
+    # Реєстраційні реквізити (ЄДРПОУ, КОАТУУ, КАТОТТГ, код ДПІ, код ПФУ,
+    # КВЕД, форма власності, юридична адреса) переїхали в
+    # `l10n_ua_company_base`: вони потрібні податковому й бухгалтерському
+    # блокам, які кадровий модуль не тягнуть і тягнути не мають (#292).
+    # Тут лишається те, що справді кадрове.
+
     director_id = fields.Many2one(
         'hr.employee', string='Director',
         help='Company director for document signing')
@@ -24,22 +19,12 @@ class ResCompany(models.Model):
     hr_manager_id = fields.Many2one(
         'hr.employee', string='HR Manager',
         help='HR department head for document signing')
-    tax_office_code = fields.Char(
-        string='Tax Office Code',
-        help='Code of the tax office (DPI)')
-    pension_fund_code = fields.Char(
-        string='Pension Fund Code',
-        help='Code of the pension fund office (PFU)')
-    kved_main = fields.Char(
-        string='Main KVED',
-        help='Main economic activity code (KVED)')
-    ownership_form = fields.Selection([
-        ('private', 'Private'),
-        ('state', 'State'),
-        ('communal', 'Communal'),
-        ('collective', 'Collective'),
-        ('mixed', 'Mixed'),
-    ], string='Ownership Form')
+    military_officer_id = fields.Many2one(
+        'hr.employee', string='Відповідальний за військовий облік',
+        help='Особа, відповідальна за ведення військового обліку. Підписує '
+             'Списки персонального військового обліку та відомість '
+             'оперативного обліку (п. 40 Порядку № 1487), і саме її кадровий '
+             'модуль підставляє у друковані форми за замовчуванням.')
 
     # Staffing table settings
     wage_from_staffing = fields.Selection([

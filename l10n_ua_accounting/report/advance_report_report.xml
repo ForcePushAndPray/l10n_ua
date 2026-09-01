@@ -3,7 +3,7 @@
 
     <!-- Advance Report Action -->
     <record id="action_report_advance_report" model="ir.actions.report">
-        <field name="name">Авансовий звіт</field>
+        <field name="name">Advance Report</field>
         <field name="model">l10n_ua.advance.report</field>
         <field name="report_type">qweb-pdf</field>
         <field name="report_name">l10n_ua_accounting.report_advance_report_document</field>

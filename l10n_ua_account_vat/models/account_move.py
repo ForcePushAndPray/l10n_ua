@@ -236,7 +236,10 @@ class AccountMove(models.Model):
                 'sequence': seq,
                 'product_id': iline.product_id.id if iline.product_id else False,
                 'name': iline.name or iline.product_id.display_name or '',
-                'uktzed_code': iline.product_id.l10n_ua_uktzed if hasattr(iline.product_id, 'l10n_ua_uktzed') else '',
+                # гр. 3.1 для товару, гр. 3.3 для послуги — за Порядком
+                # 1307 п. 16 рядок несе рівно один із двох кодів, тож який
+                # саме, вирішує тип номенклатури, а не наявність значення.
+                **iline.product_id._l10n_ua_product_codes(),
                 'quantity': sign * iline.quantity,
                 'uom_id': iline.product_uom_id.id if iline.product_uom_id else False,
                 'price_unit': net_unit_price,

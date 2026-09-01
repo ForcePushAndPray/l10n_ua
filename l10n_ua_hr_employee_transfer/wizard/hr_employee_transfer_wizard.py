@@ -162,7 +162,7 @@ class HrEmployeeTransferWizard(models.TransientModel):
             if fname not in source._fields:
                 continue
             value = source[fname]
-            if hasattr(value, 'id'):
+            if isinstance(value, models.BaseModel):
                 vals[fname] = value.id if value else False
             else:
                 vals[fname] = value

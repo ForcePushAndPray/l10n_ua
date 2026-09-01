@@ -120,6 +120,35 @@ class L10nUaBankSyncConfig(models.Model):
             'context': {'default_config_id': self.id},
         }
 
+    def action_test_connection(self):
+        """Кінець ланцюжка `super()` для перевірки з'єднання.
+
+        Кожен модуль банку (`l10n_ua_bank_mono`, `l10n_ua_bank_privat`, …)
+        розширює цю саму модель і перевіряє лише свого провайдера, а решту
+        передає далі по MRO. Раніше передача була обгорнута в
+        `hasattr(super(), 'action_test_connection')`, бо базової реалізації не
+        існувало й ланцюжок упирався в порожнечу — при цьому `hasattr` мовчки
+        ковтав би й будь-яку іншу помилку доступу. Тепер кінець ланцюжка є, і
+        провайдери викликають `super()` беззастережно.
+
+        Провайдер, який перевірки не має (як-от «Manual» чи обмін файлами),
+        доходить сюди й отримує зрозуміле повідомлення замість тиші.
+        """
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Nothing to test'),
+                'message': _(
+                    'Provider "%s" has no connection to test: statements for '
+                    'it are imported from a file, not fetched over an API.'
+                ) % dict(self._fields['provider']._description_selection(
+                    self.env)).get(self.provider, self.provider),
+                'type': 'warning',
+            },
+        }
+
     def action_sync_now(self):
         """Create and run sync job for default period."""
         self.ensure_one()

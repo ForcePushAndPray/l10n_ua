@@ -329,19 +329,8 @@ msgstr "Код з Класифікатора професій (КП 2010)"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_department__koatuu_code
-#: model:ir.model.fields,help:l10n_ua_hr_base.field_res_company__koatuu
 msgid "Code of the Classification of Administrative-Territorial Units of Ukraine"
 msgstr "Код Класифікатора адміністративно-територіальних одиниць України"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields,help:l10n_ua_hr_base.field_res_company__pension_fund_code
-msgid "Code of the pension fund office (PFU)"
-msgstr "Код відділення пенсійного фонду (ПФУ)"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields,help:l10n_ua_hr_base.field_res_company__tax_office_code
-msgid "Code of the tax office (DPI)"
-msgstr "Код податкової інспекції (ДПІ)"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade__coefficient
@@ -610,7 +599,6 @@ msgstr "Чернетка"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_department__edrpou
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_res_company__edrpou
 msgid "EDRPOU"
 msgstr "ЄДРПОУ"
 
@@ -996,11 +984,6 @@ msgid "Junior Sergeant"
 msgstr "Молодший сержант"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_res_company__koatuu
-msgid "KOATUU"
-msgstr "КОАТУУ"
-
-#. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_department__koatuu_code
 msgid "KOATUU Code"
 msgstr "Код КОАТУУ"
@@ -1046,12 +1029,6 @@ msgid "Last Updated on"
 msgstr "Дата останнього оновлення"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_res_company__legal_address
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_company_form_inherit_ua_hr
-msgid "Legal Address"
-msgstr "Юридична адреса"
-
-#. module: l10n_ua_hr_base
 #: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_employee__military_status__liable
 msgid "Liable for Military Service"
 msgstr "Військовозобов'язаний"
@@ -1080,16 +1057,6 @@ msgstr "Обмежено придатний"
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__disability_document
 msgid "MSEC Document"
 msgstr "Документ МСЕК"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_res_company__kved_main
-msgid "Main KVED"
-msgstr "Основний КВЕД"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields,help:l10n_ua_hr_base.field_res_company__kved_main
-msgid "Main economic activity code (KVED)"
-msgstr "Код основного виду економічної діяльності (КВЕД)"
 
 #. module: l10n_ua_hr_base
 #: model:hr.military.rank,name:l10n_ua_hr_base.military_rank_major
@@ -1391,11 +1358,6 @@ msgid "Other"
 msgstr "Інший"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_res_company__ownership_form
-msgid "Ownership Form"
-msgstr "Форма власності"
-
-#. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee_benefit__psp_multiplier
 msgid "PSP Multiplier"
 msgstr "Множник ПСП"
@@ -1424,11 +1386,6 @@ msgstr "Серія паспорта"
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee__passport_number
 msgid "Passport/ID Number"
 msgstr "Номер паспорта/ID"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_res_company__pension_fund_code
-msgid "Pension Fund Code"
-msgstr "Код пенсійного фонду"
 
 #. module: l10n_ua_hr_base
 #: model:ir.actions.report,name:l10n_ua_hr_base.action_report_hr_employee_p2
@@ -1502,11 +1459,6 @@ msgstr "Номер запису"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
 msgid "Region"
 msgstr "Область"
-
-#. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_company_form_inherit_ua_hr
-msgid "Registration"
-msgstr "Реєстрація"
 
 #. module: l10n_ua_hr_base
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
@@ -1768,19 +1720,9 @@ msgid "Tariff grade must be unique!"
 msgstr "Тарифний розряд повинен бути унікальним!"
 
 #. module: l10n_ua_hr_base
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_company_form_inherit_ua_hr
-msgid "Tax & Pension"
-msgstr "Податки та пенсія"
-
-#. module: l10n_ua_hr_base
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_base.view_employee_form_inherit_ua
 msgid "Tax Identification"
 msgstr "Податкова ідентифікація"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_res_company__tax_office_code
-msgid "Tax Office Code"
-msgstr "Код податкової"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_employee__military_tcc_id
@@ -1877,11 +1819,6 @@ msgstr "HR Україна"
 #: model:ir.model.fields.selection,name:l10n_ua_hr_base.selection__hr_employee__military_fitness__unfit
 msgid "Unfit for Service"
 msgstr "Непридатний до служби"
-
-#. module: l10n_ua_hr_base
-#: model:ir.model.fields,help:l10n_ua_hr_base.field_res_company__edrpou
-msgid "Unified State Register of Enterprises and Organizations of Ukraine code"
-msgstr "Код єднодержавної реєстрації підприємств та організацій України"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_employee__passport_record_number

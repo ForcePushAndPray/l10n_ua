@@ -46,7 +46,7 @@
                     <notebook>
                         <page string="Рахунки для закриття" name="closing_lines">
                             <field name="closing_line_ids" readonly="True">
-                                <list string="Рахунки">
+                                <list string="Accounts">
                                     <field name="account_code"/>
                                     <field name="account_id"/>
                                     <field name="account_type" widget="badge"

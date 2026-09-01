@@ -50,6 +50,7 @@ class TestTaxInvoice(TransactionCase):
                 'quantity': 1,
                 'price_unit': 10000,
                 'vat_rate': '20',
+                'dkpp_code': '70.22.11-00.00',
             })],
         }
         vals.update(kwargs)
@@ -142,9 +143,12 @@ class TestTaxInvoice(TransactionCase):
             'partner_id': self.partner.id,
             'company_id': self.company.id,
             'line_ids': [
-                (0, 0, {'name': 'Товар 20%', 'quantity': 1, 'price_unit': 10000, 'vat_rate': '20'}),
-                (0, 0, {'name': 'Ліки 7%', 'quantity': 1, 'price_unit': 5000, 'vat_rate': '7'}),
-                (0, 0, {'name': 'Експорт 0%', 'quantity': 1, 'price_unit': 8000, 'vat_rate': '0'}),
+                (0, 0, {'name': 'Товар 20%', 'quantity': 1, 'price_unit': 10000,
+                        'vat_rate': '20', 'uktzed_code': '8471300000'}),
+                (0, 0, {'name': 'Ліки 7%', 'quantity': 1, 'price_unit': 5000,
+                        'vat_rate': '7', 'uktzed_code': '3004900000'}),
+                (0, 0, {'name': 'Експорт 0%', 'quantity': 1, 'price_unit': 8000,
+                        'vat_rate': '0', 'uktzed_code': '9403208000'}),
             ],
         })
         self.assertEqual(ti.total_base, 23000)
