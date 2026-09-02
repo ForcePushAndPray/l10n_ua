@@ -1,5 +1,4 @@
 from collections import defaultdict
-from datetime import timedelta
 
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
@@ -313,27 +312,15 @@ class HrVersion(models.Model):
             version.staffing_line_id = resolved.get(keys[version.id], False)
 
     def _staffing_ref_date(self, sibling_dates, today):
-        """Date this version is read against: the end of its period, else today.
+        """Date this version is read against — see `_reference_date`.
 
-        Mirrors the rule core uses for `date_start` / `date_end`
-        (`hr.version._compute_dates`) instead of reading those fields: they are
-        computed one record at a time with a search each, which a batched
-        compute cannot afford.
+        The rule itself lives on `hr.staffing.table`, because the employee card
+        asks the same question about fields it is still editing.
         """
         self.ensure_one()
-        own_date = self.date_version or today
-        start = own_date
-        if self.contract_date_start and self.contract_date_start > start:
-            start = self.contract_date_start
-        following = [d for d in sibling_dates if d > own_date]
-        end = min(following) - timedelta(days=1) if following else False
-        if end and self.contract_date_end:
-            end = min(end, self.contract_date_end)
-        elif not end:
-            end = self.contract_date_end
-        # A version dated in the future is read against the day it takes
-        # effect: by then the staffing table may well be a different one.
-        return end or max(start, today)
+        return self.env['hr.staffing.table']._reference_date(
+            self.date_version, self.contract_date_start,
+            self.contract_date_end, sibling_dates, today)
 
     @api.onchange('job_id', 'department_id')
     def _onchange_job_suggest_wage(self):

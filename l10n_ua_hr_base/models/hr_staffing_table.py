@@ -1,4 +1,5 @@
 from collections import defaultdict
+from datetime import timedelta
 
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
@@ -128,6 +129,38 @@ class HrStaffingTable(models.Model):
     # staffing table applies is then a question of date. Everything that needs
     # "the staffing line of this employee" goes through here, so the rule lives
     # in one place.
+
+    @api.model
+    def _reference_date(self, own_date, contract_start, contract_end,
+                        sibling_dates, today):
+        """Date a position is read against: the end of its period, else today.
+
+        Takes plain values rather than a record, because two models ask the
+        question: `hr.version` for a version of the history, and `hr.employee`
+        for the card, where the answer has to follow fields still being edited.
+        One rule, one place — the card and the version list can never disagree.
+
+        Mirrors what core computes as `date_start` / `date_end`
+        (`hr.version._compute_dates`) instead of reading those fields: they are
+        computed one record at a time with a search each, which a batched
+        compute cannot afford.
+
+        :param own_date: `date_version` of the version in question
+        :param sibling_dates: `date_version` of that employee's other versions
+        """
+        own_date = own_date or today
+        start = own_date
+        if contract_start and contract_start > start:
+            start = contract_start
+        following = [date for date in sibling_dates if date and date > own_date]
+        end = min(following) - timedelta(days=1) if following else False
+        if end and contract_end:
+            end = min(end, contract_end)
+        elif not end:
+            end = contract_end
+        # A version dated in the future is read against the day it takes
+        # effect: by then the staffing table may well be a different one.
+        return end or max(start, today)
 
     @api.model
     def _resolve(self, company, department, job, ref_date):

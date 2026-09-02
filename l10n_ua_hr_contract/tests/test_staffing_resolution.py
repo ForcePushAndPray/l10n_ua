@@ -7,6 +7,7 @@ the date the version is in force. Covered here:
 - unapproved lines and uncovered positions raise nothing
 - the salary range warns instead of blocking
 - the wage suggestion fires from a change of position
+- the panel on the card follows the position inside the form, before saving
 - resolution is batched: one lookup for a whole recordset
 
 Note on the fixtures: creating an hr.employee already creates a version dated
@@ -20,7 +21,7 @@ from datetime import date
 from dateutil.relativedelta import relativedelta
 
 from odoo import fields
-from odoo.tests import tagged
+from odoo.tests import Form, tagged
 
 from .common import ContractTestCase
 
@@ -152,6 +153,34 @@ class TestStaffingResolution(ContractTestCase):
         future = self._version(employee, in_a_year)
 
         self.assertEqual(future.staffing_line_id, future_line)
+
+    def test_panel_follows_the_position_inside_the_form(self):
+        """The panel must react to the position before the record is saved.
+
+        The card resolves the line itself instead of reading it from
+        `current_version_id`: that field is a stored compute over
+        `version_ids.date_version`, so a related field routed through it stays
+        empty until save — the panel showed nothing while the HR officer was
+        still choosing the position.
+        """
+        line = self._line()
+        employee = self._employee(job=self.job_2)
+        self.assertFalse(employee.staffing_line_id)
+
+        with Form(employee) as form:
+            form.job_id = self.job
+
+            self.assertEqual(form.staffing_line_id, line)
+            self.assertEqual(form.staffing_salary, line.salary)
+
+    def test_card_and_version_agree(self):
+        """Both read the same rule, so they cannot answer differently."""
+        line = self._line()
+        employee = self._employee()
+
+        self.assertEqual(employee.staffing_line_id, line)
+        self.assertEqual(
+            employee.current_version_id.staffing_line_id, line)
 
     # === Salary range ===
 

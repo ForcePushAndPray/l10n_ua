@@ -114,3 +114,16 @@ def migrate(cr, version):
             "a staffing line (ids: %s)",
             len(unresolved), unresolved.ids[:50])
 
+    # The `staffing_line_id` column is deliberately left in place, and left
+    # alone. The field is computed now, so the ORM neither selects nor writes
+    # it; a fresh install never creates it, because Odoo builds columns only for
+    # stored fields. It therefore survives only in databases that lived through
+    # this migration — which is the point: rolling back to the previous code is
+    # then a matter of checking that code out, with every pointer still where it
+    # was, instead of restoring them from the snapshot table.
+    #
+    # Nothing may start reading it again. Its values freeze here: a position
+    # changed after the migration is not reflected, and deleting a staffing line
+    # still nulls the pointer through the foreign key — exactly as it did
+    # before, so a rollback finds the state the old code would have produced.
+

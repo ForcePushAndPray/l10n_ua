@@ -31,27 +31,61 @@ class HrEmployee(models.Model):
     )
     # Derived from department_id + job_id, so no longer writable from the card:
     # the position is entered once, in the native "Job Position" field.
+    #
+    # Resolved here rather than read from `current_version_id.staffing_line_id`:
+    # that field is a stored compute over `version_ids.date_version`, so a
+    # department or job picked in an unsaved form never reaches it and the panel
+    # stayed empty until the record was saved. The fields the form actually
+    # edits are on the card itself, so the panel now follows them at once. The
+    # date rule is the shared one, so the card and the version cannot disagree.
     staffing_line_id = fields.Many2one(
-        related='current_version_id.staffing_line_id'
+        'hr.staffing.table',
+        string='Staffing Position',
+        compute='_compute_staffing_line_id',
+        compute_sudo=True,
+        groups="hr.group_hr_user",
+        help='Staffing table line matching the department and the job of this '
+             'employee. Not filled in by hand: the position is entered once, '
+             'in the native Job Position field, and the staffing line follows '
+             'from it.'
     )
-    # Details of that line, shown next to the position on the Work tab. No
+    # Details of that line, shown next to the position on the Work tab. One hop
+    # from a field of this same record, so they follow it inside the form. No
     # explicit strings — the labels come from hr.staffing.table, where they are
     # already translated.
-    staffing_date_from = fields.Date(
-        related='current_version_id.staffing_line_id.date_from')
-    staffing_state = fields.Selection(
-        related='current_version_id.staffing_line_id.state')
+    staffing_date_from = fields.Date(related='staffing_line_id.date_from')
+    staffing_state = fields.Selection(related='staffing_line_id.state')
     staffing_currency_id = fields.Many2one(
-        related='current_version_id.staffing_line_id.currency_id')
+        related='staffing_line_id.currency_id')
     staffing_salary = fields.Monetary(
-        related='current_version_id.staffing_line_id.salary',
+        related='staffing_line_id.salary',
         currency_field='staffing_currency_id')
     staffing_salary_min = fields.Monetary(
-        related='current_version_id.staffing_line_id.salary_min',
+        related='staffing_line_id.salary_min',
         currency_field='staffing_currency_id')
     staffing_salary_max = fields.Monetary(
-        related='current_version_id.staffing_line_id.salary_max',
+        related='staffing_line_id.salary_max',
         currency_field='staffing_currency_id')
+
+    @api.depends('company_id', 'department_id', 'job_id', 'date_version',
+                 'contract_date_start', 'contract_date_end',
+                 'version_ids.date_version')
+    def _compute_staffing_line_id(self):
+        today = fields.Date.context_today(self)
+        Staffing = self.env['hr.staffing.table']
+        keys = {}
+        for employee in self:
+            ref_date = Staffing._reference_date(
+                employee.date_version, employee.contract_date_start,
+                employee.contract_date_end,
+                employee.version_ids.mapped('date_version'), today)
+            keys[employee.id] = (
+                employee.company_id.id, employee.department_id.id,
+                employee.job_id.id, ref_date,
+            )
+        resolved = Staffing._resolve_batch(list(keys.values()))
+        for employee in self:
+            employee.staffing_line_id = resolved.get(keys[employee.id], False)
     tariff_grade_id = fields.Many2one(
         related='current_version_id.tariff_grade_id',
         readonly=False
