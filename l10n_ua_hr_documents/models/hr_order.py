@@ -1,4 +1,6 @@
 import logging
+from datetime import date, timedelta
+
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError, ValidationError
 from psycopg2 import IntegrityError
@@ -360,49 +362,45 @@ class HrOrder(models.Model):
 
     def _sync_failure(self, exc):
         """Convert a sync exception into a UserError so it surfaces as a modal
-        dialog the user must dismiss before continuing. Overlapping-contract
-        failures get a tailored, actionable message."""
-        text = str(exc)
-        if 'contract running' in text or 'active versions' in text \
-                or 'overlap' in text.lower():
-            return UserError(_(
-                "Cannot update the employee contract: this employee already "
-                "has an active contract during the selected period.\n\n"
-                "Please either:\n"
-                "- Change the start date so that it does not overlap with the "
-                "existing contract, or\n"
-                "- Create a new employee if this employee should have multiple "
-                "active contracts."
-            ))
+        dialog the user must dismiss before continuing.
+
+        The one refusal users actually run into — an overlapping contract
+        period — is raised by :meth:`_check_hiring_period_free` before any
+        write is attempted, with the dates spelled out. Recognising it here
+        instead is not possible: core raises its messages already translated,
+        so matching their English wording never fires in a Ukrainian database.
+        """
         return UserError(_(
             "Failed to sync hiring order data to the employee record.\n\n"
             "Details: %s",
-            text,
+            exc,
         ))
 
     def _sync_hiring_to_employee(self):
         """Sync hiring order data to the employee record.
 
-        Three writes happen, each guarded by its own savepoint so a failure in
-        one does not abort the order transaction or the other writes:
+        Two writes happen, each guarded by its own savepoint so a failure in
+        one does not abort the order transaction or the other write:
 
         1. Employee-level fields (``job_id``).
-        2. Current version metadata (``hire_order_number``, ``hire_order_date``,
-           ``job_id``) — so the employee form immediately reflects the latest
-           order; these fields do not interact with contract period overlap
-           checks.
-        3. A dedicated contract version covering the order's period
-           (``contract_date_start``/``contract_date_end``) — created or updated
-           in place, matched first by ``hire_order_number`` and then by
-           ``date_version``.
+        2. The contract version the order documents: its period
+           (``contract_date_start`` / ``contract_date_end``), the order
+           metadata (``hire_order_number``, ``hire_order_date``) and
+           ``job_id`` — see :meth:`_find_hiring_version`.
 
         The order never writes ``hire_date`` on the employee: that field is
-        computed from the contract versions, so step 3 is what sets it. An
+        computed from the contract versions, so step 2 is what sets it. An
         order without an explicit ``date_start`` falls back to the order date
         for the contract period, which keeps the version — not the employee
         record — the single source of the hire date.
+
+        The metadata is deliberately NOT stamped on
+        ``employee.current_version_id``. That is the version in force today,
+        which for a hiring starting tomorrow is still the PREVIOUS
+        employment: stamping this order's number on it made the lookup below
+        take that old version for the order's own and move it onto the new
+        period, erasing the previous contract from the employee's history.
         """
-        Version = self.env['hr.version']
         for order in self.filtered(lambda o: o.order_type == 'hiring' and o.employee_id):
             order_no = order.name if order.name and order.name != 'New' else False
 
@@ -421,38 +419,18 @@ class HrOrder(models.Model):
                     )
                     raise self._sync_failure(exc) from exc
 
-            # 2. Current version metadata (visible on the employee form)
-            current = order.employee_id.current_version_id
-            if current:
-                current_vals = {}
-                if order_no:
-                    current_vals['hire_order_number'] = order_no
-                if order.date:
-                    current_vals['hire_order_date'] = order.date
-                if order.job_id:
-                    current_vals['job_id'] = order.job_id.id
-                if current_vals:
-                    try:
-                        with self.env.cr.savepoint():
-                            current.sudo().write(current_vals)
-                    except _SYNC_EXC as exc:
-                        _logger.warning(
-                            "Hiring order %s: cannot sync metadata to current version of %s: %s",
-                            order.name, order.employee_id.display_name, exc,
-                        )
-                        raise self._sync_failure(exc) from exc
-
-            # 3. Contract version for the new employment period.
-            # The contract period starts on date_start, or on the order date
-            # when the order does not spell it out — an employment order always
-            # opens a period, and leaving contract_date_start empty would keep
-            # the version out of the employee's hire date and out of the core
+            # 2. Contract version for the employment period.
+            # The period starts on date_start, or on the order date when the
+            # order does not spell it out — an employment order always opens a
+            # period, and leaving contract_date_start empty would keep the
+            # version out of the employee's hire date and out of the core
             # overlap checks.
             version_start = order.date_start or order.date
             if not version_start:
                 continue
 
             version_vals = {
+                'date_version': version_start,
                 'contract_date_start': version_start,
                 'hire_order_date': order.date or False,
             }
@@ -460,43 +438,157 @@ class HrOrder(models.Model):
                 version_vals['hire_order_number'] = order_no
             if order.job_id:
                 version_vals['job_id'] = order.job_id.id
-            if order.is_fixed_term:
-                version_vals['contract_date_end'] = order.date_end or False
-            else:
-                version_vals['contract_date_end'] = False
+            version_vals['contract_date_end'] = (
+                (order.date_end or False) if order.is_fixed_term else False)
 
-            existing = Version.browse()
-            if order_no:
-                existing = Version.search([
-                    ('employee_id', '=', order.employee_id.id),
-                    ('hire_order_number', '=', order_no),
-                ], limit=1)
-            if not existing:
-                existing = Version.search([
-                    ('employee_id', '=', order.employee_id.id),
-                    ('date_version', '=', version_start),
-                ], limit=1)
-
+            # Both resolved before the savepoint: an overlapping period is
+            # reported with its own message, which _sync_failure would
+            # otherwise flatten into a bare "failed to sync".
+            version = order._find_hiring_version(version_start)
+            order._check_hiring_period_free(
+                version_start, version_vals['contract_date_end'], version)
             try:
                 with self.env.cr.savepoint():
-                    if existing:
-                        version_vals['date_version'] = version_start
-                        existing.sudo().write(version_vals)
-                    else:
-                        version_vals['date_version'] = version_start
-                        version_vals['employee_id'] = order.employee_id.id
-                        template = order.employee_id.current_version_id
-                        if template:
-                            template.sudo().copy(version_vals)
-                        else:
-                            version_vals.setdefault('company_id', order.company_id.id)
-                            Version.sudo().create(version_vals)
+                    if not version:
+                        version = order._create_hiring_version(version_start)
+                    version.sudo().write(version_vals)
             except _SYNC_EXC as exc:
                 _logger.warning(
                     "Hiring order %s: cannot sync to contract version of %s: %s",
                     order.name, order.employee_id.display_name, exc,
                 )
                 raise self._sync_failure(exc) from exc
+
+            # The employee card reads the version in force today, and core
+            # refreshes that only once a day (the "HR Employee: Update Current
+            # Version" cron). Without this the card keeps showing the previous
+            # employment right after the order is issued, and the next order
+            # would resolve against that stale value.
+            order.employee_id.sudo()._compute_current_version_id()
+
+    def _find_hiring_version(self, version_start):
+        """The contract version this order documents, when it already exists.
+
+        Two candidates, in this order:
+
+        1. The version effective on ``version_start`` — typically the contract
+           the user prepared by hand before issuing the order. It is the one
+           the order documents, and filling it in is also what keeps a second
+           version off that date, which the database forbids outright.
+        2. The version already carrying this order's number, as long as no
+           version sits on that date yet. Moving it is how a corrected start
+           date on the order follows through to the contract.
+
+        When both exist and differ, the second one is not this order's any
+        more, so its number is cleared: leaving it there would let a later
+        sync take that version for the order's own and move it — the mistake
+        that erased the previous contract of re-hired employees.
+
+        Returns an empty recordset when the order needs a new version.
+        """
+        self.ensure_one()
+        order_no = self.name if self.name and self.name != 'New' else False
+        # Elevated for the same reason core is in hr.version._check_dates:
+        # contract dates are manager-level fields, while issuing orders is the
+        # job of HR officers, who need not hold that right.
+        versions = self.employee_id.sudo().with_context(
+            active_test=False).version_ids
+        on_date = versions.filtered(
+            lambda v: v.date_version == version_start)[:1]
+        by_order = versions.filtered(
+            lambda v: order_no and v.hire_order_number == order_no)
+        if on_date:
+            stale = by_order - on_date
+            if stale:
+                stale.write({
+                    'hire_order_number': False,
+                    'hire_order_date': False,
+                })
+            return on_date
+        return by_order[:1]
+
+    def _create_hiring_version(self, version_start):
+        """A new contract version opening the employment on ``version_start``.
+
+        Core's ``create_version`` is what copies the version in force on that
+        date and keeps the contract dates of sibling versions in step; the
+        plain create is only the fallback for an employee left with no
+        version at all.
+        """
+        self.ensure_one()
+        employee = self.employee_id
+        if employee.with_context(active_test=False).version_ids:
+            return employee.sudo().create_version({
+                'date_version': version_start,
+                'contract_date_start': version_start,
+                'contract_date_end': False,
+            })
+        return self.env['hr.version'].sudo().create({
+            'employee_id': employee.id,
+            'company_id': self.company_id.id,
+            'date_version': version_start,
+            'contract_date_start': version_start,
+        })
+
+    def _check_hiring_period_free(self, version_start, version_end, own_version):
+        """Refuse a hiring order whose period overlaps a contract in place.
+
+        Core refuses it as well, from ``hr.version._check_dates``, but only
+        once the write is under way and with a message that names no dates
+        and arrives already translated — this module cannot tell it apart
+        from any other failure, so the user was left with a bare "failed to
+        sync". Checking here lets the order name the contract standing in the
+        way and say what to do about it.
+
+        The rule mirrors core: two periods that are exactly equal are one
+        contract seen through several versions and never conflict, and a
+        period with no end date runs to the end of time.
+        """
+        self.ensure_one()
+        end = version_end or date.max
+        conflicts = self.employee_id.sudo().version_ids.filtered(
+            lambda v: (
+                v != own_version
+                and v.contract_date_start
+                and not (v.contract_date_start == version_start
+                         and (v.contract_date_end or date.max) == end)
+                and v.contract_date_start <= end
+                and version_start <= (v.contract_date_end or date.max)
+            )
+        )
+        if not conflicts:
+            return
+        conflict = conflicts[0]
+        if conflict.contract_date_end:
+            raise UserError(_(
+                "Cannot start a contract for %(employee)s on %(start)s: the "
+                "contract of %(other_start)s - %(other_end)s is still running "
+                "that day.\n\n"
+                "An employee who leaves and is hired again is free from the "
+                "day after the previous contract ends, so hire them from "
+                "%(next_day)s.\n\n"
+                "If instead the two contracts are meant to run side by side "
+                "(concurrent employment next to a job that carries on), "
+                "create a separate employee record for it: one record holds "
+                "one contract at a time.",
+                employee=self.employee_id.display_name,
+                start=version_start,
+                other_start=conflict.contract_date_start,
+                other_end=conflict.contract_date_end,
+                next_day=conflict.contract_date_end + timedelta(days=1),
+            ))
+        raise UserError(_(
+            "Cannot start a contract for %(employee)s on %(start)s: the "
+            "contract opened on %(other_start)s is still running and carries "
+            "no end date.\n\n"
+            "Close it first — confirm the dismissal order, or fill in its end "
+            "date — and hire the employee from the day after. If the two "
+            "contracts are meant to run side by side (concurrent employment), "
+            "create a separate employee record for it.",
+            employee=self.employee_id.display_name,
+            start=version_start,
+            other_start=conflict.contract_date_start,
+        ))
 
     def _check_vacation_confirm_rights(self):
         """Confirming a vacation order records that the printed, signed order
@@ -530,20 +622,52 @@ class HrOrder(models.Model):
         # lock the leave though — it can no longer be refused or sent back to
         # approval (see hr.leave._check_order_allows_cancelling).
 
+    def _current_contract_versions(self):
+        """The versions of the employment in force — the latest contract period.
+
+        A contract is a set of versions sharing one ``contract_date_start``;
+        the latest of those periods is the employment the employee is living
+        now, whether it still runs or has just been closed. Earlier periods
+        are previous employments, and core refuses to write contract dates
+        across two of them in one go ("Cannot modify multiple versions
+        contract dates with different contracts at once") — which is exactly
+        what a second dismissal of a re-hired employee used to attempt.
+
+        Versions with no start date carry no period at all and are left out:
+        core rejects an end date without a start at database level.
+
+        Contract dates are manager-level fields, so the selection reads them
+        elevated the way core does; the records come back in the caller's own
+        environment, leaving the write under the user's own rights.
+        """
+        self.ensure_one()
+        versions = self.employee_id.sudo().with_context(
+            active_test=False).version_ids.filtered('contract_date_start')
+        if not versions:
+            return versions.sudo(False)
+        latest_start = max(versions.mapped('contract_date_start'))
+        return versions.filtered(
+            lambda v: v.contract_date_start == latest_start).sudo(False)
+
     def _apply_dismissal(self):
         """Apply a confirmed dismissal order to the employee:
-        close ALL contract versions and archive the employee.
+        close the current contract and archive the employee.
 
-        We write contract_date_end to every hr.version of the employee:
-        Odoo core syncs contract_date_end across versions only on
-        `create_version`, not on direct `write`. Historical versions
-        would otherwise keep `contract_date_end = False` and slip
-        through the report filter `('contract_date_end', '=', False)`.
+        We write contract_date_end to every version of that contract: Odoo
+        core syncs contract_date_end across versions only on
+        `create_version`, not on direct `write`, so its other versions would
+        keep `contract_date_end = False` and slip through the report filter
+        `('contract_date_end', '=', False)`.
+
+        Only the current employment is closed — see
+        :meth:`_current_contract_versions`. An earlier contract of a re-hired
+        employee keeps the end date of its own dismissal, which is both its
+        history and what core requires.
         """
         self.ensure_one()
         employee = self.employee_id
         dismissal_date = self.date_dismissal or self.date
-        versions = employee.with_context(active_test=False).version_ids
+        versions = self._current_contract_versions()
         if versions:
             versions.write({
                 'contract_date_end': dismissal_date,
@@ -575,14 +699,40 @@ class HrOrder(models.Model):
     def _revert_dismissal(self):
         """Revert the effects of a previously confirmed dismissal order.
 
-        We match versions by termination_order_number == self.name so revert
-        is safe when several dismissal orders existed for the same employee.
+        We reopen exactly what this order closed: its number AND the end date
+        it wrote. The number alone is not enough — creating a version copies
+        it over to the new employment, so a later period can carry the number
+        of the dismissal that ended the previous one, and reverting by number
+        would reopen a period this order never touched (and fail, since the
+        two belong to different contracts).
         """
         self.ensure_one()
         employee = self.employee_id
-        versions = employee.with_context(active_test=False).version_ids.filtered(
+        dismissal_date = self.date_dismissal or self.date
+        versions = employee.sudo().with_context(
+            active_test=False).version_ids.filtered(
             lambda v: v.termination_order_number == self.name
-        )
+            and v.contract_date_end == dismissal_date
+        ).sudo(False)
+        later_start = min(
+            (v.contract_date_start
+             for v in employee.sudo().with_context(active_test=False).version_ids
+             if v.contract_date_start and v.contract_date_start > dismissal_date),
+            default=False)
+        if versions and later_start:
+            # Reopening this period would leave it running for ever, on top of
+            # the employment that has already started — core refuses that, and
+            # its message speaks of overlapping dates rather than of the order
+            # the user is trying to cancel.
+            raise UserError(_(
+                "Cannot cancel the dismissal of %(employee)s: a new contract "
+                "for this employee already starts on %(start)s.\n\n"
+                "Reopening the contract this order closed would put the "
+                "employee under two contracts at once. Correct or delete the "
+                "later contract first, then cancel this order.",
+                employee=employee.display_name,
+                start=later_start,
+            ))
         if versions:
             versions.write({
                 'contract_date_end': False,
