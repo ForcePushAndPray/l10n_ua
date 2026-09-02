@@ -2,7 +2,7 @@ import logging
 
 _logger = logging.getLogger(__name__)
 
-BACKUP = 'hr_version_staffing_backup_19_5_0'
+BACKUP = 'hr_version_staffing_backup_19_7_0'
 
 
 def _column_exists(cr, table, column):
@@ -15,7 +15,7 @@ def _column_exists(cr, table, column):
 def migrate(cr, version):
     """Snapshot the manual staffing pointer before it becomes a derived field.
 
-    From 19.0.5.0.0 `hr.version.staffing_line_id` is computed from
+    From 19.0.7.0.0 `hr.version.staffing_line_id` is computed from
     department + job + date instead of being picked by hand, and its column
     goes away. This table is the only surviving record of what each version
     used to point at, so post-migrate reads the mapping from here rather than
@@ -31,7 +31,7 @@ def migrate(cr, version):
 
     if not _column_exists(cr, 'hr_version', 'staffing_line_id'):
         _logger.info(
-            "l10n_ua_hr_contract 19.0.5.0.0: hr_version.staffing_line_id "
+            "l10n_ua_hr_contract 19.0.7.0.0: hr_version.staffing_line_id "
             "absent, nothing to snapshot")
         return
 
@@ -51,6 +51,6 @@ def migrate(cr, version):
         'SELECT COUNT(*), COUNT(staffing_line_id) FROM %s' % BACKUP)
     total, with_line = cr.fetchone()
     _logger.info(
-        "l10n_ua_hr_contract 19.0.5.0.0: snapshotted %s versions into %s, "
+        "l10n_ua_hr_contract 19.0.7.0.0: snapshotted %s versions into %s, "
         "%s of them carrying a manual staffing line",
         total, BACKUP, with_line)

@@ -15,7 +15,7 @@ from odoo import api, SUPERUSER_ID
 
 _logger = logging.getLogger(__name__)
 
-BACKUP = 'hr_version_staffing_backup_19_5_0'
+BACKUP = 'hr_version_staffing_backup_19_7_0'
 
 
 def _table_exists(cr, table):
@@ -31,7 +31,7 @@ def migrate(cr, version):
 
     if not _table_exists(cr, BACKUP):
         _logger.info(
-            "l10n_ua_hr_contract 19.0.5.0.0: %s absent, nothing to carry over",
+            "l10n_ua_hr_contract 19.0.7.0.0: %s absent, nothing to carry over",
             BACKUP)
         return
 
@@ -93,7 +93,7 @@ def migrate(cr, version):
                 }))
 
     _logger.info(
-        "l10n_ua_hr_contract 19.0.5.0.0: filled position fields on %s versions "
+        "l10n_ua_hr_contract 19.0.7.0.0: filled position fields on %s versions "
         "from the staffing table, restored %s hand-written job titles, "
         "%s divergences reported in chatter",
         filled, restored_titles, conflicts)
@@ -110,7 +110,7 @@ def migrate(cr, version):
     unresolved = candidates.filtered(lambda v: not v.staffing_line_id)
     if unresolved:
         _logger.warning(
-            "l10n_ua_hr_contract 19.0.5.0.0: %s versions no longer resolve to "
+            "l10n_ua_hr_contract 19.0.7.0.0: %s versions no longer resolve to "
             "a staffing line (ids: %s)",
             len(unresolved), unresolved.ids[:50])
 
