@@ -31,6 +31,7 @@
                         <page string="Lines" name="lines">
                             <field name="line_ids">
                                 <list>
+                                    <field name="currency_id" column_invisible="True"/>
                                     <field name="account_id"/>
                                     <field name="partner_id" optional="hide"/>
                                     <field name="subconto_label" optional="show"/>
