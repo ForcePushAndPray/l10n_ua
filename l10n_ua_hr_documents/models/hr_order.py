@@ -484,6 +484,11 @@ class HrOrder(models.Model):
         sync take that version for the order's own and move it — the mistake
         that erased the previous contract of re-hired employees.
 
+        Archived versions are out of scope on purpose. They are invisible to
+        the contract checks and to the unique index on the effective date, so
+        writing the order into one leaves the employee with no contract at all
+        for that period — the order would look saved and change nothing.
+
         Returns an empty recordset when the order needs a new version.
         """
         self.ensure_one()
@@ -491,8 +496,7 @@ class HrOrder(models.Model):
         # Elevated for the same reason core is in hr.version._check_dates:
         # contract dates are manager-level fields, while issuing orders is the
         # job of HR officers, who need not hold that right.
-        versions = self.employee_id.sudo().with_context(
-            active_test=False).version_ids
+        versions = self.employee_id.sudo().version_ids
         on_date = versions.filtered(
             lambda v: v.date_version == version_start)[:1]
         by_order = versions.filtered(
@@ -517,7 +521,7 @@ class HrOrder(models.Model):
         """
         self.ensure_one()
         employee = self.employee_id
-        if employee.with_context(active_test=False).version_ids:
+        if employee.sudo().version_ids:
             return employee.sudo().create_version({
                 'date_version': version_start,
                 'contract_date_start': version_start,
@@ -667,13 +671,19 @@ class HrOrder(models.Model):
         self.ensure_one()
         employee = self.employee_id
         dismissal_date = self.date_dismissal or self.date
+        order_vals = {
+            'termination_order_number': self.name,
+            'termination_order_date': self.date,
+        }
         versions = self._current_contract_versions()
         if versions:
-            versions.write({
-                'contract_date_end': dismissal_date,
-                'termination_order_number': self.name,
-                'termination_order_date': self.date,
-            })
+            versions.write({'contract_date_end': dismissal_date, **order_vals})
+        else:
+            # No contract period on record — nothing to close, and core
+            # rejects an end date without a start anyway. The order itself
+            # still has to be traceable on the card, so its reference goes in
+            # on its own.
+            employee.version_ids.write(order_vals)
         # Back up the previous value once per apply/revert cycle so revert
         # restores exactly what was there before this order — independent of
         # later manual edits.
@@ -705,6 +715,12 @@ class HrOrder(models.Model):
         of the dismissal that ended the previous one, and reverting by number
         would reopen a period this order never touched (and fail, since the
         two belong to different contracts).
+
+        Matching on both cannot pick up two employments at once: periods
+        sharing an end date necessarily overlap, and core allows no such pair
+        on one employee. Cards written by the old code, which stamped the
+        number on every version, therefore resolve to the one employment that
+        really ended on that date.
         """
         self.ensure_one()
         employee = self.employee_id

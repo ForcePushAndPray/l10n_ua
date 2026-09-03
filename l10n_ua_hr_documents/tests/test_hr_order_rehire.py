@@ -234,3 +234,102 @@ class TestHrOrderRehire(TransactionCase):
         self.first_version.invalidate_recordset()
         self.assertFalse(self.first_version.contract_date_end,
                          'the period this order closed reopens')
+
+
+    # --- Cards written by the old code -------------------------------------
+    # The fixtures below are built the way the previous sync left them, partly
+    # behind the ORM: the point is data the current code could not produce.
+
+    def test_legacy_stale_number_on_an_older_employment_is_ignored(self):
+        """The old dismissal stamped its number on EVERY version of the
+        employee, so an earlier employment can still carry the number of an
+        order that never ended it. Cancelling must go by the end date the
+        order wrote, not by the number alone."""
+        stale = self.employee.sudo().create_version({
+            'date_version': date(2024, 1, 1)})
+        self.env.flush_all()
+        # Behind the ORM on purpose: this is what the previous code left, not
+        # something the current one can produce.
+        self.env.cr.execute(
+            """UPDATE hr_version SET contract_date_start=%s, contract_date_end=%s,
+               termination_order_number=%s WHERE id=%s""",
+            (date(2024, 1, 1), date(2024, 12, 31), 'З-2025/0001', stale.id))
+        self.env.invalidate_all()
+        order = self.env['hr.order'].create({
+            'order_type': 'dismissal', 'subject': 'Звільнення',
+            'employee_id': self.employee.id, 'date': date(2025, 6, 30),
+            'date_dismissal': date(2025, 6, 30), 'company_id': self.company.id})
+        order.write({'name': 'З-2025/0001'})
+        order.action_confirm()
+
+        order.action_cancel()
+
+        self.first_version.invalidate_recordset()
+        stale.invalidate_recordset()
+        self.assertFalse(self.first_version.contract_date_end,
+                         'the employment this order ended reopens')
+        self.assertEqual(stale.contract_date_end, date(2024, 12, 31),
+                         'the older employment keeps its own end date')
+
+    def test_legacy_number_copied_onto_a_later_employment_is_refused(self):
+        """Creating a version copies the termination number onto the new
+        employment. Cancelling the old order then has a later contract in the
+        way, and the order says so rather than letting core answer with
+        overlapping dates."""
+        order = self._dismiss(date(2025, 6, 30))
+        self._hire(date(2025, 7, 1))
+        later = self._versions() - self.first_version
+        later.sudo().write({'termination_order_number': order.name})
+
+        with self.assertRaises(UserError) as caught:
+            order.action_cancel()
+
+        self.assertIn('2025-07-01', str(caught.exception))
+        self.first_version.invalidate_recordset()
+        self.assertEqual(self.first_version.contract_date_end, date(2025, 6, 30))
+
+    def test_hiring_order_ignores_an_archived_version_on_its_date(self):
+        """An archived version is invisible to the contract checks and to the
+        unique index, so filling it in would leave the employee with no
+        contract for that period and an order that looks saved."""
+        self._dismiss(date(2025, 6, 30))
+        archived = self.employee.sudo().create_version({
+            'date_version': date(2025, 7, 1),
+            'contract_date_start': date(2025, 7, 1),
+        })
+        archived.sudo().write({'active': False})
+
+        order = self._hire(date(2025, 7, 1))
+
+        archived.invalidate_recordset()
+        self.assertFalse(archived.hire_order_number,
+                         'the archived version is left alone')
+        live = self.employee.version_ids.filtered(
+            lambda v: v.hire_order_number == order.name)
+        self.assertEqual(len(live), 1, 'the order opened a live contract')
+        self.assertEqual(live.contract_date_start, date(2025, 7, 1))
+        self.assertEqual(self.employee.hire_date, date(2025, 1, 1))
+
+    def test_dismissal_records_the_order_without_a_contract_period(self):
+        """Cards carried over from other systems can have no contract dates at
+        all. There is no period to close — core rejects an end date without a
+        start — but the dismissal order still has to be traceable."""
+        employee = self.env['hr.employee'].create({
+            'name': 'ТЕСТ Без періоду', 'company_id': self.company.id})
+        order = self.env['hr.order'].create({
+            'order_type': 'dismissal', 'subject': 'Звільнення',
+            'employee_id': employee.id, 'date': date(2025, 6, 30),
+            'date_dismissal': date(2025, 6, 30), 'company_id': self.company.id})
+
+        order.action_confirm()
+
+        versions = employee.with_context(active_test=False).version_ids
+        self.assertTrue(versions)
+        for version in versions:
+            self.assertEqual(version.termination_order_number, order.name)
+            self.assertEqual(version.termination_order_date, order.date)
+            self.assertFalse(version.contract_date_end,
+                             'no period on record, nothing to close')
+        self.assertEqual(
+            employee.with_context(active_test=False).departure_date,
+            date(2025, 6, 30))
