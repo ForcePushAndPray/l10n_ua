@@ -333,3 +333,65 @@ class TestHrOrderRehire(TransactionCase):
         self.assertEqual(
             employee.with_context(active_test=False).departure_date,
             date(2025, 6, 30))
+
+    def test_editing_a_past_hiring_order_keeps_the_contract_closed(self):
+        """The sync runs on every write touching the order's job, dates or
+        number — including a correction made to the order of an employee who
+        has since left. It must not reopen the period the dismissal closed."""
+        self._dismiss(date(2025, 6, 30))
+        hire_order = self.env['hr.order'].search([
+            ('employee_id', '=', self.employee.id),
+            ('order_type', '=', 'hiring')], limit=1)
+        if not hire_order:
+            hire_order = self._hire(date(2025, 1, 1))
+            self.first_version.invalidate_recordset()
+
+        hire_order.write({'job_id': self.job.id})
+
+        self.first_version.invalidate_recordset()
+        self.assertEqual(self.first_version.contract_date_end, date(2025, 6, 30),
+                         'the dismissal, not the hiring order, owns the end date')
+        self.assertEqual(self.first_version.job_id, self.job)
+
+    def test_editing_a_past_hiring_order_with_several_versions(self):
+        """Same correction on a contract seen through several versions: the
+        sibling versions carry the same period, so they are the same contract
+        and must not be reported as one standing in the way."""
+        self.employee.sudo().create_version({
+            'date_version': date(2025, 3, 1),
+            'contract_date_start': date(2025, 1, 1),
+        })
+        hire_order = self._hire(date(2025, 1, 1))
+        self._dismiss(date(2025, 6, 30))
+
+        hire_order.write({'job_id': self.job.id})
+
+        versions = self._versions().filtered(
+            lambda v: v.contract_date_start == date(2025, 1, 1))
+        self.assertEqual(len(versions), 2)
+        self.assertEqual(set(versions.mapped('contract_date_end')),
+                         {date(2025, 6, 30)})
+
+    def test_fixed_term_rehire_keeps_its_own_end_date(self):
+        """A version prepared by hand for a re-hire inherits the termination
+        order number of the employment before it — core's create_version
+        copies the field. That number alone must not be taken for this
+        period's closure, or the order would leave the fixed-term contract it
+        opens without an end date."""
+        self._dismiss(date(2025, 6, 30))
+        prepared = self.employee.sudo().create_version({
+            'date_version': date(2025, 7, 1),
+            'contract_date_start': date(2025, 7, 1),
+        })
+        self.assertTrue(prepared.termination_order_number,
+                        'core copies the number of the previous dismissal')
+
+        order = self._hire(date(2025, 7, 1))
+        order.write({'is_fixed_term': True, 'date_end': date(2025, 12, 31)})
+
+        prepared.invalidate_recordset()
+        self.assertEqual(prepared.contract_date_end, date(2025, 12, 31),
+                         'the order sets the end date of its own contract')
+        self.first_version.invalidate_recordset()
+        self.assertEqual(self.first_version.contract_date_end, date(2025, 6, 30),
+                         'the previous period stays as the dismissal closed it')

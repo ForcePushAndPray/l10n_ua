@@ -32,6 +32,14 @@ def _calendar_references(cr):
     which copy the row belongs to. This excludes resource_calendar_attendance
     (the working hour lines belong to the calendar itself) and res_company,
     which is handled separately.
+
+    resource_calendar_leaves is excluded for the same reason as the attendance
+    lines, even though it does carry a company_id: that column is a stored
+    compute over calendar_id.company_id (addons/resource), so the rows belong
+    to the calendar rather than to a company of their own, and the copies
+    already carry their own. Repointing them moved the original onto the same
+    copy the duplicate sits on, leaving the company with the public holiday
+    twice - which core's own overlap constraint forbids.
     """
     cr.execute("""
         SELECT tc.table_name, kcu.column_name
@@ -42,7 +50,8 @@ def _calendar_references(cr):
             ON ccu.constraint_name = tc.constraint_name
          WHERE tc.constraint_type = 'FOREIGN KEY'
            AND ccu.table_name = 'resource_calendar'
-           AND tc.table_name <> 'resource_calendar'
+           AND tc.table_name NOT IN ('resource_calendar',
+                                     'resource_calendar_leaves')
            AND EXISTS (SELECT 1 FROM information_schema.columns c
                         WHERE c.table_name = tc.table_name
                           AND c.column_name = 'company_id')
@@ -81,25 +90,6 @@ def _repoint_by_ua_code(cr, table, column):
            AND own.company_id = t.company_id
            AND own.active
            AND (cur.company_id IS NULL OR cur.company_id <> t.company_id)
-    """.format(table=table, column=column))
-    return cr.rowcount
-
-
-def _repoint_to_company_default(cr, table, column):
-    """Handle the rest: schedules without ua_code owned by another company.
-
-    They have no counterpart to match by code, so the company's own default
-    schedule (res_company.resource_calendar_id) is used instead.
-    """
-    cr.execute("""
-        UPDATE {table} t SET {column} = c.resource_calendar_id
-          FROM resource_calendar cur, res_company c
-         WHERE cur.id = t.{column}
-           AND c.id = t.company_id
-           AND c.resource_calendar_id IS NOT NULL
-           AND cur.ua_code IS NULL
-           AND cur.company_id IS NOT NULL
-           AND cur.company_id <> t.company_id
     """.format(table=table, column=column))
     return cr.rowcount
 
@@ -144,30 +134,46 @@ def migrate(cr, version):
     moved = 0
     for table, column in references:
         moved += _repoint_by_ua_code(cr, table, column)
-        moved += _repoint_to_company_default(cr, table, column)
     moved += _repoint_company_defaults(cr)
     env.invalidate_all()
     _logger.info(
         "l10n_ua_hr_contract 19.0.6.0.0: repointed %s references to the "
         "schedule of their own company", moved)
 
-    # Sanity check: no reference may point at another company's schedule, and
-    # none may be left on an archived template.
+    # Sanity check, counted apart because the two leftovers mean different
+    # things: a row on another company's schedule is a pre-existing misfiling
+    # this migration deliberately does not touch, while a row left on an
+    # archived template is damage this migration itself would have caused.
     for table, column in references:
-        # A row left on a template counts as broken too: the template is
-        # archived and company-less, so the record is orphaned rather than
-        # merely misfiled.
         cr.execute("""
-            SELECT count(*) FROM {table} t
+            SELECT count(*) FILTER (WHERE NOT rc.active
+                                      AND rc.company_id IS NULL),
+                   count(*) FILTER (WHERE rc.active
+                                      AND rc.company_id IS DISTINCT FROM
+                                          t.company_id)
+              FROM {table} t
               JOIN resource_calendar rc ON rc.id = t.{column}
-             WHERE rc.company_id IS DISTINCT FROM t.company_id
         """.format(table=table, column=column))
-        left = cr.fetchone()[0]
-        if left:
+        # Archived AND company-less is what a template looks like; a
+        # calendar the user archived themselves keeps its company and is none
+        # of this migration's business.
+        on_template, misfiled = cr.fetchone()
+        if on_template:
+            # Nothing to pick from: a row with no company of its own has no
+            # copy to be moved to. Reported rather than guessed at.
             _logger.warning(
-                "l10n_ua_hr_contract 19.0.6.0.0: %s still has %s references to "
-                "a schedule of another company or to a template - manual "
-                "review needed", table, left)
+                "l10n_ua_hr_contract 19.0.6.0.0: %s has %s rows left on an "
+                "archived schedule template - they carry no company_id, so "
+                "there is no copy to move them to. Assign a schedule of the "
+                "right company by hand.", table, on_template)
+        if misfiled:
+            _logger.warning(
+                "l10n_ua_hr_contract 19.0.6.0.0: %s has %s rows pointing at a "
+                "schedule of another company. They carry no ua_code, were "
+                "already like that before this migration and are left "
+                "untouched on purpose: a custom schedule shared across "
+                "companies can be a deliberate setup, and there is no "
+                "counterpart to match it against.", table, misfiled)
 
     # Tables without a company_id cannot be repointed automatically: there is
     # no own copy to pick. hr.payroll.structure.type is the one such pointer in

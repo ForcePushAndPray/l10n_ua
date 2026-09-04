@@ -180,3 +180,31 @@ class TestResourceCalendarMultiCompany(ContractTestCase):
                          self.env.company)
         self.assertEqual(employee_b.resource_calendar_id.company_id,
                          self.company_b)
+
+    def test_copy_carries_the_time_off_of_the_template(self):
+        """A company's copy brings the schedule's time off along.
+
+        This is what lets the 19.0.6.0.0 migration leave
+        resource_calendar_leaves alone: the rows belong to the calendar (their
+        company_id is a stored compute over calendar_id.company_id), and every
+        company already gets its own. Repointing them as well put the original
+        on the same copy as its duplicate, leaving one company with the public
+        holiday twice - which core's own overlap constraint forbids.
+        """
+        template = self.env.ref('l10n_ua_hr_contract.resource_calendar_ua_std40')
+        self.env['resource.calendar.leaves'].create({
+            'name': 'ТЕСТ Корпоративний вихідний',
+            'calendar_id': template.id,
+            'date_from': '2099-10-13 00:00:00',
+            'date_to': '2099-10-13 23:59:59',
+        })
+
+        company = self.env['res.company'].create({'name': 'ТЕСТ Третя компанія'})
+
+        copy = self._calendars_of(company).filtered(lambda c: c.ua_code == 'STD40')
+        carried = copy.leave_ids.filtered(
+            lambda l: l.name == 'ТЕСТ Корпоративний вихідний')
+        self.assertEqual(len(carried), 1,
+                         'the copy carries the time off exactly once')
+        self.assertEqual(carried.company_id, company,
+                         'the copied time off belongs to the company')
