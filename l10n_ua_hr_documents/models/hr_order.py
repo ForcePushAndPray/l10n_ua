@@ -438,15 +438,39 @@ class HrOrder(models.Model):
                 version_vals['hire_order_number'] = order_no
             if order.job_id:
                 version_vals['job_id'] = order.job_id.id
-            version_vals['contract_date_end'] = (
-                (order.date_end or False) if order.is_fixed_term else False)
 
-            # Both resolved before the savepoint: an overlapping period is
-            # reported with its own message, which _sync_failure would
-            # otherwise flatten into a bare "failed to sync".
+            # Resolved before the savepoint: an overlapping period is reported
+            # with its own message, which _sync_failure would otherwise
+            # flatten into a bare "failed to sync".
             version = order._find_hiring_version(version_start)
+
+            # A period already closed by a dismissal order is left alone. The
+            # sync runs on every write that touches the order's job, dates or
+            # number, so editing a long-past hiring order of an employee who
+            # has since left would otherwise reopen their contract: the card
+            # kept departure_date and the termination order number while the
+            # contract ran again, and the employee slipped into every report
+            # filtering on `contract_date_end = False`. The dismissal order is
+            # what ends a period; only cancelling it may reopen one.
+            #
+            # The end date has to fall on or after the start of the period the
+            # order documents for it to be this period's closure. A version
+            # prepared by hand for a re-hire inherits the termination number of
+            # the employment before it (core's create_version copies the
+            # field), so the number alone would also hold back the end date of
+            # a fixed-term re-hire and leave the contract open-ended.
+            closed = (version.contract_date_end
+                      and version.termination_order_number
+                      and version.contract_date_end >= version_start)
+            if closed:
+                version_end = version.contract_date_end
+            else:
+                version_end = (
+                    (order.date_end or False) if order.is_fixed_term else False)
+                version_vals['contract_date_end'] = version_end
+
             order._check_hiring_period_free(
-                version_start, version_vals['contract_date_end'], version)
+                version_start, version_end, version)
             try:
                 with self.env.cr.savepoint():
                     if not version:
