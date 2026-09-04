@@ -6,6 +6,7 @@ from . import test_allowance
 from . import test_termination_reason
 from . import test_work_rate
 from . import test_resource_calendar_ua
+from . import test_resource_calendar_multicompany
 from . import test_scheduled_norm
 from . import test_multicompany
 from . import test_work_schedule_removed

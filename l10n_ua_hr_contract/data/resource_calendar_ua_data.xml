@@ -2,23 +2,35 @@
 <odoo>
     <data noupdate="1">
 
-        <!-- Передвизначені графіки роботи як штатні resource.calendar (#213).
-             Заміна hr.work.schedule: норму годин рахує саме ядро з рядків
-             attendance_ids, тож зарплата і відпустки більше не можуть
-             розійтися.
+        <!-- Predefined working schedules as native resource.calendar records
+             (#213). Replacement for hr.work.schedule: the hour norm is
+             computed by the core itself from the attendance_ids lines, so
+             payroll and time off can no longer drift apart.
 
-             attendance_ids задаємо явно навіть там, де він порожній: штатний
-             _compute_attendance_ids копіює сітку календаря компанії в кожен
-             новий календар, тож без (5, 0, 0) змінні графіки мовчки отримали б
-             чужий 5-денний тиждень.
+             attendance_ids is set explicitly even where it stays empty: the
+             core _compute_attendance_ids copies the company calendar grid
+             into every new calendar, so without (5, 0, 0) the shift schedules
+             would silently inherit a foreign 5-day week.
 
-             Змінні цикли (2/2, доба/три, 3/3) і підсумований облік на тижневу
-             сітку не лягають — вони позначені штатним schedule_type='flexible',
-             через що ядро не перераховує hours_per_week/hours_per_day, і
-             норма береться з наших явних значень. Планування самих змін —
-             окрема задача (hr.production.calendar). -->
+             Shift cycles (2/2, 24h/3days, 3/3) and summarized accounting do
+             not fit a weekly grid - they carry the native
+             schedule_type='flexible', which stops the core from recomputing
+             hours_per_week/hours_per_day, so the norm comes from our explicit
+             values. Scheduling the shifts themselves is a separate task
+             (hr.production.calendar).
+
+             These records are templates, not working schedules: company_id is
+             empty and active=False, so they never show up in dropdowns. The
+             working copy of each of them in each company is created by
+             res.company._l10n_ua_create_resource_calendars(), following the
+             same pattern the core uses to give companies their default
+             schedule (res.company._create_resource_calendar). That way every
+             company has its own set of schedules, and changing the hours in
+             one does not affect the rest. -->
 
         <record id="resource_calendar_ua_std40" model="resource.calendar">
+            <field name="company_id" eval="False"/>
+            <field name="active" eval="False"/>
             <field name="name">Стандартний 5-денний (40 год/тиждень)</field>
             <field name="ua_code">STD40</field>
             <field name="ua_schedule_type">standard</field>
@@ -33,6 +45,8 @@
         </record>
 
         <record id="resource_calendar_ua_std36" model="resource.calendar">
+            <field name="company_id" eval="False"/>
+            <field name="active" eval="False"/>
             <field name="name">Скорочений 5-денний (36 год/тиждень)</field>
             <field name="ua_code">STD36</field>
             <field name="ua_schedule_type">standard</field>
@@ -48,6 +62,8 @@
         </record>
 
         <record id="resource_calendar_ua_std24" model="resource.calendar">
+            <field name="company_id" eval="False"/>
+            <field name="active" eval="False"/>
             <field name="name">Скорочений (24 год/тиждень)</field>
             <field name="ua_code">STD24</field>
             <field name="ua_schedule_type">standard</field>
@@ -60,6 +76,8 @@
         </record>
 
         <record id="resource_calendar_ua_part20" model="resource.calendar">
+            <field name="company_id" eval="False"/>
+            <field name="active" eval="False"/>
             <field name="name">Неповний робочий день (0.5 ставки)</field>
             <field name="ua_code">PART20</field>
             <field name="ua_schedule_type">standard</field>
@@ -71,6 +89,8 @@
         </record>
 
         <record id="resource_calendar_ua_std6d" model="resource.calendar">
+            <field name="company_id" eval="False"/>
+            <field name="active" eval="False"/>
             <field name="name">6-денний робочий тиждень</field>
             <field name="ua_code">STD6D</field>
             <field name="ua_schedule_type">standard</field>
@@ -82,6 +102,8 @@
         </record>
 
         <record id="resource_calendar_ua_flex" model="resource.calendar">
+            <field name="company_id" eval="False"/>
+            <field name="active" eval="False"/>
             <field name="name">Гнучкий графік</field>
             <field name="ua_code">FLEX</field>
             <field name="ua_schedule_type">flexible</field>
@@ -95,9 +117,11 @@
             ]"/>
         </record>
 
-        <!-- Змінні цикли: тижневої сітки немає, норму задаємо явно -->
+        <!-- Shift cycles: no weekly grid, the norm is set explicitly -->
 
         <record id="resource_calendar_ua_shift2x2" model="resource.calendar">
+            <field name="company_id" eval="False"/>
+            <field name="active" eval="False"/>
             <field name="name">Змінний 2/2 (12 год)</field>
             <field name="ua_code">SHIFT2X2</field>
             <field name="ua_schedule_type">shift</field>
@@ -109,6 +133,8 @@
         </record>
 
         <record id="resource_calendar_ua_shift1x3" model="resource.calendar">
+            <field name="company_id" eval="False"/>
+            <field name="active" eval="False"/>
             <field name="name">Змінний доба/три</field>
             <field name="ua_code">SHIFT1X3</field>
             <field name="ua_schedule_type">shift</field>
@@ -121,6 +147,8 @@
         </record>
 
         <record id="resource_calendar_ua_shift3x3" model="resource.calendar">
+            <field name="company_id" eval="False"/>
+            <field name="active" eval="False"/>
             <field name="name">Змінний 3/3 (8 год)</field>
             <field name="ua_code">SHIFT3X3</field>
             <field name="ua_schedule_type">shift</field>
@@ -132,6 +160,8 @@
         </record>
 
         <record id="resource_calendar_ua_summ" model="resource.calendar">
+            <field name="company_id" eval="False"/>
+            <field name="active" eval="False"/>
             <field name="name">Підсумований облік (місяць)</field>
             <field name="ua_code">SUMM</field>
             <field name="ua_schedule_type">summarized</field>
