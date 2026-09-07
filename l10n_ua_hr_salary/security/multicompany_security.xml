@@ -49,8 +49,8 @@
             <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
         </record>
 
-        <!-- Моделі із company_id, які не потрапили в первинний набір #178:
-             без правила їх записи були видимі з усіх компаній. -->
+        <!-- Models with company_id missed by the initial #178 sweep: without
+             a rule their records were visible across ALL companies. -->
 
         <record id="hr_salary_deposit_company_rule" model="ir.rule">
             <field name="name">Депонент: multi-company</field>

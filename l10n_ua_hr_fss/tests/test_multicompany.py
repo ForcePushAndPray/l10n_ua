@@ -1,4 +1,4 @@
-"""Multi-company record rule + обмеження випадайки компанії."""
+"""Multi-company record rule + company dropdown scoping (issue #178)."""
 
 from odoo.tests import TransactionCase, tagged
 
@@ -12,8 +12,8 @@ class TestFssMultiCompany(TransactionCase):
         self.assertTrue(rule['global'], "Rule must be global")
 
     def test_company_field_is_limited_to_enabled_companies(self):
-        """Випадайка компанії обмежена увімкненими в перемикачі компаній."""
+        """The company dropdown is limited to the enabled companies."""
         domain = self.env['hr.fss.settlement'].fields_get(
             ['company_id'], ['domain'])['company_id']['domain']
         self.assertIn('allowed_company_ids', domain,
-                      "company_id має бути обмежене увімкненими компаніями")
+                      "company_id must be limited to enabled companies")

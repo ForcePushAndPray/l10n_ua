@@ -17,10 +17,10 @@ class TestBonusMultiCompanyRules(TransactionCase):
             self.assertTrue(rule['global'], f"Rule {ref} must be global")
 
     def test_company_field_is_limited_to_enabled_companies(self):
-        """Випадайка компанії обмежена увімкненими в перемикачі компаній."""
+        """The company dropdown is limited to the enabled companies."""
         for model in ('hr.bonus', 'hr.bonus.type'):
             domain = self.env[model].fields_get(
                 ['company_id'], ['domain'])['company_id']['domain']
             self.assertIn(
                 'allowed_company_ids', domain,
-                f"{model}: company_id має бути обмежене увімкненими компаніями")
+                f"{model}: company_id must be limited to enabled companies")

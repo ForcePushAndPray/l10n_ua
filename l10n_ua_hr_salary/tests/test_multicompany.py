@@ -68,12 +68,12 @@ class TestSalaryMultiCompany(TransactionCase):
             self.assertTrue(rule['global'], f"Rule {ref} must be global")
 
     def test_company_field_is_limited_to_enabled_companies(self):
-        """Випадайка компанії обмежена увімкненими в перемикачі.
+        """The company dropdown is limited to companies enabled in the switcher.
 
-        Без домену адміністратор (`base.group_erp_manager` бачить усі
-        компанії за правилом `base.res_company_rule_erp_manager`) міг
-        обрати вимкнену компанію і впертися в AccessError уже під час
-        збереження — record rule модуля її не пропускає.
+        Without the domain an administrator (`base.group_erp_manager` sees
+        every company through `base.res_company_rule_erp_manager`) could pick
+        a disabled company and only hit an AccessError on save, since the
+        module's record rule does not let it through.
         """
         models = [
             'hr.payslip',
@@ -92,4 +92,4 @@ class TestSalaryMultiCompany(TransactionCase):
                 ['company_id'], ['domain'])['company_id']['domain']
             self.assertIn(
                 'allowed_company_ids', domain,
-                f"{model}: company_id має бути обмежене увімкненими компаніями")
+                f"{model}: company_id must be limited to enabled companies")

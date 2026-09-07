@@ -2,8 +2,9 @@
 <odoo>
     <data noupdate="1">
 
-        <!-- Multi-company record rule: розрахунок з ФСС має company_id,
-             але правила ізоляції не було — записи бачили з усіх компаній. -->
+        <!-- Multi-company record rule (issue #178).
+             hr.fss.settlement carries company_id but had no multi-company
+             ir.rule, so records leaked across ALL companies. -->
 
         <record id="hr_fss_settlement_company_rule" model="ir.rule">
             <field name="name">Розрахунок з ФСС: multi-company</field>
