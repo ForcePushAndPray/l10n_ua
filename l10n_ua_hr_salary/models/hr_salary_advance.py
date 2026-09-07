@@ -70,6 +70,7 @@ class HrSalaryAdvance(models.Model):
     company_id = fields.Many2one(
         'res.company', string='Company', required=True,
         default=lambda self: self.env.company,
+        domain="[('id', 'in', allowed_company_ids)]",
     )
     department_id = fields.Many2one(
         'hr.department', related='employee_id.department_id',

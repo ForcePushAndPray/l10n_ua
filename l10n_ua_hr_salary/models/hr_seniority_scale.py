@@ -14,7 +14,8 @@ class HrSeniorityScale(models.Model):
     name = fields.Char(string='Назва', required=True, default='Основна шкала')
     company_id = fields.Many2one(
         'res.company', string='Компанія',
-        default=lambda self: self.env.company)
+        default=lambda self: self.env.company,
+        domain="[('id', 'in', allowed_company_ids)]")
     line_ids = fields.One2many(
         'hr.seniority.scale.line', 'scale_id', string='Ступені')
     active = fields.Boolean(default=True)

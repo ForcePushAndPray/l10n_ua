@@ -49,5 +49,36 @@
             <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
         </record>
 
+        <!-- Моделі із company_id, які не потрапили в первинний набір #178:
+             без правила їх записи були видимі з усіх компаній. -->
+
+        <record id="hr_salary_deposit_company_rule" model="ir.rule">
+            <field name="name">Депонент: multi-company</field>
+            <field name="model_id" ref="model_hr_salary_deposit"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="hr_piece_work_entry_company_rule" model="ir.rule">
+            <field name="name">Відрядний виробіток: multi-company</field>
+            <field name="model_id" ref="model_hr_piece_work_entry"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="hr_cpi_index_company_rule" model="ir.rule">
+            <field name="name">Індекс споживчих цін: multi-company</field>
+            <field name="model_id" ref="model_hr_cpi_index"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="hr_seniority_scale_company_rule" model="ir.rule">
+            <field name="name">Шкала вислуги років: multi-company</field>
+            <field name="model_id" ref="model_hr_seniority_scale"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]</field>
+        </record>
+
     </data>
 </odoo>

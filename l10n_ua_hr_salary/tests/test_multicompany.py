@@ -57,8 +57,39 @@ class TestSalaryMultiCompany(TransactionCase):
             'l10n_ua_hr_salary.hr_salary_advance_company_rule',
             'l10n_ua_hr_salary.hr_salary_advance_run_company_rule',
             'l10n_ua_hr_salary.hr_psp_parameters_company_rule',
+            'l10n_ua_hr_salary.hr_salary_deposit_company_rule',
+            'l10n_ua_hr_salary.hr_piece_work_entry_company_rule',
+            'l10n_ua_hr_salary.hr_cpi_index_company_rule',
+            'l10n_ua_hr_salary.hr_seniority_scale_company_rule',
         ]
         for ref in refs:
             rule = self.env.ref(ref)
             self.assertTrue(rule, f"Rule {ref} must exist")
             self.assertTrue(rule['global'], f"Rule {ref} must be global")
+
+    def test_company_field_is_limited_to_enabled_companies(self):
+        """Випадайка компанії обмежена увімкненими в перемикачі.
+
+        Без домену адміністратор (`base.group_erp_manager` бачить усі
+        компанії за правилом `base.res_company_rule_erp_manager`) міг
+        обрати вимкнену компанію і впертися в AccessError уже під час
+        збереження — record rule модуля її не пропускає.
+        """
+        models = [
+            'hr.payslip',
+            'hr.payslip.run',
+            'hr.salary.advance',
+            'hr.salary.advance.run',
+            'hr.execution.document',
+            'hr.psp.parameters',
+            'hr.salary.deposit',
+            'hr.piece.work.entry',
+            'hr.cpi.index',
+            'hr.seniority.scale',
+        ]
+        for model in models:
+            domain = self.env[model].fields_get(
+                ['company_id'], ['domain'])['company_id']['domain']
+            self.assertIn(
+                'allowed_company_ids', domain,
+                f"{model}: company_id має бути обмежене увімкненими компаніями")

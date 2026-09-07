@@ -16,6 +16,7 @@ class HrSalaryAccountConfig(models.Model):
         string='Компанія',
         required=True,
         default=lambda self: self.env.company,
+        domain="[('id', 'in', allowed_company_ids)]",
     )
 
     # --- Journal ---

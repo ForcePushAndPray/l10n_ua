@@ -71,6 +71,7 @@ class HrBonus(models.Model):
         string='Company',
         required=True,
         default=lambda self: self.env.company,
+        domain="[('id', 'in', allowed_company_ids)]",
     )
     department_id = fields.Many2one(
         'hr.department',

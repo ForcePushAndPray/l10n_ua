@@ -43,7 +43,7 @@ class HrSalaryDeposit(models.Model):
 
     company_id = fields.Many2one(
         'res.company', string='Company', default=lambda self: self.env.company,
-        required=True)
+        domain="[('id', 'in', allowed_company_ids)]", required=True)
     currency_id = fields.Many2one(
         'res.currency', related='company_id.currency_id')
     note = fields.Text(string='Note')

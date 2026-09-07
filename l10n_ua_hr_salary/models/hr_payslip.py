@@ -48,6 +48,7 @@ class HrPayslip(models.Model):
         'res.company',
         string='Company',
         default=lambda self: self.env.company,
+        domain="[('id', 'in', allowed_company_ids)]",
         required=True
     )
     currency_id = fields.Many2one(

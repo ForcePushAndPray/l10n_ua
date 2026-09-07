@@ -85,6 +85,7 @@ class HrVacationReserve(models.Model):
         'res.company',
         required=True,
         default=lambda self: self.env.company,
+        domain="[('id', 'in', allowed_company_ids)]",
     )
     currency_id = fields.Many2one(
         related='company_id.currency_id',

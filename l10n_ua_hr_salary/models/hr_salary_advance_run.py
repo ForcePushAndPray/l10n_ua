@@ -30,7 +30,8 @@ class HrSalaryAdvanceRun(models.Model):
     total_amount = fields.Monetary(
         compute='_compute_total_amount', currency_field='currency_id')
     company_id = fields.Many2one(
-        'res.company', default=lambda self: self.env.company, required=True)
+        'res.company', default=lambda self: self.env.company, required=True,
+        domain="[('id', 'in', allowed_company_ids)]")
     currency_id = fields.Many2one(
         'res.currency', related='company_id.currency_id')
     notes = fields.Text(string='Notes')

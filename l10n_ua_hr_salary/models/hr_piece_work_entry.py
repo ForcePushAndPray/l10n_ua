@@ -27,7 +27,8 @@ class HrPieceWorkEntry(models.Model):
         string='Сума', compute='_compute_amount', store=True,
         currency_field='currency_id')
     company_id = fields.Many2one(
-        'res.company', string='Компанія', default=lambda self: self.env.company)
+        'res.company', string='Компанія', default=lambda self: self.env.company,
+        domain="[('id', 'in', allowed_company_ids)]")
     currency_id = fields.Many2one(
         'res.currency', related='company_id.currency_id', readonly=True)
 

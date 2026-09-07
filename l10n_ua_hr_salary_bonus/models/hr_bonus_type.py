@@ -47,6 +47,7 @@ class HrBonusType(models.Model):
         'res.company',
         string='Company',
         default=lambda self: self.env.company,
+        domain="[('id', 'in', allowed_company_ids)]",
     )
 
     _code_uniq = models.Constraint(

@@ -16,7 +16,8 @@ class HrFssSettlement(models.Model):
 
     name = fields.Char(string='Reference', required=True, default='New', copy=False)
     company_id = fields.Many2one(
-        'res.company', required=True, default=lambda self: self.env.company)
+        'res.company', required=True, default=lambda self: self.env.company,
+        domain="[('id', 'in', allowed_company_ids)]")
     currency_id = fields.Many2one(
         'res.currency', related='company_id.currency_id')
     date_from = fields.Date(string='Period From', required=True, tracking=True)

@@ -44,6 +44,7 @@ class HrPayslipRun(models.Model):
         'res.company',
         string='Company',
         default=lambda self: self.env.company,
+        domain="[('id', 'in', allowed_company_ids)]",
         required=True
     )
     
