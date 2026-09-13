@@ -1,4 +1,5 @@
 import logging
+import math
 from datetime import date, timedelta
 
 from odoo import models, fields, api, _
@@ -117,11 +118,13 @@ class HrOrder(models.Model):
     def unused_vacation_days_phrase(self):
         """«N календарних днів» для наказу: ціле число з узгодженим іменником.
 
-        Одне округлення і для умови друку, і для самого числа — інакше залишок
-        0.4 друкував би «за 0 днів». Порожній рядок, коли компенсувати нічого.
+        Дробові дні округлюються вгору, на користь працівника (роз'яснення
+        Мінсоцполітики), і одним округленням і для умови друку, і для числа.
+        Порожній рядок, коли компенсувати нічого.
         """
         self.ensure_one()
-        days = int(self.unused_vacation_days + 0.5)
+        # Допуск на похибку float: 12.000000001 — це 12, а не 13.
+        days = math.ceil(round(self.unused_vacation_days, 6))
         if days <= 0:
             return ''
         if days % 10 == 1 and days % 100 != 11:
