@@ -1,5 +1,8 @@
 # Part of Odoo. See LICENSE file for full copyright and licensing details.
 
+import importlib.util
+import os
+
 from psycopg2 import IntegrityError
 
 from odoo.tests import tagged
@@ -15,6 +18,10 @@ from .common import TestHrUaBase
 @tagged('post_install', '-at_install')
 class TestHrStaffingTable(TestHrUaBase):
     """Test hr.staffing.table model."""
+
+    # Logger of the migration script below, named after the module it is
+    # loaded under: its warnings are the point of the test, not a failure.
+    MIGRATION_19_0_1_6_1 = 'l10n_ua_hr_base_post_19_0_1_6_1'
 
     def _create_staffing_record(self, **kwargs):
         """Helper to create staffing table record."""
@@ -240,6 +247,137 @@ class TestHrStaffingTable(TestHrUaBase):
         self.env['hr.staffing.table']._report_duplicate_start_dates()
 
         self.assertEqual(len(line.message_ids), before)
+
+    def _post_migration_19_0_1_6_1(self):
+        """The script that reports what the new meaning of `date_to` changed.
+
+        Loaded from its path: a migration is not importable as `odoo.addons.*`
+        (it is loaded as `odoo.upgrade.<addon>.<version>.<name>`), and its
+        scans are the part worth testing — the methods on the model only
+        format what the queries found.
+        """
+        path = os.path.join(
+            os.path.dirname(os.path.dirname(__file__)),
+            'migrations', '19.0.1.6.1', 'post-migration.py')
+        spec = importlib.util.spec_from_file_location(
+            self.MIGRATION_19_0_1_6_1, path)
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        # The scans read the tables directly, the way they do during an
+        # upgrade, where everything they look at is long committed. Here it is
+        # still sitting in the ORM's buffer.
+        self.env.flush_all()
+        return module
+
+    def _messages_on(self, line):
+        line.invalidate_recordset(['message_ids'])
+        return len(line.message_ids)
+
+    def test_a_discontinued_position_is_reported_on_the_line(self):
+        """The newest approved line closed by a past date stops the position.
+
+        The upgrade that changed the meaning of the field said so in the log.
+        This says it where the officer works.
+        """
+        self._create_employee()
+        line = self._create_staffing_record(
+            state='approved',
+            date_from=date.today() - relativedelta(years=2),
+            date_to=date.today() - relativedelta(months=1))
+        before = self._messages_on(line)
+
+        migration = self._post_migration_19_0_1_6_1()
+        # The employees that make it a payslip and not a curiosity: matched to
+        # the position by the same query the note is counted from.
+        self.assertGreaterEqual(
+            migration._employees_without_wage(self.env.cr, [line.id]).get(
+                line.id, 0), 1,
+            'the employee standing on the position should be counted')
+
+        with mute_logger(self.MIGRATION_19_0_1_6_1):
+            migration.migrate(self.env.cr, '19.0.1.6.0')
+
+        self.assertGreater(
+            self._messages_on(line), before,
+            'the line that stops resolving should say so in its chatter')
+
+    def test_a_gap_between_approved_lines_is_reported_on_the_line(self):
+        """A hole in the middle: the position comes back, the months inside it
+        do not."""
+        closed = self._create_staffing_record(
+            state='approved',
+            date_from=date(2024, 1, 1), date_to=date(2024, 6, 30))
+        following = self._create_staffing_record(
+            state='approved', date_from=date(2025, 1, 1))
+        before = self._messages_on(closed), self._messages_on(following)
+
+        migration = self._post_migration_19_0_1_6_1()
+        self.assertEqual(
+            [row[0] for row in migration._gaps(self.env.cr)
+             if row[0] in (closed | following).ids],
+            [closed.id])
+
+        with mute_logger(self.MIGRATION_19_0_1_6_1):
+            migration.migrate(self.env.cr, '19.0.1.6.0')
+
+        self.assertGreater(self._messages_on(closed), before[0],
+                           'the line the gap opens after should carry the note')
+        self.assertEqual(self._messages_on(following), before[1],
+                         'the line that resumes the position is not at fault')
+
+    def test_a_handover_end_date_is_not_reported(self):
+        """The habit the report is about, done in a way that leaves no hole.
+
+        A line closed the day before the next one starts changes nothing under
+        the new rule, and must not be flagged: a report that fires on the
+        common case stops being read before it reaches the rare one.
+        """
+        closed = self._create_staffing_record(
+            state='approved',
+            date_from=date(2024, 1, 1), date_to=date(2024, 12, 31))
+        following = self._create_staffing_record(
+            state='approved', date_from=date(2025, 1, 1))
+        before = self._messages_on(closed), self._messages_on(following)
+
+        with mute_logger(self.MIGRATION_19_0_1_6_1):
+            self._post_migration_19_0_1_6_1().migrate(
+                self.env.cr, '19.0.1.6.0')
+
+        self.assertEqual(
+            (self._messages_on(closed), self._messages_on(following)), before)
+
+    def test_the_note_names_the_employees_calculated_at_zero(self):
+        """What the officer has to act on is in the note, not only in the log.
+
+        Read in English on purpose: the note is written in the language of the
+        reader, and this is about what it says, not which language it says it
+        in.
+        """
+        line = self._create_staffing_record(
+            state='approved',
+            date_from=date(2024, 1, 1), date_to=date(2024, 6, 30))
+
+        line.with_context(lang='en_US')._message_log_position_discontinued(
+            {line.id: 3})
+
+        body = self._latest_body(line)
+        self.assertIn('3 employee(s)', body)
+        self.assertIn('calculated at zero', body)
+
+    def test_the_gap_note_names_the_day_the_position_resumes(self):
+        """A hole has two ends, and the officer needs both to close it."""
+        line = self._create_staffing_record(
+            state='approved',
+            date_from=date(2024, 1, 1), date_to=date(2024, 6, 30))
+
+        line.with_context(lang='en_US')._message_log_position_gap(
+            {line.id: date(2025, 1, 1)})
+
+        self.assertIn('starts only 01/01/2025', self._latest_body(line))
+
+    def _latest_body(self, line):
+        line.invalidate_recordset(['message_ids'])
+        return line.message_ids[0].body or ''
 
     def test_an_approved_line_cannot_be_archived(self):
         """Archiving the line in force would silently restore the previous

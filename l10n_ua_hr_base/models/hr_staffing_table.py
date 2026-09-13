@@ -203,6 +203,70 @@ class HrStaffingTable(models.Model):
                 ids=', '.join(str(line_id) for line_id in lines.ids))
             lines._message_log_batch({line_id: body for line_id in lines.ids})
 
+    def _message_log_position_discontinued(self, employees_without_wage):
+        """Say on the line that its end date now ends the position itself.
+
+        Written once, from the migration that changes what `date_to` means —
+        deliberately not a standing report like `_report_duplicate_start_dates`.
+        That one is about two lines that may never both be approved: it repeats
+        until the data is corrected, and stops because the data stopped being
+        wrong. This one is about an ambiguity that exists only at the moment of
+        the change. Afterwards a past end date is a perfectly good statement
+        that the position was abolished, and nothing in the data separates a
+        line an officer has read and stood by from one nobody has opened.
+        Repeated on every update, it would nag about every correctly closed
+        position for ever, and be scrolled past by the time it meant something.
+
+        :param employees_without_wage: {line id: how many employees stand on
+            that position with no wage of their own}. Counted by the caller,
+            which is the only place that can: the position fields of a version
+            are still being filled in while this runs.
+        """
+        self._message_log_batch({
+            line.id: self.env._(
+                'This update changed what the end date of a staffing line '
+                'means: it now says the position itself was discontinued, and '
+                'payroll no longer falls back to the line before it. This is '
+                'the newest approved line of the position and it ends '
+                '%(date)s, so from the next day the position resolves to no '
+                'line at all, and %(employees)s employee(s) standing on it '
+                'carry no wage of their own — their next payslip would be '
+                'calculated at zero. If the position did end, there is nothing '
+                'to do. Otherwise open an approved line from the day it '
+                'continues, or clear the end date.',
+                date=format_date(self.env, line.date_to),
+                employees=employees_without_wage.get(line.id, 0),
+            )
+            for line in self
+        })
+
+    def _message_log_position_gap(self, next_start):
+        """Say on the line that the position stops for a while after it.
+
+        The same one-off note as `_message_log_position_discontinued`, for the
+        hole in the middle rather than at the end: here the position comes back,
+        so only the months in between are affected, and only when a payslip is
+        recalculated for them.
+
+        :param next_start: {line id: the day the next approved line of the
+            same position starts}.
+        """
+        self._message_log_batch({
+            line.id: self.env._(
+                'This update changed what the end date of a staffing line '
+                'means: it now says the position itself was discontinued, and '
+                'payroll no longer falls back to the line before it. This line '
+                'ends %(date)s while the next approved line of the position '
+                'starts only %(next)s, so in between the position resolves to '
+                'no line at all: a payslip recalculated for those months comes '
+                'out at zero where the version carries no wage of its own. '
+                'Clear the end date if the position never stopped.',
+                date=format_date(self.env, line.date_to),
+                next=format_date(self.env, next_start[line.id]),
+            )
+            for line in self
+        })
+
     @api.onchange('company_id')
     def _onchange_company_id(self):
         if self.department_id and self.department_id.company_id \
