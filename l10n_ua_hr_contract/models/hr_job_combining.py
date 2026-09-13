@@ -106,6 +106,14 @@ class HrJobCombining(models.Model):
     order_date = fields.Date(string='Order Date', required=True)
     cancellation_order_number = fields.Char(string='Cancellation Order')
     cancellation_order_date = fields.Date(string='Cancellation Order Date')
+    date_to_before_cancellation = fields.Date(
+        string='End Date Before Cancellation',
+        readonly=True,
+        copy=False,
+        help='The end date the combination carried before its cancellation '
+             'stamped one of its own. Put back when the record returns to '
+             'draft, so an undone cancellation leaves no trace of its date.'
+    )
 
     # Related allowance
     allowance_id = fields.Many2one(
@@ -272,10 +280,20 @@ class HrJobCombining(models.Model):
         `is_active` can never come out true: an empty end date on a start that
         is still ahead would come alive the moment anything rewrote those
         dates, because that flag is stored and recomputed only from them.
+
+        A draft owns no surcharge and so mirrors nothing. It is not counted in
+        the staffing table either, and for the same reason: a draft is a
+        combination that is not in force. Its allowance — the one left behind
+        by an earlier activation — stays closed exactly as the cancellation
+        left it, and only `action_activate` opens it again. Without this the
+        surcharge answered to a record that no longer claimed anything:
+        clearing `date_to` or correcting the percentage on a drafted
+        combination revived a closed allowance, and payroll paid for a
+        combination that was not in force.
         """
         for record in self:
             allowance = record.allowance_id
-            if not allowance:
+            if not allowance or record.state not in ('active', 'cancelled'):
                 continue
             values = record._allowance_values()
             if record.state == 'cancelled' and not record.date_to \
@@ -306,22 +324,37 @@ class HrJobCombining(models.Model):
             self.combined_department_id = False
 
     def action_activate(self):
-        """Activate job combining and create allowance"""
+        """Activate job combining and open its allowance.
+
+        A combination that has been through the workflow before keeps the
+        allowance it already has, reopened on the period it now carries.
+        Creating a second one would leave the first behind on the version,
+        closed on the day of the old cancellation but covering the same months
+        as the new one — and payroll, which sums `version.allowance_ids`, would
+        pay the surcharge twice over the overlap.
+
+        The values are re-read from the combination rather than trusted as they
+        stand: a drafted combination is free to be corrected, and
+        `_sync_allowance` deliberately leaves a draft's allowance alone.
+        """
         for record in self:
             if record.state != 'draft':
                 raise UserError('Only draft job combining can be activated.')
 
-            # Create allowance on version
-            combining_type = self.env['hr.allowance.type'].search([
-                ('code', '=', 'COMBINING')
-            ], limit=1)
+            if record.allowance_id:
+                record.allowance_id.write(record._allowance_values())
+            else:
+                # Create allowance on version
+                combining_type = self.env['hr.allowance.type'].search([
+                    ('code', '=', 'COMBINING')
+                ], limit=1)
 
-            if combining_type:
-                allowance = self.env['hr.version.allowance'].create(dict(
-                    record._allowance_values(),
-                    allowance_type_id=combining_type.id,
-                ))
-                record.allowance_id = allowance.id
+                if combining_type:
+                    allowance = self.env['hr.version.allowance'].create(dict(
+                        record._allowance_values(),
+                        allowance_type_id=combining_type.id,
+                    ))
+                    record.allowance_id = allowance.id
 
             record.state = 'active'
 
@@ -372,11 +405,52 @@ class HrJobCombining(models.Model):
             # so `_sync_allowance` closes it on the same day. One route
             # for the surcharge, whether the date arrives from this button or
             # from an officer correcting the period afterwards.
-            record.write({'state': 'cancelled', 'date_to': ends_on})
+            #
+            # What the period was before this stamp is kept, so that undoing
+            # the cancellation can put it back. `action_draft` has nowhere
+            # else to read it from: the stamp overwrites it.
+            record.write({
+                'state': 'cancelled',
+                'date_to': ends_on,
+                'date_to_before_cancellation': record.date_to,
+            })
 
     def action_draft(self):
-        """Reset to draft"""
+        """Reset to draft, undoing the cancellation that led here.
+
+        Draft is the state a combination is in before it ever ran: out of the
+        occupancy count and out of payroll. Coming back to it from `cancelled`
+        therefore has to undo what the cancellation wrote, or the record keeps
+        a period that no order stands behind any more.
+
+        `date_to` above all. The cancellation stamps it on the combination
+        itself, and a stamp left behind outlives the cancellation: activating
+        again produced a combination that was over before it began — the post
+        freed on the old cancellation date, the surcharge closed on it too —
+        and nothing on the form said why. The date the combination carried
+        before is put back, which for the usual open-ended one means no end
+        date at all, and for a fixed-term one the day its own order named.
+
+        The cancellation order goes with it. It is the paper the stamp came
+        from; left on a combination that is about to run again, it would date
+        the *next* cancellation by an order that was withdrawn, and one dated
+        before the new period ends the combination before it starts.
+
+        The allowance stays where it is, closed as the cancellation left it.
+        Payroll reads it, not this model, and a closed allowance pays nothing;
+        `_sync_allowance` keeps its hands off a draft, so corrections made here
+        cannot revive it. It is the same allowance `action_activate` reopens,
+        which is what keeps one combination to one surcharge.
+        """
         for record in self:
             if record.state == 'active':
                 raise UserError('Cannot reset an active job combining to draft. Cancel it first.')
-            record.state = 'draft'
+            values = {'state': 'draft'}
+            if record.state == 'cancelled':
+                values.update({
+                    'date_to': record.date_to_before_cancellation,
+                    'date_to_before_cancellation': False,
+                    'cancellation_order_number': False,
+                    'cancellation_order_date': False,
+                })
+            record.write(values)

@@ -224,6 +224,98 @@ class TestJobCombining(ContractTestCase):
         self.assertEqual(jc.date_to, date(2025, 5, 31))
         self.assertEqual(jc.allowance_id.date_to, date(2025, 5, 31))
 
+    def test_drafting_lets_go_of_the_closed_surcharge(self):
+        """A draft is not in force, so nothing done to it may be paid.
+
+        The allowance stayed bound to the combination after the cancellation,
+        and the sync knew nothing of the state. Clearing the end date or
+        raising the percentage on a drafted combination therefore reopened a
+        closed allowance, and payroll paid a surcharge for a combination that
+        no order stood behind.
+        """
+        jc = self._create_combining()
+        jc.action_activate()
+        jc.cancellation_order_date = date(2025, 6, 30)
+        jc.action_cancel()
+        jc.action_draft()
+        self.assertEqual(jc.state, 'draft')
+
+        jc.write({'date_to': False, 'surcharge_percent': 80})
+
+        self.assertEqual(jc.allowance_id.date_to, date(2025, 6, 30))
+        self.assertAlmostEqual(jc.allowance_id.percent, 50)
+        self.assertFalse(jc.allowance_id.is_active)
+
+    def test_drafting_puts_back_the_end_date_the_cancellation_stamped(self):
+        """The stamp goes when the cancellation goes.
+
+        Left behind, it outlived the order it came from: activating again gave
+        a combination that was over before it began — the post freed on the old
+        cancellation date and the surcharge closed on it too.
+        """
+        jc = self._create_combining()
+        jc.action_activate()
+        jc.cancellation_order_number = 'НК-C01/2025-СК'
+        jc.action_cancel()
+        self.assertEqual(jc.date_to, fields.Date.context_today(jc))
+
+        jc.action_draft()
+
+        self.assertFalse(jc.date_to)
+        # The paper the stamp came from is withdrawn with it: kept, it would
+        # date the next cancellation by an order that no longer stands.
+        self.assertFalse(jc.cancellation_order_number)
+        self.assertFalse(jc.cancellation_order_date)
+
+    def test_drafting_puts_back_a_planned_end_date(self):
+        """What is restored is the period the combination's own order named,
+        not an empty one: a fixed-term combination stays fixed-term."""
+        jc = self._create_combining(date_to=date(2099, 12, 31))
+        jc.action_activate()
+        jc.action_cancel()
+        self.assertEqual(jc.date_to, fields.Date.context_today(jc))
+
+        jc.action_draft()
+
+        self.assertEqual(jc.date_to, date(2099, 12, 31))
+
+    def test_drafting_a_draft_keeps_its_period(self):
+        """There is no cancellation to undo, so nothing is undone."""
+        jc = self._create_combining(date_to=date(2099, 12, 31))
+        jc.action_draft()
+
+        self.assertEqual(jc.date_to, date(2099, 12, 31))
+
+    def test_reactivating_keeps_a_single_surcharge(self):
+        """One combination, one allowance — however often it goes round.
+
+        A second allowance would stay on the version beside the first, closed
+        on the day of the old cancellation but covering the same months as the
+        new one, and payroll sums `version.allowance_ids`: the surcharge would
+        be paid twice over the overlap.
+        """
+        jc = self._create_combining()
+        jc.action_activate()
+        allowance = jc.allowance_id
+        jc.cancellation_order_date = date(2025, 6, 30)
+        jc.action_cancel()
+        jc.action_draft()
+
+        # Corrections made in draft are carried into the reopened allowance.
+        jc.surcharge_percent = 60
+        jc.action_activate()
+
+        self.assertEqual(jc.state, 'active')
+        self.assertEqual(jc.allowance_id, allowance)
+        self.assertEqual(
+            jc.version_id.allowance_ids.filtered(
+                lambda a: a.allowance_type_id.code == 'COMBINING'),
+            allowance,
+        )
+        self.assertFalse(allowance.date_to)
+        self.assertAlmostEqual(allowance.percent, 60)
+        self.assertTrue(allowance.is_active)
+
     def test_combining_date_validation(self):
         """End date must be after start date."""
         with self.assertRaises(Exception):

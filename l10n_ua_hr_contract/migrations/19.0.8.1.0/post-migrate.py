@@ -24,6 +24,14 @@ allowance it touched.
 What neither source can date is left alone and counted in the log. There is no
 telling when such a combination stopped, and inventing a day would put a staff
 unit back into a period on a guess.
+
+The same stamping is why `date_to_before_cancellation` is filled in here. It
+holds the end date a combination carried before its cancellation wrote one, so
+that returning the record to draft can put that date back. Under the old
+`action_cancel` nothing was ever stamped, so an end date on a cancelled record
+is the one its own order named — and that is what the column is set to. The
+records this script dates are the other half: they had no end date before, and
+the column stays empty for them, which is exactly what draft should restore.
 """
 import logging
 
@@ -37,6 +45,20 @@ def migrate(cr, version):
         return
 
     env = api.Environment(cr, SUPERUSER_ID, {})
+
+    # Before anything is stamped: what a cancelled combination carries today is
+    # an end date of its own, not a stamp. Left unrecorded, `action_draft`
+    # would clear a planned end it had no part in writing, and a combination
+    # activated again after that would hold its post — and be paid for — with
+    # no end at all.
+    cr.execute("""
+        UPDATE hr_job_combining
+           SET date_to_before_cancellation = date_to
+         WHERE state = 'cancelled'
+           AND date_to IS NOT NULL
+           AND date_to_before_cancellation IS NULL
+    """)
+
     Combining = env['hr.job.combining']
     combinings = Combining.search([
         ('state', '=', 'cancelled'), ('date_to', '=', False)])

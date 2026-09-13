@@ -308,6 +308,28 @@ class TestStaffingOccupancy(ContractTestCase):
         self.assertFalse(combining.date_to)
         self.assertAlmostEqual(line.filled_units, 0.0)
 
+    def test_a_drafted_cancellation_holds_the_post_again(self):
+        """Round the whole cycle: the post is held for the period that stands.
+
+        Draft takes the unit back — a draft claims nothing — and activating
+        again holds it once more. It used to come back already expired: the
+        cancellation left its end date on the combination, so the count freed
+        the post on the day of an order that had been undone.
+        """
+        line = self._line(date(2020, 1, 1))
+        combining = self._combining(line)
+        self.assertAlmostEqual(line.filled_units, 0.5)
+
+        combining.action_cancel()
+        self.assertAlmostEqual(line.filled_units, 0.5)
+
+        combining.action_draft()
+        self.assertAlmostEqual(line.filled_units, 0.0)
+
+        combining.action_activate()
+        self.assertFalse(combining.date_to)
+        self.assertAlmostEqual(line.filled_units, 0.5)
+
     def test_officer_without_manager_group_reads_the_field(self):
         """The count reads contract_date_*, guarded by hr.group_hr_manager.
 
