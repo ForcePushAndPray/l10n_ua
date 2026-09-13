@@ -108,6 +108,24 @@ def migrate(cr, version):
             "employment type while also flagged as a main workplace; the "
             "explicit type was kept", VERSION, contradictory)
 
+    # An explicit type left behind on a version whose part-time box was later
+    # cleared. Still carried over — the type is only ever there because
+    # somebody picked it — but named, since unticking the box may have been
+    # the way the officer meant to end the secondary employment.
+    cr.execute("""
+        SELECT id FROM hr_version
+         WHERE part_time_type IN ('internal', 'external')
+           AND is_part_time IS NOT TRUE
+      ORDER BY id
+    """)
+    stale_type = [row[0] for row in cr.fetchall()]
+    if stale_type:
+        _logger.warning(
+            "l10n_ua_hr_contract %s: %s versions carried a secondary "
+            "employment type with the part-time box cleared; the type was "
+            "carried over, review them by hand (ids: %s)",
+            VERSION, len(stale_type), stale_type)
+
     # Part-time and not a main workplace, but the type was never chosen. Not
     # moved: the cleared flag may be the 19.0.2.0.0 stamp, and part-time work
     # at a main workplace is not secondary employment — reading it as external
@@ -148,8 +166,8 @@ def migrate(cr, version):
             left_primary)
 
     # The history is noise, but a version still in force is not: if its flag
-    # was cleared on purpose, reading it as primary grants PSP a second time
-    # (the benefit is due at the main workplace only). Those are named.
+    # was cleared on purpose, this person is now recorded at a primary job
+    # where they hold a secondary one. Those are named.
     cr.execute("""
         SELECT id FROM hr_version
          WHERE part_time_type IS NULL
@@ -163,8 +181,8 @@ def migrate(cr, version):
     if in_force:
         _logger.warning(
             "l10n_ua_hr_contract %s: %s of them are still in force; check "
-            "that none is a secondary job, or PSP will be applied there too "
-            "(ids: %s)", VERSION, len(in_force), in_force)
+            "that none is a secondary job (ids: %s)",
+            VERSION, len(in_force), in_force)
 
     _logger.info(
         "l10n_ua_hr_contract %s: %s versions carried over from an explicit "
