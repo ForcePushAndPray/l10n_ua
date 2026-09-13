@@ -28,10 +28,11 @@ deliberate decide instead:
      where `is_main_workplace` is TRUE, because TRUE is what every new version
      gets for free from the field default while nobody picks "Internal
      secondary job" by accident.
-  2. `is_part_time = TRUE` together with a cleared main-workplace flag is the
-     recipe the HR manual gave for a secondary job whose type was never
-     chosen — the old form hid `part_time_type` until that checkbox was
-     ticked. Read as external, the common case, and the ids are logged.
+  2. `is_part_time = TRUE` together with a cleared main-workplace flag, but no
+     type, is NOT carried over. The cleared flag may be nothing but the
+     19.0.2.0.0 stamp, and part-time work at the main workplace is not
+     secondary employment; guessing `external` would change the person for
+     payroll. These rows stay primary and every id is logged for review.
 
 Everything else is left primary, and the count is logged so it can be
 reviewed. To see what this will do before upgrading, run on a copy:
@@ -107,26 +108,25 @@ def migrate(cr, version):
             "employment type while also flagged as a main workplace; the "
             "explicit type was kept", VERSION, contradictory)
 
-    # Part-time and not a main workplace, but the type was never chosen — the
-    # old form only revealed it once the part-time box was ticked. External is
-    # the common case; the ids are named so the guess can be reviewed.
+    # Part-time and not a main workplace, but the type was never chosen. Not
+    # moved: the cleared flag may be the 19.0.2.0.0 stamp, and part-time work
+    # at a main workplace is not secondary employment — reading it as external
+    # would change the person for payroll on a guess. Left primary and named
+    # in full, so an officer can set the type by hand where it was meant.
     cr.execute("""
         SELECT id FROM hr_version
          WHERE part_time_type IS NULL
            AND is_part_time IS TRUE
            AND is_main_workplace IS NOT TRUE
+      ORDER BY id
     """)
     guessed = [row[0] for row in cr.fetchall()]
     if guessed:
-        cr.execute("""
-            UPDATE hr_version
-               SET employment_type_ua = 'external'
-             WHERE id IN %s
-        """, (tuple(guessed),))
         _logger.warning(
-            "l10n_ua_hr_contract %s: %s part-time versions were not a main "
-            "workplace but carried no secondary employment type; read as "
-            "external (ids: %s)", VERSION, len(guessed), guessed[:50])
+            "l10n_ua_hr_contract %s: %s part-time versions were not flagged as "
+            "a main workplace but carried no secondary employment type; left "
+            "primary, review them by hand (ids: %s)",
+            VERSION, len(guessed), guessed)
 
     # Left primary despite a cleared main-workplace flag. Expected on any
     # database that went through 19.0.2.0.0, which stamped the whole table
@@ -149,5 +149,5 @@ def migrate(cr, version):
 
     _logger.info(
         "l10n_ua_hr_contract %s: %s versions carried over from an explicit "
-        "secondary employment type, %s more read as external, the rest read "
-        "as a primary job", VERSION, explicit, len(guessed))
+        "secondary employment type, %s part-time ones left primary for review, "
+        "the rest read as a primary job", VERSION, explicit, len(guessed))
