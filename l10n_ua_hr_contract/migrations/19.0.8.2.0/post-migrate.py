@@ -147,6 +147,25 @@ def migrate(cr, version):
             "by 19.0.2.0.0 and carries no information on its own", VERSION,
             left_primary)
 
+    # The history is noise, but a version still in force is not: if its flag
+    # was cleared on purpose, reading it as primary grants PSP a second time
+    # (the benefit is due at the main workplace only). Those are named.
+    cr.execute("""
+        SELECT id FROM hr_version
+         WHERE part_time_type IS NULL
+           AND is_part_time IS NOT TRUE
+           AND is_main_workplace IS NOT TRUE
+           AND active IS TRUE
+           AND (contract_date_end IS NULL OR contract_date_end >= CURRENT_DATE)
+      ORDER BY id
+    """)
+    in_force = [row[0] for row in cr.fetchall()]
+    if in_force:
+        _logger.warning(
+            "l10n_ua_hr_contract %s: %s of them are still in force; check "
+            "that none is a secondary job, or PSP will be applied there too "
+            "(ids: %s)", VERSION, len(in_force), in_force)
+
     _logger.info(
         "l10n_ua_hr_contract %s: %s versions carried over from an explicit "
         "secondary employment type, %s part-time ones left primary for review, "
