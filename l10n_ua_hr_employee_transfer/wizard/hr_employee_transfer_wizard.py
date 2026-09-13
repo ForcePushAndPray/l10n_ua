@@ -123,7 +123,7 @@ class HrEmployeeTransferWizard(models.TransientModel):
             wiz.hire_date = (wiz.dismissal_date + timedelta(days=1)) if wiz.dismissal_date else False
 
     @api.depends('source_employee_id', 'copy_wage',
-                 'target_company_id', 'hire_date')
+                 'target_company_id', 'dismissal_date', 'hire_date')
     def _compute_new_wage(self):
         """Оклад джерела, виражений у валюті цільової компанії.
 
@@ -137,6 +137,16 @@ class HrEmployeeTransferWizard(models.TransientModel):
         Курс береться на дату прийняття, а не на сьогодні: наказ можуть
         готувати заздалегідь, а рахуватись переведення має за днем, коли воно
         відбувається.
+
+        Оклад читається так само, як його читає розрахунковий листок: із
+        версії, а за її мовчання — зі штатного розпису. Для української
+        практики це не рідкісний випадок, а звичайний — оклад живе саме в
+        розписі, тож без фолбеку працівник переводився в нову організацію з
+        нулем, і мовчки: майстер показував 0, кадровик підтверджував наказ.
+
+        Ворота `wage_from_staffing` беруться з компанії-джерела: це її
+        політика оплати, і саме її оклад переїжджає. Компанія призначення про
+        нього ще нічого не вирішувала.
         """
         for wiz in self:
             src_version = wiz.source_employee_id.current_version_id
@@ -145,10 +155,19 @@ class HrEmployeeTransferWizard(models.TransientModel):
                 continue
 
             date = wiz.hire_date or fields.Date.context_today(wiz)
-            # Спільний хелпер з l10n_ua_hr_base: він і кидає UserError, якщо
+            # Спільні хелпери з l10n_ua_hr_base: вони й кидають UserError, якщо
             # курсу немає. Мовчазне число тут гірше за зупинку — воно піде
             # у новий контракт.
-            amount = src_version._l10n_ua_wage_in_company_currency(date)
+            #
+            # Власний оклад версії — за курсом на `hire_date`, як і вище. Розпис
+            # же питається про останній день у джерелі: на `hire_date` посаду,
+            # скорочену з днем звільнення, він уже не знає (знову нуль, #303),
+            # а рядок, що діє з дня прийняття, переніс би оклад, якого в
+            # джерелі ніколи не платили.
+            amount = src_version._l10n_ua_wage_in_company_currency(date) \
+                or src_version._l10n_ua_effective_wage(
+                    wiz.dismissal_date or date,
+                    company=wiz.source_company_id or src_version.company_id)
 
             source_currency = (src_version.company_id
                                or wiz.source_company_id).currency_id
@@ -290,9 +309,10 @@ class HrEmployeeTransferWizard(models.TransientModel):
             vals['job_id'] = self.new_job_id.id
         if self.new_department_id and 'department_id' in Version._fields:
             vals['department_id'] = self.new_department_id.id
-        # Перенести умови (тип договору, режим, ставку) з джерела за згодою.
+        # Carry the employment terms (contract type, employment type, work
+        # rate) over from the source version when the HR officer asked for it.
         if self.copy_wage and src:
-            for fname in ('contract_type_ua', 'work_mode', 'work_rate'):
+            for fname in ('contract_type_ua', 'employment_type_ua', 'work_rate'):
                 if fname in src._fields and fname in Version._fields and src[fname]:
                     vals[fname] = src[fname]
 

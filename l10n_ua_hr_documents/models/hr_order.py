@@ -1,4 +1,5 @@
 import logging
+import math
 from datetime import date, timedelta
 
 from odoo import models, fields, api, _
@@ -113,6 +114,26 @@ class HrOrder(models.Model):
                 ])
                 days = sum(balances.mapped('remaining_days'))
             order.unused_vacation_days = max(0.0, days)
+
+    def unused_vacation_days_phrase(self):
+        """«N календарних днів» для наказу: ціле число з узгодженим іменником.
+
+        Дробові дні округлюються вгору, на користь працівника (роз'яснення
+        Мінсоцполітики), і одним округленням і для умови друку, і для числа.
+        Порожній рядок, коли компенсувати нічого.
+        """
+        self.ensure_one()
+        # Допуск на похибку float: 12.000000001 — це 12, а не 13.
+        days = math.ceil(round(self.unused_vacation_days, 6))
+        if days <= 0:
+            return ''
+        if days % 10 == 1 and days % 100 != 11:
+            noun = 'календарний день'
+        elif 2 <= days % 10 <= 4 and not 12 <= days % 100 <= 14:
+            noun = 'календарні дні'
+        else:
+            noun = 'календарних днів'
+        return f'{days} {noun}'
 
     # Vacation-specific fields
     vacation_date_from = fields.Date(string='Vacation Start Date', tracking=True)
