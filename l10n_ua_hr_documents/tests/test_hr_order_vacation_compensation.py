@@ -119,6 +119,32 @@ class TestVacationCompensation(VacationCompensationCommon):
         text = self._plain_text(self._apply_dismissal_template(order))
         self.assertIn('виплатити компенсацію за 5 календарних днів', text)
 
+    def test_day_count_agrees_with_the_noun(self):
+        """Наказ — офіційний документ: «1 календарний день», «2 календарні
+        дні», «5 календарних днів», з винятками 11–14."""
+        order = self._dismissal(date(2026, 5, 20), days=0)
+        for days, phrase in ((1, '1 календарний день'),
+                             (3, '3 календарні дні'),
+                             (5, '5 календарних днів'),
+                             (11, '11 календарних днів'),
+                             (12, '12 календарних днів'),
+                             (21, '21 календарний день'),
+                             (24, '24 календарні дні')):
+            order.unused_vacation_days = days
+            self.assertEqual(order.unused_vacation_days_phrase(), phrase)
+
+    def test_fractional_days_round_up_in_favour_of_the_employee(self):
+        """Дробові дні — вгору: 0.4 → 1 день (фраза є), 11.3 → 12, ціле лишається цілим."""
+        order = self._dismissal(date(2026, 5, 20), days=0.4)
+        self.assertIn('за 1 календарний день', self._plain_text(
+            self._print(order)))
+        order.unused_vacation_days = 11.3
+        self.assertIn('за 12 календарних днів', self._plain_text(
+            self._apply_dismissal_template(order)))
+        order.unused_vacation_days = 12.0
+        self.assertEqual(order.unused_vacation_days_phrase(),
+                         '12 календарних днів')
+
     def test_non_dismissal_has_no_days(self):
         """A non-dismissal order never computes compensation days."""
         order = self.env['hr.order'].create({
