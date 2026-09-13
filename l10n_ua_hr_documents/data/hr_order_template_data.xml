@@ -186,6 +186,9 @@
         <p style="margin: 10px 0;"><strong>Дата звільнення:</strong> <t t-esc="format_date_ua(order.date_dismissal) if order.date_dismissal else format_date_ua(order.date)"/></p>
         <p style="margin: 10px 0;"><strong>Причина звільнення:</strong> <t t-esc="order.dismissal_reason or (order.termination_reason_id and order.termination_reason_id.full_text) or 'за власним бажанням, ст. 38 КЗпП України'"/></p>
         <p style="margin: 10px 0;"><strong>Підстава:</strong> заява працівника</p>
+        <!-- Rendered once, when the template is loaded, exactly like every
+             other value in these templates (employee, dates, job). Re-load
+             the template to pick up a changed day count. -->
         <t t-if="order.include_vacation_compensation and order.unused_vacation_days &gt; 0">
             <p style="margin: 10px 0;">Бухгалтерії підприємства виплатити компенсацію за
                 <strong><t t-out="order.unused_vacation_days" t-options='{"widget": "float", "precision": 0}'/></strong>
