@@ -123,7 +123,7 @@ class HrEmployeeTransferWizard(models.TransientModel):
             wiz.hire_date = (wiz.dismissal_date + timedelta(days=1)) if wiz.dismissal_date else False
 
     @api.depends('source_employee_id', 'copy_wage',
-                 'target_company_id', 'hire_date')
+                 'target_company_id', 'dismissal_date', 'hire_date')
     def _compute_new_wage(self):
         """Оклад джерела, виражений у валюті цільової компанії.
 
@@ -155,11 +155,17 @@ class HrEmployeeTransferWizard(models.TransientModel):
                 continue
 
             date = wiz.hire_date or fields.Date.context_today(wiz)
+            # Оклад — той, що людина отримувала в джерелі, тобто на останній
+            # робочий день. На `hire_date` посаду, скорочену з днем звільнення,
+            # розпис уже не знає (знову нуль, #303), а рядок, що діє з дня
+            # прийняття, переніс би оклад, якого в джерелі ніколи не платили.
+            # Курс валюти цілі — далі, на `hire_date`.
             # Спільний хелпер з l10n_ua_hr_base: він і кидає UserError, якщо
             # курсу немає. Мовчазне число тут гірше за зупинку — воно піде
             # у новий контракт.
             amount = src_version._l10n_ua_effective_wage(
-                date, company=wiz.source_company_id or src_version.company_id)
+                wiz.dismissal_date or date,
+                company=wiz.source_company_id or src_version.company_id)
 
             source_currency = (src_version.company_id
                                or wiz.source_company_id).currency_id

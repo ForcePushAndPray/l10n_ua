@@ -102,14 +102,21 @@ class TestTransferWageFromStaffing(TransactionCase):
 
         self.assertAlmostEqual(self._wizard().new_wage, 25000.0, places=2)
 
-    def test_the_line_in_force_on_the_hire_date_is_used(self):
-        """Переведення оцінюється за розписом свого дня, а не найновішим."""
+    def test_the_line_in_force_on_the_dismissal_date_is_used(self):
+        """Переїжджає оклад останнього дня в джерелі, а не найновіший."""
         self._line(18000.0, date_from=date(2024, 1, 1))
-        self._line(30000.0, date_from=date(2026, 6, 1))
+        self._line(30000.0, date_from=date(2026, 5, 1))
 
         self.assertAlmostEqual(
             self._wizard().new_wage, 18000.0, places=2,
-            msg='Прийняття 2026-05-01 — рядок від 2026-06-01 ще не діє')
+            msg='Звільнення 2026-04-30 — рядок від дня прийняття в джерелі '
+                'не платився')
+
+    def test_a_position_closed_on_the_dismissal_date_still_travels(self):
+        """Посада, скорочена з днем звільнення, на цей день ще діє."""
+        self._line(18000.0, date_to=date(2026, 4, 30))
+
+        self.assertAlmostEqual(self._wizard().new_wage, 18000.0, places=2)
 
     def test_a_draft_line_is_not_a_salary(self):
         self._line(18000.0, state='draft')
