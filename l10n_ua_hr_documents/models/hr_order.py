@@ -114,6 +114,24 @@ class HrOrder(models.Model):
                 days = sum(balances.mapped('remaining_days'))
             order.unused_vacation_days = max(0.0, days)
 
+    def unused_vacation_days_phrase(self):
+        """«N календарних днів» для наказу: ціле число з узгодженим іменником.
+
+        Одне округлення і для умови друку, і для самого числа — інакше залишок
+        0.4 друкував би «за 0 днів». Порожній рядок, коли компенсувати нічого.
+        """
+        self.ensure_one()
+        days = int(self.unused_vacation_days + 0.5)
+        if days <= 0:
+            return ''
+        if days % 10 == 1 and days % 100 != 11:
+            noun = 'календарний день'
+        elif 2 <= days % 10 <= 4 and not 12 <= days % 100 <= 14:
+            noun = 'календарні дні'
+        else:
+            noun = 'календарних днів'
+        return f'{days} {noun}'
+
     # Vacation-specific fields
     vacation_date_from = fields.Date(string='Vacation Start Date', tracking=True)
     vacation_date_to = fields.Date(string='Vacation End Date', tracking=True)
