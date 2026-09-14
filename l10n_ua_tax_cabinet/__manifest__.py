@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Tax Cabinet Integration',
-    'version': '19.0.1.0.0',
+    'version': '19.0.2.0.0',
     'category': 'Accounting/Localization',
     'summary': 'Integration with cabinet.tax.gov.ua for document sync',
     'description': """
@@ -19,6 +19,10 @@ Features:
 2. Prepare and manually upload documents
 3. (Future) Automatic submission to tax office
 
+KEP key and password never reach the server: every signature (documents and
+the Authorization header of the cabinet API) is computed in the browser by
+l10n_ua_sign, the server only relays ready signatures.
+
 Extends l10n_ua.tax.document with cabinet-specific fields and actions.
     """,
     'author': 'Svyatoslav Nadozirny',
@@ -35,7 +39,6 @@ Extends l10n_ua.tax.document with cabinet-specific fields and actions.
         'security/ir.model.access.csv',
         'security/multicompany_security.xml',
         'wizard/l10n_ua_tax_cabinet_sync_wizard_views.xml',
-        'wizard/l10n_ua_tax_cabinet_password_wizard_views.xml',
         'wizard/l10n_ua_tax_document_wizard_views.xml',
         'views/res_company_views.xml',
         'views/l10n_ua_tax_cabinet_document_views.xml',

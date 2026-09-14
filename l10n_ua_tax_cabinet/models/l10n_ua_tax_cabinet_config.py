@@ -1,7 +1,5 @@
 import base64
 import logging
-import os
-import time
 from datetime import datetime
 
 import httpx
@@ -27,20 +25,18 @@ TAX_CABINET_API_PATH = "/ws/public_api"
 DPS_ENCRYPT_CERT_URL = "https://cabinet.tax.gov.ua/ws/api/crypto/public_sign/data/EK_C_NEW.cer"
 DPS_SIGN_CERT_URL = "https://cabinet.tax.gov.ua/ws/api/crypto/public_sign/data/EK_S_NEW.cer"
 
-# Default IIT library paths
-DEFAULT_IIT_LIB_PATH = '/opt/iit/eu/sw'
-DEFAULT_IIT_CERT_PATH = '/opt/iit/certificates'
-
-# Auth header cache: {config_id: {'header': str, 'timestamp': float}}
-# Signatures are valid for ~10 min, cache for 5 min to be safe
-_AUTH_HEADER_CACHE = {}
-_AUTH_CACHE_TTL = 300  # 5 minutes
-
 
 class L10nUaTaxCabinetConfig(models.Model):
+    """Підключення до електронного кабінету ДПС.
+
+    Ключ КЕП і пароль на сервері не зберігаються й сюди не передаються (#324).
+    Авторизація публічного API кабінету — КЕП-підпис коду платника в заголовку
+    Authorization; його, як і підписи документів, рахує браузер
+    (l10n_ua_sign), а сервер лише пересилає запити з готовим підписом.
+    """
     _name = 'l10n_ua.tax.cabinet.config'
     _description = 'Tax Cabinet Configuration'
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread', 'l10n_ua.sign.mixin']
 
     name = fields.Char(
         string='Name',
@@ -61,27 +57,6 @@ class L10nUaTaxCabinetConfig(models.Model):
     active = fields.Boolean(
         default=True,
     )
-
-    # KEP settings
-    kep_key_file = fields.Binary(
-        string='KEP Key File',
-        attachment=True,
-        help='Private key file (.dat, .jks, .pfx)',
-    )
-    kep_key_filename = fields.Char(
-        string='Key Filename',
-    )
-    iit_lib_path = fields.Char(
-        string='IIT Library Path',
-        default=DEFAULT_IIT_LIB_PATH,
-        help='Path to IIT EUSignCP library',
-    )
-    iit_cert_path = fields.Char(
-        string='IIT Certificates Path',
-        default=DEFAULT_IIT_CERT_PATH,
-        help='Path to certificates directory (CA certs, user certs)',
-    )
-    # Note: Password is NOT stored - always requested via wizard
 
     # Sync settings
     last_sync_date = fields.Datetime(
@@ -130,59 +105,22 @@ class L10nUaTaxCabinetConfig(models.Model):
         self.ensure_one()
         return TAX_CABINET_TEST_URL if self.use_test_environment else TAX_CABINET_BASE_URL
 
-    def _clear_auth_cache(self):
-        """Clear cached auth header for this config."""
-        if self.id in _AUTH_HEADER_CACHE:
-            del _AUTH_HEADER_CACHE[self.id]
-            _logger.debug("Cleared auth header cache for config %s", self.id)
+    def _auth_headers(self, auth_signature):
+        """Заголовки запиту до публічного API з підписом, зробленим у браузері.
 
-    def _sign_with_kep(self, data, password):
-        """Sign data using KEP (qualified electronic signature).
-
-        Args:
-            data: Data to sign
-            password: KEP password (not stored, passed from wizard)
+        Підпис не кешується: кожен сеанс роботи з кабінетом приносить свій.
         """
         self.ensure_one()
-
-        if not self.kep_key_file:
-            raise UserError(_("KEP key file is required. Please upload your private key."))
-
-        if not password:
-            raise UserError(_("KEP password is required for signing."))
-
-        try:
-            from ..lib.tax_cabinet_auth import KEPSigner
-        except ImportError as e:
-            raise UserError(_("KEP signing library not available: %s") % str(e))
-
-        lib_path = self.iit_lib_path or DEFAULT_IIT_LIB_PATH
-        cert_path = self.iit_cert_path or DEFAULT_IIT_CERT_PATH
-
-        # Set environment variables for the library
-        os.environ['IIT_LIB_PATH'] = lib_path
-        os.environ['IIT_CERT_PATH'] = cert_path
-
-        # Decode binary key file to temp file
-        import tempfile
-        key_data = base64.b64decode(self.kep_key_file)
-
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.dat') as tmp_key:
-            tmp_key.write(key_data)
-            tmp_key_path = tmp_key.name
-
-        try:
-            with KEPSigner(lib_path=lib_path, cert_path=cert_path) as signer:
-                signer.load_certificates()
-                signer.load_private_key(tmp_key_path, password)
-                return signer.sign_data(data)
-        except Exception as e:
-            _logger.error("KEP signing failed: %s", str(e))
-            raise UserError(_("KEP signing failed: %s") % str(e))
-        finally:
-            # Always clean up temp file
-            if os.path.exists(tmp_key_path):
-                os.unlink(tmp_key_path)
+        if not auth_signature:
+            raise UserError(_("Немає КЕП-підпису для авторизації в кабінеті ДПС."))
+        if isinstance(auth_signature, bytes):
+            auth_signature = auth_signature.decode('ascii')
+        return {
+            'Authorization': auth_signature,
+            'Content-Type': 'application/json',
+            'Accept': 'application/json, text/plain, */*',
+            'Lang': 'uk',
+        }
 
     def _get_dps_encrypt_certificate(self):
         """Download and cache DPS encryption certificate.
@@ -222,167 +160,51 @@ class L10nUaTaxCabinetConfig(models.Model):
         except requests.RequestException as e:
             raise UserError(_("Failed to download DPS certificate: %s") % str(e))
 
-    def _sign_and_encrypt_for_dps(self, data, password):
-        """Sign data with KEP and encrypt for DPS server.
-
-        Args:
-            data: Data to sign and encrypt (bytes or string)
-            password: KEP password
-
-        Returns:
-            Base64-encoded signed and encrypted data
-        """
-        self.ensure_one()
-
-        if not self.kep_key_file:
-            raise UserError(_("KEP key file is required. Please upload your private key."))
-
-        if not password:
-            raise UserError(_("KEP password is required for signing."))
-
-        try:
-            from ..lib.tax_cabinet_auth import KEPSigner
-        except ImportError as e:
-            raise UserError(_("KEP signing library not available: %s") % str(e))
-
-        lib_path = self.iit_lib_path or DEFAULT_IIT_LIB_PATH
-        cert_path = self.iit_cert_path or DEFAULT_IIT_CERT_PATH
-
-        os.environ['IIT_LIB_PATH'] = lib_path
-        os.environ['IIT_CERT_PATH'] = cert_path
-
-        # Get DPS encryption certificate
-        dps_cert = self._get_dps_encrypt_certificate()
-
-        # Decode binary key file to temp file
-        import tempfile
-        key_data = base64.b64decode(self.kep_key_file)
-
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.dat') as tmp_key:
-            tmp_key.write(key_data)
-            tmp_key_path = tmp_key.name
-
-        try:
-            with KEPSigner(lib_path=lib_path, cert_path=cert_path) as signer:
-                signer.load_certificates()
-                signer.load_private_key(tmp_key_path, password)
-
-                # Sign and then encrypt for DPS
-                signed_and_encrypted = signer.sign_and_envelope(data, dps_cert)
-
-                # Return as base64 string
-                if isinstance(signed_and_encrypted, bytes):
-                    return base64.b64encode(signed_and_encrypted).decode('utf-8')
-                return signed_and_encrypted
-
-        except Exception as e:
-            _logger.error("Sign and encrypt failed: %s", str(e))
-            raise UserError(_("Sign and encrypt failed: %s") % str(e))
-        finally:
-            if os.path.exists(tmp_key_path):
-                os.unlink(tmp_key_path)
-
-    def _get_auth_headers(self, password=None, use_cache=True):
-        """Get authorization headers for API requests.
-
-        Args:
-            password: KEP password (required if cache is empty/expired). Can also be in context.
-            use_cache: If True, use cached signed header (default). Set False to force re-sign.
-        """
-        self.ensure_one()
-
-        if not self.kep_key_file:
-            raise UserError(_("KEP key file is required. Please upload your private key."))
-
-        # Get password from argument or context
-        if not password:
-            password = self.env.context.get('kep_password')
-
-        # Check cache first
-        cache_key = self.id
-        now = time.time()
-
-        if use_cache and cache_key in _AUTH_HEADER_CACHE:
-            cached = _AUTH_HEADER_CACHE[cache_key]
-            if now - cached['timestamp'] < _AUTH_CACHE_TTL:
-                auth_header = cached['header']
-                _logger.debug("Using cached KEP auth header (age: %.1fs)", now - cached['timestamp'])
-                return {
-                    'Authorization': auth_header,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json, text/plain, */*',
-                    'Lang': 'uk',
-                }
-            else:
-                # Expired, remove from cache
-                del _AUTH_HEADER_CACHE[cache_key]
-
-        # Need password to sign
-        if not password:
-            raise UserError(_("KEP password is required for signing."))
-
-        # Sign taxpayer code with KEP
-        signed_data = self._sign_with_kep(self.taxpayer_code, password)
-        auth_header = signed_data
-
-        # Cache it
-        _AUTH_HEADER_CACHE[cache_key] = {
-            'header': auth_header,
-            'timestamp': now,
-        }
-        _logger.debug("Created and cached new KEP auth header")
-
-        return {
-            'Authorization': auth_header,
-            'Content-Type': 'application/json',
-            'Accept': 'application/json, text/plain, */*',
-            'Lang': 'uk',
-        }
+    # ========== Перевірка з'єднання (l10n_ua.sign.mixin) ==========
 
     def action_test_connection(self):
-        """Open password wizard to test API connection."""
+        """Перевірити з'єднання: браузер підписує код платника, сервер питає картку."""
+        return self.action_kep_sign(mode='test')
+
+    def kep_prepare_signing(self):
         self.ensure_one()
+        if not self.taxpayer_code:
+            raise UserError(_("Вкажіть код платника (ЄДРПОУ / РНОКПП)."))
         return {
-            'type': 'ir.actions.act_window',
-            'name': _('Enter KEP Password'),
-            'res_model': 'l10n_ua.tax.cabinet.password.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {
-                'default_config_id': self.id,
-                'default_action': 'test',
-            },
+            'auth_subject': self.taxpayer_code,
+            'submit_label': _("Перевірити з'єднання"),
+            'documents': [],
         }
 
-    def _do_test_connection(self, password):
-        """Actually test API connection with provided password."""
+    def kep_submit_signed(self, signed, auth_signature=None):
         self.ensure_one()
+        name = self._api_get_payer_name(auth_signature)
+        return {'receipt': _("З'єднання успішне. Платник: %s") % name}
+
+    # ========== API ==========
+
+    def _api_get_payer_name(self, auth_signature):
+        """Назва платника з картки (GET /payer_card) — перевірка авторизації."""
+        self.ensure_one()
+        url = f"{self._get_api_url()}/payer_card"
+        headers = self._auth_headers(auth_signature)
+
+        env_name = "TEST" if self.use_test_environment else "PRODUCTION"
+        _logger.info("Tax Cabinet API [%s]: Testing connection to %s", env_name, url)
         try:
-            # Try to get payer card (basic info)
-            headers = self._get_auth_headers(password=password)
-            api_url = self._get_api_url()
-            url = f"{api_url}/payer_card"
-
-            env_name = "TEST" if self.use_test_environment else "PRODUCTION"
-            _logger.info("Tax Cabinet API [%s]: Testing connection to %s", env_name, url)
             response = requests.get(url, headers=headers, timeout=30)
+        except requests.RequestException as e:
+            raise UserError(_("Connection failed: %s") % str(e))
 
-            if response.status_code == 200:
-                data = response.json()
-                # Extract name from response
-                name = "Unknown"
-                for item in data:
-                    if item.get('values', {}).get('FULL_NAME'):
-                        name = item['values']['FULL_NAME']
-                        break
-                return True, name
-            else:
-                return False, _("API error %s: %s") % (response.status_code, response.text)
+        if response.status_code != 200:
+            raise UserError(_("API error %s: %s") % (response.status_code, response.text))
 
-        except Exception as e:
-            return False, str(e)
+        for item in response.json():
+            if item.get('values', {}).get('FULL_NAME'):
+                return item['values']['FULL_NAME']
+        return "Unknown"
 
-    def _api_get_document_list(self, year, month):
+    def _api_get_document_list(self, year, month, *, auth_signature):
         """
         Get list of reported documents for period.
 
@@ -395,7 +217,7 @@ class L10nUaTaxCabinetConfig(models.Model):
             'periodYear': year,
             'periodMonth': month,
         }
-        headers = self._get_auth_headers()
+        headers = self._auth_headers(auth_signature)
 
         _logger.info("Tax Cabinet API: GET %s params=%s", url, params)
         response = requests.get(url, params=params, headers=headers, timeout=30)
@@ -405,7 +227,7 @@ class L10nUaTaxCabinetConfig(models.Model):
 
         return response.json()
 
-    def _api_get_incoming_documents(self, page=1):
+    def _api_get_incoming_documents(self, page=1, *, auth_signature):
         """
         Get incoming correspondence.
 
@@ -415,7 +237,7 @@ class L10nUaTaxCabinetConfig(models.Model):
         api_url = self._get_api_url()
         url = f"{api_url}/post/incoming"
         params = {'page': page}
-        headers = self._get_auth_headers()
+        headers = self._auth_headers(auth_signature)
 
         _logger.info("Tax Cabinet API: GET %s params=%s", url, params)
         response = requests.get(url, params=params, headers=headers, timeout=30)
@@ -425,7 +247,7 @@ class L10nUaTaxCabinetConfig(models.Model):
 
         return response.json()
 
-    def _api_get_sent_documents(self, page=1):
+    def _api_get_sent_documents(self, page=1, *, auth_signature):
         """
         Get outgoing correspondence.
 
@@ -435,7 +257,7 @@ class L10nUaTaxCabinetConfig(models.Model):
         api_url = self._get_api_url()
         url = f"{api_url}/post/sent"
         params = {'page': page}
-        headers = self._get_auth_headers()
+        headers = self._auth_headers(auth_signature)
 
         _logger.info("Tax Cabinet API: GET %s params=%s", url, params)
         response = requests.get(url, params=params, headers=headers, timeout=30)
@@ -445,7 +267,7 @@ class L10nUaTaxCabinetConfig(models.Model):
 
         return response.json()
 
-    def _api_download_document_pdf(self, year, doc_id, doc_type='reg_doc'):
+    def _api_download_document_pdf(self, year, doc_id, doc_type='reg_doc', *, auth_signature):
         """
         Download document PDF.
 
@@ -465,7 +287,7 @@ class L10nUaTaxCabinetConfig(models.Model):
         else:
             raise ValueError(f"Unknown doc_type: {doc_type}")
 
-        headers = self._get_auth_headers()
+        headers = self._auth_headers(auth_signature)
 
         _logger.info("Tax Cabinet API: GET %s", url)
         response = requests.get(url, headers=headers, timeout=60)
@@ -476,7 +298,7 @@ class L10nUaTaxCabinetConfig(models.Model):
 
         return base64.b64encode(response.content)
 
-    def _api_download_document_xml(self, year, doc_id, doc_type='reg_doc'):
+    def _api_download_document_xml(self, year, doc_id, doc_type='reg_doc', *, auth_signature):
         """
         Download document XML.
 
@@ -493,7 +315,7 @@ class L10nUaTaxCabinetConfig(models.Model):
         else:
             raise ValueError(f"Unknown doc_type for XML: {doc_type}")
 
-        headers = self._get_auth_headers()
+        headers = self._auth_headers(auth_signature)
 
         _logger.info("Tax Cabinet API: GET %s", url)
         response = requests.get(url, headers=headers, timeout=60)
@@ -504,57 +326,13 @@ class L10nUaTaxCabinetConfig(models.Model):
 
         return base64.b64encode(response.content)
 
-    def _api_submit_document(self, signed_content, filename, password):
-        """
-        Submit signed document to Tax Cabinet.
-
-        POST /cabinet/public/api/exchange/report
-        Content-Type: application/json
-
-        Request body format:
-        {
-            "list": [
-                {
-                    "contentBase64": "...",
-                    "fname": "..."
-                }
-            ]
-        }
-
-        The document must be signed, encrypted and Base64 encoded.
-
-        NOTE: Test environment (port 9443) is ONLY for PRRO (cash registers).
-        Report submission always uses production endpoint.
-
-        Args:
-            signed_content: Base64-encoded signed and encrypted document
-            filename: Document filename (e.g., F0103309_2025_Q3.xml)
-            password: KEP password for authentication
-        """
-        self.ensure_one()
-
-        # IMPORTANT: Test environment (port 9443) only supports PRRO operations.
-        # Report submission must use production endpoint.
-        # See: https://cabinet.tax.gov.ua/help/api.html
-        base_url = TAX_CABINET_BASE_URL  # Always use production for reports
-
-        if self.use_test_environment:
-            _logger.warning(
-                "Test environment is only for PRRO (cash registers). "
-                "Report submission will use production: %s", base_url
-            )
-
-        # Use the exchange/report endpoint for document submission
-        headers = self._get_auth_headers(password=password)
-        return self._post_report(signed_content, filename, headers)
-
     def _api_submit_document_presigned(self, signed_content, filename, auth_signature):
         """Релей уже підписаного документа (клієнтське КЕП-підписування, #146).
 
         Ключ і пароль лишаються в браузері: сюди приходять готові
         ``signed_content`` (base64 sign+encrypt конверта на сертифікат ДПС) і
         ``auth_signature`` (base64 підпис taxpayer_code для заголовка
-        Authorization). Сервер лише пересилає — жодного виклику ``_sign_with_kep``.
+        Authorization). Сервер лише пересилає.
         """
         self.ensure_one()
         auth_header = auth_signature if isinstance(auth_signature, str) \
@@ -569,8 +347,8 @@ class L10nUaTaxCabinetConfig(models.Model):
     def _post_report(self, signed_content, filename, headers):
         """Спільний HTTP-релей подачі звіту в кабінет ДПС.
 
-        Приймає готові ``headers`` (з Authorization) — байдуже, серверний
-        підпис це чи клієнтський. POST на exchange/report завжди у продакшн.
+        Приймає готові ``headers`` (з Authorization, підписаним у браузері).
+        POST на exchange/report завжди у продакшн.
         """
         self.ensure_one()
 

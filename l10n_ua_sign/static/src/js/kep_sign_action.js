@@ -2,7 +2,7 @@
 
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
-import { Component, useState, onWillStart } from "@odoo/owl";
+import { Component, useState, onWillStart, onWillUnmount } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
 import { checkLibPresent, createSigner } from "./kep_sign_service";
 
@@ -13,7 +13,8 @@ import { checkLibPresent, createSigner } from "./kep_sign_service";
  *   3. Відправити    → orm.call kep_submit_signed (ДПС / банк / інша установа).
  *
  * Модель-агностичний: працює з будь-якою моделлю на l10n_ua.sign.mixin.
- * Приватний ключ і пароль обробляються лише в браузері.
+ * Параметр ``mode`` (якщо є) передається обом викликам у контексті як
+ * ``kep_mode``. Приватний ключ і пароль обробляються лише в браузері.
  */
 export class KepSignAction extends Component {
     static template = "l10n_ua_sign.KepSignAction";
@@ -28,6 +29,7 @@ export class KepSignAction extends Component {
         const params = this.props.action.params || this.props.action.context || {};
         this.model = params.model;
         this.resId = params.res_id;
+        this.callKwargs = params.mode ? { context: { kep_mode: params.mode } } : {};
 
         this.state = useState({
             phase: "loading", // loading | ready | done | error
@@ -48,7 +50,7 @@ export class KepSignAction extends Component {
             try {
                 this.state.libAvailable = await checkLibPresent();
                 this.state.prepared = await this.orm.call(
-                    this.model, "kep_prepare_signing", [this.resId]
+                    this.model, "kep_prepare_signing", [this.resId], this.callKwargs
                 );
                 this.state.phase = "ready";
             } catch (e) {
@@ -56,6 +58,8 @@ export class KepSignAction extends Component {
                 this.state.error = this._errMessage(e);
             }
         });
+        // Зчитаний ключ не переживає діалог.
+        onWillUnmount(() => this.signer.reset());
     }
 
     _errMessage(e) {
@@ -64,6 +68,11 @@ export class KepSignAction extends Component {
 
     get docCount() {
         return (this.state.prepared && this.state.prepared.documents || []).length;
+    }
+
+    /** Підписується лише код для авторизації (перевірка з'єднання, синхронізація). */
+    get authOnly() {
+        return !this.docCount && !!(this.state.prepared && this.state.prepared.auth_subject);
     }
 
     get submitLabel() {
@@ -117,7 +126,7 @@ export class KepSignAction extends Component {
         try {
             this._signedPayload = await this.signer.sign(this.state.prepared);
             this.state.signed = true;
-            this.notification.add(_t("Документи підписано."), { type: "success" });
+            this.notification.add(_t("Підписано."), { type: "success" });
         } catch (e) {
             this.state.error = this._errMessage(e);
             this.notification.add(this.state.error, { type: "danger" });
@@ -134,7 +143,7 @@ export class KepSignAction extends Component {
             const { auth_signature, signed } = this._signedPayload;
             const result = await this.orm.call(
                 this.model, "kep_submit_signed",
-                [this.resId, signed, auth_signature]
+                [this.resId, signed, auth_signature], this.callKwargs
             );
             this.state.receipt = (result && result.receipt) || _t("Успішно");
             this.state.phase = "done";
@@ -172,7 +181,8 @@ export class KepSignAction extends Component {
     }
 
     async onClose() {
-        await this.action.doAction({
+        const closeAction = this.state.prepared && this.state.prepared.close_action;
+        await this.action.doAction(closeAction || {
             type: "ir.actions.act_window",
             res_model: this.model,
             res_id: this.resId,

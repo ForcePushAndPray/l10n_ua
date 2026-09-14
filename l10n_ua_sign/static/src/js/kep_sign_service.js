@@ -3,35 +3,39 @@
 import { _t } from "@web/core/l10n/translation";
 
 /**
- * Сервіс клієнтського КЕП-підпису поверх бібліотеки IIT euscp (WASM).
+ * Сервіс клієнтського КЕП-підпису поверх бібліотеки IIT EndUser (euscp).
+ *
+ * Та сама схема, що на cabinet.tax.gov.ua/login: бібліотека працює у
+ * web worker браузера, ключ і пароль не залишають клієнт, сервер отримує лише
+ * готові підписи. Запити до ЦСК (сертифікати, OCSP) бібліотека робить напряму,
+ * якщо ЦСК це дозволяє (directAccess у CAs.json), інакше — через проксі Odoo.
  *
  * Файли бібліотеки пропрієтарні й лежать поза бандлом/git у
  * static/src/lib/euscp (див. README там). Вантажимо їх ЛІНИВО за URL: worker
- * euscp.worker.js ~16МБ, euscp.js ~5МБ — у web.assets_backend це зламало б
- * worker і роздуло кожну сторінку.
+ * ~17МБ у web.assets_backend роздув би кожну сторінку.
  *
  * Публічне API:
- *   checkLibPresent()               → чи лежать файли (HEAD, без завантаження)
- *   signDocuments(spec, key, pwd)   → { auth_signature, signed: {name: b64} }
+ *   checkLibPresent()   → чи лежать файли (HEAD, без завантаження)
+ *   createSigner()      → { readKey(key, pwd), sign(spec), reset() }
  */
 
 export const EUSCP_BASE = "/l10n_ua_sign/static/src/lib/euscp";
-// Порядок важливий. За потреби підлаштуйте під вашу версію пакета IIT
-// (орієнтир — github.com/kelatev/SA-SignInfo).
-export const EUSCP_SCRIPTS = ["euscpm.js", "euutils.js", "eusw.js", "euscp.js"];
+export const EUSCP_SCRIPT = `${EUSCP_BASE}/euscp.js`;
+export const EUSCP_WORKER = `${EUSCP_BASE}/euscp.worker.js`;
+export const CA_SETTINGS_URL = `${EUSCP_BASE}/data/CAs.json`;
+export const CA_CERTIFICATES_URL = `${EUSCP_BASE}/data/CACertificates.p7b`;
+export const CA_PROXY_URL = "/l10n_ua_sign/ca_proxy";
 
-function getEuLibrary() {
-    return window.EndUserLibrary || window.euscp || window.EndUser || null;
-}
+const REQUIRED_FILES = [EUSCP_SCRIPT, EUSCP_WORKER, CA_SETTINGS_URL, CA_CERTIFICATES_URL];
 
-/** HEAD-перевірка, що файли бібліотеки на місці (без завантаження ~21МБ). */
+/** HEAD-перевірка, що файли бібліотеки та ЦСК на місці (без завантаження). */
 export async function checkLibPresent() {
     try {
-        const resp = await fetch(`${EUSCP_BASE}/${EUSCP_SCRIPTS[0]}`, {
-            method: "HEAD",
-        });
-        return resp.ok;
-    } catch (e) {
+        const responses = await Promise.all(
+            REQUIRED_FILES.map((url) => fetch(url, { method: "HEAD" }))
+        );
+        return responses.every((resp) => resp.ok);
+    } catch {
         return false;
     }
 }
@@ -52,24 +56,46 @@ function loadScript(url) {
     });
 }
 
-/** Лінива підгрузка euscp за URL (лише при першому підписі). */
-export async function ensureEuscpLoaded() {
-    if (getEuLibrary()) {
-        return getEuLibrary();
+/**
+ * euscp.js — UMD-збірка: підключена звичайним <script>, вона кладе свої
+ * експорти (EndUser, EndUserConstants, …) у window.
+ */
+async function ensureEuscpLoaded() {
+    if (!window.EndUser) {
+        await loadScript(EUSCP_SCRIPT);
     }
-    // Підказати бібліотеці, де взяти worker/wasm (назва хука залежить від версії).
-    window.EU_WORKER_URL = window.EU_WORKER_URL || `${EUSCP_BASE}/euscp.worker.js`;
-    for (const name of EUSCP_SCRIPTS) {
-        await loadScript(`${EUSCP_BASE}/${name}`);
-    }
-    const lib = getEuLibrary();
-    if (!lib) {
+    if (!window.EndUser) {
         throw new Error(_t(
-            "Бібліотеку euscp завантажено, але глобальний об'єкт не знайдено — " +
-            "підлаштуйте EUSCP_SCRIPTS / назву глобала під вашу версію IIT."
+            "Бібліотеку euscp завантажено, але клас EndUser не знайдено — " +
+            "перевірте версію файлів у l10n_ua_sign/static/src/lib/euscp."
         ));
     }
-    return lib;
+}
+
+let endUserPromise = null;
+
+/** Один ініціалізований екземпляр EndUser на вкладку (worker дорогий). */
+function getEndUser() {
+    if (!endUserPromise) {
+        endUserPromise = (async () => {
+            await ensureEuscpLoaded();
+            const libraryTypeJS = window.EndUserConstants?.EndUserLibraryType?.JS ?? 0;
+            const eu = new window.EndUser(EUSCP_WORKER, libraryTypeJS);
+            await eu.Initialize({
+                language: "uk",
+                encoding: "UTF-8",
+                httpProxyServiceURL: CA_PROXY_URL,
+                directAccess: true,
+                CAs: CA_SETTINGS_URL,
+                CACertificates: CA_CERTIFICATES_URL,
+            });
+            return eu;
+        })().catch((e) => {
+            endUserPromise = null;
+            throw e;
+        });
+    }
+    return endUserPromise;
 }
 
 function b64ToBytes(b64) {
@@ -83,32 +109,29 @@ function b64ToBytes(b64) {
 
 /**
  * Підписати один документ у потрібному форматі.
- * Сигнатури методів звірені з EndUserLibrary (kelatev/SA-SignInfo):
- *   SignData(data, asBase64String?)
- *   SignDataInternal(appendCert, data, asBase64String?)
- * Точні виклики конверта/ASiC залежать від версії пакета — за потреби
- * підлаштуйте (EUSignJavaScriptD.doc).
+ * Сигнатури — з euscp.d.ts пакета @it-enterprise/digital-signature:
+ *   SignDataInternal(appendCert, data, asBase64String)
+ *   EnvelopData(recipientsCerts, data, signData, appendCert, asBase64String)
  */
 async function signOneDocument(eu, doc) {
     const bytes = b64ToBytes(doc.data_b64);
     const fmt = doc.format || "cades";
     if (fmt === "cades") {
-        // CAdES/P7S із сертифікатом підписувача.
+        // CAdES/P7S із вбудованими даними та сертифікатом підписувача.
         return await eu.SignDataInternal(true, bytes, true);
     }
     if (fmt === "envelope") {
-        // Підпис, за потреби — шифрування на сертифікат отримувача.
-        const signed = await eu.SignData(bytes, true);
-        // Якщо регламент вимагає шифрування — розкоментуйте (звірте сигнатуру
-        // EnvelopData під вашу версію IIT; cert приходить у recipient_cert_b64):
-        // if (doc.recipient_cert_b64) {
-        //     const cert = b64ToBytes(doc.recipient_cert_b64);
-        //     return await eu.EnvelopData(cert, signed, true);
-        // }
-        return signed;
+        if (!doc.recipient_cert_b64) {
+            // Сертифікат шифрування отримувача недоступний — лише підпис.
+            return await eu.SignDataInternal(true, bytes, true);
+        }
+        // Спершу підпис, потім шифрування підписаного на сертифікат отримувача.
+        const signedBytes = await eu.SignDataInternal(true, bytes, false);
+        return await eu.EnvelopData(
+            [b64ToBytes(doc.recipient_cert_b64)], signedBytes, false, true, true
+        );
     }
     if (fmt === "asic") {
-        // Контейнер ASiC (для Дії). Метод залежить від версії пакета.
         if (typeof eu.ASiCSignData === "function") {
             return await eu.ASiCSignData(bytes, true);
         }
@@ -125,6 +148,7 @@ async function signOneDocument(eu, doc) {
  *   const signer = createSigner();
  *   const { owner, certs } = await signer.readKey(keyBuffer, password);
  *   const { auth_signature, signed } = await signer.sign(spec);
+ *   await signer.reset();   // при закритті діалогу
  */
 export function createSigner() {
     let eu = null;
@@ -138,18 +162,19 @@ export function createSigner() {
          */
         async readKey(keyBuffer, password) {
             if (!keyBuffer) {
-                throw new Error(_t("Виберіть файл-ключ (.dat/.jks)."));
+                throw new Error(_t("Виберіть файл-ключ (.dat/.jks/.pfx)."));
             }
             if (!password) {
                 throw new Error(_t("Введіть пароль до ключа."));
             }
-            const Lib = await ensureEuscpLoaded();
-            eu = Lib.EndUser ? new Lib.EndUser() : new Lib();
-            const owner = await eu.ReadPrivateKeyBinary(keyBuffer, password, null, null);
+            const lib = await getEndUser();
+            eu = null;
+            const owner = await lib.ReadPrivateKeyBinary(keyBuffer, password);
+            eu = lib;
             let certs = [];
             try {
-                certs = await eu.GetOwnCertificates();
-            } catch (e) {
+                certs = await lib.GetOwnCertificates();
+            } catch {
                 certs = [];
             }
             return { owner, certs };
@@ -172,6 +197,19 @@ export function createSigner() {
                 signed[doc.name] = await signOneDocument(eu, doc);
             }
             return { auth_signature: authSignature, signed };
+        },
+        /** Вивантажити ключ із бібліотеки (закриття діалогу). */
+        async reset() {
+            if (!eu) {
+                return;
+            }
+            const lib = eu;
+            eu = null;
+            try {
+                await lib.ResetPrivateKey();
+            } catch {
+                // ключ уже вивантажено — нічого робити
+            }
         },
     };
 }
