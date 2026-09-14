@@ -35,7 +35,10 @@ CAS_JSON = 'l10n_ua_sign/static/src/lib/euscp/data/CAs.json'
 CA_ADDRESS_KEYS = ('address', 'cmpAddress', 'tspAddress', 'ocspAccessPointAddress')
 MAX_REQUEST_BYTES = 1024 * 1024
 MAX_RESPONSE_BYTES = 10 * 1024 * 1024
-TIMEOUT = 30
+# (з'єднання, читання). У режимі «визначати автоматично» бібліотека питає ЦСК
+# по черзі, і один недоступний ЦСК із таймаутом 30 с затримував зчитування
+# ключа на пів хвилини; живі ЦСК з'єднуються за мілісекунди.
+TIMEOUT = (5, 20)
 
 
 def _split_address(address):

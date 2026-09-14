@@ -58,6 +58,24 @@
                     <div class="o_kep_step mb-3">
                         <h5>1. Зчитати ключ</h5>
                         <div class="mb-2">
+                            <label class="form-label">Оберіть АЦСК</label>
+                            <select class="form-select" t-on-change="onCaChange"
+                                    t-att-disabled="state.busy">
+                                <option value="" t-att-selected="!state.caName">
+                                    Визначати автоматично
+                                </option>
+                                <t t-foreach="state.caList" t-as="ca" t-key="ca.name">
+                                    <option t-att-value="ca.name"
+                                            t-att-selected="ca.name === state.caName"
+                                            t-esc="ca.name"/>
+                                </t>
+                            </select>
+                            <small t-if="!state.caName" class="text-muted">
+                                Бібліотека по черзі перепитає всі ЦСК — це довго. Оберіть
+                                свій ЦСК, щоб зчитати ключ одразу.
+                            </small>
+                        </div>
+                        <div class="mb-2">
                             <label class="form-label">Файл-ключ (.dat / .jks / .pfx)</label>
                             <input type="file" class="form-control"
                                    accept=".dat,.jks,.pfx,.pk8,.zs2"

@@ -26,6 +26,9 @@ export const CA_SETTINGS_URL = `${EUSCP_BASE}/data/CAs.json`;
 export const CA_CERTIFICATES_URL = `${EUSCP_BASE}/data/CACertificates.p7b`;
 export const CA_PROXY_URL = "/l10n_ua_sign/ca_proxy";
 
+// EU_ERROR_CERT_NOT_FOUND: ключ виданий не тим ЦСК, що вибрано в діалозі.
+export const KEY_CA_MISMATCH = 0x0033;
+
 const REQUIRED_FILES = [EUSCP_SCRIPT, EUSCP_WORKER, CA_SETTINGS_URL, CA_CERTIFICATES_URL];
 
 /** HEAD-перевірка, що файли бібліотеки та ЦСК на місці (без завантаження). */
@@ -94,6 +97,24 @@ async function loadCaData() {
         load(CA_CERTIFICATES_URL).then((resp) => resp.arrayBuffer()),
     ]);
     return { cas, certificates: new Uint8Array(certificates) };
+}
+
+/**
+ * ЦСК для вибору в діалозі: ``{name, issuerCNs}``, за назвою.
+ *
+ * Без вибраного ЦСК бібліотека по черзі перепитує всі ЦСК зі списку, поки
+ * не знайде сертифікат ключа, — це довго. ``name`` (перша назва запису) можна
+ * передати в ``readKey``: бібліотека шукає ЦСК за будь-якою з ``issuerCNs``.
+ */
+export async function listCAs() {
+    const resp = await fetch(CA_SETTINGS_URL, { cache: "no-cache" });
+    if (!resp.ok) {
+        return [];
+    }
+    const cas = await resp.json();
+    return cas
+        .map((ca) => ({ name: ca.issuerCNs[0], issuerCNs: ca.issuerCNs }))
+        .sort((a, b) => a.name.localeCompare(b.name, "uk"));
 }
 
 let endUserPromise = null;
@@ -185,9 +206,12 @@ export function createSigner() {
         },
         /**
          * Крок 1 — зчитати ключ і повернути дані власника (для підтвердження).
+         * @param {string|null} caName ЦСК із listCAs(); null — бібліотека
+         *     перебирає всі ЦСК (довго). Якщо ключ виданий іншим ЦСК —
+         *     помилка з кодом KEY_CA_MISMATCH.
          * @returns {{owner: Object, certs: Array}}
          */
-        async readKey(keyBuffer, password) {
+        async readKey(keyBuffer, password, caName = null) {
             if (!keyBuffer) {
                 throw new Error(_t("Виберіть файл-ключ (.dat/.jks/.pfx)."));
             }
@@ -196,7 +220,7 @@ export function createSigner() {
             }
             const lib = await getEndUser();
             eu = null;
-            const owner = await lib.ReadPrivateKeyBinary(keyBuffer, password);
+            const owner = await lib.ReadPrivateKeyBinary(keyBuffer, password, null, caName || null);
             eu = lib;
             let certs = [];
             try {

@@ -4,7 +4,30 @@ import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
 import { Component, useState, onWillStart, onWillUnmount } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
-import { checkLibPresent, createSigner } from "./kep_sign_service";
+import { checkLibPresent, createSigner, listCAs, KEY_CA_MISMATCH } from "./kep_sign_service";
+
+// Останній ЦСК користувача: наступного разу ключ зчитується без перебору.
+const CA_STORAGE_KEY = "l10n_ua_sign.ca_name";
+
+function loadSavedCa() {
+    try {
+        return window.localStorage.getItem(CA_STORAGE_KEY) || "";
+    } catch {
+        return "";
+    }
+}
+
+function saveCa(name) {
+    try {
+        if (name) {
+            window.localStorage.setItem(CA_STORAGE_KEY, name);
+        } else {
+            window.localStorage.removeItem(CA_STORAGE_KEY);
+        }
+    } catch {
+        // сховище браузера недоступне — просто не запам'ятовуємо
+    }
+}
 
 /**
  * Універсальний client action клієнтського КЕП-підпису у ТРИ явні кроки:
@@ -36,6 +59,8 @@ export class KepSignAction extends Component {
             busy: false,
             error: null,
             libAvailable: false,
+            caList: [],        // ЦСК для вибору; "" — визначати автоматично
+            caName: "",
             password: "",
             keyFileName: "",
             prepared: null,
@@ -48,10 +73,18 @@ export class KepSignAction extends Component {
 
         onWillStart(async () => {
             try {
-                this.state.libAvailable = await checkLibPresent();
-                this.state.prepared = await this.orm.call(
-                    this.model, "kep_prepare_signing", [this.resId], this.callKwargs
-                );
+                const [libAvailable, caList, prepared] = await Promise.all([
+                    checkLibPresent(),
+                    listCAs().catch(() => []),
+                    this.orm.call(
+                        this.model, "kep_prepare_signing", [this.resId], this.callKwargs
+                    ),
+                ]);
+                this.state.libAvailable = libAvailable;
+                this.state.caList = caList;
+                const saved = loadSavedCa();
+                this.state.caName = caList.some((ca) => ca.name === saved) ? saved : "";
+                this.state.prepared = prepared;
                 this.state.phase = "ready";
             } catch (e) {
                 this.state.phase = "error";
@@ -80,11 +113,21 @@ export class KepSignAction extends Component {
             || _t("Відправити");
     }
 
-    onKeyFileChange(ev) {
-        const file = ev.target.files && ev.target.files[0];
-        this.state.ownerRows = null;  // зміна ключа скидає зчитане
+    _resetReadKey() {
+        this.state.ownerRows = null;
         this.state.signed = null;
         this._signedPayload = null;
+    }
+
+    onCaChange(ev) {
+        this.state.caName = ev.target.value;
+        saveCa(this.state.caName);
+        this._resetReadKey();  // ключ, зчитаний з іншим ЦСК, більше не актуальний
+    }
+
+    onKeyFileChange(ev) {
+        const file = ev.target.files && ev.target.files[0];
+        this._resetReadKey();  // зміна ключа скидає зчитане
         if (!file) {
             this.keyFileBuffer = null;
             this.state.keyFileName = "";
@@ -108,14 +151,33 @@ export class KepSignAction extends Component {
         this.state.error = null;
         try {
             const { owner, certs } = await this.signer.readKey(
-                this.keyFileBuffer, this.state.password);
+                this.keyFileBuffer, this.state.password, this.state.caName || null);
+            if (!this.state.caName) {
+                this._rememberDetectedCa(owner);
+            }
             this.state.ownerRows = this._summarizeOwner(owner, certs);
             this.notification.add(_t("Ключ зчитано."), { type: "success" });
         } catch (e) {
             this.state.error = this._errMessage(e);
+            if (this.state.caName && e && e.code === KEY_CA_MISMATCH) {
+                this.state.error = _t(
+                    "Сертифікат ключа не знайдено у ЦСК «%s». Оберіть ЦСК, який видав " +
+                    "ваш ключ, або «Визначати автоматично»."
+                ).replace("%s", this.state.caName);
+            }
             this.notification.add(this.state.error, { type: "danger" });
         } finally {
             this.state.busy = false;
+        }
+    }
+
+    /** ЦСК, знайдений перебором, — у вибір і на наступний раз. */
+    _rememberDetectedCa(owner) {
+        const issuer = owner && owner.issuerCN;
+        const ca = issuer && this.state.caList.find((item) => item.issuerCNs.includes(issuer));
+        if (ca) {
+            this.state.caName = ca.name;
+            saveCa(ca.name);
         }
     }
 
