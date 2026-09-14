@@ -89,8 +89,11 @@ class L10nUaFopDeclaration(models.Model):
     )
     income_limit = fields.Monetary(
         string='Ліміт доходу',
-        related='fop_group_id.income_limit',
+        compute='_compute_income_limit',
+        store=True,
         currency_field='currency_id',
+        help='Граничний дохід групи: множник групи × мінімальна заробітна плата '
+             'на 1 січня року декларації (п. 291.4 ПКУ).',
     )
     income_limit_exceeded = fields.Boolean(
         string='Ліміт перевищено',
@@ -118,8 +121,12 @@ class L10nUaFopDeclaration(models.Model):
     # ESV
     min_wage = fields.Monetary(
         string='Мінімальна зарплата',
+        compute='_compute_min_wage',
+        store=True,
         currency_field='currency_id',
-        help='Мінімальна заробітна плата для розрахунку ЄСВ',
+        help='Мінімальна заробітна плата на кінець звітного періоду (довідник '
+             '«Мінімальна заробітна плата»). ЄСВ рахується від мінімальної '
+             'зарплати кожного місяця періоду.',
     )
     esv_rate = fields.Float(
         string='Ставка ЄСВ (%)',
@@ -207,12 +214,40 @@ class L10nUaFopDeclaration(models.Model):
             else:
                 rec.income_book_ids = False
 
+    def _period_month_min_wages(self):
+        """Мінімальна зарплата кожного місяця звітного періоду (від січня).
+
+        Нуль на місці місяця означає, що на цей рік довідник ще не заповнено.
+        """
+        self.ensure_one()
+        if not self.year or not self.period:
+            return []
+        MinWage = self.env['l10n_ua.min.wage']
+        return [
+            MinWage._get_amount(f'{self.year}-{month:02d}-01')
+            for month in range(1, PERIOD_MONTHS.get(self.period, 0) + 1)
+        ]
+
+    @api.depends('year', 'fop_group_id.limit_min_wages')
+    def _compute_income_limit(self):
+        for rec in self:
+            rec.income_limit = (
+                rec.fop_group_id._get_income_limit(rec.year)
+                if rec.fop_group_id and rec.year else 0.0
+            )
+
     @api.depends('total_income', 'income_limit')
     def _compute_income_limit_exceeded(self):
         for rec in self:
             rec.income_limit_exceeded = (
                 rec.income_limit > 0 and rec.total_income > rec.income_limit
             )
+
+    @api.depends('year', 'period')
+    def _compute_min_wage(self):
+        for rec in self:
+            month_wages = rec._period_month_min_wages()
+            rec.min_wage = month_wages[-1] if month_wages else 0.0
 
     @api.depends('period')
     def _compute_esv_months(self):
@@ -221,7 +256,7 @@ class L10nUaFopDeclaration(models.Model):
 
     @api.depends(
         'total_income', 'tax_rate', 'monthly_tax_amount',
-        'min_wage', 'esv_rate', 'period', 'fop_group_id',
+        'year', 'esv_rate', 'period', 'fop_group_id',
     )
     def _compute_taxes(self):
         for rec in self:
@@ -237,8 +272,9 @@ class L10nUaFopDeclaration(models.Model):
                     if rec.tax_rate else 0
                 )
 
-            # ESV: min_wage × months × rate
-            rec.esv_base = rec.min_wage * months
+            # ESV: мінімальний внесок щомісяця — від мінзарплати цього місяця
+            # (у 2024 вона змінилась з квітня, тож «одна сума × місяці» хибна).
+            rec.esv_base = sum(rec._period_month_min_wages())
             rec.esv_amount = (
                 rec.esv_base * (rec.esv_rate / 100) if rec.esv_base else 0
             )
@@ -252,6 +288,19 @@ class L10nUaFopDeclaration(models.Model):
                 raise UserError(
                     'Вкажіть звітний період та групу ЄП перед розрахунком.'
                 )
+
+            # Довідник мінзарплати міг змінитися вже після створення декларації
+            # (додали новий рік) — збережені суми треба перерахувати.
+            for fname in ('min_wage', 'income_limit', 'income_limit_exceeded',
+                          'esv_base', 'esv_amount', 'total_payable'):
+                self.env.add_to_compute(rec._fields[fname], rec)
+
+            if not all(rec._period_month_min_wages()):
+                raise UserError(_(
+                    'У довіднику немає мінімальної заробітної плати на %s рік — '
+                    'від неї рахуються ЄСВ і ліміт доходу групи. Додайте розмір: '
+                    'Taxes UA → Configuration → Мінімальна заробітна плата.'
+                ) % rec.year)
 
             # Find matching income books
             quarters = PERIOD_QUARTERS.get(rec.period, [])
@@ -273,17 +322,10 @@ class L10nUaFopDeclaration(models.Model):
 
             total_income = sum(books.mapped('total_income'))
 
-            vals = {
+            rec.write({
                 'total_income': total_income,
                 'state': 'calculated',
-            }
-
-            # Set default min_wage if not set
-            if not rec.min_wage:
-                # Use 8000 as default 2025 min wage, user should update
-                vals['min_wage'] = 8000.0
-
-            rec.write(vals)
+            })
 
             # Check income limit
             if rec.income_limit_exceeded:
