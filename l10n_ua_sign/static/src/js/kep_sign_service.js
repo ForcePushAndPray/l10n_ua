@@ -72,13 +72,40 @@ async function ensureEuscpLoaded() {
     }
 }
 
+/**
+ * Список ЦСК і їхні сертифікати — у обхід HTTP-кешу браузера.
+ *
+ * Odoo віддає static із max-age на тиждень: якщо передати бібліотеці URL,
+ * після оновлення файлів ЦСК користувачі ще тиждень ініціалізуються зі
+ * старими (а несумісний CACertificates.p7b валить Initialize кодом 49,
+ * «помилка при роботі з файловим сховищем сертифікатів та СВС»).
+ * 'no-cache' перепитує сервер за ETag — незмінений файл коштує лише 304.
+ */
+async function loadCaData() {
+    const load = async (url) => {
+        const resp = await fetch(url, { cache: "no-cache" });
+        if (!resp.ok) {
+            throw new Error(_t("Не вдалося завантажити %s").replace("%s", url));
+        }
+        return resp;
+    };
+    const [cas, certificates] = await Promise.all([
+        load(CA_SETTINGS_URL).then((resp) => resp.json()),
+        load(CA_CERTIFICATES_URL).then((resp) => resp.arrayBuffer()),
+    ]);
+    return { cas, certificates: new Uint8Array(certificates) };
+}
+
 let endUserPromise = null;
 
 /** Один ініціалізований екземпляр EndUser на вкладку (worker дорогий). */
 function getEndUser() {
     if (!endUserPromise) {
         endUserPromise = (async () => {
-            await ensureEuscpLoaded();
+            const [{ cas, certificates }] = await Promise.all([
+                loadCaData(),
+                ensureEuscpLoaded(),
+            ]);
             const libraryTypeJS = window.EndUserConstants?.EndUserLibraryType?.JS ?? 0;
             const eu = new window.EndUser(EUSCP_WORKER, libraryTypeJS);
             await eu.Initialize({
@@ -86,8 +113,8 @@ function getEndUser() {
                 encoding: "UTF-8",
                 httpProxyServiceURL: CA_PROXY_URL,
                 directAccess: true,
-                CAs: CA_SETTINGS_URL,
-                CACertificates: CA_CERTIFICATES_URL,
+                CAs: cas,
+                CACertificates: certificates,
             });
             return eu;
         })().catch((e) => {
