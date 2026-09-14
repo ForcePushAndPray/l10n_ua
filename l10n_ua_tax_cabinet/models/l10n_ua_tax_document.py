@@ -1,5 +1,4 @@
 """Extension of tax document model with Tax Cabinet integration."""
-import base64
 import logging
 
 from odoo import api, fields, models, _
@@ -9,8 +8,17 @@ _logger = logging.getLogger(__name__)
 
 
 class L10nUaTaxDocumentCabinet(models.Model):
-    """Extends tax document with Tax Cabinet (cabinet.tax.gov.ua) integration."""
-    _inherit = 'l10n_ua.tax.document'
+    """Extends tax document with Tax Cabinet (cabinet.tax.gov.ua) integration.
+
+    Усі КЕП-операції йдуть через браузерний підпис (l10n_ua.dps.submit.mixin):
+    ключ і пароль сервера не торкаються (#324). Сценарій діалогу — ``kep_mode``:
+
+    * ``sign``       — CAdES/P7S підпис XML, зберігається в ``file_signed``;
+    * ``submit``     — підпис + конверт на сертифікат ДПС і подання в кабінет;
+    * ``redownload`` — лише підпис коду платника, щоб забрати файли з кабінету.
+    """
+    _name = 'l10n_ua.tax.document'
+    _inherit = ['l10n_ua.tax.document', 'l10n_ua.dps.submit.mixin']
 
     # Source info
     source = fields.Selection(
@@ -52,95 +60,27 @@ class L10nUaTaxDocumentCabinet(models.Model):
     )
 
     def action_sign_document(self):
-        """Open password wizard to sign the XML document with KEP."""
+        """Підписати XML документа КЕП у браузері (P7S зберігається в документі)."""
         self.ensure_one()
         if not self.file_xml:
             raise UserError(_("No XML file to sign"))
-
-        config = self.env['l10n_ua.tax.cabinet.config'].search([
-            ('company_id', '=', self.company_id.id),
-        ], limit=1)
-
-        if not config:
-            raise UserError(_(
-                "No KEP configuration found for company %s. "
-                "Please configure Tax Cabinet connection."
-            ) % self.company_id.name)
-
-        if not config.kep_key_file:
-            raise UserError(_("KEP key file is required. Please upload your private key."))
-
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('Enter KEP Password'),
-            'res_model': 'l10n_ua.tax.cabinet.password.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {
-                'default_config_id': config.id,
-                'default_action': 'sign',
-                'default_document_id': self.id,
-            },
-        }
+        self._dps_config()
+        return self.action_kep_sign(mode='sign')
 
     def action_submit_to_cabinet(self):
-        """Submit signed document to cabinet.tax.gov.ua."""
+        """Підписати, зашифрувати й подати документ до cabinet.tax.gov.ua."""
         self.ensure_one()
-        if not self.file_xml:
-            raise UserError(_("No XML file to submit"))
-
-        config = self.env['l10n_ua.tax.cabinet.config'].search([
-            ('company_id', '=', self.company_id.id),
-        ], limit=1)
-
-        if not config:
-            raise UserError(_("No KEP configuration found for company %s.") % self.company_id.name)
-
-        if not config.kep_key_file:
-            raise UserError(_("KEP key file is required. Please upload your private key."))
-
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('Enter KEP Password'),
-            'res_model': 'l10n_ua.tax.cabinet.password.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {
-                'default_config_id': config.id,
-                'default_action': 'submit',
-                'default_document_id': self.id,
-            },
-        }
+        return self.action_kep_submit()
 
     def action_redownload_files(self):
-        """Open password wizard to re-download PDF/XML from Tax Cabinet."""
+        """Повторно забрати PDF/XML з кабінету (браузер підписує код платника)."""
         self.ensure_one()
 
         if self.source != 'cabinet' or not self.external_id:
             raise UserError(_("Can only re-download documents synced from Tax Cabinet."))
 
-        config = self.env['l10n_ua.tax.cabinet.config'].search([
-            ('company_id', '=', self.company_id.id),
-        ], limit=1)
-
-        if not config:
-            raise UserError(_("No Tax Cabinet configuration found for company %s.") % self.company_id.name)
-
-        if not config.kep_key_file:
-            raise UserError(_("KEP key file is required. Please upload your private key."))
-
-        return {
-            'type': 'ir.actions.act_window',
-            'name': _('Enter KEP Password'),
-            'res_model': 'l10n_ua.tax.cabinet.password.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {
-                'default_config_id': config.id,
-                'default_action': 'redownload',
-                'default_document_id': self.id,
-            },
-        }
+        self._dps_config()
+        return self.action_kep_sign(mode='redownload')
 
     def action_download_signed(self):
         """Download signed document."""
@@ -153,49 +93,91 @@ class L10nUaTaxDocumentCabinet(models.Model):
             'target': 'new',
         }
 
-    def _do_sign_document(self, config, password):
-        """Sign document with KEP. Called from password wizard."""
+    # ========== Контракт l10n_ua.dps.submit.mixin ==========
+
+    def _kep_mode(self):
+        return self.env.context.get('kep_mode') or 'submit'
+
+    def _dps_document_b64(self):
         self.ensure_one()
-
-        if not self.file_xml:
-            raise UserError(_("No XML file to sign"))
-
-        xml_content = base64.b64decode(self.file_xml)
-        signed_content = config._sign_with_kep(xml_content, password)
-
-        if signed_content:
-            filename = self.file_xml_name or 'document.xml'
-            signed_filename = filename.replace('.xml', '.p7s')
-            if not signed_filename.endswith('.p7s'):
-                signed_filename += '.p7s'
-
-            if isinstance(signed_content, str):
-                signed_content = signed_content.encode('ascii')
-
-            self.write({
-                'file_signed': signed_content,
-                'file_signed_name': signed_filename,
-                'state': 'signed',
-            })
-            return True
-        else:
-            raise UserError(_("Signing failed - no signed content returned"))
-
-    def _do_submit_to_cabinet(self, config, password):
-        """Submit document to cabinet.tax.gov.ua. Called from password wizard."""
-        self.ensure_one()
-
         if not self.file_xml:
             raise UserError(_("No XML file to submit"))
+        xml = self.file_xml
+        return xml.decode() if isinstance(xml, bytes) else xml
 
-        xml_content = base64.b64decode(self.file_xml)
-        signed_encrypted_b64 = config._sign_and_encrypt_for_dps(xml_content, password)
-        filename = self._generate_filename()
-        result = config._api_submit_document(signed_encrypted_b64, filename, password)
+    def _dps_filename(self):
+        return self._generate_filename()
 
-        return result
+    def _dps_on_submitted(self, receipt):
+        self.write({
+            'state': 'submitted',
+            'status_message': receipt or _('Submitted successfully'),
+        })
 
-    def _do_redownload_files(self, config):
+    def kep_prepare_signing(self):
+        self.ensure_one()
+        mode = self._kep_mode()
+        if mode == 'submit':
+            return super().kep_prepare_signing()
+
+        config = self._dps_config()
+        if mode == 'sign':
+            return {
+                'auth_subject': None,
+                'submit_label': _('Зберегти підпис'),
+                'documents': [{
+                    'name': 'doc',
+                    'data_b64': self._dps_document_b64(),
+                    'format': 'cades',
+                    'filename': self.file_xml_name or 'document.xml',
+                }],
+            }
+        if mode == 'redownload':
+            return {
+                'auth_subject': config.taxpayer_code,
+                'submit_label': _('Завантажити файли'),
+                'documents': [],
+            }
+        raise UserError(_("Невідомий сценарій КЕП-підпису: %s") % mode)
+
+    def kep_submit_signed(self, signed, auth_signature=None):
+        self.ensure_one()
+        mode = self._kep_mode()
+        if mode == 'submit':
+            return super().kep_submit_signed(signed, auth_signature)
+
+        if mode == 'sign':
+            self._store_signature(signed.get('doc'))
+            return {'receipt': _('Документ підписано КЕП.')}
+        if mode == 'redownload':
+            downloaded = self._do_redownload_files(
+                self._dps_config(), auth_signature=auth_signature)
+            if downloaded:
+                return {'receipt': _('Завантажено: %s') % ', '.join(downloaded)}
+            return {'receipt': _('Файли не завантажено — деталі в журналі сервера.')}
+        raise UserError(_("Невідомий сценарій КЕП-підпису: %s") % mode)
+
+    def _store_signature(self, signature_b64):
+        """Зберегти P7S, підписаний у браузері."""
+        self.ensure_one()
+        if not signature_b64:
+            raise UserError(_("Signing failed - no signed content returned"))
+
+        filename = self.file_xml_name or 'document.xml'
+        signed_filename = filename.replace('.xml', '.p7s')
+        if not signed_filename.endswith('.p7s'):
+            signed_filename += '.p7s'
+
+        if isinstance(signature_b64, str):
+            signature_b64 = signature_b64.encode('ascii')
+
+        self.write({
+            'file_signed': signature_b64,
+            'file_signed_name': signed_filename,
+            'state': 'signed',
+        })
+
+    def _do_redownload_files(self, config, *, auth_signature):
         """Re-download PDF and XML files from Tax Cabinet."""
         self.ensure_one()
 
@@ -209,7 +191,8 @@ class L10nUaTaxDocumentCabinet(models.Model):
         downloaded = []
 
         try:
-            xml_content = config._api_download_document_xml(doc_year, external_id, doc_type)
+            xml_content = config._api_download_document_xml(
+                doc_year, external_id, doc_type, auth_signature=auth_signature)
             if xml_content:
                 self.write({
                     'file_xml': xml_content,
@@ -220,7 +203,8 @@ class L10nUaTaxDocumentCabinet(models.Model):
             _logger.warning("Could not download XML for %s: %s", external_id, str(e))
 
         try:
-            pdf_content = config._api_download_document_pdf(doc_year, external_id, doc_type)
+            pdf_content = config._api_download_document_pdf(
+                doc_year, external_id, doc_type, auth_signature=auth_signature)
             if pdf_content:
                 self.write({
                     'file_pdf': pdf_content,
@@ -235,25 +219,28 @@ class L10nUaTaxDocumentCabinet(models.Model):
     # ========== Sync methods ==========
 
     @api.model
-    def _sync_reported_documents(self, config, year, month):
+    def _sync_reported_documents(self, config, year, month, *, auth_signature):
         """Sync reported documents from cabinet."""
-        docs_data = config._api_get_document_list(year, month)
-        return self._process_api_documents(config, docs_data, 'reg_doc', year)
+        docs_data = config._api_get_document_list(year, month, auth_signature=auth_signature)
+        return self._process_api_documents(
+            config, docs_data, 'reg_doc', year, auth_signature=auth_signature)
 
     @api.model
-    def _sync_incoming_documents(self, config):
+    def _sync_incoming_documents(self, config, *, auth_signature):
         """Sync incoming correspondence from cabinet."""
-        docs_data = config._api_get_incoming_documents()
-        return self._process_api_documents(config, docs_data, 'incoming')
+        docs_data = config._api_get_incoming_documents(auth_signature=auth_signature)
+        return self._process_api_documents(
+            config, docs_data, 'incoming', auth_signature=auth_signature)
 
     @api.model
-    def _sync_sent_documents(self, config):
+    def _sync_sent_documents(self, config, *, auth_signature):
         """Sync sent correspondence from cabinet."""
-        docs_data = config._api_get_sent_documents()
-        return self._process_api_documents(config, docs_data, 'sent')
+        docs_data = config._api_get_sent_documents(auth_signature=auth_signature)
+        return self._process_api_documents(
+            config, docs_data, 'sent', auth_signature=auth_signature)
 
     @api.model
-    def _process_api_documents(self, config, docs_data, doc_type, year=None):
+    def _process_api_documents(self, config, docs_data, doc_type, year=None, *, auth_signature):
         """Process documents from API response."""
         if year is None:
             year = fields.Date.today().year
@@ -288,7 +275,8 @@ class L10nUaTaxDocumentCabinet(models.Model):
 
             if config.auto_download_xml and doc_type != 'sent':
                 try:
-                    xml_content = config._api_download_document_xml(doc_year, external_id, doc_type)
+                    xml_content = config._api_download_document_xml(
+                        doc_year, external_id, doc_type, auth_signature=auth_signature)
                     if xml_content:
                         doc.write({
                             'file_xml': xml_content,
@@ -299,7 +287,8 @@ class L10nUaTaxDocumentCabinet(models.Model):
 
             if config.auto_download_pdf:
                 try:
-                    pdf_content = config._api_download_document_pdf(doc_year, external_id, doc_type)
+                    pdf_content = config._api_download_document_pdf(
+                        doc_year, external_id, doc_type, auth_signature=auth_signature)
                     if pdf_content:
                         doc.write({
                             'file_pdf': pdf_content,

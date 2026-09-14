@@ -20,13 +20,21 @@ class L10nUaSignMixin(models.AbstractModel):
     _name = 'l10n_ua.sign.mixin'
     _description = 'КЕП Signing Mixin'
 
-    def action_kep_sign(self):
-        """Відкрити діалог клієнтського КЕП-підпису для цього запису."""
+    def action_kep_sign(self, mode=None):
+        """Відкрити діалог клієнтського КЕП-підпису для цього запису.
+
+        :param mode: мітка сценарію, якщо модель має кілька дій із підписом
+            (напр. ``'sign'`` / ``'submit'``). Діалог передає її обом викликам
+            контракту в контексті як ``kep_mode``.
+        """
         self.ensure_one()
+        params = {'model': self._name, 'res_id': self.id}
+        if mode:
+            params['mode'] = mode
         return {
             'type': 'ir.actions.client',
             'tag': 'l10n_ua_sign.kep_sign',
-            'params': {'model': self._name, 'res_id': self.id},
+            'params': params,
         }
 
     def kep_prepare_signing(self):
@@ -36,6 +44,8 @@ class L10nUaSignMixin(models.AbstractModel):
 
             {
               'auth_subject': <рядок для підпису заголовка Authorization|None>,
+              'submit_label': <підпис кнопки відправлення|None>,
+              'close_action': <дія після закриття діалогу|None>,
               'documents': [
                  {'name': 'doc',
                   'data_b64': <base64 даних для підпису>,
@@ -47,7 +57,8 @@ class L10nUaSignMixin(models.AbstractModel):
             }
 
         ``data_b64`` — base64 сирих байтів, які підписуються (для XML це вміст
-        файлу; браузер декодує перед підписом).
+        файлу; браузер декодує перед підписом). ``documents`` може бути
+        порожнім, якщо потрібен лише підпис ``auth_subject`` (авторизація).
         """
         raise UserError(_(
             'Модель %s не реалізує kep_prepare_signing().') % self._name)
