@@ -35,10 +35,23 @@ sha256sum euscp.js euscp.worker.js
 # 5ee4caab852b04b0272722ba2834f7589f0ad76c655247d3f52ee4b161aa4362  euscp.worker.js
 ```
 
-Список ЦСК — зі сторінки https://iit.com.ua/downloads, пункти
-«Користувач центру сертифікації ключів. Параметри взаємодії із сумісними ЦСК»
-(`CAs.json`) і «… Список сертифікатів сумісних ЦСК» (`CACertificates.p7b`).
-Обидва файли IIT оновлює, коли з'являються нові ЦСК — оновлюйте разом із ними.
+Список ЦСК — ті самі файли, з якими працює вхід до електронного кабінету ДПС:
+
+```bash
+mkdir -p data
+curl -fLo data/CAs.json           https://cabinet.tax.gov.ua/ws/api/crypto/public_sign/data/CAs.json
+curl -fLo data/CACertificates.p7b https://cabinet.tax.gov.ua/ws/api/crypto/public_sign/data/CACertificates.p7b
+```
+
+`CAs.json` там той самий, що на https://iit.com.ua/downloads, а от
+`CACertificates.p7b` **брати з кабінету, не з сайту IIT**: вереснева (2026)
+збірка з iit.com.ua того ж розміру, але іншої редакції, і бібліотека 1.4.7
+на ній падає в `Initialize` з кодом 49 — «Виникла помилка при роботі з
+файловим сховищем сертифікатів та СВС». Файли ЦСК оновлюються разом із
+появою нових ЦСК; після заміни перевірте ініціалізацію в браузері.
+
+Сервіс завантажує обидва файли в обхід HTTP-кешу (`cache: 'no-cache'`),
+тож нові файли підхоплюються без очищення кешу в користувачів.
 
 Опис API: `euscp/euscp.d.ts` у тому ж npm-пакеті та
 `EUSignJavaScriptD.doc` на сторінці завантажень IIT.
