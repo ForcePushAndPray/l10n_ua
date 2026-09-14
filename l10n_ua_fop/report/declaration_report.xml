@@ -147,7 +147,7 @@
                             <tr>
                                 <td class="text-center">4</td>
                                 <td>
-                                    Мінімальна заробітна плата
+                                    Мінімальна заробітна плата (на кінець періоду)
                                 </td>
                                 <td class="text-center">04</td>
                                 <td class="text-right">
@@ -167,7 +167,7 @@
                             <tr>
                                 <td class="text-center">6</td>
                                 <td>
-                                    База нарахування ЄСВ (р.04 × р.05)
+                                    База нарахування ЄСВ (сума мінімальних зарплат за місяці періоду)
                                 </td>
                                 <td class="text-center">06</td>
                                 <td class="text-right">
