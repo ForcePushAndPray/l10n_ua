@@ -20,8 +20,13 @@ PERIOD_F0103309 = {
     'year': ('5', '12', 'H4KV'),
 }
 
-# Military levy (військовий збір) rate for FOP single-tax payers, %.
+# Групи з фіксованими ЄП і військовим збором (1, 2); F0103309 — декларація 3 групи.
+FIXED_TAX_GROUPS = ('1', '2')
+# Військовий збір платників ЄП діє з 01.01.2025:
+# 3 група — % доходу; 1–2 групи — % мінімальної зарплати щомісяця.
+FOP_MILITARY_FROM_YEAR = 2025
 FOP_MILITARY_RATE = 1.0
+FOP_MILITARY_MIN_WAGE_SHARE = 10.0
 
 PERIOD_MONTHS = {
     'q1': 3,
@@ -149,6 +154,16 @@ class L10nUaFopDeclaration(models.Model):
         currency_field='currency_id',
     )
 
+    # Military levy
+    military_levy = fields.Monetary(
+        string='Військовий збір',
+        compute='_compute_taxes',
+        store=True,
+        currency_field='currency_id',
+        help='З 2025 року: 1–2 групи — 10 % мінімальної заробітної плати за кожен '
+             'місяць періоду; 3 група — 1 % доходу.',
+    )
+
     # Totals
     total_payable = fields.Monetary(
         string='Всього до сплати',
@@ -262,9 +277,10 @@ class L10nUaFopDeclaration(models.Model):
         for rec in self:
             months = PERIOD_MONTHS.get(rec.period, 0)
             group_code = rec.fop_group_id.code if rec.fop_group_id else ''
+            month_wages = rec._period_month_min_wages()
 
             # Single tax: groups 1,2 — fixed monthly; group 3 — % of income
-            if group_code in ('1', '2'):
+            if group_code in FIXED_TAX_GROUPS:
                 rec.single_tax = rec.monthly_tax_amount * months
             else:
                 rec.single_tax = (
@@ -274,12 +290,21 @@ class L10nUaFopDeclaration(models.Model):
 
             # ESV: мінімальний внесок щомісяця — від мінзарплати цього місяця
             # (у 2024 вона змінилась з квітня, тож «одна сума × місяці» хибна).
-            rec.esv_base = sum(rec._period_month_min_wages())
+            rec.esv_base = sum(month_wages)
             rec.esv_amount = (
                 rec.esv_base * (rec.esv_rate / 100) if rec.esv_base else 0
             )
 
-            rec.total_payable = rec.single_tax + rec.esv_amount
+            if not rec.year or rec.year < FOP_MILITARY_FROM_YEAR:
+                rec.military_levy = 0.0
+            elif group_code in FIXED_TAX_GROUPS:
+                rec.military_levy = round(
+                    sum(month_wages) * FOP_MILITARY_MIN_WAGE_SHARE / 100, 2)
+            else:
+                rec.military_levy = round(
+                    rec.total_income * FOP_MILITARY_RATE / 100, 2)
+
+            rec.total_payable = rec.single_tax + rec.esv_amount + rec.military_levy
 
     def action_calculate(self):
         """Розрахувати декларацію на основі книг обліку доходів."""
@@ -292,7 +317,7 @@ class L10nUaFopDeclaration(models.Model):
             # Довідник мінзарплати міг змінитися вже після створення декларації
             # (додали новий рік) — збережені суми треба перерахувати.
             for fname in ('min_wage', 'income_limit', 'income_limit_exceeded',
-                          'esv_base', 'esv_amount', 'total_payable'):
+                          'esv_base', 'esv_amount', 'military_levy', 'total_payable'):
                 self.env.add_to_compute(rec._fields[fname], rec)
 
             if not all(rec._period_month_min_wages()):
@@ -348,9 +373,20 @@ class L10nUaFopDeclaration(models.Model):
         """Відкрити КЕП-підпис і подання декларації ЄП до ДПС."""
         return self.action_kep_submit()
 
+    def _check_f0103309_group(self):
+        """F0103309 — декларація 3 групи; для 1–2 груп подається інша, річна форма."""
+        for rec in self:
+            if rec.fop_group_id.code in FIXED_TAX_GROUPS:
+                raise UserError(_(
+                    'Форма F0103309 — декларація платника єдиного податку 3 групи. '
+                    'ФОП %s групи подають окрему річну декларацію, формування якої '
+                    'ще не підтримується: подайте її в Електронному кабінеті ДПС.'
+                ) % rec.fop_group_id.code)
+
     # --- контракт l10n_ua.dps.submit.mixin ---
 
     def _dps_check_can_submit(self):
+        self._check_f0103309_group()
         for rec in self:
             if rec.state == 'draft':
                 raise UserError(_(
@@ -403,6 +439,7 @@ class L10nUaFopDeclaration(models.Model):
         l10n_ua_tax_F0103309, щоб не дублювати шаблон декларації.
         """
         self.ensure_one()
+        self._check_f0103309_group()
         if self.state == 'draft':
             raise UserError(
                 'Спершу розрахуйте декларацію (кнопка «Розрахувати»), '
@@ -418,9 +455,6 @@ class L10nUaFopDeclaration(models.Model):
             (link.kved_id.code, link.kved_id.name)
             for link in company.l10n_ua_kved_ids
         ]
-
-        # Військовий збір: 1% доходу (декларація не веде авансів, тож весь до сплати).
-        military_amount = self.total_income * FOP_MILITARY_RATE / 100
 
         vals = {
             'taxpayer_tin': company.vat or company.company_registry or '',
@@ -442,9 +476,10 @@ class L10nUaFopDeclaration(models.Model):
             'tax_amount': self.single_tax,
             'tax_paid_prev': 0.0,
             'tax_to_pay': self.single_tax,
-            'military_amount': military_amount,
+            # Декларація не веде авансів, тож увесь військовий збір — до сплати.
+            'military_amount': self.military_levy,
             'military_paid_prev': 0.0,
-            'military_to_pay': military_amount,
+            'military_to_pay': self.military_levy,
         }
 
         xml = self.env['l10n_ua.tax.document.wizard']._render_F0103309_xml(vals)
