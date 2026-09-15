@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class L10nUaFopGroup(models.Model):
@@ -25,8 +25,14 @@ class L10nUaFopGroup(models.Model):
         string='Ставка ЄП (%)',
         help='Ставка єдиного податку як відсоток від доходу',
     )
+    limit_min_wages = fields.Integer(
+        string='Ліміт доходу, мінімальних зарплат',
+        help='Граничний річний дохід групи в розмірах мінімальної заробітної плати, '
+             'установленої на 1 січня року (п. 291.4 ПКУ): 167 / 834 / 1167.',
+    )
     income_limit = fields.Monetary(
-        string='Ліміт річного доходу',
+        string='Ліміт річного доходу (поточний рік)',
+        compute='_compute_income_limit',
         currency_field='currency_id',
     )
     can_hire_employees = fields.Boolean(
@@ -46,3 +52,15 @@ class L10nUaFopGroup(models.Model):
     active = fields.Boolean(
         default=True,
     )
+
+    @api.depends('limit_min_wages')
+    def _compute_income_limit(self):
+        year = fields.Date.context_today(self).year
+        for group in self:
+            group.income_limit = group._get_income_limit(year)
+
+    def _get_income_limit(self, year):
+        """Граничний дохід групи за рік; 0.0, якщо мінзарплату на рік не задано."""
+        self.ensure_one()
+        min_wage = self.env['l10n_ua.min.wage']._get_amount(f'{year}-01-01')
+        return self.limit_min_wages * min_wage

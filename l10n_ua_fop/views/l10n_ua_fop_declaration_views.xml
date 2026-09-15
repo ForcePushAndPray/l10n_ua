@@ -72,6 +72,9 @@
                                     <field name="esv_base" widget="monetary"/>
                                     <field name="esv_amount" widget="monetary"/>
                                 </group>
+                                <group string="Військовий збір">
+                                    <field name="military_levy" widget="monetary"/>
+                                </group>
                             </group>
                             <group>
                                 <group>

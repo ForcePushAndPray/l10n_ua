@@ -39,8 +39,9 @@
                 </group>
 
                 <div class="alert alert-info" role="alert" invisible="mode != 'sync'">
-                    <p><strong>Authentication:</strong> Uses KEP (qualified electronic signature).</p>
-                    <p>Make sure KEP key file is uploaded in the configuration. Password will be requested when syncing.</p>
+                    <p><strong>Авторизація:</strong> КЕП-підпис коду платника.</p>
+                    <p>Після «Process» відкриється діалог підпису: оберіть файл-ключ і введіть пароль —
+                        підпис рахується у вашому браузері, ключ і пароль на сервер не передаються.</p>
                 </div>
 
                 <footer>

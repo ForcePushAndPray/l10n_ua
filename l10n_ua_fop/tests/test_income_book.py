@@ -26,7 +26,7 @@ class TestFopIncomeBook(TransactionCase):
                 'code': '3',
                 'name': '3 група (без ПДВ)',
                 'tax_rate': 5.0,
-                'income_limit': 9336000,
+                'limit_min_wages': 1167,
             })
 
     def _create_income_book(self, quarter='1', year=2025):
