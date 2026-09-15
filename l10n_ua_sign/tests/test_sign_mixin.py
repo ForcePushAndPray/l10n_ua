@@ -24,6 +24,11 @@ class TestSignMixin(TransactionCase):
         self.assertEqual(action['tag'], 'l10n_ua_sign.kep_sign')
         self.assertEqual(action['params']['model'], 'l10n_ua.sign.mixin')
         self.assertIn('res_id', action['params'])
+        self.assertNotIn('mode', action['params'])
+
+    def test_action_passes_mode(self):
+        action = self._rec().action_kep_sign(mode='submit')
+        self.assertEqual(action['params']['mode'], 'submit')
 
     def test_prepare_default_raises(self):
         with self.assertRaises(UserError):

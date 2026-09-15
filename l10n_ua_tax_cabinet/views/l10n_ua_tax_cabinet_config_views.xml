@@ -44,27 +44,18 @@
                         </group>
                     </group>
 
-                    <!-- KEP Authentication -->
-                    <group string="KEP Settings">
-                        <group>
-                            <field name="kep_key_file" filename="kep_key_filename"/>
-                            <field name="kep_key_filename" invisible="1"/>
-                        </group>
-                        <group>
-                            <field name="iit_lib_path" placeholder="/opt/iit/eu/sw"/>
-                            <field name="iit_cert_path" placeholder="/opt/iit/certificates"/>
-                        </group>
-                    </group>
-
                     <div class="alert alert-info" role="alert">
-                        <p><strong>KEP Authentication Setup:</strong></p>
-                        <ol>
-                            <li>Install IIT library: <code>sudo dpkg -i euswi.64.deb</code> (download from iit.com.ua)</li>
-                            <li>Place CA certificates in the certificates directory</li>
-                            <li>Place your user certificates (.cer files) in the same directory</li>
-                            <li>Upload your private key file (.dat, .jks, .pfx)</li>
-                        </ol>
-                        <p class="text-muted"><em>Note: Password is never stored. You will be prompted for it when needed.</em></p>
+                        <p><strong>КЕП-підпис у браузері</strong></p>
+                        <p>
+                            Ключ КЕП і пароль на сервері не зберігаються. Під час перевірки
+                            з'єднання, синхронізації чи подання ви обираєте файл-ключ і вводите
+                            пароль у діалозі підпису — підпис рахується у вашому браузері, як
+                            під час входу до електронного кабінету.
+                        </p>
+                        <p class="text-muted"><em>
+                            Бібліотека підпису IIT і список ЦСК мають лежати в
+                            <code>l10n_ua_sign/static/src/lib/euscp</code> (див. README там).
+                        </em></p>
                         <hr/>
                         <p><strong>Useful Links:</strong></p>
                         <ul>

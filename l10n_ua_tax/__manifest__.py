@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Tax',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Accounting/Localization',
     'summary': 'Ukrainian tax documents and reporting',
     'description': """
@@ -13,6 +13,7 @@ Ukrainian tax accounting base module providing:
 * Document types (F0103309, VAT, ESV, etc.)
 * Tax periods (month, quarter, year)
 * Budget classification codes (КБК)
+* Minimum wage by date (base for minimum ESV and single tax income limits)
 * Base taxes: PDFO 18%, Military tax 5%, ESV 22%, VAT 20%/7%/0%
 
 Workflow:
@@ -35,6 +36,7 @@ Requires l10n_ua_account_base module.
         'security/multicompany_security.xml',
         'data/account_tax_data.xml',
         'data/l10n_ua_budget_code_data.xml',
+        'data/l10n_ua_min_wage_data.xml',
         'data/l10n_ua_tax_document_type_data.xml',
         'views/account_tax_views.xml',
         'views/l10n_ua_tax_period_views.xml',
@@ -43,6 +45,7 @@ Requires l10n_ua_account_base module.
         'views/l10n_ua_budget_code_views.xml',
         'views/res_company_views.xml',
         'views/menu_views.xml',
+        'views/l10n_ua_min_wage_views.xml',
     ],
     'demo': [],
     'images': ['static/description/icon.png'],

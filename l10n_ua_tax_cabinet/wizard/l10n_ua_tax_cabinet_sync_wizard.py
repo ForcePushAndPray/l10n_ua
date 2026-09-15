@@ -11,6 +11,7 @@ _logger = logging.getLogger(__name__)
 
 class L10nUaTaxCabinetSyncWizard(models.TransientModel):
     _name = 'l10n_ua.tax.cabinet.sync.wizard'
+    _inherit = ['l10n_ua.sign.mixin']
     _description = 'Tax Cabinet Sync Wizard'
 
     mode = fields.Selection(
@@ -216,175 +217,48 @@ class L10nUaTaxCabinetSyncWizard(models.TransientModel):
             _logger.warning("Could not parse XML document: %s", str(e))
 
     def _process_sync(self):
-        """Open password wizard for sync - password is never stored."""
+        """Синхронізація: браузер підписує код платника, сервер забирає документи.
+
+        Ключ і пароль сервера не торкаються (#324).
+        """
         self.ensure_one()
 
         if not self.config_id:
             raise UserError(_("Please select or create a Tax Cabinet configuration first."))
 
-        # Validate KEP key is uploaded
-        if not self.config_id.kep_key_file:
-            raise UserError(_(
-                "KEP key not configured.\n\n"
-                "Please upload your private key file in the Tax Cabinet connection settings."
-            ))
+        return self.action_kep_sign(mode='sync')
 
-        # Map sync_type to password wizard sync_mode
-        sync_mode_map = {
-            'reported': 'reported',
-            'incoming': 'incoming',
-            'sent': 'sent',
-        }
+    # --- контракт l10n_ua.sign.mixin ---
 
-        # Open password wizard to request password
+    def kep_prepare_signing(self):
+        self.ensure_one()
+        if not self.config_id:
+            raise UserError(_("Please select or create a Tax Cabinet configuration first."))
         return {
-            'type': 'ir.actions.act_window',
-            'name': _('Enter KEP Password'),
-            'res_model': 'l10n_ua.tax.cabinet.password.wizard',
-            'view_mode': 'form',
-            'target': 'new',
-            'context': {
-                'default_config_id': self.config_id.id,
-                'default_action': 'sync',
-                'default_sync_mode': sync_mode_map.get(self.sync_type, 'all'),
-                'default_year': self.year,
-                'default_month': int(self.month) if self.month else fields.Date.today().month,
-            },
+            'auth_subject': self.config_id.taxpayer_code,
+            'submit_label': _('Синхронізувати'),
+            'documents': [],
+            'close_action': self.env['ir.actions.act_window']._for_xml_id(
+                'l10n_ua_tax.l10n_ua_tax_document_action'),
         }
 
-    def _sync_reported_documents(self):
-        """Sync reported documents from cabinet."""
-        docs_data = self.config_id._api_get_document_list(self.year, int(self.month))
-        return self._process_api_documents(docs_data, 'reg_doc')
-
-    def _sync_incoming_documents(self):
-        """Sync incoming correspondence from cabinet."""
-        docs_data = self.config_id._api_get_incoming_documents()
-        return self._process_api_documents(docs_data, 'incoming')
-
-    def _sync_sent_documents(self):
-        """Sync sent correspondence from cabinet."""
-        docs_data = self.config_id._api_get_sent_documents()
-        return self._process_api_documents(docs_data, 'sent')
-
-    def _process_api_documents(self, docs_data, doc_type):
-        """Process documents from API response."""
-        created_docs = self.env['l10n_ua.tax.document']
+    def kep_submit_signed(self, signed, auth_signature=None):
+        self.ensure_one()
+        config = self.config_id
         Document = self.env['l10n_ua.tax.document']
 
-        if not docs_data:
-            return created_docs
+        if self.sync_type == 'incoming':
+            count = Document._sync_incoming_documents(config, auth_signature=auth_signature)
+        elif self.sync_type == 'sent':
+            count = Document._sync_sent_documents(config, auth_signature=auth_signature)
+        else:
+            month = int(self.month or fields.Date.today().month)
+            count = Document._sync_reported_documents(
+                config, self.year, month, auth_signature=auth_signature)
 
-        # Handle paginated response from cabinet.tax.gov.ua
-        if isinstance(docs_data, dict):
-            docs_data = docs_data.get('content', docs_data.get('items', docs_data.get('data', [])))
-
-        for doc_item in docs_data:
-            # reg_doc uses 'codRegdoc', correspondence uses 'id'
-            external_id = str(doc_item.get('codRegdoc') or doc_item.get('id', ''))
-            if not external_id:
-                continue
-
-            # Check if already synced
-            existing = Document.search([
-                ('external_id', '=', external_id),
-                ('source', '=', 'cabinet'),
-            ], limit=1)
-
-            if existing:
-                _logger.debug("Document %s already synced", external_id)
-                continue
-
-            # Create document
-            doc_vals = self._prepare_api_document_vals(doc_item, doc_type)
-            doc = Document.create(doc_vals)
-            created_docs |= doc
-
-            # Download files
-            year = doc_vals.get('year', self.year)
-            if self.config_id.auto_download_xml and doc_type != 'sent':
-                try:
-                    xml_content = self.config_id._api_download_document_xml(year, external_id, doc_type)
-                    if xml_content:
-                        doc.write({
-                            'file_xml': xml_content,
-                            'file_xml_name': f"{external_id}.xml",
-                        })
-                except Exception as e:
-                    _logger.warning("Could not download XML for %s: %s", external_id, str(e))
-
-            if self.config_id.auto_download_pdf:
-                try:
-                    pdf_content = self.config_id._api_download_document_pdf(year, external_id, doc_type)
-                    if pdf_content:
-                        doc.write({
-                            'file_pdf': pdf_content,
-                            'file_pdf_name': f"{external_id}.pdf",
-                        })
-                except Exception as e:
-                    _logger.warning("Could not download PDF for %s: %s", external_id, str(e))
-
-            _logger.info("Synced tax document: %s", doc.name)
-
-        return created_docs
-
-    def _prepare_api_document_vals(self, doc_item, doc_type):
-        """Prepare document values from API response.
-
-        API fields:
-        - reg_doc: codRegdoc, docName, doc (code), nreg, dget, periodYear, periodMonth
-        - incoming: id, name/docName, cdoc, dateIn, periodYear
-        - sent: id, name/docName, cdoc, dateOut, periodYear
-        """
-        # Get document code
-        doc_code = doc_item.get('doc') or doc_item.get('cdoc') or 'OTHER'
-
-        # Try to find document type by code
-        doc_type_record = self.env['l10n_ua.tax.document.type'].search([
-            ('code', '=', doc_code)
-        ], limit=1)
-
-        if not doc_type_record:
-            doc_type_record = self.env.ref(
-                'l10n_ua_tax_cabinet.tax_document_type_other',
-                raise_if_not_found=False
-            ) or self.env['l10n_ua.tax.document.type'].search([], limit=1)
-
-        # Parse date - API uses 'dget' for reg_doc, 'dateIn'/'dateOut' for correspondence
-        doc_date_str = doc_item.get('dget') or doc_item.get('dateIn') or doc_item.get('dateOut')
-        doc_date = fields.Date.today()
-        if doc_date_str:
-            try:
-                # Format: "2024-04-09 20:37:54" or "2024-04-09"
-                doc_date = fields.Date.from_string(doc_date_str[:10])
-            except Exception:
-                pass
-
-        # Get external ID - reg_doc uses 'codRegdoc', correspondence uses 'id'
-        external_id = str(doc_item.get('codRegdoc') or doc_item.get('id', ''))
-
-        # Get document name
-        doc_name = doc_item.get('docName') or doc_item.get('name') or f'Document {external_id}'
-
-        # Get registration number
-        reg_num = doc_item.get('nreg') or doc_item.get('text') or ''
-        if reg_num:
-            reg_num = str(reg_num)
-
-        return {
-            'name': doc_name,
-            'document_type_id': doc_type_record.id if doc_type_record else False,
-            'document_number': reg_num,
-            'document_date': doc_date,
-            'year': doc_item.get('periodYear', self.year),
-            'period': str(doc_item.get('periodMonth', '')).zfill(2) if doc_item.get('periodMonth') else False,
-            'company_id': self.company_id.id,
-            'taxpayer_code': self.config_id.taxpayer_code,
-            'source': 'cabinet',
-            'external_id': external_id,
-            'sync_date': fields.Datetime.now(),
-            'state': 'accepted',  # Documents from cabinet are already accepted
-        }
+        # Службова позначка; писати саму конфігурацію має право лише менеджер.
+        config.sudo().last_sync_date = fields.Datetime.now()
+        return {'receipt': _('Імпортовано документів: %d') % count}
 
 
 class L10nUaTaxCabinetSyncWizardFile(models.TransientModel):
