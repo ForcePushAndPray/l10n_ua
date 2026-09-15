@@ -30,7 +30,7 @@ class TestFopDeclaration(TransactionCase):
                 'code': '3',
                 'name': '3 група (без ПДВ)',
                 'tax_rate': 5.0,
-                'income_limit': 9336000,
+                'limit_min_wages': 1167,
             })
 
     def _create_income_books(self, year=2025):
@@ -85,11 +85,11 @@ class TestFopDeclaration(TransactionCase):
         self.assertEqual(decl.single_tax, 15000)  # 300000 × 5%
 
     def test_declaration_esv_calculation(self):
-        """ESV = min_wage × months × 22%."""
+        """ЄСВ = мінзарплата з довідника (2025 — 8000) × місяці × 22%."""
         self._create_income_books()
         decl = self._create_declaration('year', 2025)
-        decl.write({'min_wage': 8000})
         decl.action_calculate()
+        self.assertEqual(decl.min_wage, 8000)
         # ESV for year: 8000 × 12 × 22% = 21,120
         self.assertEqual(decl.esv_base, 96000)  # 8000 × 12
         self.assertAlmostEqual(decl.esv_amount, 21120, places=2)
