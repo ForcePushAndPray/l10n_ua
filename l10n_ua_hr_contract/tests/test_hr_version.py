@@ -10,6 +10,7 @@ Tests cover:
 """
 
 from datetime import date
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 from .common import ContractTestCase
 
@@ -187,3 +188,31 @@ class TestHrVersion(ContractTestCase):
         # ст. 46 — відсторонення (не звільнення) → is_suspension=True
         art_46 = self.env.ref('l10n_ua_hr_contract.termination_reason_46')
         self.assertTrue(art_46.is_suspension)
+
+
+@tagged('post_install', '-at_install')
+class TestHrVersionTariffGrade(ContractTestCase):
+    """A version may only use a tariff grade of its own company."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.company_b = cls.env['res.company'].create({'name': 'Tariff Grade Test Company B'})
+        # 2025 only: each company's typical set starts in 2026.
+        common = {'name': 'Grade 3', 'grade': 3, 'coefficient': 1.18,
+                  'hourly_rate': 177.0, 'date_from': date(2025, 1, 1),
+                  'date_to': date(2025, 12, 31)}
+        Grade = cls.env['hr.tariff.grade']
+        cls.grade_a = Grade.create(dict(common, company_id=cls.company.id))
+        cls.grade_b = Grade.create(dict(common, company_id=cls.company_b.id))
+
+    def test_grade_of_own_company_is_accepted(self):
+        version = self._create_version(tariff_grade_id=self.grade_a.id)
+        self.assertEqual(version.tariff_grade_id, self.grade_a)
+
+    def test_grade_of_another_company_is_refused(self):
+        with self.assertRaises(UserError):
+            self._create_version(tariff_grade_id=self.grade_b.id)
+        version = self._create_version(tariff_grade_id=self.grade_a.id)
+        with self.assertRaises(UserError):
+            version.company_id = self.company_b

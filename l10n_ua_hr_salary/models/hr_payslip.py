@@ -841,16 +841,9 @@ class HrPayslip(models.Model):
 
                 if self.worked_hours > 0:                                   # Guard clause
                     min_hourly_wage = params.min_hourly_wage
-                    tariff = version.tariff_grade_id
-                    coef = tariff.coefficient or 1.0
-
-                    # Priority: hourly rate -> monthly rate -> 0
-                    if tariff.hourly_rate:
-                        hourly_rate = tariff.hourly_rate * coef
-                    elif tariff.min_salary and self.scheduled_hours > 0:
-                        hourly_rate = (tariff.min_salary * coef) / self.scheduled_hours
-                    else:
-                        hourly_rate = 0.0
+                    tariff = self._tariff_grade(version)
+                    # The grade rate is final: the progression is already in it.
+                    hourly_rate = tariff.hourly_rate
 
 
                     # Floor — never below statutory minimum hourly wage
@@ -865,7 +858,7 @@ class HrPayslip(models.Model):
                             'rate': hourly_rate,
                             'amount': amount,
                             'is_auto_generated': True,
-                            'notes': f'Тариф: {tariff.name} (коеф. {coef})',
+                            'notes': _('Tariff: %s', tariff.name),
                        })
             
             # monthly wage calculation
@@ -1054,24 +1047,31 @@ class HrPayslip(models.Model):
                 percent, base_month.strftime('%m.%Y')),
         })
 
-    def _base_hourly_rate(self, version, params):
-        """Базова годинна ставка для доплат.
+    def _tariff_grade(self, version):
+        """The version's tariff grade in force at the period end."""
+        self.ensure_one()
+        tariff = version.tariff_grade_id._l10n_ua_grade_on(self.date_to)
+        if not tariff.hourly_rate:
+            # Without this the statutory floor would quietly stand in for a
+            # rate nobody has entered.
+            raise UserError(_(
+                'Tariff grade %(grade)s of %(employee)s has no hourly rate in '
+                'force on %(date)s. Enter it in Tariff Grades.',
+                grade=version.tariff_grade_id.name,
+                employee=self.employee_id.name, date=self.date_to))
+        return tariff
 
-        Тарифна сітка — погодинна ставка × коефіцієнт; інакше — місячний
-        (з урахуванням work_rate) оклад, поділений на норму годин періоду.
-        Не нижче законодавчої мінімальної годинної ставки.
+    def _base_hourly_rate(self, version, params):
+        """Base hourly rate for surcharges.
+
+        On a tariff grade, the hourly rate of the grade in force; otherwise
+        the monthly salary (with work_rate) over the hours of the period.
+        Never below the statutory minimum hourly wage.
         """
         self.ensure_one()
         min_hourly = params.min_hourly_wage or 0.0
-        tariff = getattr(version, 'tariff_grade_id', False)
-        if tariff:
-            coef = tariff.coefficient or 1.0
-            if tariff.hourly_rate:
-                rate = tariff.hourly_rate * coef
-            elif tariff.min_salary and self.scheduled_hours > 0:
-                rate = (tariff.min_salary * coef) / self.scheduled_hours
-            else:
-                rate = 0.0
+        if getattr(version, 'tariff_grade_id', False):
+            rate = self._tariff_grade(version).hourly_rate
         elif self.scheduled_hours > 0:
             monthly = self._get_effective_wage(version) * (version.work_rate or 1.0)
             rate = monthly / self.scheduled_hours

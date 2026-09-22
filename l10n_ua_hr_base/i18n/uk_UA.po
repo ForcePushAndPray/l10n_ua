@@ -340,6 +340,7 @@ msgstr "Код Класифікатора адміністративно-тер�
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade__coefficient
+#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade_template__coefficient
 msgid "Coefficient"
 msgstr "Коефіцієнт"
 
@@ -374,6 +375,7 @@ msgstr "Компанії"
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee_list_report__company_id
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_employee_military_report__company_id
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__company_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade__company_id
 msgid "Company"
 msgstr "Компанія"
 
@@ -764,6 +766,7 @@ msgstr "Генерал"
 
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade__grade
+#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade_template__grade
 msgid "Grade"
 msgstr "Розряд"
 
@@ -1259,6 +1262,7 @@ msgstr "Термін моєї активності"
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_military_tcc__name
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_staffing_table__name
 #: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade__name
+#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade_template__name
 msgid "Name"
 msgstr "Назва"
 
@@ -1719,7 +1723,7 @@ msgid "Tariff Grades"
 msgstr "Тарифні розряди"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.constraint,message:l10n_ua_hr_base.constraint_hr_tariff_grade_grade_uniq
+#: model:ir.model.constraint,message:l10n_ua_hr_base.constraint_hr_tariff_grade_template_grade_uniq
 msgid "Tariff grade must be unique!"
 msgstr "Тарифний розряд повинен бути унікальним!"
 
@@ -2279,3 +2283,84 @@ msgstr ""
 "розрахунок зарплати, друкований штатний розпис — брало число за "
 "%(new)s, валюту %(company)s. Тепер валюта говорить те, що число "
 "означало завжди."
+
+#. module: l10n_ua_hr_base
+#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade__date_from
+msgid "Valid From"
+msgstr "Діє з"
+
+#. module: l10n_ua_hr_base
+#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade__date_to
+msgid "Valid To"
+msgstr "Діє по"
+
+#. module: l10n_ua_hr_base
+#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade__hourly_rate
+msgid "Hourly Rate"
+msgstr "Ставка за годину"
+
+#. module: l10n_ua_hr_base
+#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade__computed_rate
+msgid "Computed Rate"
+msgstr "Розрахункова ставка"
+
+#. module: l10n_ua_hr_base
+#: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_tariff_grade__computed_rate
+msgid ""
+"Hourly rate of grade 1 × coefficient (art. 96 of the Labour Code). The rate "
+"of the collective agreement may differ from it by rounding."
+msgstr ""
+"Ставка за годину I розряду × коефіцієнт (ст. 96 КЗпП). Ставка колективного "
+"договору може відрізнятися від неї через округлення."
+
+#. module: l10n_ua_hr_base
+#: model:ir.model,name:l10n_ua_hr_base.model_hr_tariff_grade_template
+msgid "Tariff Grade Template"
+msgstr "Типовий тарифний розряд"
+
+#. module: l10n_ua_hr_base
+#: model:ir.model.constraint,message:l10n_ua_hr_base.constraint_hr_tariff_grade_grade_uniq
+msgid "Tariff grade must be unique for a company and a start date!"
+msgstr "Тарифний розряд має бути унікальним для компанії та дати початку дії!"
+
+#. module: l10n_ua_hr_base
+#. odoo-python
+#: code:addons/l10n_ua_hr_base/models/hr_tariff_grade.py:0
+msgid "Tariff grade %(grade)s ends before it starts."
+msgstr "Тарифний розряд %(grade)s закінчується раніше, ніж починається."
+
+#. module: l10n_ua_hr_base
+#. odoo-python
+#: code:addons/l10n_ua_hr_base/models/hr_tariff_grade.py:0
+msgid ""
+"Tariff grade %(grade)s already has a period that overlaps the one starting "
+"on %(date)s. Close the previous period before opening a new one."
+msgstr ""
+"Тарифний розряд %(grade)s уже має період, що перетинається з періодом від "
+"%(date)s. Закрийте попередній період, перш ніж відкривати новий."
+
+#. module: l10n_ua_hr_base
+#. odoo-python
+#: code:addons/l10n_ua_hr_base/models/hr_tariff_grade.py:0
+msgid ""
+"Tariff grade %(grade)s is %(rate).2f per hour, %(monthly).2f a month, below "
+"the subsistence minimum for able-bodied persons of %(minimum).2f on 1 January "
+"%(year)s (art. 6 of the Law on Remuneration of Labour)."
+msgstr ""
+"Тарифний розряд %(grade)s становить %(rate).2f за годину, тобто %(monthly).2f "
+"на місяць, що нижче за прожитковий мінімум для працездатних осіб "
+"%(minimum).2f на 1 січня %(year)s року (ст. 6 ЗУ «Про оплату праці»)."
+
+#. module: l10n_ua_hr_base
+#: model:ir.model.fields,field_description:l10n_ua_hr_base.field_hr_tariff_grade__rate_diff
+msgid "Difference"
+msgstr "Відхилення"
+
+#. module: l10n_ua_hr_base
+#: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_tariff_grade__rate_diff
+msgid ""
+"Hourly rate minus computed rate. Any difference, down to a kopiyka, is "
+"highlighted."
+msgstr ""
+"Ставка за годину мінус розрахункова ставка. Будь-яке відхилення, навіть на "
+"копійку, підсвічується."

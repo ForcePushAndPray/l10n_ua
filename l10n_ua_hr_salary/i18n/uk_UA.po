@@ -3362,3 +3362,19 @@ msgstr "по"
 #: code:addons/l10n_ua_hr_salary/models/hr_payslip.py:0
 msgid "сторнування"
 msgstr "сторнування"
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_payslip.py:0
+msgid "Tariff: %s"
+msgstr "Тариф: %s"
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_payslip.py:0
+msgid ""
+"Tariff grade %(grade)s of %(employee)s has no hourly rate in force on "
+"%(date)s. Enter it in Tariff Grades."
+msgstr ""
+"Для тарифного розряду %(grade)s працівника %(employee)s на %(date)s немає "
+"чинної ставки за годину. Внесіть її в «Тарифні розряди»."

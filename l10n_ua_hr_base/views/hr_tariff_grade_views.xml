@@ -5,11 +5,17 @@
         <field name="name">hr.tariff.grade.tree</field>
         <field name="model">hr.tariff.grade</field>
         <field name="arch" type="xml">
-            <list>
+            <list decoration-warning="rate_diff != 0">
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
                 <field name="grade"/>
                 <field name="name"/>
                 <field name="coefficient"/>
-                <field name="min_salary"/>
+                <field name="computed_rate"/>
+                <field name="hourly_rate"/>
+                <field name="rate_diff" decoration-danger="rate_diff != 0"/>
+                <field name="currency_id" column_invisible="1"/>
             </list>
         </field>
     </record>
@@ -24,10 +30,15 @@
                         <group>
                             <field name="name"/>
                             <field name="grade"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
                         </group>
                         <group>
                             <field name="coefficient"/>
-                            <field name="min_salary"/>
+                            <field name="computed_rate"/>
+                            <field name="hourly_rate"/>
+                            <field name="rate_diff" decoration-danger="rate_diff != 0"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="active"/>
                         </group>

@@ -11,6 +11,7 @@ Tests cover:
 """
 
 from datetime import date
+from odoo.exceptions import UserError
 from odoo.tests import tagged
 from .common import SalaryTestCase
 
@@ -273,3 +274,62 @@ class TestPayslipMultiCompany(SalaryTestCase):
         # та сама компанія — нічого не скидається
         payslip._onchange_company_id()
         self.assertEqual(payslip.employee_id, self.employee)
+
+
+@tagged('post_install', '-at_install')
+class TestPayslipTariffGrade(SalaryTestCase):
+    """Payroll on tariff grades: the hourly rate in force, as agreed."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        # No statutory floor, so the accrual shows the tariff rate itself.
+        cls.psp_params.write({'min_hourly_wage': 0.0})
+        cls.salary_type = cls.env['hr.accrual.type'].search(
+            [('code', '=', 'SALARY')], limit=1) or cls.env['hr.accrual.type'].create(
+            {'name': 'Salary', 'code': 'SALARY', 'category': 'wage'})
+        # Two periods in 2025; the company's typical set starts in 2026.
+        Grade = cls.env['hr.tariff.grade']
+        common = {'name': 'Grade 6', 'grade': 6, 'coefficient': 1.45,
+                  'company_id': cls.company.id}
+        cls.grade6 = Grade.create(dict(common, hourly_rate=196.02,
+                                       date_from=date(2025, 1, 1),
+                                       date_to=date(2025, 6, 30)))
+        Grade.create(dict(common, hourly_rate=174.0, date_from=date(2025, 7, 1),
+                          date_to=date(2025, 12, 31)))
+        cls.version.tariff_grade_id = cls.grade6
+
+    def _salary(self, month):
+        slip = self.env['hr.payslip'].create({
+            'employee_id': self.employee.id, 'version_id': self.version.id,
+            'date_from': date(2025, month, 1), 'date_to': date(2025, month, 28),
+        })
+        slip.write({'scheduled_hours': 160.0, 'scheduled_days': 20,
+                    'worked_days': 20, 'worked_hours': 160.0})
+        slip._generate_accruals()
+        return slip.accrual_ids.filtered(
+            lambda a: a.accrual_type_id == self.salary_type)
+
+    def test_grade_rate_is_paid_without_coefficient(self):
+        # 196.02 is the agreed rate of grade 6; the progression is already in
+        # it, so it is not multiplied by 1.45 again.
+        salary = self._salary(6)
+        self.assertAlmostEqual(salary.rate, 196.02, places=2)
+        self.assertAlmostEqual(salary.amount, 196.02 * 160, places=2)
+
+    def test_rate_of_the_period_is_used(self):
+        # The version still points at the grade of the first half-year.
+        self.assertAlmostEqual(self._salary(8).rate, 174.0, places=2)
+
+    def test_no_rate_in_force_stops_payroll(self):
+        self.grade6.hourly_rate = 0.0
+        with self.assertRaises(UserError):
+            self._salary(6)
+        self.grade6.hourly_rate = 196.02
+        slip = self.env['hr.payslip'].create({
+            'employee_id': self.employee.id, 'version_id': self.version.id,
+            'date_from': date(2024, 12, 1), 'date_to': date(2024, 12, 31),
+        })
+        slip.write({'scheduled_hours': 160.0, 'worked_hours': 160.0})
+        with self.assertRaises(UserError):
+            slip._generate_accruals()
