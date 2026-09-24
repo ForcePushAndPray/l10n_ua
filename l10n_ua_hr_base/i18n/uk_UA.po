@@ -2307,11 +2307,13 @@ msgstr "Розрахункова ставка"
 #. module: l10n_ua_hr_base
 #: model:ir.model.fields,help:l10n_ua_hr_base.field_hr_tariff_grade__computed_rate
 msgid ""
-"Hourly rate of grade 1 × coefficient (art. 96 of the Labour Code). The rate "
-"of the collective agreement may differ from it by rounding."
+"Base tariff rate × the coefficient of this grade (art. 96 of the Labour "
+"Code), for comparison with the hourly rate of the collective agreement, "
+"which may differ from it, for example by rounding."
 msgstr ""
-"Ставка за годину I розряду × коефіцієнт (ст. 96 КЗпП). Ставка колективного "
-"договору може відрізнятися від неї через округлення."
+"Базова тарифна ставка × коефіцієнт цього розряду (ст. 96 КЗпП) — для "
+"порівняння зі ставкою за годину з колективного договору, яка може від неї "
+"відрізнятися, наприклад, через округлення."
 
 #. module: l10n_ua_hr_base
 #: model:ir.model,name:l10n_ua_hr_base.model_hr_tariff_grade_template

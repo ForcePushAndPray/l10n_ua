@@ -29,9 +29,10 @@ class HrTariffGrade(models.Model):
     computed_rate = fields.Monetary(
         string='Computed Rate', compute='_compute_computed_rate',
         currency_field='currency_id',
-        help='Hourly rate of grade 1 × coefficient (art. 96 of the Labour '
-             'Code). The rate of the collective agreement may differ from it '
-             'by rounding.')
+        help='Base tariff rate × the coefficient of this grade (art. 96 of '
+             'the Labour Code), for comparison with the hourly rate of the '
+             'collective agreement, which may differ from it, for example by '
+             'rounding.')
     rate_diff = fields.Monetary(
         string='Difference', compute='_compute_computed_rate',
         currency_field='currency_id',
