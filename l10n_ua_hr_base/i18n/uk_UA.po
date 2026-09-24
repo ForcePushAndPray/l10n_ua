@@ -2279,3 +2279,13 @@ msgstr ""
 "розрахунок зарплати, друкований штатний розпис — брало число за "
 "%(new)s, валюту %(company)s. Тепер валюта говорить те, що число "
 "означало завжди."
+
+#. module: l10n_ua_hr_base
+#. odoo-python
+#: code:addons/l10n_ua_hr_base/models/hr_department.py:0
+msgid ""
+"The head of department %(department)s must belong to its company "
+"%(company)s, but %(employee)s belongs to %(other)s."
+msgstr ""
+"Керівник підрозділу %(department)s має належати до його компанії "
+"%(company)s, але %(employee)s належить до %(other)s."

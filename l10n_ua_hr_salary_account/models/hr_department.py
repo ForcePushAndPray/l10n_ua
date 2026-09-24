@@ -1,4 +1,4 @@
-from odoo import fields, models
+from odoo import api, fields, models
 
 
 class HrDepartment(models.Model):
@@ -7,6 +7,7 @@ class HrDepartment(models.Model):
     salary_expense_account_id = fields.Many2one(
         'account.account',
         string='Рахунок витрат на ЗП',
+        check_company=True,
         help='Рахунок витрат для цього підрозділу (91/92/93/94). '
              'Якщо не вказано — використовується рахунок за замовчуванням '
              'з налаштувань зарплати.',
@@ -27,3 +28,9 @@ class HrDepartment(models.Model):
         default=lambda self: self.env['decimal.precision'].precision_get(
             'Percentage Analytic'),
     )
+
+    @api.constrains('company_id', 'salary_expense_account_id')
+    def _check_salary_expense_account_company(self):
+        # hr.department has no _check_company_auto, so check_company alone
+        # only narrows the form domain and does not block saving.
+        self._check_company(['salary_expense_account_id'])
