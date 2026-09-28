@@ -1,0 +1,149 @@
+"""Corporate API mode of the monobank provider (mocked API)."""
+
+from datetime import date, datetime
+from unittest.mock import MagicMock, patch
+from zoneinfo import ZoneInfo
+
+from odoo.exceptions import UserError
+from odoo.tests import TransactionCase, tagged
+
+MODULE = 'odoo.addons.l10n_ua_bank_mono.models.l10n_ua_bank_mono_config'
+OWN_IBAN = 'UA213223130000026007233566001'
+KYIV = ZoneInfo('Europe/Kyiv')
+
+
+def _response(status=200, json_data=None, headers=None):
+    resp = MagicMock()
+    resp.status_code = status
+    resp.text = str(json_data)
+    resp.json.return_value = json_data
+    resp.headers = headers or {}
+    return resp
+
+
+def _item(n, ts, **extra):
+    vals = {'id': f'op-{n}', 'time': ts, 'amount': 10000,
+            'description': f'Операція {n}', 'status': 'DONE'}
+    vals.update(extra)
+    return vals
+
+
+@tagged('post_install', '-at_install')
+class TestMonoCorporate(TransactionCase):
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        bank_account = cls.env['res.partner.bank'].create({
+            'acc_number': OWN_IBAN, 'partner_id': cls.env.company.partner_id.id})
+        uah = cls.env.ref('base.UAH')
+        uah.active = True
+        cls.journal = cls.env['account.journal'].create({
+            'name': 'mono corp', 'type': 'bank', 'code': 'MNC',
+            'bank_account_id': bank_account.id, 'currency_id': uah.id,
+            'company_id': cls.env.company.id})
+        cls.config = cls.env['l10n_ua.bank.sync.config'].create({
+            'name': 'mono corp', 'provider': 'mono',
+            'mono_api_type': 'corporate', 'mono_api_token': 'corp-token',
+            'journal_id': cls.journal.id,
+        })
+
+    def test_personal_is_the_default(self):
+        config = self.env['l10n_ua.bank.sync.config'].create({
+            'name': 'mono personal', 'provider': 'mono',
+            'journal_id': self.journal.id})
+        self.assertEqual(config.mono_api_type, 'personal')
+
+    def test_statement_goes_to_corporate_api_with_journal_iban(self):
+        with patch(f'{MODULE}.requests.get',
+                   return_value=_response(json_data=[])) as get:
+            self.config._fetch_from_bank(date(2026, 9, 1), date(2026, 9, 7))
+        url = get.call_args.args[0]
+        self.assertTrue(url.startswith(
+            f'https://corp-api.monobank.ua/ext/v1/statement/{OWN_IBAN}/'))
+        self.assertEqual(get.call_args.kwargs['headers']['x-token'], 'corp-token')
+        # Without an explicit limit the API returns only 10 operations.
+        self.assertEqual(get.call_args.kwargs['params'], {'limit': 500})
+
+    def test_period_bounds_are_kyiv_days(self):
+        with patch(f'{MODULE}.requests.get', return_value=_response(json_data=[])):
+            raw = self.config._fetch_from_bank(date(2026, 9, 1), date(2026, 9, 7))
+        self.assertEqual(
+            raw['from_ts'],
+            int(datetime(2026, 9, 1, tzinfo=KYIV).timestamp()))
+        self.assertEqual(
+            raw['to_ts'],
+            int(datetime(2026, 9, 7, 23, 59, 59, tzinfo=KYIV).timestamp()))
+
+    def test_statement_is_read_past_one_page(self):
+        start = int(datetime(2026, 9, 1, tzinfo=KYIV).timestamp())
+        first = [_item(n, start + n) for n in range(500)]
+        # The next page starts at the second of the last one received, so
+        # that one comes again and must not be counted twice.
+        second = [_item(499, start + 499)] + [
+            _item(n, start + n) for n in range(500, 520)]
+        with patch(f'{MODULE}.requests.get', side_effect=[
+                _response(json_data=first), _response(json_data=second)]) as get:
+            raw = self.config._fetch_from_bank(date(2026, 9, 1), date(2026, 9, 7))
+        self.assertEqual(get.call_count, 2)
+        self.assertIn(f'/{start + 499}/', get.call_args_list[1].args[0])
+        self.assertEqual(len(raw['response']), 520)
+
+    def test_only_done_operations_are_imported(self):
+        ts = int(datetime(2026, 9, 2, 12, tzinfo=KYIV).timestamp())
+        raw = {'api_type': 'corp_statement', 'response': [
+            _item(1, ts),
+            _item(2, ts, status='PENDING'),
+            _item(3, ts, status='DECLINED'),
+        ]}
+        transactions = self.config._parse_transactions(raw)
+        self.assertEqual([t['id'] for t in transactions], ['op-1'])
+        self.assertEqual(transactions[0]['amount'], 100.0)
+
+    def test_booking_date_is_the_kyiv_day_of_completion(self):
+        # 00:30 in Kyiv is still the previous day in UTC.
+        created = int(datetime(2026, 9, 2, 20, tzinfo=KYIV).timestamp())
+        completed = int(datetime(2026, 9, 3, 0, 30, tzinfo=KYIV).timestamp())
+        raw = {'api_type': 'corp_statement', 'response': [
+            _item(1, created, completedTime=completed, amount=-5050,
+                  counterName='ТОВ Приклад', counterEdrpou='21133352',
+                  counterIban='UA293220010000026000000000001')]}
+        trans = self.config._parse_transactions(raw)[0]
+        self.assertEqual(trans['date'], '2026-09-03')
+        self.assertEqual(trans['amount'], -50.5)
+        self.assertEqual(trans['partner_edrpou'], '21133352')
+
+    def test_rate_limit_names_the_wait(self):
+        with patch(f'{MODULE}.requests.get', return_value=_response(
+                429, {'errorCode': 'TOO_MANY'},
+                headers={'x-rate-limit-retry-after-seconds': '17'})):
+            with self.assertRaisesRegex(UserError, '17'):
+                self.config._fetch_from_bank(date(2026, 9, 1), date(2026, 9, 7))
+
+    def test_api_error_description_is_shown(self):
+        with patch(f'{MODULE}.requests.get', return_value=_response(
+                403, {'errorCode': 'FORBIDDEN', 'errorDescription': 'Токен недійсний'})):
+            with self.assertRaisesRegex(UserError, 'Токен недійсний'):
+                self.config._fetch_from_bank(date(2026, 9, 1), date(2026, 9, 7))
+
+    def test_connection_warns_when_journal_account_is_missing(self):
+        with patch(f'{MODULE}.requests.get', return_value=_response(json_data=[
+                {'iban': 'UA293220010000026002700000002', 'currency': 980,
+                 'balance': 42.0}])):
+            action = self.config.action_test_connection()
+        self.assertEqual(action['params']['type'], 'warning')
+
+        with patch(f'{MODULE}.requests.get', return_value=_response(json_data=[
+                {'iban': OWN_IBAN, 'currency': 980, 'balance': 42.0}])) as get:
+            action = self.config.action_test_connection()
+        self.assertEqual(action['params']['type'], 'success')
+        self.assertEqual(
+            get.call_args.args[0], 'https://corp-api.monobank.ua/ext/v1/accounts')
+
+    def test_personal_mode_keeps_personal_api(self):
+        self.config.mono_api_type = 'personal'
+        with patch(f'{MODULE}.requests.get', return_value=_response(
+                json_data={'name': 'ФОП', 'accounts': []})) as get:
+            self.config.action_test_connection()
+        self.assertEqual(
+            get.call_args.args[0], 'https://api.monobank.ua/personal/client-info')
