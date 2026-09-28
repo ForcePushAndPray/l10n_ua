@@ -253,3 +253,13 @@ msgstr "Підключено до корпоративного API monobank. Р�
 #: code:addons/l10n_ua_bank_mono/models/l10n_ua_bank_mono_config.py:0
 msgid "Warning"
 msgstr "Попередження"
+
+#. module: l10n_ua_bank_mono
+#. odoo-python
+#: code:addons/l10n_ua_bank_mono/models/l10n_ua_bank_mono_config.py:0
+msgid ""
+"monobank statement for %s has more than %s operations within one second and "
+"cannot be read page by page."
+msgstr ""
+"Виписка monobank за рахунком %s має понад %s операцій в межах однієї секунди, "
+"тож її неможливо прочитати посторінково."

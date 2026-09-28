@@ -1,6 +1,6 @@
 import logging
 import requests
-from datetime import datetime, time
+from datetime import datetime, time, timedelta
 from zoneinfo import ZoneInfo
 
 from odoo import api, fields, models, _
@@ -16,6 +16,11 @@ MONO_CORP_API_URL = "https://corp-api.monobank.ua"
 MONO_CORP_PAGE_SIZE = 500
 # A runaway loop guard: 200 pages is 100 000 operations in one period.
 MONO_CORP_MAX_PAGES = 200
+# How far before the period start operations are asked for, so that one
+# created earlier and booked inside the period is not missed.
+MONO_CORP_LOOKBACK_DAYS = 7
+# The longest span one statement request may cover.
+MONO_CORP_WINDOW_DAYS = 31
 KYIV_TZ = ZoneInfo('Europe/Kyiv')
 
 
@@ -322,18 +327,51 @@ class L10nUaBankSyncConfig(models.Model):
         return iban
 
     def _mono_corp_fetch_statement(self, date_from, date_to):
-        """Read the whole period, page by page.
+        """Read every operation booked in the period.
 
-        A page holds at most 500 operations. The bank's day is the Kyiv one,
-        so the period bounds are taken in Kyiv time, whatever the server's
-        timezone is.
+        The bank selects operations by the time they were *created*, while an
+        operation belongs to the statement of the day it was *booked*
+        (`completedTime`). The manual sync starts each period the day after
+        the previous one ended, so an operation created on the last day of a
+        period and booked the next day would be in neither: pending when the
+        first period was read, and before the start of the second. The query
+        therefore reaches `MONO_CORP_LOOKBACK_DAYS` back, and
+        `_mono_corp_parse` keeps what was booked inside the period.
+
+        The bank's day is the Kyiv one, whatever the server's timezone is.
         """
         iban = self._mono_corp_iban()
         from_ts = int(datetime.combine(date_from, time.min, tzinfo=KYIV_TZ).timestamp())
         to_ts = int(datetime.combine(date_to, time.max, tzinfo=KYIV_TZ).timestamp())
+        query_from = int(datetime.combine(
+            date_from - timedelta(days=MONO_CORP_LOOKBACK_DAYS), time.min,
+            tzinfo=KYIV_TZ).timestamp())
 
         items, seen = [], set()
-        low, high = from_ts, to_ts
+        # One request may not span more than the bank's 31 days; the
+        # look-back can push a full-length period past that.
+        window_start = query_from
+        while window_start <= to_ts:
+            window_end = min(window_start + MONO_CORP_WINDOW_DAYS * 86400 - 1, to_ts)
+            self._mono_corp_read_window(iban, window_start, window_end, items, seen)
+            window_start = window_end + 1
+
+        return {
+            'api_type': 'corp_statement',
+            'account_id': iban,
+            'from_ts': from_ts,
+            'to_ts': to_ts,
+            'response': items,
+        }
+
+    def _mono_corp_read_window(self, iban, low, high, items, seen):
+        """Append the operations created in [low, high], page by page.
+
+        A page holds at most 500 operations, ordered by time. The next page
+        continues past the last operation received, from whichever end of the
+        window the page started; the ones sharing its second come again and
+        are dropped by id.
+        """
         for _page in range(MONO_CORP_MAX_PAGES):
             page = self._mono_corp_request(
                 f"/ext/v1/statement/{iban}/{low}/{high}",
@@ -344,39 +382,40 @@ class L10nUaBankSyncConfig(models.Model):
             for item in new:
                 seen.add(item.get('id'))
                 items.append(item)
-            if len(page) < MONO_CORP_PAGE_SIZE or not new:
-                break
-            # Operations come ordered by time. Continue past the last one
-            # received, from whichever end of the period the page started;
-            # the ones sharing its second come again and are dropped above.
+            if len(page) < MONO_CORP_PAGE_SIZE:
+                return
+            if not new:
+                # A full page all within one second: moving the bound cannot
+                # get past it, and stopping here would lose the rest quietly.
+                raise UserError(_(
+                    "monobank statement for %s has more than %s operations "
+                    "within one second and cannot be read page by page."
+                ) % (iban, MONO_CORP_PAGE_SIZE))
             first, last = page[0].get('time') or 0, page[-1].get('time') or 0
             if first <= last:
                 low = last
             else:
                 high = last
-        else:
-            raise UserError(_(
-                "monobank statement for %s has more than %s pages; shorten the "
-                "period.") % (iban, MONO_CORP_MAX_PAGES))
-
-        return {
-            'api_type': 'corp_statement',
-            'account_id': iban,
-            'from_ts': from_ts,
-            'to_ts': to_ts,
-            'response': items,
-        }
+        raise UserError(_(
+            "monobank statement for %s has more than %s pages; shorten the "
+            "period.") % (iban, MONO_CORP_MAX_PAGES))
 
     def _mono_corp_parse(self, raw_data):
         """Corporate statement items into the bank_sync transaction dicts."""
+        from_ts, to_ts = raw_data.get('from_ts'), raw_data.get('to_ts')
         transactions = []
         for item in raw_data.get('response') or []:
             # PENDING is not booked yet and DECLINED never will be. A pending
-            # operation is picked up by a later sync once it is DONE: lines are
-            # deduplicated by id, so overlapping periods are safe.
+            # operation is picked up by a later sync once it is DONE: the
+            # query reaches back past the period start, and lines are
+            # deduplicated by id.
             if item.get('status', 'DONE') != 'DONE':
                 continue
             booked = item.get('completedTime') or item.get('time')
+            # Booked outside the period: it belongs to another statement,
+            # and was fetched only because of the look-back.
+            if booked and from_ts and to_ts and not from_ts <= booked <= to_ts:
+                continue
             transactions.append({
                 'id': item.get('id', ''),
                 'date': (datetime.fromtimestamp(booked, KYIV_TZ).strftime('%Y-%m-%d')

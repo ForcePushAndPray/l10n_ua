@@ -147,3 +147,44 @@ class TestMonoCorporate(TransactionCase):
             self.config.action_test_connection()
         self.assertEqual(
             get.call_args.args[0], 'https://api.monobank.ua/personal/client-info')
+
+    def test_pending_at_period_end_is_picked_up_by_the_next_period(self):
+        """Created on the last day of one sync, booked on the first day of
+        the next: the manual sync starts the next period the day after, so
+        the query has to reach back to find it."""
+        created = int(datetime(2026, 9, 7, 23, tzinfo=KYIV).timestamp())
+        booked = int(datetime(2026, 9, 8, 9, tzinfo=KYIV).timestamp())
+        item = _item(1, created, completedTime=booked)
+        with patch(f'{MODULE}.requests.get',
+                   return_value=_response(json_data=[item])) as get:
+            raw = self.config._fetch_from_bank(date(2026, 9, 8), date(2026, 9, 14))
+        query_from = int(get.call_args.args[0].split('/')[-2])
+        self.assertLessEqual(query_from, created)
+        self.assertEqual(
+            [t['id'] for t in self.config._parse_transactions(raw)], ['op-1'])
+
+    def test_operation_booked_before_the_period_is_left_to_its_own(self):
+        """The look-back fetches operations of the previous period too; they
+        belong to that statement and must not be imported twice over here."""
+        booked = int(datetime(2026, 9, 7, 12, tzinfo=KYIV).timestamp())
+        with patch(f'{MODULE}.requests.get', return_value=_response(
+                json_data=[_item(1, booked)])):
+            raw = self.config._fetch_from_bank(date(2026, 9, 8), date(2026, 9, 14))
+        self.assertEqual(self.config._parse_transactions(raw), [])
+
+    def test_long_period_is_split_into_31_day_requests(self):
+        with patch(f'{MODULE}.requests.get',
+                   return_value=_response(json_data=[])) as get:
+            self.config._fetch_from_bank(date(2026, 8, 1), date(2026, 8, 31))
+        self.assertEqual(get.call_count, 2)
+        for call in get.call_args_list:
+            low, high = map(int, call.args[0].split('/')[-2:])
+            self.assertLessEqual(high - low, 31 * 86400)
+
+    def test_a_full_page_within_one_second_is_not_lost_quietly(self):
+        ts = int(datetime(2026, 9, 2, 12, tzinfo=KYIV).timestamp())
+        page = [_item(n, ts) for n in range(500)]
+        with patch(f'{MODULE}.requests.get', side_effect=[
+                _response(json_data=page), _response(json_data=page)]):
+            with self.assertRaisesRegex(UserError, 'one second'):
+                self.config._fetch_from_bank(date(2026, 9, 1), date(2026, 9, 7))
