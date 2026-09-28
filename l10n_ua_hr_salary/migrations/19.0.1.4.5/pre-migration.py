@@ -9,6 +9,11 @@ The xmlids of a dropped shared record go with it. The xmlids of the seeded
 records bound to a company are removed by the post-migration, after the
 19.0.1.4.4 post-migration has used them.
 
+A company that had no record of its own is left with nothing but those copies,
+and the data file adds only periods newer than a company's latest record — so
+its earlier periods would never come. Such companies are noted here, before
+the split makes them indistinguishable, for the post-migration to fill in.
+
 Done payslips of companies that had no parameters of their own are logged:
 they were computed on another company's parameters or on the constants
 hardcoded in the payslip code, and should be reviewed.
@@ -17,6 +22,8 @@ hardcoded in the payslip code, and should be reviewed.
 import logging
 
 _logger = logging.getLogger(__name__)
+
+SEED_KEY = 'l10n_ua_hr_salary.migration_1_4_5_companies_to_seed'
 
 
 def migrate(cr, version):
@@ -51,6 +58,17 @@ def migrate(cr, version):
            AND column_name NOT IN ('id', 'company_id')
     """)
     columns = [f'"{name}"' for (name,) in cr.fetchall()]
+
+    # Handed over to the post-migration through a system parameter: the two
+    # run in the same update, and nothing else survives between them.
+    cr.execute("""
+        INSERT INTO ir_config_parameter (key, value)
+        SELECT %s, coalesce(string_agg(c.id::text, ',' ORDER BY c.id), '')
+          FROM res_company c
+         WHERE NOT EXISTS (SELECT 1 FROM hr_psp_parameters p
+                            WHERE p.company_id = c.id)
+        ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value
+    """, (SEED_KEY,))
 
     cr.execute(f"""
         INSERT INTO hr_psp_parameters ({', '.join(columns)}, company_id)

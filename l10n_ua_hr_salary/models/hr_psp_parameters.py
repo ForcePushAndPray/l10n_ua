@@ -177,7 +177,7 @@ class HrPspParameters(models.Model):
         ], order='date_from desc', limit=1)
 
     @api.model
-    def _seed_company_parameters(self, companies=None):
+    def _seed_company_parameters(self, companies=None, fill_gaps=False):
         """Create each company's records from the statutory reference.
 
         All companies are treated alike: records are built from
@@ -186,7 +186,15 @@ class HrPspParameters(models.Model):
         every period; otherwise only periods newer than its latest record are
         added. Existing records are never touched, and a period the company's
         administrator deleted is not brought back.
+
+        `fill_gaps` adds every period the company has no record for, older
+        ones included. It is for the 19.0.1.4.5 migration only: a company
+        that had nothing of its own but shared records is handed copies of
+        them before this runs, and those copies must not stand for a history
+        the company never had.
         """
+        if fill_gaps:
+            return self._seed_missing_periods(companies)
         Params = self.sudo().with_context(active_test=False)
         if companies is None:
             companies = self.env['res.company'].sudo().with_context(
@@ -202,6 +210,22 @@ class HrPspParameters(models.Model):
             if not latest.get(company) or template.date_from > latest[company]
         ]
         return Params.create(vals_list)
+
+    @api.model
+    def _seed_missing_periods(self, companies):
+        """Every statutory period a company has no record for, by start date."""
+        Params = self.sudo().with_context(active_test=False)
+        templates = self.env['hr.psp.parameters.template'].sudo().search([])
+        existing = {
+            (params.company_id.id, params.date_from)
+            for params in Params.search([('company_id', 'in', companies.ids)])
+        }
+        return Params.create([
+            template._company_values(company)
+            for company in companies
+            for template in templates
+            if (company.id, template.date_from) not in existing
+        ])
 
     _unique_year_date_from_company_id = models.Constraint(
         'unique(year, date_from, company_id)',

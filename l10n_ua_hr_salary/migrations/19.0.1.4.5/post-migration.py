@@ -9,6 +9,9 @@ the statutory periods for every company without parameters. What is left:
   records are tied to the module data;
 - the record rule, under noupdate, still lets records without a company
   through;
+- companies that had no record of their own before the split got only
+  copies of the shared records, and the data file did not add the earlier
+  periods; they are filled in now from the statutory reference;
 - open payslips (draft / verify) get PSP and taxes recomputed, since the
   parameters they are computed on may have changed. Done payslips are paid
   documents and stay as they are.
@@ -20,6 +23,7 @@ from odoo import SUPERUSER_ID, api
 
 _logger = logging.getLogger(__name__)
 
+SEED_KEY = 'l10n_ua_hr_salary.migration_1_4_5_companies_to_seed'
 OLD_RULE_DOMAIN = "['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]"
 PAYSLIP_RECOMPUTED_FIELDS = (
     'psp_eligible', 'psp_amount', 'pdfo_amount', 'military_tax_amount',
@@ -44,6 +48,22 @@ def migrate(cr, version):
         ('model', '=', 'hr.psp.parameters'),
     ])
     xmlids.unlink()
+
+    # Read and dropped with SQL, like the pre-migration wrote it: the
+    # get_param cache knows nothing of a row inserted behind its back.
+    cr.execute("DELETE FROM ir_config_parameter WHERE key = %s RETURNING value",
+               (SEED_KEY,))
+    row = cr.fetchone()
+    if row:
+        companies = env['res.company'].browse(
+            int(company_id) for company_id in (row[0] or '').split(',') if company_id
+        ).exists()
+        seeded = env['hr.psp.parameters']._seed_company_parameters(
+            companies, fill_gaps=True)
+        _logger.info(
+            'l10n_ua_hr_salary 19.0.1.4.5: %s statutory period(s) added to '
+            'companies %s that had only shared PSP parameters',
+            len(seeded), companies.ids)
 
     Payslip = env['hr.payslip']
     open_slips = Payslip.search([('state', 'in', ('draft', 'verify'))])

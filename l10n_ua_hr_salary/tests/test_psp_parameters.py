@@ -166,3 +166,29 @@ class TestPspParametersCompanyScope(TransactionCase):
         Params = self.env['hr.psp.parameters'].with_company(self.company_b)
         self.assertEqual(Params.get_parameters(date(2026, 6, 1)),
                          self._own(self.company_b, '2026-01-01'))
+
+    def test_fill_gaps_restores_history_behind_a_later_record(self):
+        """The 19.0.1.4.5 migration hands a company without records of its
+        own copies of the shared ones; if those are for a later period, the
+        ordinary seeding sees them as the company's latest and adds nothing
+        before them. Filling the gaps gives the company its whole history."""
+        company_c = self.env['res.company'].create({'name': 'PSP Scope C'})
+        self.Params.search([('company_id', '=', company_c.id)]).unlink()
+        later = self.Params.create({
+            'year': 2031, 'date_from': date(2031, 1, 1),
+            'subsistence_minimum': 4000, 'min_wage': 10000,
+            'company_id': company_c.id,
+        })
+
+        self.Params._seed_company_parameters(company_c)
+        self.assertEqual(
+            self.Params.search([('company_id', '=', company_c.id)]), later)
+
+        self.Params._seed_company_parameters(company_c, fill_gaps=True)
+        for template in self.templates:
+            with self.subTest(period=template.date_from):
+                self.assertEqual(len(self._own(company_c, template.date_from)), 1)
+        self.assertEqual(later.min_wage, 10000)
+        # Idempotent: a second run finds nothing missing.
+        self.assertFalse(
+            self.Params._seed_company_parameters(company_c, fill_gaps=True))
