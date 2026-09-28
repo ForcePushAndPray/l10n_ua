@@ -263,3 +263,13 @@ msgid ""
 msgstr ""
 "Виписка monobank за рахунком %s має понад %s операцій в межах однієї секунди, "
 "тож її неможливо прочитати посторінково."
+
+#. module: l10n_ua_bank_mono
+#. odoo-python
+#: code:addons/l10n_ua_bank_mono/models/l10n_ua_bank_mono_config.py:0
+msgid ""
+"%s is not an IBAN. The corporate API reads accounts by IBAN: enter it, or "
+"clear the field to use the journal's account."
+msgstr ""
+"%s — не IBAN. Корпоративний API читає рахунки за IBAN: вкажіть його або "
+"очистіть поле, щоб використати рахунок журналу."

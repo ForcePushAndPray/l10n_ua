@@ -1,6 +1,8 @@
 import logging
+import re
 import requests
 from datetime import datetime, time, timedelta
+from time import sleep
 from zoneinfo import ZoneInfo
 
 from odoo import api, fields, models, _
@@ -21,6 +23,9 @@ MONO_CORP_MAX_PAGES = 200
 MONO_CORP_LOOKBACK_DAYS = 7
 # The longest span one statement request may cover.
 MONO_CORP_WINDOW_DAYS = 31
+# The longest a request sits out the rate limit before giving up, in seconds.
+MONO_CORP_MAX_RATE_WAIT = 120
+IBAN_UA_RE = re.compile(r'^UA\d{27}$')
 KYIV_TZ = ZoneInfo('Europe/Kyiv')
 
 
@@ -291,19 +296,31 @@ class L10nUaBankSyncConfig(models.Model):
             'x-token': self.mono_api_token,
             'accept': 'application/json',
         }
-        try:
-            response = requests.get(url, headers=headers, params=params, timeout=60)
-        except requests.exceptions.RequestException as e:
-            raise UserError(_("Connection failed: %s") % str(e))
+        waited = 0
+        while True:
+            try:
+                response = requests.get(url, headers=headers, params=params, timeout=60)
+            except requests.exceptions.RequestException as e:
+                raise UserError(_("Connection failed: %s") % str(e))
 
-        _logger.info("monobank corporate: %s -> %s", path, response.status_code)
+            _logger.info("monobank corporate: %s -> %s", path, response.status_code)
 
-        if response.status_code == 429:
-            # Limits are per company; the bank says when the next call may go.
-            retry_after = response.headers.get('x-rate-limit-retry-after-seconds')
-            raise UserError(_(
-                "monobank API rate limit exceeded. Retry in %s seconds."
-            ) % (retry_after or 60))
+            if response.status_code != 429:
+                break
+            # Limits are per company, and the bank says when the next call may
+            # go. A statement takes several calls, so a short wait is sat out
+            # rather than failing the whole period; a long one is reported.
+            try:
+                retry_after = int(response.headers.get('x-rate-limit-retry-after-seconds') or 60)
+            except (TypeError, ValueError):
+                retry_after = 60
+            if waited + retry_after > MONO_CORP_MAX_RATE_WAIT:
+                raise UserError(_(
+                    "monobank API rate limit exceeded. Retry in %s seconds."
+                ) % retry_after)
+            _logger.info("monobank corporate: rate limited, retrying in %ss", retry_after)
+            sleep(retry_after)
+            waited += retry_after
 
         if response.status_code != 200:
             try:
@@ -318,8 +335,15 @@ class L10nUaBankSyncConfig(models.Model):
     def _mono_corp_iban(self):
         """IBAN of the account to read: set explicitly, or the journal's."""
         self.ensure_one()
-        iban = (self.mono_account_id or self.bank_account_id.acc_number or '')
-        iban = iban.replace(' ', '').upper()
+        iban = (self.mono_account_id or '').replace(' ', '').upper()
+        if iban and not IBAN_UA_RE.match(iban):
+            # An account ID of the personal API, left over from before the
+            # switch, is not an IBAN; sending it would only return a 404.
+            raise UserError(_(
+                "%s is not an IBAN. The corporate API reads accounts by IBAN: "
+                "enter it, or clear the field to use the journal's account."
+            ) % self.mono_account_id)
+        iban = iban or (self.bank_account_id.acc_number or '').replace(' ', '').upper()
         if not iban:
             raise UserError(_(
                 "Set the account IBAN or a bank account on the journal to read "
@@ -434,11 +458,16 @@ class L10nUaBankSyncConfig(models.Model):
             [('iso_numeric', '=', int(code or 0))], limit=1)
         return currency.name or str(code)
 
-    def _mono_corp_test_connection(self):
+    def _mono_corp_accounts(self):
         accounts = self._mono_corp_request('/ext/v1/accounts')
+        if not isinstance(accounts, list):
+            raise UserError(_("monobank API error: %s") % accounts)
+        return accounts
+
+    def _mono_corp_test_connection(self):
+        accounts = self._mono_corp_accounts()
         ibans = [acc.get('iban') for acc in accounts]
-        own = (self.mono_account_id or self.bank_account_id.acc_number or '')
-        own = own.replace(' ', '').upper()
+        own = self._mono_corp_iban()
         if own and own not in ibans:
             message = _(
                 "Connected to monobank corporate API, but account %(iban)s is "
@@ -461,7 +490,7 @@ class L10nUaBankSyncConfig(models.Model):
         }
 
     def _mono_corp_fetch_accounts(self):
-        accounts = self._mono_corp_request('/ext/v1/accounts')
+        accounts = self._mono_corp_accounts()
         # Corporate balances come in currency units, not in kopecks.
         account_info = [
             f"IBAN: {acc.get('iban')} | "

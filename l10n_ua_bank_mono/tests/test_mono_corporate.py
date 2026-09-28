@@ -113,12 +113,33 @@ class TestMonoCorporate(TransactionCase):
         self.assertEqual(trans['amount'], -50.5)
         self.assertEqual(trans['partner_edrpou'], '21133352')
 
-    def test_rate_limit_names_the_wait(self):
-        with patch(f'{MODULE}.requests.get', return_value=_response(
-                429, {'errorCode': 'TOO_MANY'},
-                headers={'x-rate-limit-retry-after-seconds': '17'})):
-            with self.assertRaisesRegex(UserError, '17'):
+    def test_short_rate_limit_is_waited_out(self):
+        """A statement takes several calls; a short wait must not fail it."""
+        limited = _response(429, {'errorCode': 'TOO_MANY'},
+                            headers={'x-rate-limit-retry-after-seconds': '17'})
+        with patch(f'{MODULE}.sleep') as sleep, \
+                patch(f'{MODULE}.requests.get',
+                      side_effect=[limited, _response(json_data=[])]) as get:
+            self.config._fetch_from_bank(date(2026, 9, 1), date(2026, 9, 7))
+        sleep.assert_called_once_with(17)
+        self.assertEqual(get.call_count, 2)
+
+    def test_long_rate_limit_names_the_wait(self):
+        with patch(f'{MODULE}.sleep') as sleep, \
+                patch(f'{MODULE}.requests.get', return_value=_response(
+                    429, {'errorCode': 'TOO_MANY'},
+                    headers={'x-rate-limit-retry-after-seconds': '600'})):
+            with self.assertRaisesRegex(UserError, '600'):
                 self.config._fetch_from_bank(date(2026, 9, 1), date(2026, 9, 7))
+        sleep.assert_not_called()
+
+    def test_personal_account_id_is_not_sent_as_iban(self):
+        """Left over from the personal API before the switch."""
+        self.config.mono_account_id = 'kKGVoZuHWzqVoZuH'
+        with patch(f'{MODULE}.requests.get') as get:
+            with self.assertRaisesRegex(UserError, 'not an IBAN'):
+                self.config._fetch_from_bank(date(2026, 9, 1), date(2026, 9, 7))
+        get.assert_not_called()
 
     def test_api_error_description_is_shown(self):
         with patch(f'{MODULE}.requests.get', return_value=_response(
