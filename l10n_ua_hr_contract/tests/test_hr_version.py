@@ -198,11 +198,17 @@ class TestHrVersionTariffGrade(ContractTestCase):
     def setUpClass(cls):
         super().setUpClass()
         cls.company_b = cls.env['res.company'].create({'name': 'Tariff Grade Test Company B'})
-        # 2025 only: each company's typical set starts in 2026.
         common = {'name': 'Grade 3', 'grade': 3, 'coefficient': 1.18,
                   'hourly_rate': 177.0, 'date_from': date(2025, 1, 1),
                   'date_to': date(2025, 12, 31)}
         Grade = cls.env['hr.tariff.grade']
+        # Whatever the companies already have for grade 3 — the typical set of
+        # a fresh database or the grades a migration gave them — is archived,
+        # so the periods below do not overlap it.
+        Grade.search([
+            ('company_id', 'in', (cls.company | cls.company_b).ids),
+            ('grade', '=', 3),
+        ]).action_archive()
         cls.grade_a = Grade.create(dict(common, company_id=cls.company.id))
         cls.grade_b = Grade.create(dict(common, company_id=cls.company_b.id))
 

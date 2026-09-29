@@ -288,8 +288,13 @@ class TestPayslipTariffGrade(SalaryTestCase):
         cls.salary_type = cls.env['hr.accrual.type'].search(
             [('code', '=', 'SALARY')], limit=1) or cls.env['hr.accrual.type'].create(
             {'name': 'Salary', 'code': 'SALARY', 'category': 'wage'})
-        # Two periods in 2025; the company's typical set starts in 2026.
+        # Two periods in 2025. Whatever the company already has for grade 6 —
+        # the typical set of a fresh database or the grades a migration gave
+        # it — is closed before them, so the periods do not overlap.
         Grade = cls.env['hr.tariff.grade']
+        Grade.search([
+            ('company_id', '=', cls.company.id), ('grade', '=', 6),
+        ]).action_archive()
         common = {'name': 'Grade 6', 'grade': 6, 'coefficient': 1.45,
                   'company_id': cls.company.id}
         cls.grade6 = Grade.create(dict(common, hourly_rate=196.02,
@@ -333,3 +338,42 @@ class TestPayslipTariffGrade(SalaryTestCase):
         slip.write({'scheduled_hours': 160.0, 'worked_hours': 160.0})
         with self.assertRaises(UserError):
             slip._generate_accruals()
+
+
+@tagged('post_install', '-at_install')
+class TestPayslipTaxRates(SalaryTestCase):
+    """Tax rates come from the payroll parameters of the payslip's company."""
+
+    def _payslip(self, **values):
+        vals = {
+            'employee_id': self.employee.id,
+            'company_id': self.company.id,
+            'date_from': date(2025, 6, 1),
+            'date_to': date(2025, 6, 30),
+        }
+        vals.update(values)
+        return self.env['hr.payslip'].create(vals)
+
+    def test_rates_come_from_company_parameters(self):
+        self.psp_params.write({
+            'pdfo_rate': 17.0, 'military_tax_rate': 4.0, 'esv_rate': 21.0})
+        payslip = self._payslip()
+        self.assertAlmostEqual(payslip.pdfo_rate, 17.0)
+        self.assertAlmostEqual(payslip.military_tax_rate, 4.0)
+        self.assertAlmostEqual(payslip.esv_rate, 21.0)
+
+    def test_closed_payslip_keeps_its_rates(self):
+        payslip = self._payslip()
+        payslip.action_compute_sheet()
+        payslip.action_payslip_verify()
+        rate = payslip.pdfo_rate
+        self.psp_params.pdfo_rate = 10.0
+        payslip.date_to = date(2025, 6, 29)
+        self.assertAlmostEqual(payslip.pdfo_rate, rate)
+
+    def test_period_without_parameters_leaves_rates_at_zero(self):
+        payslip = self._payslip(
+            date_from=date(2020, 6, 1), date_to=date(2020, 6, 30))
+        self.assertAlmostEqual(payslip.pdfo_rate, 0.0)
+        with self.assertRaises(UserError):
+            payslip.action_payslip_verify()

@@ -28,6 +28,12 @@ class TestTariffGrade(TransactionCase):
             **({'hourly_rate': rate} if rate is not None else {}),
         } for grade, coef, rate in rates])
 
+    def _flush_tracking(self):
+        # Tracking values are written by the pre-commit callbacks, which a
+        # test transaction never reaches on its own.
+        self.env.flush_all()
+        self.env.cr.precommit.run()
+
     def test_computed_rate_is_first_grade_times_coefficient(self):
         grade1, grade3 = self._grades()
         self.assertAlmostEqual(grade3.computed_rate, 118.0)
@@ -64,6 +70,31 @@ class TestTariffGrade(TransactionCase):
         self.assertEqual(old3._l10n_ua_grade_on(date(2026, 7, 31)), new3)
         self.assertEqual(new3._l10n_ua_grade_on(date(2026, 3, 31)), old3)
         self.assertFalse(old3._l10n_ua_grade_on(date(2025, 12, 31)))
+
+    def test_periods_of_one_grade_leave_no_gap(self):
+        self._grades(date_to=date(2026, 6, 30))
+        with self.assertRaises(ValidationError):
+            self._grades(((3, 1.18, 130.0),), date_from=date(2026, 9, 1))
+        # The day after the previous period ends is accepted.
+        self._grades(((3, 1.18, 130.0),), date_from=date(2026, 7, 1))
+
+    def test_closing_a_period_too_early_leaves_no_gap(self):
+        old3 = self._grades(date_to=date(2026, 6, 30))[1]
+        self._grades(((3, 1.18, 130.0),), date_from=date(2026, 7, 1))
+        with self.assertRaises(ValidationError):
+            old3.date_to = date(2026, 5, 31)
+
+    def test_first_period_starts_on_any_date(self):
+        self._grades(date_from=date(2026, 5, 1))
+
+    def test_last_period_may_stay_closed(self):
+        # Giving up the tariff system is not a gap.
+        self._grades(date_to=date(2026, 6, 30))
+
+    def test_archived_period_is_not_a_neighbour(self):
+        old = self._grades(date_to=date(2026, 6, 30))
+        old.action_archive()
+        self._grades(((3, 1.18, 130.0),), date_from=date(2026, 9, 1))
 
     def test_periods_of_one_grade_do_not_overlap(self):
         self._grades(date_to=date(2026, 6, 30))
@@ -129,3 +160,138 @@ class TestTariffGrade(TransactionCase):
         grades.filtered(lambda g: g.grade == 1).hourly_rate = 103.66
         self.assertAlmostEqual(grades.filtered(lambda g: g.grade == 2).hourly_rate,
                                112.99, msg='the first-grade rate fills the others')
+
+    def test_grade_in_use_is_not_deleted(self):
+        grade3 = self._grades()[1]
+        self.env['hr.job'].create({
+            'name': 'Turner', 'company_id': self.company.id,
+            'tariff_grade_id': grade3.id,
+        })
+        with self.assertRaises(UserError):
+            grade3.unlink()
+        grade3.action_archive()
+        self.assertFalse(grade3._l10n_ua_grade_on(date(2026, 5, 1)),
+                         'an archived grade is in force nowhere')
+
+    def test_unused_grade_is_deleted(self):
+        self._grades()[1].unlink()
+
+    def test_name_shows_the_period_and_search_by_number(self):
+        grade3 = self._grades(date_to=date(2026, 6, 30))[1]
+        self.assertEqual(grade3.display_name, 'Grade 3 (2026-01-01 – 2026-06-30)')
+        open_ended = self._grades(date_from=date(2026, 7, 1))[1]
+        self.assertEqual(open_ended.display_name, 'Grade 3 (2026-07-01 –)')
+        found = self.Grade.name_search('3')
+        self.assertIn(grade3.id, [grade_id for grade_id, _name in found])
+
+    def test_currency_follows_the_company_not_the_switcher(self):
+        usd = self.env.ref('base.USD')
+        self.company_b.currency_id = usd
+        grade = self.Grade.with_company(self.company).create({
+            'name': 'Grade 1', 'grade': 1, 'coefficient': 1.0,
+            'hourly_rate': 100.0, 'company_id': self.company_b.id,
+            'date_from': date(2026, 1, 1),
+        })
+        self.assertEqual(grade.currency_id, usd)
+
+    def test_rate_changes_are_logged(self):
+        grade1 = self._grades()[0]
+        self._flush_tracking()
+        before = len(grade1.message_ids)
+        grade1.hourly_rate = 110.0
+        self._flush_tracking()
+        self.assertEqual(len(grade1.message_ids), before + 1)
+        tracked = grade1.message_ids[0].tracking_value_ids
+        self.assertEqual(tracked.field_id.name, 'hourly_rate')
+        self.assertAlmostEqual(tracked.old_value_float, 100.0)
+        self.assertAlmostEqual(tracked.new_value_float, 110.0)
+
+
+@tagged('post_install', '-at_install')
+class TestTariffGradeNewPeriod(TestTariffGrade):
+    """The wizard closes the grades in force and opens them anew."""
+
+    def _wizard(self, base=120.0, date_from=date(2026, 7, 1)):
+        return self.env['hr.tariff.grade.new.period'].create({
+            'company_id': self.company.id,
+            'date_from': date_from,
+            'base_rate': base,
+        })
+
+    def test_new_period_closes_the_old_one_without_a_gap(self):
+        grade1, grade3 = self._grades()
+        wizard = self._wizard()
+        wizard.action_apply()
+        self.assertEqual(grade1.date_to, date(2026, 6, 30))
+        self.assertEqual(grade3.date_to, date(2026, 6, 30))
+        new3 = grade3._l10n_ua_grade_on(date(2026, 7, 31))
+        self.assertNotEqual(new3, grade3)
+        self.assertEqual(new3.date_from, date(2026, 7, 1))
+        # A rate is in force on every date, the day of the change included.
+        self.assertTrue(grade3._l10n_ua_grade_on(date(2026, 6, 30)))
+
+    def test_rates_follow_the_new_first_grade_rate(self):
+        # Grade 3 is agreed at 122.00 while the formula gives 118.00.
+        grade1, grade3 = self._grades()
+        wizard = self._wizard()
+        lines = {line.grade: line for line in wizard.line_ids}
+        self.assertAlmostEqual(lines[1].new_rate, 120.0)
+        self.assertAlmostEqual(lines[3].new_rate, 122.0,
+                               msg='a rate agreed otherwise is carried over')
+        # A grade that followed the formula is recomputed from the new base.
+        grade3.hourly_rate = grade3.computed_rate
+        wizard = self._wizard()
+        self.assertAlmostEqual(
+            {line.grade: line for line in wizard.line_ids}[3].new_rate, 141.6)
+
+    def test_old_rates_stay_as_they_were(self):
+        grade1, grade3 = self._grades()
+        self._wizard().action_apply()
+        self.assertAlmostEqual(grade3.hourly_rate, 122.0)
+        self.assertAlmostEqual(
+            grade3._l10n_ua_grade_on(date(2026, 3, 31)).hourly_rate, 122.0)
+
+    def test_a_later_period_stops_the_wizard(self):
+        self._grades(date_to=date(2026, 6, 30))
+        self._grades(date_from=date(2026, 7, 1))
+        with self.assertRaises(UserError):
+            self._wizard(date_from=date(2026, 7, 1)).action_apply()
+
+    def test_company_without_grades_stops_the_wizard(self):
+        with self.assertRaises(UserError):
+            self._wizard().action_apply()
+
+    def test_new_rate_below_the_subsistence_minimum_is_refused(self):
+        if 'hr.psp.parameters' not in self.env:
+            self.skipTest('l10n_ua_hr_salary is not installed')
+        # The company already has the statutory parameters of 2026.
+        params = self.env['hr.psp.parameters'].get_parameters(
+            date(2026, 1, 1), self.company.id)
+        params.subsistence_minimum = 4000.0
+        self._grades()
+        with self.assertRaises(ValidationError):
+            self._wizard(base=1.0).action_apply()
+
+    def test_the_wizard_says_where_each_new_rate_comes_from(self):
+        # Grade 3 is agreed at 122.00 while the formula gives 118.00.
+        self._grades()
+        self._grades(((5, 1.36, None),))
+        sources = {line.grade: line.rate_source
+                   for line in self._wizard().line_ids}
+        self.assertEqual(sources[1], 'base')
+        self.assertEqual(sources[3], 'agreed',
+                         'a rate agreed apart from the formula is carried over')
+        self.assertEqual(sources[5], 'formula')
+
+    def test_the_wizard_saves_from_the_form(self):
+        # Form() goes through the view like the client does: a line field the
+        # view does not carry is lost on save.
+        self._grades()
+        with Form(self.env['hr.tariff.grade.new.period']) as form:
+            form.company_id = self.company
+            form.date_from = date(2026, 7, 1)
+            form.base_rate = 120.0
+        wizard = form.record
+        self.assertEqual(len(wizard.line_ids), 2)
+        self.assertTrue(all(wizard.line_ids.mapped('grade_id')))
+        wizard.action_apply()

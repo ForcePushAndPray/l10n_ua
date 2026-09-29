@@ -178,7 +178,10 @@ class HrPayslip(models.Model):
     )
     pdfo_rate = fields.Float(
         string='PDFO Rate (%)',
-        default=18.0
+        compute='_compute_tax_rates', store=True, readonly=False,
+        precompute=True,
+        help='Rate of the payroll parameters of the payslip company for the '
+             'period. Can be corrected by hand.'
     )
     pdfo_amount = fields.Monetary(
         string='PDFO Amount',
@@ -195,7 +198,10 @@ class HrPayslip(models.Model):
     )
     military_tax_rate = fields.Float(
         string='Military Tax Rate (%)',
-        default=5.0
+        compute='_compute_tax_rates', store=True, readonly=False,
+        precompute=True,
+        help='Rate of the payroll parameters of the payslip company for the '
+             'period. Can be corrected by hand.'
     )
     military_tax_amount = fields.Monetary(
         string='Military Tax Amount',
@@ -213,7 +219,10 @@ class HrPayslip(models.Model):
     )
     esv_rate = fields.Float(
         string='ESV Rate (%)',
-        default=22.0
+        compute='_compute_tax_rates', store=True, readonly=False,
+        precompute=True,
+        help='Rate of the payroll parameters of the payslip company for the '
+             'period. Can be corrected by hand.'
     )
     esv_amount = fields.Monetary(
         string='ESV Amount',
@@ -656,6 +665,27 @@ class HrPayslip(models.Model):
             else:
                 slip.salary_rate = 1.0
 
+    @api.depends('company_id', 'date_to')
+    def _compute_tax_rates(self):
+        """Tax rates of the company's payroll parameters for the period.
+
+        The rates used to be constants of the payslip itself, so the rates of
+        the parameters were read nowhere and changing them changed nothing.
+        A payslip that is no longer a draft keeps the rates it was computed
+        with; without parameters the rates stay at zero, and the payslip can
+        be neither computed nor verified (see _check_psp_parameters_known).
+        """
+        Params = self.env['hr.psp.parameters']
+        for payslip in self:
+            if payslip.state != 'draft':
+                continue
+            params = Params.get_parameters(
+                payslip.date_to, payslip.company_id.id) \
+                if payslip.date_to and payslip.company_id else None
+            payslip.pdfo_rate = params.pdfo_rate if params else 0.0
+            payslip.military_tax_rate = params.military_tax_rate if params else 0.0
+            payslip.esv_rate = params.esv_rate if params else 0.0
+
     def _check_psp_parameters_known(self, params):
         """Refuse to compute a payslip without payroll parameters.
 
@@ -1057,7 +1087,7 @@ class HrPayslip(models.Model):
             raise UserError(_(
                 'Tariff grade %(grade)s of %(employee)s has no hourly rate in '
                 'force on %(date)s. Enter it in Tariff Grades.',
-                grade=version.tariff_grade_id.name,
+                grade=version.tariff_grade_id.display_name,
                 employee=self.employee_id.name, date=self.date_to))
         return tariff
 

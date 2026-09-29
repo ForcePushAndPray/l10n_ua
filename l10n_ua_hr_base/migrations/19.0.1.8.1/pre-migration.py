@@ -43,11 +43,6 @@ def migrate(cr, version):
          WHERE module = 'l10n_ua_hr_base' AND model = 'hr.tariff.grade'
     """)
     _from_shared_list(cr)
-    cr.execute("""
-        UPDATE hr_tariff_grade g SET currency_id = c.currency_id
-          FROM res_company c
-         WHERE c.id = g.company_id AND g.currency_id IS NULL
-    """)
 
 
 def _from_shared_list(cr):
@@ -106,9 +101,9 @@ def _from_shared_list(cr):
         cr.execute("""
             INSERT INTO hr_tariff_grade
                 (company_id, date_from, name, grade, coefficient, hourly_rate,
-                 currency_id, active, create_date, write_date)
+                 active, create_date, write_date)
             SELECT %s, %s, name, grade, coefficient, hourly_rate,
-                   currency_id, active, NOW() AT TIME ZONE 'UTC',
+                   active, NOW() AT TIME ZONE 'UTC',
                    NOW() AT TIME ZONE 'UTC'
               FROM hr_tariff_grade WHERE company_id = %s
          RETURNING id, grade

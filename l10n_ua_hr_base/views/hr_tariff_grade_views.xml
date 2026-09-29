@@ -6,6 +6,15 @@
         <field name="model">hr.tariff.grade</field>
         <field name="arch" type="xml">
             <list decoration-warning="rate_diff != 0">
+                <header>
+                    <!-- display="always": without it the button shows only
+                         once a row is ticked, and a rate change has nothing
+                         to do with the row one happens to select. -->
+                    <button name="%(action_hr_tariff_grade_new_period)d"
+                            type="action" string="New Rates from Date"
+                            display="always" class="btn-secondary"
+                            groups="l10n_ua_hr_base.group_hr_ua_manager"/>
+                </header>
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="date_from"/>
                 <field name="date_to"/>
@@ -44,7 +53,30 @@
                         </group>
                     </group>
                 </sheet>
+                <chatter/>
             </form>
+        </field>
+    </record>
+
+    <record id="view_hr_tariff_grade_search" model="ir.ui.view">
+        <field name="name">hr.tariff.grade.search</field>
+        <field name="model">hr.tariff.grade</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <filter string="In Force Today" name="filter_in_force"
+                        domain="[('date_from', '&lt;=', context_today().strftime('%Y-%m-%d')),
+                                 '|', ('date_to', '=', False),
+                                 ('date_to', '&gt;=', context_today().strftime('%Y-%m-%d'))]"/>
+                <group>
+                    <filter string="Company" name="groupby_company" domain="[]"
+                            context="{'group_by': 'company_id'}"
+                            groups="base.group_multi_company"/>
+                    <filter string="Valid From" name="groupby_date_from" domain="[]"
+                            context="{'group_by': 'date_from'}"/>
+                </group>
+            </search>
         </field>
     </record>
 
