@@ -165,7 +165,7 @@
                 <span>ЄДРПОУ: <span t-field="partner.edrpou"/></span>
             </t>
             <t t-if="partner.ipn">
-                <span>, ІПН: <span t-field="partner.ipn"/></span>
+                <span><t t-if="partner.edrpou">, </t>ІПН: <span t-field="partner.ipn"/></span>
             </t>
             <t t-if="partner.is_vat_payer">
                 <span>, платник ПДВ</span>
@@ -194,7 +194,7 @@
                 <span>ЄДРПОУ: <span t-field="partner.edrpou"/></span>
             </t>
             <t t-if="partner.ipn">
-                <span>, ІПН: <span t-field="partner.ipn"/></span>
+                <span><t t-if="partner.edrpou">, </t>ІПН: <span t-field="partner.ipn"/></span>
             </t>
         </div>
     </template>

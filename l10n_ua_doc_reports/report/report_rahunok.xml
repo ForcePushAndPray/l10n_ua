@@ -58,6 +58,9 @@
                                     <t t-if="comp_partner.l10n_ua_legal_address">
                                         <span t-field="comp_partner.l10n_ua_legal_address"/><br/>
                                     </t>
+                                    <t t-elif="comp_partner.contact_address">
+                                        <span t-esc="comp_partner.contact_address"/><br/>
+                                    </t>
                                     <t t-if="comp_partner.phone">
                                         тел. <span t-field="comp_partner.phone"/><br/>
                                     </t>
@@ -65,7 +68,7 @@
                                         ЄДРПОУ: <span t-field="comp_partner.edrpou"/>
                                     </t>
                                     <t t-if="comp_partner.ipn">
-                                        , ІПН: <span t-field="comp_partner.ipn"/>
+                                        <t t-if="comp_partner.edrpou">, </t>ІПН: <span t-field="comp_partner.ipn"/>
                                     </t>
                                     <t t-if="comp_partner.is_vat_payer">
                                         , платник ПДВ
@@ -92,10 +95,13 @@
                                         ЄДРПОУ: <span t-field="partner.edrpou"/>
                                     </t>
                                     <t t-if="partner.ipn">
-                                        , ІПН: <span t-field="partner.ipn"/>
+                                        <t t-if="partner.edrpou">, </t>ІПН: <span t-field="partner.ipn"/>
                                     </t>
                                     <t t-if="partner.l10n_ua_legal_address">
                                         <br/><span t-field="partner.l10n_ua_legal_address"/>
+                                    </t>
+                                    <t t-elif="partner.contact_address">
+                                        <br/><span t-esc="partner.contact_address"/>
                                     </t>
                                     <t t-if="partner.phone">
                                         <br/>тел. <span t-esc="partner.phone"/>
@@ -233,6 +239,9 @@
                                     <t t-if="comp_partner.l10n_ua_legal_address">
                                         <span t-field="comp_partner.l10n_ua_legal_address"/><br/>
                                     </t>
+                                    <t t-elif="comp_partner.contact_address">
+                                        <span t-esc="comp_partner.contact_address"/><br/>
+                                    </t>
                                     <t t-if="comp_partner.phone">
                                         тел. <span t-field="comp_partner.phone"/><br/>
                                     </t>
@@ -240,7 +249,7 @@
                                         ЄДРПОУ: <span t-field="comp_partner.edrpou"/>
                                     </t>
                                     <t t-if="comp_partner.ipn">
-                                        , ІПН: <span t-field="comp_partner.ipn"/>
+                                        <t t-if="comp_partner.edrpou">, </t>ІПН: <span t-field="comp_partner.ipn"/>
                                     </t>
                                     <t t-if="comp_partner.is_vat_payer">
                                         , платник ПДВ
@@ -267,7 +276,13 @@
                                         ЄДРПОУ: <span t-field="partner.edrpou"/>
                                     </t>
                                     <t t-if="partner.ipn">
-                                        , ІПН: <span t-field="partner.ipn"/>
+                                        <t t-if="partner.edrpou">, </t>ІПН: <span t-field="partner.ipn"/>
+                                    </t>
+                                    <t t-if="partner.l10n_ua_legal_address">
+                                        <br/><span t-field="partner.l10n_ua_legal_address"/>
+                                    </t>
+                                    <t t-elif="partner.contact_address">
+                                        <br/><span t-esc="partner.contact_address"/>
                                     </t>
                                     <t t-if="partner.phone">
                                         <br/>тел. <span t-esc="partner.phone"/>
