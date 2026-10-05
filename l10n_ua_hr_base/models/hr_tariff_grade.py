@@ -317,6 +317,12 @@ class HrTariffGrade(models.Model):
         the module cannot know it. A company that already has grades, archived
         ones included, is left alone.
 
+        Called once per company and never from a data file: on installation by
+        `post_init_hook`, on upgrade by migration 19.0.1.8.2, and for a new
+        company by `res.company.create`. A data file runs on every update of
+        the module, and a company that deleted its grid would get it back each
+        time.
+
         Tracking is off here: the log of a grade is about the rates its
         company agreed, and filling in the typical set is not one of them.
         """

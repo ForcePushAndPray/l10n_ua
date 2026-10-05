@@ -94,7 +94,9 @@
 
     </data>
 
-    <!-- Each company without tariff grades gets these, with zero rates to be
-         filled in from its collective agreement; new companies on creation. -->
-    <function model="hr.tariff.grade" name="_seed_company_grades"/>
+    <!-- Companies are not seeded here: a data file runs on every update of
+         the module, and the grid a company deliberately deleted would come
+         back each time. The typical set is given once — on installation by
+         `post_init_hook`, on upgrade by migration 19.0.1.8.2, and to a new
+         company by `res.company.create`. -->
 </odoo>

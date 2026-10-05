@@ -2605,3 +2605,20 @@ msgstr ""
 "звідси і до %(next)s виходить нульовою. Очистіть дату завершення, якщо "
 "посада не припинялася, або виправте день, з якого починається наступний "
 "рядок."
+
+#. module: l10n_ua_hr_base
+#. odoo-python
+#: code:addons/l10n_ua_hr_base/migrations/19.0.1.8.2/post-migration.py:0
+msgid ""
+"Until this upgrade the grade held a monthly salary of %(amount).2f and no "
+"hourly rate. Payroll multiplies the rate by the hours worked, so a monthly "
+"salary could not be taken for one, and the grade is left without a rate: "
+"payroll stops on it and says so. Enter the hourly rate of the collective "
+"agreement — the monthly salary of a position belongs in the staffing table."
+msgstr ""
+"До цього оновлення розряд містив місячний оклад %(amount).2f і не мав "
+"погодинної ставки. Розрахунок множить ставку на відпрацьовані години, тож "
+"місячний оклад не можна було взяти за неї, і розряд лишився без ставки: "
+"розрахунок на ньому зупиняється і про це повідомляє. Введіть погодинну "
+"ставку з колективного договору — місячний оклад посади належить штатному "
+"розпису."

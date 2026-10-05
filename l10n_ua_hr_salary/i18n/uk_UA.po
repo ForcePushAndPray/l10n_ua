@@ -3411,3 +3411,54 @@ msgid ""
 msgstr ""
 "Ставка з параметрів розрахунку компанії листка на цей період. Можна "
 "виправити вручну."
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_payslip.py:0
+msgid "%(date_from)s – %(date_to)s"
+msgstr "%(date_from)s – %(date_to)s"
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_payslip.py:0
+msgid "version of %(version)s, %(dates)s"
+msgstr "версія від %(version)s, %(dates)s"
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_payslip.py:0
+msgid "%(note)s, %(rest)s"
+msgstr "%(note)s, %(rest)s"
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_payslip.py:0
+msgid ""
+"The period of %(employee)s holds versions with different salary currencies. "
+"A payslip states one currency and one rate, so split it into a payslip per "
+"period."
+msgstr ""
+"У періоді %(employee)s є версії з різними валютами окладу. Листок має одну "
+"валюту й один курс, тож розділіть його на листок за кожен період."
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_payslip.py:0
+msgid ""
+"The Diia.City status of %(employee)s changes inside this period, and with it "
+"the rate of the personal income tax. A payslip is taxed at one rate, so "
+"split it into a payslip per period."
+msgstr ""
+"Статус Дія.Сіті %(employee)s змінюється всередині періоду, а з ним і ставка "
+"ПДФО. Листок оподатковується за однією ставкою, тож розділіть його на листок "
+"за кожен період."
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_payslip.py:0
+msgid ""
+"The period of %(employee)s holds versions of different companies. Split it "
+"into a payslip per company."
+msgstr ""
+"У періоді %(employee)s є версії різних компаній. Розділіть його на листок за "
+"кожну компанію."

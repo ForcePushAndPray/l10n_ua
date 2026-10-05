@@ -19,3 +19,11 @@ def post_init_hook(env):
         kp2010.search_count([('level', '=', '1')]),
         kp2010.search_count([('level', '=', '2')]),
         kp2010.search_count([('level', '=', '3')]))
+
+    # The companies already in the database get the typical tariff grades
+    # here, the ones created later get them from `res.company.create`. The
+    # data file does not seed: it runs on every update of the module and
+    # would give back the grid a company deliberately deleted.
+    seeded = env['hr.tariff.grade']._seed_company_grades()
+    _logger.info('l10n_ua_hr_base: typical tariff grades given to %s '
+                 'company(ies)', len(seeded.company_id))

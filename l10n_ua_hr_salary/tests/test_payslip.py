@@ -377,3 +377,294 @@ class TestPayslipTaxRates(SalaryTestCase):
         self.assertAlmostEqual(payslip.pdfo_rate, 0.0)
         with self.assertRaises(UserError):
             payslip.action_payslip_verify()
+
+
+@tagged('post_install', '-at_install')
+class TestPayslipSegments(SalaryTestCase):
+    """A month is paid by the day: by the version, the rate and the salary
+    in force on it.
+
+    July 2025 has 23 working days: 11 of them fall on 1–15 and 12 on 16–31.
+    At the daily norm of 8 hours that is 88 and 96 hours, and 184 together.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        cls.psp_params.write({'min_hourly_wage': 0.0})
+        cls.salary_type = cls.env['hr.accrual.type'].search(
+            [('code', '=', 'SALARY')], limit=1) or cls.env['hr.accrual.type'].create(
+            {'name': 'Salary', 'code': 'SALARY', 'category': 'wage'})
+        cls.night_type = cls.env['hr.accrual.type'].search(
+            [('code', '=', 'NIGHT')], limit=1) or cls.env['hr.accrual.type'].create(
+            {'name': 'Night', 'code': 'NIGHT', 'category': 'surcharge'})
+        cls.allowance_type = cls.env['hr.accrual.type'].search(
+            [('code', '=', 'ALLOWANCE')], limit=1) or cls.env['hr.accrual.type'].create(
+            {'name': 'Allowance', 'code': 'ALLOWANCE', 'category': 'wage'})
+        Grade = cls.env['hr.tariff.grade']
+        Grade.search([
+            ('company_id', '=', cls.company.id), ('grade', 'in', (9, 11)),
+        ]).action_archive()
+        common = {'coefficient': 1.73, 'company_id': cls.company.id}
+        cls.before = Grade.create(dict(
+            common, name='Grade 9', grade=9, hourly_rate=100.0,
+            date_from=date(2025, 1, 1), date_to=date(2025, 7, 15)))
+        cls.after = Grade.create(dict(
+            common, name='Grade 9', grade=9, hourly_rate=120.0,
+            date_from=date(2025, 7, 16)))
+        cls.other_grade = Grade.create(dict(
+            common, name='Grade 11', grade=11, hourly_rate=150.0,
+            date_from=date(2025, 1, 1)))
+
+    def _payslip(self, **values):
+        slip = self.env['hr.payslip'].create({
+            'employee_id': self.employee.id,
+            'date_from': date(2025, 7, 1), 'date_to': date(2025, 7, 31),
+        })
+        slip.write(dict({'scheduled_hours': 184.0, 'scheduled_days': 23,
+                         'worked_days': 23, 'worked_hours': 184.0}, **values))
+        return slip
+
+    def _second_version(self, **values):
+        """A version starting on 16 July, so the month falls in two.
+
+        Carries the wage of the first one unless told otherwise: Odoo writes
+        a new version by copying the current one.
+        """
+        return self.env['hr.version'].create(dict({
+            'employee_id': self.employee.id,
+            'contract_date_start': date(2024, 1, 15),
+            'date_version': date(2025, 7, 16),
+            'company_id': self.company.id,
+            'wage': self.version.wage,
+        }, **values))
+
+    def _lines(self, slip, accrual_type=None):
+        slip._generate_accruals()
+        return slip.accrual_ids.filtered(
+            lambda a: a.accrual_type_id == (accrual_type or self.salary_type)
+        ).sorted('id')
+
+    # --- the tariff rate changes, the version does not ---
+
+    def test_rate_change_inside_the_month_is_paid_by_the_day(self):
+        self.version.tariff_grade_id = self.before
+        lines = self._lines(self._payslip())
+        self.assertEqual(len(lines), 2, 'one line for each rate')
+        self.assertAlmostEqual(lines[0].quantity, 88.0, places=2)
+        self.assertAlmostEqual(lines[0].rate, 100.0, places=2)
+        self.assertAlmostEqual(lines[0].amount, 8800.0, places=2)
+        self.assertAlmostEqual(lines[1].quantity, 96.0, places=2)
+        self.assertAlmostEqual(lines[1].rate, 120.0, places=2)
+        self.assertAlmostEqual(lines[1].amount, 11520.0, places=2)
+        self.assertAlmostEqual(sum(lines.mapped('quantity')), 184.0, places=2,
+                               msg='no hour is paid twice or lost')
+
+    def test_a_month_in_one_period_is_paid_on_one_line(self):
+        self.version.tariff_grade_id = self.other_grade
+        lines = self._lines(self._payslip())
+        self.assertEqual(len(lines), 1)
+        self.assertAlmostEqual(lines.amount, 184.0 * 150.0, places=2)
+        self.assertNotIn('–', lines.notes, 'no dates when nothing changed')
+
+    def test_hours_entered_by_hand_are_not_split(self):
+        self.version.tariff_grade_id = self.before
+        lines = self._lines(self._payslip(worked_hours=170.0))
+        self.assertEqual(len(lines), 1)
+        self.assertAlmostEqual(lines.rate, 120.0, places=2)
+        self.assertAlmostEqual(lines.amount, 170.0 * 120.0, places=2)
+
+    def test_a_worked_day_without_a_rate_stops_payroll(self):
+        self.version.tariff_grade_id = self.before
+        self.before.action_archive()
+        with self.assertRaises(UserError):
+            self._lines(self._payslip())
+
+    def test_the_statutory_floor_holds_for_each_part_on_its_own(self):
+        self.version.tariff_grade_id = self.before
+        self.psp_params.min_hourly_wage = 110.0
+        lines = self._lines(self._payslip())
+        self.assertAlmostEqual(lines[0].rate, 110.0, places=2,
+                               msg='the floor lifts the first half only')
+        self.assertAlmostEqual(lines[1].rate, 120.0, places=2)
+
+    def test_night_hours_entered_by_hand_are_paid_whole_at_the_end_rate(self):
+        self.version.tariff_grade_id = self.before
+        slip = self._payslip(night_hours=10.0)
+        night = self._lines(slip, self.night_type)
+        self.assertEqual(len(night), 1)
+        self.assertAlmostEqual(
+            night.rate, 120.0 * self.psp_params.night_surcharge_rate / 100.0,
+            places=4)
+
+    # --- the version changes ---
+
+    def test_a_version_that_changes_nothing_paid_for_keeps_one_line(self):
+        # Odoo writes a version for any change of the card; one that touches
+        # no pay must not split the month.
+        self.version.tariff_grade_id = self.other_grade
+        self._second_version(tariff_grade_id=self.other_grade.id)
+        lines = self._lines(self._payslip())
+        self.assertEqual(len(lines), 1)
+        self.assertAlmostEqual(lines.amount, 184.0 * 150.0, places=2)
+
+    def test_a_grade_change_by_version_is_paid_by_the_day(self):
+        self.version.tariff_grade_id = self.other_grade
+        self._second_version(tariff_grade_id=self.before.id)
+        lines = self._lines(self._payslip())
+        self.assertEqual(len(lines), 2)
+        self.assertAlmostEqual(lines[0].amount, 88.0 * 150.0, places=2)
+        # From 16 July the second grade is in force and so is its new rate.
+        self.assertAlmostEqual(lines[1].rate, 120.0, places=2)
+        self.assertAlmostEqual(lines[1].amount, 96.0 * 120.0, places=2)
+        self.assertIn('16', lines[1].notes)
+
+    def test_a_wage_change_by_version_is_paid_by_the_day(self):
+        self.version.write({'tariff_grade_id': False, 'wage': 23000})
+        self._second_version(wage=46000)
+        lines = self._lines(self._payslip())
+        self.assertEqual(len(lines), 2)
+        self.assertAlmostEqual(lines[0].amount,
+                               round(23000 / 23 * 11, 2), places=2)
+        self.assertAlmostEqual(lines[1].amount,
+                               round(46000 / 23 * 12, 2), places=2)
+        self.assertAlmostEqual(sum(lines.mapped('quantity')), 23.0, places=2,
+                               msg='no day is paid twice or lost')
+
+    def test_a_work_rate_change_halves_the_hours_of_its_days(self):
+        self.version.write({'tariff_grade_id': self.other_grade.id,
+                            'wage': 23000})
+        self._second_version(tariff_grade_id=self.other_grade.id, work_rate=0.5)
+        slip = self._payslip()
+        slip._compute_working_days()
+        # 11 days at 8 hours and 12 days at 4.
+        self.assertAlmostEqual(slip.worked_hours, 11 * 8 + 12 * 4, places=2)
+        lines = self._lines(slip)
+        self.assertAlmostEqual(sum(lines.mapped('quantity')), slip.worked_hours,
+                               places=2)
+
+    def test_allowances_are_paid_for_the_days_of_their_version(self):
+        self.version.write({'tariff_grade_id': self.other_grade.id})
+        self.env['hr.version.allowance'].create({
+            'version_id': self.version.id,
+            'allowance_type_id': self.env['hr.allowance.type'].search(
+                [], limit=1).id,
+            'calculation_method': 'fixed',
+            'amount': 2300,
+        })
+        self._second_version(tariff_grade_id=self.other_grade.id)
+        lines = self._lines(self._payslip(), self.allowance_type)
+        self.assertEqual(len(lines), 1, 'only the first version has one')
+        self.assertAlmostEqual(lines.amount, round(2300 * 11 / 23, 2), places=2)
+
+    def test_different_salary_currencies_refuse_one_payslip(self):
+        self.version.write({'tariff_grade_id': self.other_grade.id})
+        usd = self.env.ref('base.USD')
+        self._second_version(tariff_grade_id=self.other_grade.id,
+                             salary_currency_id=usd.id, wage=1000)
+        with self.assertRaises(UserError):
+            self._lines(self._payslip())
+
+    def test_a_diia_city_change_refuses_one_payslip(self):
+        self.version.write({'tariff_grade_id': self.other_grade.id})
+        self._second_version(tariff_grade_id=self.other_grade.id,
+                             contract_type_ua='gig', diia_city_employee=True)
+        with self.assertRaises(UserError):
+            self._lines(self._payslip())
+
+    def test_the_payslip_keeps_one_version(self):
+        self.version.tariff_grade_id = self.other_grade
+        second = self._second_version(tariff_grade_id=self.before.id)
+        slip = self._payslip()
+        slip._generate_accruals()
+        self.assertEqual(slip.version_id, self.version,
+                         'the field still holds the version of the period start')
+        self.assertNotEqual(slip.version_id, second)
+
+
+@tagged('post_install', '-at_install')
+class TestPayslipSegmentsFromTimesheet(SalaryTestCase):
+    """With a timesheet every hour has a date, and is paid by it."""
+
+    @classmethod
+    def setUpClass(cls):
+        super().setUpClass()
+        if 'hr.timesheet.line' not in cls.env:
+            return
+        cls.psp_params.write({'min_hourly_wage': 0.0})
+        cls.salary_type = cls.env['hr.accrual.type'].search(
+            [('code', '=', 'SALARY')], limit=1) or cls.env['hr.accrual.type'].create(
+            {'name': 'Salary', 'code': 'SALARY', 'category': 'wage'})
+        cls.night_type = cls.env['hr.accrual.type'].search(
+            [('code', '=', 'NIGHT')], limit=1) or cls.env['hr.accrual.type'].create(
+            {'name': 'Night', 'code': 'NIGHT', 'category': 'surcharge'})
+        Grade = cls.env['hr.tariff.grade']
+        Grade.search([
+            ('company_id', '=', cls.company.id), ('grade', '=', 10),
+        ]).action_archive()
+        common = {'name': 'Grade 10', 'grade': 10, 'coefficient': 1.82,
+                  'company_id': cls.company.id}
+        cls.before = Grade.create(dict(common, hourly_rate=100.0,
+                                       date_from=date(2025, 1, 1),
+                                       date_to=date(2025, 7, 15)))
+        cls.after = Grade.create(dict(common, hourly_rate=120.0,
+                                      date_from=date(2025, 7, 16)))
+        cls.version.tariff_grade_id = cls.before
+        cls.work_code = cls.env['hr.timesheet.code'].search(
+            [('is_worked', '=', True)], limit=1)
+
+    def setUp(self):
+        super().setUp()
+        if 'hr.timesheet.line' not in self.env:
+            self.skipTest('l10n_ua_hr_attendance_sheet is not installed')
+        if not self.work_code:
+            self.skipTest('no worked timesheet code in this database')
+
+    def _timesheet(self, days):
+        sheet = self.env['hr.timesheet'].create({
+            'month': '7', 'year': 2025, 'company_id': self.company.id,
+        })
+        line = self.env['hr.timesheet.line'].create({
+            'timesheet_id': sheet.id, 'employee_id': self.employee.id,
+        })
+        self.env['hr.timesheet.day'].create([{
+            'line_id': line.id, 'date': date(2025, 7, day), 'day_number': day,
+            'code_id': self.work_code.id, 'hours': hours,
+            'night_hours': night, 'is_scheduled': True,
+        } for day, hours, night in days])
+        sheet.state = 'confirmed'
+        return line
+
+    def _payslip(self):
+        return self.env['hr.payslip'].create({
+            'employee_id': self.employee.id,
+            'date_from': date(2025, 7, 1), 'date_to': date(2025, 7, 31),
+        })
+
+    def test_hours_are_paid_at_the_rate_of_the_day_they_fall_on(self):
+        self._timesheet([(14, 8.0, 0.0), (15, 6.0, 0.0),
+                         (16, 8.0, 0.0), (17, 7.5, 0.0)])
+        slip = self._payslip()
+        slip.action_compute_sheet()
+        lines = slip.accrual_ids.filtered(
+            lambda a: a.accrual_type_id == self.salary_type).sorted('id')
+        self.assertEqual(len(lines), 2)
+        self.assertAlmostEqual(lines[0].quantity, 14.0, places=2)
+        self.assertAlmostEqual(lines[0].amount, 1400.0, places=2)
+        self.assertAlmostEqual(lines[1].quantity, 15.5, places=2)
+        self.assertAlmostEqual(lines[1].amount, 1860.0, places=2)
+        self.assertAlmostEqual(sum(lines.mapped('quantity')),
+                               slip.worked_hours, places=2)
+
+    def test_night_hours_are_paid_at_the_rate_of_their_own_day(self):
+        self._timesheet([(14, 8.0, 4.0), (16, 8.0, 2.0)])
+        slip = self._payslip()
+        slip.action_compute_sheet()
+        night = slip.accrual_ids.filtered(
+            lambda a: a.accrual_type_id == self.night_type).sorted('id')
+        self.assertEqual(len(night), 2, 'the night of each half at its rate')
+        percent = self.psp_params.night_surcharge_rate / 100.0
+        self.assertAlmostEqual(night[0].amount, round(4.0 * 100.0 * percent, 2),
+                               places=2)
+        self.assertAlmostEqual(night[1].amount, round(2.0 * 120.0 * percent, 2),
+                               places=2)
