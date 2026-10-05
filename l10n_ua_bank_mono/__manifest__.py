@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - monobank Integration',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Accounting/Localization',
     'summary': 'monobank API integration for bank statements',
     'description': """
@@ -10,7 +10,8 @@ Ukraine monobank Integration
 monobank API integration providing:
 
 * monobank API connection
-* Automatic bank statement import for FOP
+* Automatic bank statement import for FOP (personal API)
+* Corporate API for legal entities
 * Webhook support for real-time updates
 * Multiple accounts support
 
