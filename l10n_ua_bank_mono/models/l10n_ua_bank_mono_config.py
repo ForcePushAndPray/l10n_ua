@@ -358,9 +358,12 @@ class L10nUaBankSyncConfig(models.Model):
         (`completedTime`). The manual sync starts each period the day after
         the previous one ended, so an operation created on the last day of a
         period and booked the next day would be in neither: pending when the
-        first period was read, and before the start of the second. The query
+        first period was read, and before the start of the second. The same
+        goes for anything booked on the day of a sync after it ran. The query
         therefore reaches `MONO_CORP_LOOKBACK_DAYS` back, and
-        `_mono_corp_parse` keeps what was booked inside the period.
+        `_mono_corp_parse` keeps everything booked up to the period end: what
+        an earlier sync already imported is dropped by the id deduplication
+        of the import, so only the missed operations come through.
 
         The bank's day is the Kyiv one, whatever the server's timezone is.
         """
@@ -426,7 +429,7 @@ class L10nUaBankSyncConfig(models.Model):
 
     def _mono_corp_parse(self, raw_data):
         """Corporate statement items into the bank_sync transaction dicts."""
-        from_ts, to_ts = raw_data.get('from_ts'), raw_data.get('to_ts')
+        to_ts = raw_data.get('to_ts')
         transactions = []
         for item in raw_data.get('response') or []:
             # PENDING is not booked yet and DECLINED never will be. A pending
@@ -436,9 +439,12 @@ class L10nUaBankSyncConfig(models.Model):
             if item.get('status', 'DONE') != 'DONE':
                 continue
             booked = item.get('completedTime') or item.get('time')
-            # Booked outside the period: it belongs to another statement,
-            # and was fetched only because of the look-back.
-            if booked and from_ts and to_ts and not from_ts <= booked <= to_ts:
+            # Booked after the period: it belongs to a later statement.
+            # There is no lower bound on purpose: an operation booked before
+            # the period start was either imported already (and is dropped
+            # as a duplicate by its id) or missed by the sync of that day,
+            # and then the look-back is its only way in.
+            if booked and to_ts and booked > to_ts:
                 continue
             transactions.append({
                 'id': item.get('id', ''),

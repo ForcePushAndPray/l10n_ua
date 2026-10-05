@@ -184,12 +184,24 @@ class TestMonoCorporate(TransactionCase):
         self.assertEqual(
             [t['id'] for t in self.config._parse_transactions(raw)], ['op-1'])
 
-    def test_operation_booked_before_the_period_is_left_to_its_own(self):
-        """The look-back fetches operations of the previous period too; they
-        belong to that statement and must not be imported twice over here."""
-        booked = int(datetime(2026, 9, 7, 12, tzinfo=KYIV).timestamp())
+    def test_operation_booked_before_the_period_is_still_returned(self):
+        """Booked on the day of the previous sync, after it ran: the manual
+        sync starts the next period the day after, so no period ever covers
+        that moment and the look-back is the operation's only way in. What
+        was already imported is dropped by its id on import, not here."""
+        booked = int(datetime(2026, 9, 7, 15, tzinfo=KYIV).timestamp())
         with patch(f'{MODULE}.requests.get', return_value=_response(
                 json_data=[_item(1, booked)])):
+            raw = self.config._fetch_from_bank(date(2026, 9, 8), date(2026, 9, 14))
+        transactions = self.config._parse_transactions(raw)
+        self.assertEqual([t['id'] for t in transactions], ['op-1'])
+        self.assertEqual(transactions[0]['date'], '2026-09-07')
+
+    def test_operation_booked_after_the_period_is_left_to_a_later_one(self):
+        created = int(datetime(2026, 9, 14, 23, tzinfo=KYIV).timestamp())
+        booked = int(datetime(2026, 9, 15, 9, tzinfo=KYIV).timestamp())
+        with patch(f'{MODULE}.requests.get', return_value=_response(
+                json_data=[_item(1, created, completedTime=booked)])):
             raw = self.config._fetch_from_bank(date(2026, 9, 8), date(2026, 9, 14))
         self.assertEqual(self.config._parse_transactions(raw), [])
 

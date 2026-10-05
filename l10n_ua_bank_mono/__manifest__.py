@@ -10,7 +10,8 @@ Ukraine monobank Integration
 monobank API integration providing:
 
 * monobank API connection
-* Automatic bank statement import for FOP
+* Automatic bank statement import for FOP (personal API)
+* Corporate API for legal entities
 * Webhook support for real-time updates
 * Multiple accounts support
 
