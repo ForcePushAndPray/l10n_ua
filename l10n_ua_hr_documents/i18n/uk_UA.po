@@ -1337,6 +1337,19 @@ msgstr "календарних днів невикористаної відпу�
 
 #. module: l10n_ua_hr_documents
 #. odoo-python
+#: code:addons/l10n_ua_hr_documents/migrations/19.0.1.2.0/post-migration.py:0
+msgid ""
+"Leave type recorded on this order: %(type)s. The field holding it now lives "
+"in Ukraine - HR Holidays, which is not installed here, so it is removed with "
+"this update."
+msgstr ""
+"Вид відпустки, зазначений у цьому наказі: %(type)s. Поле, що його тримало, "
+"тепер живе в модулі «Україна — Кадрові відпустки», якого тут не встановлено, "
+"тож це оновлення його прибирає."
+
+#. module: l10n_ua_hr_documents
+#. odoo-python
+#: code:addons/l10n_ua_hr_documents/migrations/19.0.1.2.0/post-migration.py:0
 msgid ""
 "This order was linked to time off #%(leave)s%(detail)s. The link itself is "
 "not kept: it now lives in Ukraine - HR Holidays, which is not installed "

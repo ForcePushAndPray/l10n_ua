@@ -42,10 +42,15 @@ def migrate(cr, version):
     if not cr.fetchone():
         return
 
+    # holiday_status_id is a stored, writable related: an order may carry a
+    # leave type with no time off linked at all, and that value goes too.
     cr.execute(
-        'SELECT id, leave_id FROM hr_order WHERE leave_id IS NOT NULL')
-    links = dict(cr.fetchall())
-    if not links:
+        """SELECT id, leave_id, holiday_status_id FROM hr_order
+            WHERE leave_id IS NOT NULL OR holiday_status_id IS NOT NULL""")
+    rows = cr.fetchall()
+    links = {oid: leave for oid, leave, _type in rows if leave}
+    types = {oid: type_id for oid, _leave, type_id in rows if type_id}
+    if not rows:
         return
 
     env = api.Environment(cr, SUPERUSER_ID, {})
@@ -67,22 +72,39 @@ def migrate(cr, version):
             for leave in leaves
         }
 
-    orders = env['hr.order'].browse(list(links))
-    orders._message_log_batch({
-        order.id: env._(
-            'This order was linked to time off #%(leave)s%(detail)s. The link '
-            'itself is not kept: it now lives in Ukraine - HR Holidays, which '
-            'is not installed here, so the field holding it is removed with '
-            'this update. The note stays, so the time off this order was '
-            'issued for can still be found.',
-            leave=links[order.id],
-            detail=' (%s)' % described[links[order.id]]
-            if links[order.id] in described else '')
-        for order in orders
-    })
+    type_names = {}
+    if 'hr.leave.type' in env:
+        type_names = {
+            leave_type.id: leave_type.display_name
+            for leave_type in env['hr.leave.type'].with_context(
+                active_test=False).browse(set(types.values())).exists()
+        }
+
+    def note(order):
+        parts = []
+        if order.id in types:
+            parts.append(env._(
+                'Leave type recorded on this order: %(type)s. The field '
+                'holding it now lives in Ukraine - HR Holidays, which is not '
+                'installed here, so it is removed with this update.',
+                type=type_names.get(types[order.id]) or '#%s' % types[order.id]))
+        if order.id in links:
+            parts.append(env._(
+                'This order was linked to time off #%(leave)s%(detail)s. The link '
+                'itself is not kept: it now lives in Ukraine - HR Holidays, which '
+                'is not installed here, so the field holding it is removed with '
+                'this update. The note stays, so the time off this order was '
+                'issued for can still be found.',
+                leave=links[order.id],
+                detail=' (%s)' % described[links[order.id]]
+                if links[order.id] in described else ''))
+        return ' '.join(parts)
+
+    orders = env['hr.order'].browse([row[0] for row in rows])
+    orders._message_log_batch({order.id: note(order) for order in orders})
     _logger.warning(
         'l10n_ua_hr_documents 19.0.1.2.0: %s order(s) carried a link to a '
-        'time off, and %s is not installed, so hr_order.leave_id and '
+        'time off or a leave type, and %s is not installed, so hr_order.leave_id and '
         'hr_order.holiday_status_id are dropped with this update. Each order '
         'has the link written into its chatter: %s',
-        len(links), NEW_MODULE, sorted(links))
+        len(rows), NEW_MODULE, sorted(row[0] for row in rows))
