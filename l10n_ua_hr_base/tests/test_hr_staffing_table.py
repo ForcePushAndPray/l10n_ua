@@ -400,6 +400,60 @@ class TestHrStaffingTable(TestHrUaBase):
 
         self.assertEqual(self._messages_on(line), before)
 
+    def test_a_rehired_employee_is_still_reported(self):
+        """The departure of the employment before does not end this one.
+
+        Core leaves `departure_date` on the old version whenever the new
+        contract was already current when the card was unarchived (or it was
+        reactivated by a plain write). The person works, has no wage, and the
+        position stopped: exactly the zero the report exists for.
+        """
+        employee = self._create_employee()
+        first = employee.current_version_id
+        first.write({
+            'date_version': date.today() - relativedelta(years=1),
+            'contract_date_start': date.today() - relativedelta(years=1),
+            'contract_date_end': date.today() - relativedelta(months=6),
+            'departure_date': date.today() - relativedelta(months=6),
+        })
+        employee.create_version({
+            'date_version': date.today() - relativedelta(months=4),
+            'contract_date_start': date.today() - relativedelta(months=4),
+            'contract_date_end': False,
+        })
+        line = self._create_staffing_record(
+            state='approved',
+            date_from=date.today() - relativedelta(years=2),
+            date_to=date.today() - relativedelta(months=1))
+        before = self._messages_on(line)
+
+        self._run_stopped_report()
+
+        self.assertGreater(self._messages_on(line), before)
+        self.assertIn('1 employee(s)', self._latest_body(line))
+        self.assertEqual(line.filled_units, 1.0)
+
+    def test_a_legacy_departure_without_contract_end_still_empties_the_post(self):
+        """What the fallback is for: a dismissal that only reached
+        `departure_date`. It falls inside the version's own period, so it
+        still ends it."""
+        employee = self._create_employee()
+        employee.current_version_id.write({
+            'date_version': date.today() - relativedelta(years=1),
+            'contract_date_start': date.today() - relativedelta(years=1),
+            'departure_date': date.today() - relativedelta(months=6),
+        })
+        line = self._create_staffing_record(
+            state='approved',
+            date_from=date.today() - relativedelta(years=2),
+            date_to=date.today() - relativedelta(months=1))
+        before = self._messages_on(line)
+
+        self._run_stopped_report()
+
+        self.assertEqual(self._messages_on(line), before)
+        self.assertEqual(line.filled_units, 0.0)
+
     def test_a_transfer_is_seen_before_the_daily_cron_catches_up(self):
         """The report speaks about today, so it reads the version timeline.
 

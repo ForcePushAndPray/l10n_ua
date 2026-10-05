@@ -778,7 +778,17 @@ class HrStaffingTable(models.Model):
             start = in_force['contract_date_start']
             if start and start > ref_date:
                 continue
-            end = in_force['contract_date_end'] or departures.get(employee)
+            departure = departures.get(employee)
+            # The departure is the latest one on any version, so after a
+            # re-hire it is the end of the employment *before* this one: core
+            # only clears it on the version current at the moment of
+            # `action_unarchive`, and does not copy it to a new version. A
+            # departure that precedes the period this version belongs to says
+            # nothing about that period.
+            period_start = start or in_force['date_version']
+            if departure and departure < period_start:
+                departure = None
+            end = in_force['contract_date_end'] or departure
             if end and end < ref_date:
                 continue
             if not end and employee in archived:
