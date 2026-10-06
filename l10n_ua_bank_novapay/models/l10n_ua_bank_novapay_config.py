@@ -210,6 +210,15 @@ class L10nUaBankSyncConfig(models.Model):
             yield self.env
             return
         with self.env.registry.cursor() as cr:
+            # Замок на підключення, а не на рядок сесії: до першої
+            # авторизації рядка ще немає, і `FOR UPDATE` нічого б не тримав —
+            # дві паралельні синхронізації витратили б той самий одноразовий
+            # токен. READ COMMITTED потрібен, щоб той, хто дочекався замка,
+            # побачив щойно збережену пару, а не знімок від початку очікування.
+            cr.execute('SET TRANSACTION ISOLATION LEVEL READ COMMITTED')
+            cr.execute(
+                'SELECT pg_advisory_xact_lock(hashtext(%s), %s)',
+                [self.env['l10n_ua.bank.novapay.session']._table, self.id])
             yield self.env(cr=cr)
 
     @staticmethod
@@ -253,13 +262,15 @@ class L10nUaBankSyncConfig(models.Model):
                     and session.jwt_expiration > fields.Datetime.now() + NOVAPAY_JWT_MARGIN):
                 return session.jwt, True
 
+            # Сесія без токена (стара або зіпсована) ланцюжка не продовжує.
+            sent_token = (chained and session.refresh_token) or seed
+            sent_certificate = ((chained and session.public_certificate)
+                                or config.novapay_public_certificate)
             try:
                 data = self._novapay_call('UserAuthenticationJWT', {
-                    'refresh_token': session.refresh_token if chained else seed,
+                    'refresh_token': sent_token,
                     'login': config.novapay_login,
-                    'public_certificate': (
-                        session.public_certificate if chained
-                        else config.novapay_public_certificate),
+                    'public_certificate': sent_certificate,
                 })
             except UserError as e:
                 raise UserError(_(
@@ -270,10 +281,14 @@ class L10nUaBankSyncConfig(models.Model):
             jwt = data.get('jwt')
             if not jwt or not isinstance(jwt, str):
                 raise UserError(_('NovaPay API did not return a JWT token'))
+            # Відповідь без нової пари означає, що токен не змінено: лишаємо
+            # той, яким щойно авторизувалися. Порожнє значення тут назавжди
+            # відрізало б підключення після завершення дії JWT.
             vals = {
                 'seed_token': seed,
-                'refresh_token': data.get('refresh_token') or False,
-                'public_certificate': data.get('public_certificate') or False,
+                'refresh_token': data.get('refresh_token') or sent_token,
+                'public_certificate': (data.get('public_certificate')
+                                       or sent_certificate),
                 'jwt': jwt,
                 'jwt_expiration': self._novapay_parse_expiration(
                     data.get('expiration')),
@@ -328,6 +343,32 @@ class L10nUaBankSyncConfig(models.Model):
                 })
         return accounts
 
+    def _novapay_match_account(self, accounts):
+        """Рахунок журналу серед рахунків NovaPay: за IBAN і валютою.
+
+        Мультивалютний рахунок має один IBAN на всі валюти, тож за самим IBAN
+        можна взяти доларовий рахунок для гривневого журналу.
+        """
+        self.ensure_one()
+        iban = self._novapay_iban()
+        matches = [a for a in accounts if iban and a['iban'] == iban]
+        if len(matches) <= 1:
+            return matches[0] if matches else None
+        currency = (self.journal_id.currency_id
+                    or self.company_id.currency_id)
+        codes = {currency.name, str(currency.iso_numeric or '')} - {''}
+        by_currency = [a for a in matches
+                       if (a['currency'] or '').strip().upper() in codes]
+        if len(by_currency) != 1:
+            raise UserError(_(
+                'NovaPay has several accounts with IBAN %(iban)s and the '
+                'one in %(currency)s cannot be told apart: %(list)s. Fill in '
+                'the NovaPay Account ID manually.',
+                iban=iban, currency=currency.name,
+                list=', '.join('%s (ID %s)' % (a['currency'] or '-', a['account_id'])
+                               for a in matches)))
+        return by_currency[0]
+
     def _novapay_resolve_account(self):
         """ID рахунку NovaPay: збережений або знайдений за IBAN журналу."""
         self.ensure_one()
@@ -339,7 +380,7 @@ class L10nUaBankSyncConfig(models.Model):
                 'Set the IBAN on the bank journal or fill in the NovaPay '
                 'Account ID manually'))
         accounts = self._novapay_list_accounts()
-        match = next((a for a in accounts if a['iban'] == iban), None)
+        match = self._novapay_match_account(accounts)
         if not match:
             raise UserError(_(
                 'Account %(iban)s is not among NovaPay accounts: %(list)s',
@@ -391,11 +432,15 @@ class L10nUaBankSyncConfig(models.Model):
 
     @staticmethod
     def _novapay_amount(value):
-        """Сума: число або рядок ('1250.00', '1 250,5')."""
+        """Сума: число або рядок ('1250.00', '1 250,5', '1,250.00')."""
         if isinstance(value, (int, float)):
             return float(value)
-        text = (str(value or '').replace(' ', '').replace('\xa0', '')
-                .replace(',', '.'))
+        text = str(value or '').replace(' ', '').replace('\xa0', '')
+        if ',' in text and '.' in text:
+            # Обидва знаки: дробовий — той, що стоїть останнім.
+            thousands = ',' if text.rfind('.') > text.rfind(',') else '.'
+            text = text.replace(thousands, '')
+        text = text.replace(',', '.')
         try:
             return float(text)
         except ValueError:
@@ -403,11 +448,13 @@ class L10nUaBankSyncConfig(models.Model):
 
     @staticmethod
     def _novapay_date(value):
-        try:
-            return datetime.strptime(
-                (value or '').strip()[:10], NOVAPAY_DATE_FORMAT).date()
-        except ValueError:
-            return None
+        value = (value or '').strip()[:10]
+        for fmt in (NOVAPAY_DATE_FORMAT, '%Y-%m-%d'):
+            try:
+                return datetime.strptime(value, fmt).date()
+            except ValueError:
+                continue
+        return None
 
     def _novapay_extract_docs(self, raw_data):
         """XML виписки → (IBAN рахунку, список документів-словників)."""
@@ -448,6 +495,15 @@ class L10nUaBankSyncConfig(models.Model):
         seen = {}
         for doc in docs:
             amount = self._novapay_amount(doc.get('Amount'))
+            if amount is None:
+                # Пропустити мовчки — загубити рух: завдання лишилося б
+                # «виконаним», а рядка у виписці не було б.
+                raise UserError(_(
+                    'Cannot read the amount "%(amount)s" of NovaPay document '
+                    '%(code)s dated %(date)s.',
+                    amount=doc.get('Amount') or '',
+                    code=doc.get('Code') or '-',
+                    date=doc.get('PayDate') or doc.get('OrgDate') or '-'))
             if not amount:
                 continue
             debit_iban = self._novapay_norm_iban(doc.get('DebitCodeIBAN'))
@@ -471,23 +527,38 @@ class L10nUaBankSyncConfig(models.Model):
                     date=doc.get('PayDate') or doc.get('OrgDate') or '-',
                     iban=own_iban or '-'))
 
-            date = (self._novapay_date(doc.get('PayDate'))
-                    or self._novapay_date(doc.get('OrgDate')))
-            date = date.isoformat() if date else ''
+            doc_date = self._novapay_date(doc.get('OrgDate'))
+            date = self._novapay_date(doc.get('PayDate')) or doc_date
+            if not date:
+                # Без дати рядок отримав би останній день періоду, а ключ
+                # дедуплікації втратив би день — однакові платежі різних
+                # днів злилися б в один.
+                raise UserError(_(
+                    'Cannot read the date of NovaPay document %(code)s '
+                    '(PayDate "%(pay)s", OrgDate "%(org)s").',
+                    code=doc.get('Code') or '-',
+                    pay=doc.get('PayDate') or '', org=doc.get('OrgDate') or ''))
             code = (doc.get('Code') or '').strip()
             purpose = doc.get('Purpose') or ''
             # У документа немає унікального ID: ключ дедуплікації складаємо
-            # з реквізитів, однакові документи одного дня нумеруємо.
-            key = '|'.join([code, date, '%.2f' % amount, debit_iban,
-                            credit_iban, purpose])
+            # з реквізитів, однакові документи одного дня нумеруємо. У ключі
+            # лише те, що не змінюється між запитами: дата документа, а не
+            # проведення (вона з'являється пізніше), і призначення без
+            # різниці в пробілах.
+            key = '|'.join([code, (doc_date or date).isoformat(),
+                            '%.2f' % abs(amount), debit_iban, credit_iban,
+                            ' '.join(purpose.split())])
+            date = date.isoformat()
             index = seen.get(key, 0)
             seen[key] = index + 1
-            uid = 'NP-' + hashlib.sha1(
+            # Не `uid`: за локальною змінною з такою назвою `_()` визначає
+            # користувача, і помилка на наступному документі падала б у SQL.
+            import_uid = 'NP-' + hashlib.sha1(
                 ('%s|%d' % (key, index)).encode('utf-8')).hexdigest()[:24]
 
             side = 'Credit' if outgoing else 'Debit'
             transactions.append({
-                'id': uid,
+                'id': import_uid,
                 'date': date,
                 'amount': -abs(amount) if outgoing else abs(amount),
                 'description': purpose,
@@ -549,8 +620,7 @@ class L10nUaBankSyncConfig(models.Model):
         """Показати рахунки NovaPay і запам'ятати рахунок журналу за IBAN."""
         self.ensure_one()
         accounts = self._novapay_list_accounts()
-        iban = self._novapay_iban()
-        match = next((a for a in accounts if iban and a['iban'] == iban), None)
+        match = self._novapay_match_account(accounts)
         if match:
             self.write({
                 'novapay_client_id': match['client_id'],
