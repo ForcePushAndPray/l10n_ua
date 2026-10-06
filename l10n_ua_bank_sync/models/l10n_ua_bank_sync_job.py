@@ -338,9 +338,11 @@ class L10nUaBankSyncJob(models.Model):
 
         line_cmds = []
         total = 0.0
+        skipped = 0
         for trans in transactions:
             uid = self._trans_uid(trans)
             if uid and uid in seen:
+                skipped += 1
                 continue
             if uid:
                 seen.add(uid)
@@ -362,9 +364,19 @@ class L10nUaBankSyncJob(models.Model):
         if not line_cmds:
             return Statement.browse()
 
-        verified = opening is not None and closing is not None
-        bstart = opening if verified else 0.0
-        bend = closing if verified else round(bstart + total, 2)
+        # Залишки джерела стосуються всього запитаного періоду. Якщо частину
+        # рухів уже імпортовано раніше (періоди перекриваються — так працює
+        # автосинхронізація), у цій виписці лише решта, і початковий залишок
+        # періоду до неї не пасує: звірка завжди показувала б розрив.
+        # Кінцевий залишок лишається справжнім, початковий виводимо з рухів.
+        verified = opening is not None and closing is not None and not skipped
+        if verified:
+            bstart, bend = opening, closing
+        elif skipped and closing is not None:
+            bstart, bend = round(closing - total, 2), closing
+        else:
+            bstart = 0.0
+            bend = round(bstart + total, 2)
         statement = Statement.create({
             'name': self.name or _('Statement'),
             'journal_id': journal.id,
