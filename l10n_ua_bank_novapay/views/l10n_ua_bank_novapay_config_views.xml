@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Extend base config form with NovaPay fields -->
+    <record id="l10n_ua_bank_sync_config_view_form_novapay" model="ir.ui.view">
+        <field name="name">l10n_ua.bank.sync.config.form.novapay</field>
+        <field name="model">l10n_ua.bank.sync.config</field>
+        <field name="inherit_id" ref="l10n_ua_bank_sync.l10n_ua_bank_sync_config_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_sync_now']" position="before">
+                <button name="action_test_connection" string="Test Connection" type="object"
+                        invisible="provider != 'novapay'"/>
+                <button name="action_novapay_fetch_accounts" string="Fetch Accounts" type="object"
+                        invisible="provider != 'novapay' or not novapay_login"/>
+            </xpath>
+            <xpath expr="//group[@name='account_group']" position="after">
+                <group string="NovaPay API" name="novapay_connection_group"
+                       invisible="provider != 'novapay'">
+                    <field name="novapay_login"/>
+                    <field name="novapay_refresh_token" password="True"/>
+                    <field name="novapay_public_certificate"
+                           placeholder="-----BEGIN RSA PUBLIC KEY-----"/>
+                </group>
+                <group string="NovaPay Account" name="novapay_account_group"
+                       invisible="provider != 'novapay'">
+                    <field name="novapay_client_id"/>
+                    <field name="novapay_account_id"/>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

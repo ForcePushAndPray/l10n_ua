@@ -1,0 +1,2 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_l10n_ua_bank_novapay_session_system,l10n_ua.bank.novapay.session.system,model_l10n_ua_bank_novapay_session,base.group_system,1,1,1,1
