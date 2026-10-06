@@ -1,0 +1,303 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ua_bank_novapay
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260103\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-06 06:50+0000\n"
+"PO-Revision-Date: 2026-10-06 06:50+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_ua_bank_novapay
+#. odoo-python
+#: code:addons/l10n_ua_bank_novapay/models/l10n_ua_bank_novapay_config.py:0
+msgid ""
+"%s\n"
+"\n"
+"If the refresh token is no longer valid, generate a new token and certificate in the NovaPay cabinet (System → Settings → API) and paste them into the connection."
+msgstr ""
+"%s\n"
+"\n"
+"Якщо refresh-токен більше не дійсний, згенеруйте новий токен і сертифікат у кабінеті NovaPay (Система → Налаштування → API) та вставте їх у підключення."
+
+#. module: l10n_ua_bank_novapay
+#: model_terms:ir.ui.view,arch_db:l10n_ua_bank_novapay.l10n_ua_bank_sync_config_view_form_novapay
+msgid "-----BEGIN RSA PUBLIC KEY-----"
+msgstr "-----BEGIN RSA PUBLIC KEY-----"
+
+#. module: l10n_ua_bank_novapay
+#. odoo-python
+#: code:addons/l10n_ua_bank_novapay/models/l10n_ua_bank_novapay_config.py:0
+msgid "Account %(iban)s is not among NovaPay accounts: %(list)s"
+msgstr "Рахунку %(iban)s немає серед рахунків NovaPay: %(list)s"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_sync_config__novapay_account_id
+msgid "Account ID"
+msgstr "ID рахунку"
+
+#. module: l10n_ua_bank_novapay
+#. odoo-python
+#: code:addons/l10n_ua_bank_novapay/models/l10n_ua_bank_novapay_config.py:0
+msgid "Available Accounts"
+msgstr "Доступні рахунки"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model,name:l10n_ua_bank_novapay.model_l10n_ua_bank_sync_config
+msgid "Bank Sync Configuration"
+msgstr "Налаштування синхронізації банку"
+
+#. module: l10n_ua_bank_novapay
+#. odoo-python
+#: code:addons/l10n_ua_bank_novapay/models/l10n_ua_bank_novapay_config.py:0
+msgid ""
+"Cannot determine the direction of NovaPay document %(code)s dated %(date)s: "
+"neither side matches account %(iban)s. Check the IBAN of the bank journal."
+msgstr ""
+"Не вдалося визначити напрям документа NovaPay %(code)s від %(date)s: жодна "
+"зі сторін не збігається з рахунком %(iban)s. Перевірте IBAN банківського "
+"журналу."
+
+#. module: l10n_ua_bank_novapay
+#. odoo-python
+#: code:addons/l10n_ua_bank_novapay/models/l10n_ua_bank_novapay_config.py:0
+msgid "Cannot parse NovaPay statement XML: %s"
+msgstr "Не вдалося розібрати XML виписки NovaPay: %s"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_sync_config__novapay_client_id
+msgid "Client ID"
+msgstr "ID підприємства"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_novapay_session__config_id
+msgid "Configuration"
+msgstr "Налаштування"
+
+#. module: l10n_ua_bank_novapay
+#. odoo-python
+#: code:addons/l10n_ua_bank_novapay/models/l10n_ua_bank_novapay_config.py:0
+msgid "Connected to NovaPay. Companies: %s"
+msgstr "Підключено до NovaPay. Підприємства: %s"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_novapay_session__create_uid
+msgid "Created by"
+msgstr "Створив"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_novapay_session__create_date
+msgid "Created on"
+msgstr "Створено"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_novapay_session__display_name
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_sync_config__display_name
+msgid "Display Name"
+msgstr "Назва для відображення"
+
+#. module: l10n_ua_bank_novapay
+#: model_terms:ir.ui.view,arch_db:l10n_ua_bank_novapay.l10n_ua_bank_sync_config_view_form_novapay
+msgid "Fetch Accounts"
+msgstr "Отримати рахунки"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,help:l10n_ua_bank_novapay.field_l10n_ua_bank_sync_config__novapay_refresh_token
+msgid ""
+"Generated in the cabinet: System → Settings → API. The token is single-use: "
+"after the first connection the module keeps the renewed token itself. Paste "
+"a new one here only after generating it again in the cabinet."
+msgstr ""
+"Генерується в кабінеті: Система → Налаштування → API. Токен одноразовий: "
+"після першого підключення модуль сам зберігає оновлений токен. Вставляйте "
+"сюди новий лише після повторної генерації в кабінеті."
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_novapay_session__id
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_sync_config__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_novapay_session__jwt
+msgid "JWT"
+msgstr "JWT"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_novapay_session__jwt_expiration
+msgid "JWT Expiration"
+msgstr "Термін дії JWT"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_novapay_session__write_uid
+msgid "Last Updated by"
+msgstr "Востаннє оновив"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_novapay_session__write_date
+msgid "Last Updated on"
+msgstr "Востаннє оновлено"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_sync_config__novapay_login
+msgid "Login"
+msgstr "Логін"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,help:l10n_ua_bank_novapay.field_l10n_ua_bank_sync_config__novapay_login
+msgid "Login of the NovaPay Business cabinet user (business.novapay.ua)."
+msgstr "Логін користувача бізнес-кабінету NovaPay (business.novapay.ua)."
+
+#. module: l10n_ua_bank_novapay
+#. odoo-python
+#: code:addons/l10n_ua_bank_novapay/models/l10n_ua_bank_novapay_config.py:0
+msgid "No accounts found"
+msgstr "Рахунків не знайдено"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields.selection,name:l10n_ua_bank_novapay.selection__l10n_ua_bank_sync_config__provider__novapay
+msgid "NovaPay"
+msgstr "NovaPay"
+
+#. module: l10n_ua_bank_novapay
+#: model_terms:ir.ui.view,arch_db:l10n_ua_bank_novapay.l10n_ua_bank_sync_config_view_form_novapay
+msgid "NovaPay API"
+msgstr "NovaPay API"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model,name:l10n_ua_bank_novapay.model_l10n_ua_bank_novapay_session
+msgid "NovaPay API Session"
+msgstr "Сесія NovaPay API"
+
+#. module: l10n_ua_bank_novapay
+#. odoo-python
+#: code:addons/l10n_ua_bank_novapay/models/l10n_ua_bank_novapay_config.py:0
+msgid "NovaPay API did not return a JWT token"
+msgstr "NovaPay API не повернув JWT-токен"
+
+#. module: l10n_ua_bank_novapay
+#. odoo-python
+#: code:addons/l10n_ua_bank_novapay/models/l10n_ua_bank_novapay_config.py:0
+msgid "NovaPay API error (HTTP %(code)s): %(text)s"
+msgstr "Помилка NovaPay API (HTTP %(code)s): %(text)s"
+
+#. module: l10n_ua_bank_novapay
+#. odoo-python
+#: code:addons/l10n_ua_bank_novapay/models/l10n_ua_bank_novapay_config.py:0
+msgid "NovaPay API error in %(method)s: %(text)s"
+msgstr "Помилка NovaPay API у %(method)s: %(text)s"
+
+#. module: l10n_ua_bank_novapay
+#. odoo-python
+#: code:addons/l10n_ua_bank_novapay/models/l10n_ua_bank_novapay_config.py:0
+msgid "NovaPay API returned an unexpected response (HTTP %(code)s): %(text)s"
+msgstr "NovaPay API повернув неочікувану відповідь (HTTP %(code)s): %(text)s"
+
+#. module: l10n_ua_bank_novapay
+#: model_terms:ir.ui.view,arch_db:l10n_ua_bank_novapay.l10n_ua_bank_sync_config_view_form_novapay
+msgid "NovaPay Account"
+msgstr "Рахунок NovaPay"
+
+#. module: l10n_ua_bank_novapay
+#. odoo-python
+#: code:addons/l10n_ua_bank_novapay/models/l10n_ua_bank_novapay_config.py:0
+msgid "NovaPay connection failed: %s"
+msgstr "Не вдалося з'єднатися з NovaPay: %s"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,help:l10n_ua_bank_novapay.field_l10n_ua_bank_sync_config__novapay_account_id
+msgid ""
+"NovaPay identifier of the account (optional, fetched automatically by the "
+"IBAN of the journal)."
+msgstr ""
+"Ідентифікатор рахунку в NovaPay (необов'язково, визначається автоматично за "
+"IBAN журналу)."
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,help:l10n_ua_bank_novapay.field_l10n_ua_bank_sync_config__novapay_client_id
+msgid ""
+"NovaPay identifier of the company (optional, fetched automatically by the "
+"IBAN of the journal)."
+msgstr ""
+"Ідентифікатор підприємства в NovaPay (необов'язково, визначається "
+"автоматично за IBAN журналу)."
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.constraint,message:l10n_ua_bank_novapay.constraint_l10n_ua_bank_novapay_session_config_uniq
+msgid "Only one NovaPay session per configuration is allowed!"
+msgstr "Для одного підключення дозволена лише одна сесія NovaPay!"
+
+#. module: l10n_ua_bank_novapay
+#. odoo-python
+#: code:addons/l10n_ua_bank_novapay/models/l10n_ua_bank_novapay_config.py:0
+msgid "Please configure NovaPay login"
+msgstr "Вкажіть логін NovaPay"
+
+#. module: l10n_ua_bank_novapay
+#. odoo-python
+#: code:addons/l10n_ua_bank_novapay/models/l10n_ua_bank_novapay_config.py:0
+msgid ""
+"Please configure NovaPay refresh token and public certificate (cabinet: "
+"System → Settings → API)"
+msgstr ""
+"Вкажіть refresh-токен і відкритий сертифікат NovaPay (кабінет: Система → "
+"Налаштування → API)"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_sync_config__provider
+msgid "Provider"
+msgstr "Провайдер"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_novapay_session__public_certificate
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_sync_config__novapay_public_certificate
+msgid "Public Certificate"
+msgstr "Відкритий сертифікат"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,help:l10n_ua_bank_novapay.field_l10n_ua_bank_sync_config__novapay_public_certificate
+msgid "Public certificate generated together with the refresh token."
+msgstr "Відкритий сертифікат, згенерований разом із refresh-токеном."
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_novapay_session__refresh_token
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_sync_config__novapay_refresh_token
+msgid "Refresh Token"
+msgstr "Refresh-токен"
+
+#. module: l10n_ua_bank_novapay
+#: model:ir.model.fields,field_description:l10n_ua_bank_novapay.field_l10n_ua_bank_novapay_session__seed_token
+msgid "Seed Refresh Token"
+msgstr "Початковий refresh-токен"
+
+#. module: l10n_ua_bank_novapay
+#. odoo-python
+#: code:addons/l10n_ua_bank_novapay/models/l10n_ua_bank_novapay_config.py:0
+msgid ""
+"Set the IBAN on the bank journal or fill in the NovaPay Account ID manually"
+msgstr ""
+"Вкажіть IBAN у банківському журналі або заповніть ID рахунку NovaPay вручну"
+
+#. module: l10n_ua_bank_novapay
+#. odoo-python
+#: code:addons/l10n_ua_bank_novapay/models/l10n_ua_bank_novapay_config.py:0
+msgid "Success"
+msgstr "Успішно"
+
+#. module: l10n_ua_bank_novapay
+#: model_terms:ir.ui.view,arch_db:l10n_ua_bank_novapay.l10n_ua_bank_sync_config_view_form_novapay
+msgid "Test Connection"
+msgstr "Перевірити з'єднання"
+
+#. module: l10n_ua_bank_novapay
+#. odoo-python
+#: code:addons/l10n_ua_bank_novapay/models/l10n_ua_bank_novapay_config.py:0
+msgid "unknown error"
+msgstr "невідома помилка"
