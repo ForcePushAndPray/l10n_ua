@@ -99,10 +99,14 @@ class HrVersion(models.Model):
     )
 
     # === Allowances ===
+    # Copied with the version: `create_version` builds a new version from
+    # `copy_data()`, and without this the allowances stayed behind, so a
+    # version written for any change of the card quietly dropped them.
     allowance_ids = fields.One2many(
         'hr.version.allowance',
         'version_id',
         string='Allowances',
+        copy=True,
         groups="hr.group_hr_user"
     )
     total_allowances = fields.Monetary(

@@ -3,6 +3,7 @@ from odoo.exceptions import ValidationError, UserError
 from odoo.tools import format_date, float_compare
 from dateutil.relativedelta import relativedelta
 import calendar
+from collections import defaultdict
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -619,13 +620,25 @@ class HrPayslip(models.Model):
 
         # get amount of working days from timesheet
         ts_line = self._timesheet_line()
-        if ts_line:
+        if ts_line and self._covers_whole_month():
             self.worked_days = ts_line.worked_days
             self.worked_hours = ts_line.worked_hours
             # Відхилення для авто-доплат (нічні/понаднормові/святкові).
             self.night_hours = ts_line.night_hours
             self.overtime_hours = ts_line.overtime_hours
             self.holiday_hours = getattr(ts_line, 'holiday_hours', 0.0)
+        elif ts_line:
+            # A payslip for a part of the month reads the days of that part
+            # only: the sheet covers the whole month, and two payslips that
+            # split it would otherwise both pay all of it.
+            days = self._timesheet_days(ts_line)
+            self.worked_days = len(days.filtered(lambda d: d.code_id.is_worked))
+            self.worked_hours = sum(days.mapped('hours'))
+            self.night_hours = sum(days.mapped('night_hours'))
+            self.overtime_hours = sum(days.mapped('overtime_hours'))
+            self.holiday_hours = sum(days.filtered(
+                lambda d: d.code_id.code_type == 'holiday').mapped('hours'))
+        if ts_line:
             # in case if there is multiplier in timesheets
             if ts_line.scheduled_days:
                 self.scheduled_days = ts_line.scheduled_days
@@ -660,6 +673,19 @@ class HrPayslip(models.Model):
             ('timesheet_id.year', '=', self.date_to.year),
             ('timesheet_id.state', 'in', ['confirmed', 'approved'])
         ], limit=1, order='timesheet_id desc') or None
+
+    def _covers_whole_month(self):
+        """Whether the period is exactly the calendar month of its end."""
+        self.ensure_one()
+        month_start = self.date_to.replace(day=1)
+        return self.date_from == month_start and \
+            self.date_to == month_start + relativedelta(months=1, days=-1)
+
+    def _timesheet_days(self, line):
+        """The day rows of the sheet that fall inside the period."""
+        self.ensure_one()
+        return line.day_ids.filtered(
+            lambda d: d.date and self.date_from <= d.date <= self.date_to)
 
     def _version_on(self, day):
         """The version in force on that day, by the rule of the payslip.
@@ -731,13 +757,17 @@ class HrPayslip(models.Model):
                 employee=self.employee_id.name))
 
     def _worked_days_detail(self):
-        """The days this payslip pays for: (date, hours, night, overtime, holiday).
+        """The days this payslip pays for.
 
-        From the timesheet when there is one — the very day rows whose hours
-        add up to `worked_hours` — otherwise the working days of the period at
-        the daily norm of the version in force that day, which is how
-        `worked_hours` was counted without one. Days with nothing on them are
-        left out: they are paid nothing and would only ask for a rate on a day
+        (date, hours, night, overtime, holiday, worked), where `worked` is 1
+        for a day that counts as a worked day. From the timesheet when there
+        is one — the day rows of the period, counted the way the sheet counts
+        them: every hour into `worked_hours`, but only a day whose code is a
+        worked one into `worked_days`. A Saturday worked on a day-off code
+        brings its hours and its holiday surcharge, not a day of salary.
+        Without a sheet, the working days of the period at the daily norm of
+        the version in force that day. Days with nothing on them are left
+        out: they are paid nothing and would only ask for a rate on a day
         nobody worked.
         """
         self.ensure_one()
@@ -745,15 +775,16 @@ class HrPayslip(models.Model):
         if line:
             days = [
                 (day.date, day.hours, day.night_hours, day.overtime_hours,
-                 day.hours if day.code_id.code_type == 'holiday' else 0.0)
-                for day in line.day_ids if day.date
+                 day.hours if day.code_id.code_type == 'holiday' else 0.0,
+                 1 if day.code_id.is_worked else 0)
+                for day in self._timesheet_days(line).sorted('date')
             ]
             return [day for day in days if any(day[1:])]
         days, current = [], self.date_from
         while current and self.date_to and current <= self.date_to:
             if current.weekday() < 5:
                 days.append((current, self._daily_hour_norm(
-                    self._version_on(current)), 0.0, 0.0, 0.0))
+                    self._version_on(current)), 0.0, 0.0, 0.0, 1))
             current += relativedelta(days=1)
         return days
 
@@ -767,13 +798,16 @@ class HrPayslip(models.Model):
         segment, so a month where nothing changed stays a single line and a
         version created for a phone number does not split anything.
 
-        The days are the very ones `worked_hours` is made of, so the hours and
-        the days of the segments add up to the figures on the payslip exactly
-        — nothing is averaged and nothing is apportioned.
+        The days are the very ones `worked_hours` and `worked_days` are made
+        of, so the hours and the worked days of the segments add up to the
+        figures on the payslip exactly — nothing is averaged and nothing is
+        apportioned.
 
-        Returns an empty list when they do not add up: the hours were then
-        entered by hand and no day carries them, so there is nothing to place
-        on a date and the caller pays the period as one.
+        Returns an empty list when they do not add up, and the caller pays the
+        period as one, as before. The button recomputes the hours from the
+        sheet first, so this is a safeguard rather than a feature: it holds
+        for a payslip whose figures were written by other means, which no day
+        carries and which there is therefore nothing to place on a date.
         """
         self.ensure_one()
         # Before the hours: a period a payslip cannot hold is refused whether
@@ -781,10 +815,11 @@ class HrPayslip(models.Model):
         self._check_uniform_period(self._version_periods())
         days = self._worked_days_detail()
         if float_compare(sum(day[1] for day in days), self.worked_hours,
-                         precision_digits=2) != 0:
+                         precision_digits=2) != 0 \
+                or sum(day[5] for day in days) != self.worked_days:
             return []
-        segments, wages, grades, keys = {}, {}, {}, {}
-        for day, hours, night, overtime, holiday in days:
+        segments, wages, grades, keys, order = {}, {}, {}, {}, []
+        for day, hours, night, overtime, holiday, worked in days:
             version = self._version_on(day)
             if version not in grades:
                 grades[version] = self.env['hr.tariff.grade'].search([
@@ -823,16 +858,64 @@ class HrPayslip(models.Model):
             segment = segments.setdefault(key, {
                 'version': version, 'grade': tariff, 'wage': wage,
                 'hours': 0.0, 'days': 0, 'night': 0.0, 'overtime': 0.0,
-                'holiday': 0.0, 'date_from': day, 'date_to': day,
+                'holiday': 0.0, 'date_from': day, 'date_to': day, 'runs': [],
             })
             segment['hours'] += hours
-            segment['days'] += 1
+            segment['days'] += worked
             segment['night'] += night
             segment['overtime'] += overtime
             segment['holiday'] += holiday
             segment['date_from'] = min(segment['date_from'], day)
             segment['date_to'] = max(segment['date_to'], day)
+            order.append((day, key))
+        # The stretches of days each segment covers, broken wherever a day of
+        # another segment stands between: two versions that pay alike merge
+        # into one segment even when a third one lies between them, and the
+        # note must not claim the days of that third one.
+        previous = None
+        for day, key in order:
+            runs = segments[key]['runs']
+            if key == previous:
+                runs[-1][1] = day
+            else:
+                runs.append([day, day])
+            previous = key
         return sorted(segments.values(), key=lambda segment: segment['date_from'])
+
+    def _segment_weights(self, segments):
+        """The share of the month each segment stands for.
+
+        The month is shared out between the segments by their worked days, so
+        the shares add up to exactly one: a month split between two versions
+        pays one allowance, not two, and never more than one. A single segment
+        has a share of exactly 1.0, so whatever is multiplied by it comes out
+        bit for bit as it did before there were segments. Segments of hours
+        only (work on days off) are weighted by their hours.
+        """
+        self.ensure_one()
+        days = [segment['days'] for segment in segments]
+        if sum(days):
+            return [count / sum(days) for count in days]
+        hours = [segment['hours'] for segment in segments]
+        if sum(hours):
+            return [count / sum(hours) for count in hours]
+        return [1.0] + [0.0] * (len(segments) - 1)
+
+    def _rounded_parts(self, amounts, rounding):
+        """Round the parts of one whole so they add up to the whole rounded once.
+
+        Each part is the difference between the rounded running totals, so a
+        month split in two loses no kopiyka to rounding each half on its own.
+        A single part is the amount rounded, exactly as before there were
+        parts. `rounding` is the rounding the accrual always had.
+        """
+        parts, paid, running = [], 0.0, 0.0
+        for amount in amounts:
+            running += amount
+            part = rounding(rounding(running) - paid)
+            parts.append(part)
+            paid = rounding(paid + part)
+        return parts
 
     def _version_pay_key(self, version):
         """Everything in a version that a payslip pays by.
@@ -870,15 +953,18 @@ class HrPayslip(models.Model):
             'night': self.night_hours, 'overtime': self.overtime_hours,
             'holiday': self.holiday_hours,
             'date_from': self.date_from, 'date_to': self.date_to,
+            'runs': [[self.date_from, self.date_to]],
         }
 
     def _segment_note(self, note, segment, several, versions):
         """A note that says which days, and whose version, it is about."""
         if not several:
             return note
-        dates = _('%(date_from)s – %(date_to)s',
-                  date_from=format_date(self.env, segment['date_from']),
-                  date_to=format_date(self.env, segment['date_to']))
+        dates = ', '.join(
+            _('%(date_from)s – %(date_to)s',
+              date_from=format_date(self.env, start),
+              date_to=format_date(self.env, end))
+            for start, end in segment['runs'])
         if versions:
             dates = _('version of %(version)s, %(dates)s',
                       version=format_date(
@@ -1102,6 +1188,7 @@ class HrPayslip(models.Model):
         segments = self._pay_segments() or [self._whole_period_segment()]
         several = len(segments) > 1
         versions = len({segment['version'] for segment in segments}) > 1
+        total_days = sum(segment['days'] for segment in segments)
 
         # If the user already entered a base-wage accrual by hand, don't add the
         # version-based one on top — that would double-count the salary.
@@ -1153,7 +1240,11 @@ class HrPayslip(models.Model):
                     if not several and self.worked_days >= self.scheduled_days:
                         amount = monthly_wage  # full (rate-adjusted) amount if worked all days
                     else:
-                        amount = daily_rate * segment['days']
+                        # More worked days than scheduled never pay more than
+                        # the month: the same ceiling the single segment has
+                        # just above, shared out between the segments.
+                        amount = daily_rate * segment['days'] * min(
+                            1.0, self.scheduled_days / max(total_days, 1))
 
                     self.env['hr.payslip.accrual'].create({
                         'payslip_id': self.id,
@@ -1178,37 +1269,54 @@ class HrPayslip(models.Model):
         self._generate_seniority(segments, params, several, versions)
 
     def _generate_allowances(self, segments, several, versions):
-        """The allowances of a version, by the days of its segment.
+        """The allowances of each version, shared out by the days of its segment.
 
-        An allowance is a monthly figure, so a part of a month pays a part of
-        it: otherwise two versions in one month would pay two whole
-        allowances, and an incomplete month a whole one.
+        A month with one segment pays every allowance whole, whatever was
+        worked — as allowances always were. A month split between versions
+        pays each version's allowances for its share of the worked days, so
+        the parts add up to one month and never to more. Whether an allowance
+        should shrink for days not worked is a separate question this does
+        not answer.
+
+        The same allowance in successive versions — the n-th allowance of a
+        type in each — is rounded as one whole, so splitting it loses no
+        kopiyka.
         """
         self.ensure_one()
         allowance_type = self.env['hr.accrual.type'].search(
             [('code', '=', 'ALLOWANCE')], limit=1)
         if not allowance_type:
             return
-        for segment in segments:
-            share = segment['days'] / self.scheduled_days \
-                if self.scheduled_days else 1.0
-            for allowance in segment['version'].allowance_ids.filtered('is_active'):
-                # Не збережене `calculated_amount`, а сума за курсом
-                # цього листка: воно пораховане на дату початку надбавки,
-                # і для відсотка від валютного окладу це курс, якому може
-                # бути рік. Курс передаємо свій, а не дату, бо `salary_rate`
-                # бухгалтер може виправити руками — інакше оклад пішов би
-                # за виправленим курсом, а надбавка до нього за
-                # довідниковим.
-                amount = allowance._l10n_ua_amount_at(
-                    self.date_to, rate=self.salary_rate) * share
-                if not round(amount, 2):
+        groups = defaultdict(list)
+        for segment, share in zip(segments, self._segment_weights(segments)):
+            by_type = defaultdict(list)
+            for allowance in segment['version'].allowance_ids.filtered(
+                    'is_active').sorted('id'):
+                by_type[allowance.allowance_type_id].append(allowance)
+            for kind, allowances in by_type.items():
+                for index, allowance in enumerate(allowances):
+                    # Не збережене `calculated_amount`, а сума за курсом
+                    # цього листка: воно пораховане на дату початку надбавки,
+                    # і для відсотка від валютного окладу це курс, якому може
+                    # бути рік. Курс передаємо свій, а не дату, бо `salary_rate`
+                    # бухгалтер може виправити руками — інакше оклад пішов би
+                    # за виправленим курсом, а надбавка до нього за
+                    # довідниковим.
+                    exact = allowance._l10n_ua_amount_at(
+                        self.date_to, rate=self.salary_rate) * share
+                    groups[(kind.id, index)].append((segment, allowance, exact))
+        # The amount field rounds by the currency, so the parts do too.
+        rounding = self.company_id.currency_id.round
+        for entries in groups.values():
+            parts = self._rounded_parts([entry[2] for entry in entries], rounding)
+            for (segment, allowance, _exact), amount in zip(entries, parts):
+                if several and not amount:
                     continue
                 self.env['hr.payslip.accrual'].create({
                     'payslip_id': self.id,
                     'accrual_type_id': allowance_type.id,
                     'quantity': 1,
-                    'amount': round(amount, 2),
+                    'amount': amount,
                     'notes': self._segment_note(
                         allowance.allowance_type_id.name, segment,
                         several, versions),
@@ -1267,7 +1375,9 @@ class HrPayslip(models.Model):
         # Experience as of the end of the payslip period, not "today": a
         # recomputation of a past month must apply that period's percentage.
         years = self.employee_id._get_company_experience_years(self.date_to)
-        for segment in segments:
+        worked = sum(segment['days'] for segment in segments)
+        entries = []
+        for segment, share in zip(segments, self._segment_weights(segments)):
             version = segment['version']
             if not getattr(version, 'seniority_enabled', False):
                 continue
@@ -1285,9 +1395,13 @@ class HrPayslip(models.Model):
                 continue
             full = monthly_wage * percent / 100.0
             # Пропорція за фактично відпрацьований час (неповний місяць).
-            if self.scheduled_days and segment['days'] < self.scheduled_days:
-                full = full * segment['days'] / self.scheduled_days
-            amount = round(full, 2)
+            if self.scheduled_days and worked < self.scheduled_days:
+                full = full * worked / self.scheduled_days
+            # The part of it this segment pays.
+            entries.append((segment, percent, full * share))
+        parts = self._rounded_parts(
+            [entry[2] for entry in entries], lambda value: round(value, 2))
+        for (segment, percent, _exact), amount in zip(entries, parts):
             if amount <= 0:
                 continue
             self.env['hr.payslip.accrual'].create({
@@ -1321,7 +1435,9 @@ class HrPayslip(models.Model):
         if subsistence <= 0:
             return
         threshold = params.indexation_threshold or 101.0
-        for segment in segments:
+        worked = sum(segment['days'] for segment in segments)
+        entries = []
+        for segment, share in zip(segments, self._segment_weights(segments)):
             version = segment['version']
             if not getattr(version, 'indexation_enabled', False):
                 continue
@@ -1337,9 +1453,13 @@ class HrPayslip(models.Model):
             base_amount = min(monthly_wage, subsistence) if monthly_wage else subsistence
             full = base_amount * percent / 100.0
             # Пропорція за фактично відпрацьований час (неповний місяць).
-            if self.scheduled_days and segment['days'] < self.scheduled_days:
-                full = full * segment['days'] / self.scheduled_days
-            amount = round(full, 2)
+            if self.scheduled_days and worked < self.scheduled_days:
+                full = full * worked / self.scheduled_days
+            # The part of it this segment pays.
+            entries.append((segment, percent, base_month, full * share))
+        parts = self._rounded_parts(
+            [entry[3] for entry in entries], lambda value: round(value, 2))
+        for (segment, percent, base_month, _exact), amount in zip(entries, parts):
             if amount <= 0:
                 continue
             self.env['hr.payslip.accrual'].create({

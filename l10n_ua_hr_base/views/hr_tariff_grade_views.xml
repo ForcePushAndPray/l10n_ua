@@ -39,7 +39,9 @@
                         <group>
                             <field name="name"/>
                             <field name="grade"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" groups="base.group_multi_company"
+                                   options="{'no_create': True}"
+                                   domain="[('id', 'in', allowed_company_ids)]"/>
                             <field name="date_from"/>
                             <field name="date_to"/>
                         </group>

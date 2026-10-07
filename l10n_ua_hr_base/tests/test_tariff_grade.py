@@ -125,11 +125,27 @@ class TestTariffGrade(TransactionCase):
             'subsistence_minimum': 4000.0, 'min_wage': 9000.0,
             'company_id': self.company.id,
         })
-        # January 2030: 23 weekdays × 8 h = 184 h; 20 × 184 = 3 680 < 4 000.
+        # 2030: 261 working days / 12 × 8 h = 174 h; 20 × 174 = 3 480 < 4 000.
         with self.assertRaises(ValidationError):
             self._grades(((1, 1.0, 20.0),), date_from=date(2030, 1, 1))
         # A zero rate is one not entered yet.
         self._grades(((1, 1.0, 0.0),), date_from=date(2030, 1, 1))
+
+    def test_subsistence_minimum_does_not_depend_on_the_start_month(self):
+        if 'hr.psp.parameters' not in self.env:
+            self.skipTest('l10n_ua_hr_salary is not installed')
+        self.env['hr.psp.parameters'].create({
+            'year': 2030, 'date_from': date(2030, 1, 1),
+            'subsistence_minimum': 4000.0, 'min_wage': 9000.0,
+            'company_id': self.company.id,
+        })
+        # Over the 174 hours of an average month of 2030, 23.00 is 4 002 and
+        # passes even from February, whose 160 hours would give 3 680 ...
+        self._grades(((1, 1.0, 23.0),), date_from=date(2030, 2, 1))
+        # ... and 22.90 is 3 984.60 and is refused even from July, whose 184
+        # hours would give 4 213.60.
+        with self.assertRaises(ValidationError):
+            self._grades(((2, 1.09, 22.9),), date_from=date(2030, 7, 1))
 
     def test_job_uses_grades_of_its_own_company(self):
         grade_a = self._grades()[1]

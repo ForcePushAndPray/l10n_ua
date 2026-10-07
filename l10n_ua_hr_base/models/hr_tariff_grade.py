@@ -275,29 +275,41 @@ class HrTariffGrade(models.Model):
             gap_from=earlier.date_to, gap_to=later.date_from,
             expected=earlier.date_to + timedelta(days=1))
 
+    @api.model
+    def _average_monthly_hours(self, company, year):
+        """Working hours of an average month of `year` in `company`.
+
+        The working days of the year over twelve, at the daily hours of the
+        company's calendar: the hours a monthly minimum is spread over when it
+        is compared with an hourly rate.
+        """
+        weekdays = sum(
+            1 for month in range(1, 13)
+            for day in range(1, calendar.monthrange(year, month)[1] + 1)
+            if Date(year, month, day).weekday() < 5)
+        return weekdays / 12.0 * (company.resource_calendar_id.hours_per_day or 8.0)
+
     @api.constrains('hourly_rate', 'date_from', 'company_id')
     def _check_subsistence_minimum(self):
         """No tariff rate below the subsistence minimum on 1 January.
 
         Art. 6 of the Law on Remuneration of Labour. The minimum lives in the
         payroll parameters of `l10n_ua_hr_salary`; without them there is
-        nothing to check against. The hourly rate is taken over the working
-        hours of the month the grade starts in. A zero rate is one not entered
-        yet.
+        nothing to check against. The hourly rate is taken over the average
+        monthly working hours of the year — the working days of the year over
+        twelve — and not over the month the grade starts in: a month of 20
+        working days and one of 23 would otherwise pass and refuse the same
+        rate. A zero rate is one not entered yet.
         """
         if 'hr.psp.parameters' not in self.env:
             return
         for grade in self.filtered('hourly_rate'):
-            year, month = grade.date_from.year, grade.date_from.month
+            year = grade.date_from.year
             params = self.env['hr.psp.parameters'].sudo().get_parameters(
                 Date(year, 1, 1), grade.company_id.id)
             if not params or not params.subsistence_minimum:
                 continue
-            weekdays = sum(
-                1 for day in range(1, calendar.monthrange(year, month)[1] + 1)
-                if Date(year, month, day).weekday() < 5)
-            hours = weekdays * (
-                grade.company_id.resource_calendar_id.hours_per_day or 8.0)
+            hours = self._average_monthly_hours(grade.company_id, year)
             monthly = grade.hourly_rate * hours
             if float_compare(monthly, params.subsistence_minimum,
                              precision_digits=2) < 0:
