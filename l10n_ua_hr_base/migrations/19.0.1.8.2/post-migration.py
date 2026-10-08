@@ -38,13 +38,19 @@ def _amount_bounds(env, cr, company):
     the company has parameters for is taken, so that no lawful amount of any
     year falls outside. The parameters belong to `l10n_ua_hr_salary`, which is
     not loaded yet when this runs, so they are read from their table.
+
+    A company may have none yet: a database still on an older
+    `l10n_ua_hr_salary` gives each company its own parameters only in that
+    module's migration, which runs after this one. The subsistence minimum is
+    set by the state and is the same for every company, so the parameters of
+    the other companies stand in for its own.
     """
     if not table_exists(cr, 'hr_psp_parameters'):
         return None
     cr.execute("""
         SELECT subsistence_minimum, date_from FROM hr_psp_parameters
-         WHERE company_id = %s AND COALESCE(subsistence_minimum, 0) > 0
-      ORDER BY subsistence_minimum, date_from
+         WHERE COALESCE(subsistence_minimum, 0) > 0
+      ORDER BY company_id IS DISTINCT FROM %s, subsistence_minimum, date_from
          LIMIT 1
     """, (company.id,))
     row = cr.fetchone()
