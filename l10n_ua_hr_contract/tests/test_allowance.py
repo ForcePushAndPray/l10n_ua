@@ -64,6 +64,40 @@ class TestVersionAllowance(ContractTestCase):
         vals.update(kwargs)
         return self.env['hr.version.allowance'].create(vals)
 
+    def test_a_new_version_keeps_the_allowances(self):
+        """`create_version` copies the version, and the allowances go along.
+
+        A version is written for any change of the card; without this a new
+        phone number dropped the allowances from the day it was entered.
+        """
+        employee = self._create_employee()
+        version = self._create_version(
+            employee=employee, date_version=date(2025, 1, 15))
+        self._create_allowance(version=version, amount=5000)
+        new = employee.create_version({'date_version': date(2025, 9, 1)})
+        self.assertNotEqual(new, version)
+        self.assertEqual(new.allowance_ids.mapped('amount'), [5000])
+        self.assertEqual(version.allowance_ids.mapped('amount'), [5000],
+                         'the old version keeps its own')
+        self.assertFalse(new.allowance_ids & version.allowance_ids,
+                         'copies, not the same records')
+
+    def test_a_new_contract_does_not_inherit_the_allowances(self):
+        """A re-hire opens a new employment, whose terms are agreed anew."""
+        employee = self._create_employee()
+        version = self._create_version(
+            employee=employee, date_version=date(2025, 1, 15),
+            contract_date_end=date(2025, 12, 31))
+        self._create_allowance(version=version, amount=5000)
+        rehire = employee.create_version({
+            'date_version': date(2026, 3, 1),
+            'contract_date_start': date(2026, 3, 1),
+            'contract_date_end': False,
+        })
+        self.assertNotEqual(rehire, version)
+        self.assertFalse(rehire.allowance_ids)
+        self.assertEqual(version.allowance_ids.mapped('amount'), [5000])
+
     def test_fixed_allowance_amount(self):
         """Fixed allowance should use the direct amount."""
         allowance = self._create_allowance(calculation_method='fixed', amount=5000)
@@ -112,3 +146,32 @@ class TestVersionAllowance(ContractTestCase):
         version.invalidate_recordset()
         self.assertEqual(version.total_allowances, 7000)
         self.assertEqual(version.total_wage, 32000)
+
+    def test_percent_min_wage_uses_own_company_and_date(self):
+        """The minimum wage comes from the version's company, on the date asked."""
+        if 'hr.psp.parameters' not in self.env:
+            self.skipTest('l10n_ua_hr_salary is not installed')
+        Params = self.env['hr.psp.parameters']
+        own = Params.get_parameters(date(2025, 6, 1), self.company.id)
+        self.assertTrue(own, 'the company has parameters of its own')
+        own.min_wage = 8000.0
+        other_company = self.env['res.company'].create({'name': 'Allowance Other Co'})
+        other = Params.get_parameters(date(2025, 6, 1), other_company.id)
+        other.min_wage = 20000.0
+
+        allowance = self._create_allowance(
+            calculation_method='percent_min_wage', percent=10.0,
+            date_from=date(2025, 6, 1))
+        # 10% of the company's own 8 000, not of another company's 20 000.
+        self.assertAlmostEqual(allowance.calculated_amount, 800.0)
+        self.assertAlmostEqual(
+            allowance._l10n_ua_amount_at(date(2025, 6, 30)), 800.0)
+
+        # A later period of the same company is used for a later date.
+        Params.create({
+            'year': 2027, 'date_from': date(2027, 1, 1),
+            'subsistence_minimum': 3328.0, 'min_wage': 12000.0,
+            'company_id': self.company.id,
+        })
+        self.assertAlmostEqual(
+            allowance._l10n_ua_amount_at(date(2027, 3, 31)), 1200.0)

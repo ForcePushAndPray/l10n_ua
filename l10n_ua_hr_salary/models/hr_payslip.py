@@ -1,8 +1,9 @@
 from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
-from odoo.tools import format_date
+from odoo.tools import format_date, float_compare
 from dateutil.relativedelta import relativedelta
 import calendar
+from collections import defaultdict
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -178,7 +179,10 @@ class HrPayslip(models.Model):
     )
     pdfo_rate = fields.Float(
         string='PDFO Rate (%)',
-        default=18.0
+        compute='_compute_tax_rates', store=True, readonly=False,
+        precompute=True,
+        help='Rate of the payroll parameters of the payslip company for the '
+             'period. Can be corrected by hand.'
     )
     pdfo_amount = fields.Monetary(
         string='PDFO Amount',
@@ -195,7 +199,10 @@ class HrPayslip(models.Model):
     )
     military_tax_rate = fields.Float(
         string='Military Tax Rate (%)',
-        default=5.0
+        compute='_compute_tax_rates', store=True, readonly=False,
+        precompute=True,
+        help='Rate of the payroll parameters of the payslip company for the '
+             'period. Can be corrected by hand.'
     )
     military_tax_amount = fields.Monetary(
         string='Military Tax Amount',
@@ -213,7 +220,10 @@ class HrPayslip(models.Model):
     )
     esv_rate = fields.Float(
         string='ESV Rate (%)',
-        default=22.0
+        compute='_compute_tax_rates', store=True, readonly=False,
+        precompute=True,
+        help='Rate of the payroll parameters of the payslip company for the '
+             'period. Can be corrected by hand.'
     )
     esv_amount = fields.Monetary(
         string='ESV Amount',
@@ -562,16 +572,20 @@ class HrPayslip(models.Model):
         
         return True
 
-    def _daily_hour_norm(self):
+    def _daily_hour_norm(self, version=None):
         """Денна норма годин з урахуванням ставки зайнятості (work_rate).
 
         0.5 ставки → 4 год/день при 8-годинному дні. Базова денна норма —
         з графіка/тижневої норми версії, помножена на work_rate. Так табель
         неповного робочого часу відображає пропорційно зменшену норму, а не
         фіксовані 8 год (#149).
+
+        The version is named when the norm is needed for a particular day:
+        the work rate may change inside the month, and then every day has a
+        norm of its own. Defaults to the version of the payslip.
         """
         self.ensure_one()
-        version = self.version_id
+        version = version if version is not None else self.version_id
         if version and getattr(version, 'scheduled_hours_day', 0.0):
             return version.scheduled_hours_day
         base = 8.0
@@ -589,49 +603,374 @@ class HrPayslip(models.Model):
         month_start = self.date_to.replace(day=1)
         month_end = month_start + relativedelta(months=1, days=-1)
 
-        total_scheduled = 0
+        # The norm of a day comes from the version in force on it: the work
+        # rate may change inside the month, and half a month at 0.5 does not
+        # give the norm of half a month at a full rate.
+        total_scheduled, scheduled_hours = 0, 0.0
         curr = month_start
         while curr <= month_end:
             if curr.weekday() < 5:  # Monday to Friday
                 total_scheduled += 1
+                scheduled_hours += self._daily_hour_norm(self._version_on(curr))
             curr += relativedelta(days=1)
 
         daily_norm = self._daily_hour_norm()
         self.scheduled_days = total_scheduled
-        self.scheduled_hours = total_scheduled * daily_norm
-        
+        self.scheduled_hours = scheduled_hours
+
         # get amount of working days from timesheet
-        if 'hr.timesheet.line' in self.env:
-            ts_line = self.env['hr.timesheet.line'].search([
-                ('employee_id', '=', self.employee_id.id),
-                ('timesheet_id.month', '=', str(self.date_to.month)),
-                ('timesheet_id.year', '=', self.date_to.year),
-                ('timesheet_id.state', 'in', ['confirmed', 'approved'])
-            ], limit=1, order='timesheet_id desc')
-            
-            if ts_line:
-                self.worked_days = ts_line.worked_days
-                self.worked_hours = ts_line.worked_hours
-                # Відхилення для авто-доплат (нічні/понаднормові/святкові).
-                self.night_hours = ts_line.night_hours
-                self.overtime_hours = ts_line.overtime_hours
-                self.holiday_hours = getattr(ts_line, 'holiday_hours', 0.0)
-                # in case if there is multiplier in timesheets
-                if ts_line.scheduled_days:
-                    self.scheduled_days = ts_line.scheduled_days
-                    self.scheduled_hours = ts_line.scheduled_days * daily_norm
-                return
+        ts_line = self._timesheet_line()
+        if ts_line and self._covers_whole_month():
+            self.worked_days = ts_line.worked_days
+            self.worked_hours = ts_line.worked_hours
+            # Відхилення для авто-доплат (нічні/понаднормові/святкові).
+            self.night_hours = ts_line.night_hours
+            self.overtime_hours = ts_line.overtime_hours
+            self.holiday_hours = getattr(ts_line, 'holiday_hours', 0.0)
+        elif ts_line:
+            # A payslip for a part of the month reads the days of that part
+            # only: the sheet covers the whole month, and two payslips that
+            # split it would otherwise both pay all of it.
+            days = self._timesheet_days(ts_line)
+            self.worked_days = len(days.filtered(lambda d: d.code_id.is_worked))
+            self.worked_hours = sum(days.mapped('hours'))
+            self.night_hours = sum(days.mapped('night_hours'))
+            self.overtime_hours = sum(days.mapped('overtime_hours'))
+            self.holiday_hours = sum(days.filtered(
+                lambda d: d.code_id.code_type == 'holiday').mapped('hours'))
+        if ts_line:
+            # in case if there is multiplier in timesheets
+            if ts_line.scheduled_days:
+                self.scheduled_days = ts_line.scheduled_days
+                self.scheduled_hours = ts_line.scheduled_days * daily_norm
+            return
 
         # default if there is no timesheets
-        worked = 0
+        worked, worked_hours = 0, 0.0
         curr = self.date_from
         while curr <= self.date_to:
             if curr.weekday() < 5:
                 worked += 1
+                worked_hours += self._daily_hour_norm(self._version_on(curr))
             curr += relativedelta(days=1)
         self.worked_days = worked
-        self.worked_hours = worked * daily_norm
+        self.worked_hours = worked_hours
 
+    def _timesheet_line(self):
+        """The confirmed timesheet line of this employee for the month.
+
+        The hours of the payslip come from it, and so does the day each of
+        them was worked on, which is what a rate changing inside the month is
+        paid by. `None` when the attendance sheet module is not installed or
+        the month has no confirmed sheet.
+        """
+        self.ensure_one()
+        if 'hr.timesheet.line' not in self.env or not self.date_to:
+            return None
+        return self.env['hr.timesheet.line'].search([
+            ('employee_id', '=', self.employee_id.id),
+            ('timesheet_id.month', '=', str(self.date_to.month)),
+            ('timesheet_id.year', '=', self.date_to.year),
+            ('timesheet_id.state', 'in', ['confirmed', 'approved'])
+        ], limit=1, order='timesheet_id desc') or None
+
+    def _covers_whole_month(self):
+        """Whether the period is exactly the calendar month of its end."""
+        self.ensure_one()
+        month_start = self.date_to.replace(day=1)
+        return self.date_from == month_start and \
+            self.date_to == month_start + relativedelta(months=1, days=-1)
+
+    def _timesheet_days(self, line):
+        """The day rows of the sheet that fall inside the period."""
+        self.ensure_one()
+        return line.day_ids.filtered(
+            lambda d: d.date and self.date_from <= d.date <= self.date_to)
+
+    def _version_on(self, day):
+        """The version in force on that day, by the rule of the payslip.
+
+        The same filter `_compute_version_id` uses to pick the version of the
+        payslip, only asked about a day instead of the start of the period —
+        so the payslip and the day-by-day reading never disagree about what a
+        version is. Falls back to the version of the payslip.
+        """
+        self.ensure_one()
+        versions = self.employee_id.version_ids.filtered(
+            lambda v: v.date_version <= day and v.contract_date_start
+        ).sorted('date_version', reverse=True)
+        return versions[0] if versions else self.version_id
+
+    def _version_periods(self):
+        """[(version, date_from, date_to)] over the period of the payslip.
+
+        One entry when nothing changed, which is the usual month. The payslip
+        keeps its single `version_id`: these periods live inside the
+        calculation and are not stored anywhere.
+        """
+        self.ensure_one()
+        versions = self.employee_id.version_ids.filtered(
+            lambda v: v.date_version <= self.date_to and v.contract_date_start
+        ).sorted('date_version')
+        periods = []
+        for index, version in enumerate(versions):
+            start = max(version.date_version, self.date_from)
+            end = self.date_to
+            if index + 1 < len(versions):
+                end = min(end, versions[index + 1].date_version
+                          - relativedelta(days=1))
+            if start <= end:
+                periods.append((version, start, end))
+        return periods or [(self.version_id, self.date_from, self.date_to)]
+
+    def _check_uniform_period(self, periods):
+        """Refuse a period whose versions a single payslip cannot hold.
+
+        Three things exist once on a payslip and cannot be told apart by the
+        day: the currency the salary is denominated in (with its rate), the
+        Diia.City status that sets the tax rates, and the company. Taking the
+        version at the end of the period for them would understate pay by the
+        exchange rate or the tax by thirteen points, and nothing on the
+        payslip would say so. Two periods, two payslips.
+        """
+        self.ensure_one()
+        versions = [version for version, _start, _end in periods if version]
+        if len(set(versions)) < 2:
+            return
+        if len({version.salary_currency_id for version in versions}) > 1:
+            raise UserError(_(
+                'The period of %(employee)s holds versions with different '
+                'salary currencies. A payslip states one currency and one '
+                'rate, so split it into a payslip per period.',
+                employee=self.employee_id.name))
+        if len({bool(version.diia_city_employee)
+                or version.contract_type_ua == 'gig' for version in versions}) > 1:
+            raise UserError(_(
+                'The Diia.City status of %(employee)s changes inside this '
+                'period, and with it the rate of the personal income tax. A '
+                'payslip is taxed at one rate, so split it into a payslip per '
+                'period.', employee=self.employee_id.name))
+        if len({version.company_id for version in versions}) > 1:
+            raise UserError(_(
+                'The period of %(employee)s holds versions of different '
+                'companies. Split it into a payslip per company.',
+                employee=self.employee_id.name))
+
+    def _worked_days_detail(self):
+        """The days this payslip pays for.
+
+        (date, hours, night, overtime, holiday, worked), where `worked` is 1
+        for a day that counts as a worked day. From the timesheet when there
+        is one — the day rows of the period, counted the way the sheet counts
+        them: every hour into `worked_hours`, but only a day whose code is a
+        worked one into `worked_days`. A Saturday worked on a day-off code
+        brings its hours and its holiday surcharge, not a day of salary.
+        Without a sheet, the working days of the period at the daily norm of
+        the version in force that day. Days with nothing on them are left
+        out: they are paid nothing and would only ask for a rate on a day
+        nobody worked.
+        """
+        self.ensure_one()
+        line = self._timesheet_line()
+        if line:
+            days = [
+                (day.date, day.hours, day.night_hours, day.overtime_hours,
+                 day.hours if day.code_id.code_type == 'holiday' else 0.0,
+                 1 if day.code_id.is_worked else 0)
+                for day in self._timesheet_days(line).sorted('date')
+            ]
+            return [day for day in days if any(day[1:])]
+        days, current = [], self.date_from
+        while current and self.date_to and current <= self.date_to:
+            if current.weekday() < 5:
+                days.append((current, self._daily_hour_norm(
+                    self._version_on(current)), 0.0, 0.0, 0.0, 1))
+            current += relativedelta(days=1)
+        return days
+
+    def _pay_segments(self):
+        """The parts of the period that are paid alike, day by day.
+
+        A day is paid by what was in force on it: its version, the tariff
+        grade period of that version, and the salary that answers for it —
+        the wage of the version, or the staffing line of that day when the
+        version carries none. Days whose three answers coincide form one
+        segment, so a month where nothing changed stays a single line and a
+        version created for a phone number does not split anything.
+
+        The days are the very ones `worked_hours` and `worked_days` are made
+        of, so the hours and the worked days of the segments add up to the
+        figures on the payslip exactly — nothing is averaged and nothing is
+        apportioned.
+
+        Returns an empty list when they do not add up, and the caller pays the
+        period as one, as before. The button recomputes the hours from the
+        sheet first, so this is a safeguard rather than a feature: it holds
+        for a payslip whose figures were written by other means, which no day
+        carries and which there is therefore nothing to place on a date.
+        """
+        self.ensure_one()
+        # Before the hours: a period a payslip cannot hold is refused whether
+        # or not its days happen to add up.
+        self._check_uniform_period(self._version_periods())
+        days = self._worked_days_detail()
+        if float_compare(sum(day[1] for day in days), self.worked_hours,
+                         precision_digits=2) != 0 \
+                or sum(day[5] for day in days) != self.worked_days:
+            return []
+        segments, wages, grades, keys, order = {}, {}, {}, {}, []
+        for day, hours, night, overtime, holiday, worked in days:
+            version = self._version_on(day)
+            if version not in grades:
+                grades[version] = self.env['hr.tariff.grade'].search([
+                    ('company_id', '=', version.tariff_grade_id.company_id.id),
+                    ('grade', '=', version.tariff_grade_id.grade),
+                ], order='date_from') if version.tariff_grade_id \
+                    else self.env['hr.tariff.grade']
+            tariff = next(
+                (period for period in grades[version]
+                 if period.date_from <= day
+                 and (not period.date_to or period.date_to >= day)), None)
+            if version.tariff_grade_id and tariff is None:
+                self._check_tariff_rate(
+                    version, self.env['hr.tariff.grade'], day)
+            # The wage of a version is one figure; only a version without one
+            # asks the staffing table, and then the answer may change by the
+            # day, so it is read per day and remembered.
+            if version.wage:
+                wage = self._get_effective_wage(version)
+            else:
+                if (version, day) not in wages:
+                    wages[(version, day)] = self._get_effective_wage(version, day)
+                wage = wages[(version, day)]
+            if version not in keys:
+                keys[version] = self._version_pay_key(version)
+            # On a tariff grade the salary is paid by the hour, and the wage
+            # is read only by the seniority and indexation bases; where
+            # nothing reads it, it does not split anything either.
+            wage_matters = (not version.tariff_grade_id
+                            or getattr(version, 'seniority_enabled', False)
+                            or getattr(version, 'indexation_enabled', False))
+            # Not the version itself: two versions that pay alike — and Odoo
+            # writes one for any change of the card — must not split the month.
+            key = (keys[version], tariff.id if tariff else 0,
+                   round(wage, 2) if wage_matters else 0.0)
+            segment = segments.setdefault(key, {
+                'version': version, 'grade': tariff, 'wage': wage,
+                'hours': 0.0, 'days': 0, 'night': 0.0, 'overtime': 0.0,
+                'holiday': 0.0, 'date_from': day, 'date_to': day, 'runs': [],
+            })
+            segment['hours'] += hours
+            segment['days'] += worked
+            segment['night'] += night
+            segment['overtime'] += overtime
+            segment['holiday'] += holiday
+            segment['date_from'] = min(segment['date_from'], day)
+            segment['date_to'] = max(segment['date_to'], day)
+            order.append((day, key))
+        # The stretches of days each segment covers, broken wherever a day of
+        # another segment stands between: two versions that pay alike merge
+        # into one segment even when a third one lies between them, and the
+        # note must not claim the days of that third one.
+        previous = None
+        for day, key in order:
+            runs = segments[key]['runs']
+            if key == previous:
+                runs[-1][1] = day
+            else:
+                runs.append([day, day])
+            previous = key
+        return sorted(segments.values(), key=lambda segment: segment['date_from'])
+
+    def _segment_weights(self, segments):
+        """The share of the month each segment stands for.
+
+        The month is shared out between the segments by their worked days, so
+        the shares add up to exactly one: a month split between two versions
+        pays one allowance, not two, and never more than one. A single segment
+        has a share of exactly 1.0, so whatever is multiplied by it comes out
+        bit for bit as it did before there were segments. Segments of hours
+        only (work on days off) are weighted by their hours.
+        """
+        self.ensure_one()
+        days = [segment['days'] for segment in segments]
+        if sum(days):
+            return [count / sum(days) for count in days]
+        hours = [segment['hours'] for segment in segments]
+        if sum(hours):
+            return [count / sum(hours) for count in hours]
+        return [1.0] + [0.0] * (len(segments) - 1)
+
+    def _rounded_parts(self, amounts, rounding):
+        """Round the parts of one whole so they add up to the whole rounded once.
+
+        Each part is the difference between the rounded running totals, so a
+        month split in two loses no kopiyka to rounding each half on its own.
+        A single part is the amount rounded, exactly as before there were
+        parts. `rounding` is the rounding the accrual always had.
+        """
+        parts, paid, running = [], 0.0, 0.0
+        for amount in amounts:
+            running += amount
+            part = rounding(rounding(running) - paid)
+            parts.append(part)
+            paid = rounding(paid + part)
+        return parts
+
+    def _version_pay_key(self, version):
+        """Everything in a version that a payslip pays by.
+
+        Two versions with the same key are paid alike, so their days make one
+        segment. The grade and the salary are not here: they are asked about
+        the day, and stand beside this key.
+        """
+        self.ensure_one()
+        return (
+            round(version.work_rate or 1.0, 4),
+            getattr(version, 'salary_form', 'time'),
+            tuple(sorted(
+                (allowance.allowance_type_id.id,
+                 round(allowance._l10n_ua_amount_at(
+                     self.date_to, rate=self.salary_rate), 2))
+                for allowance in version.allowance_ids.filtered('is_active'))),
+            bool(getattr(version, 'seniority_enabled', False)),
+            version.seniority_scale_id.id
+            if 'seniority_scale_id' in version._fields else 0,
+            bool(getattr(version, 'indexation_enabled', False)),
+            getattr(version, 'indexation_base_month', False),
+        )
+
+    def _whole_period_segment(self):
+        """The period as one segment, the way it was paid before segments."""
+        self.ensure_one()
+        version = self.version_id
+        return {
+            'version': version,
+            'grade': version.tariff_grade_id._l10n_ua_grade_on(self.date_to)
+            if version.tariff_grade_id else self.env['hr.tariff.grade'],
+            'wage': self._get_effective_wage(version),
+            'hours': self.worked_hours, 'days': self.worked_days,
+            'night': self.night_hours, 'overtime': self.overtime_hours,
+            'holiday': self.holiday_hours,
+            'date_from': self.date_from, 'date_to': self.date_to,
+            'runs': [[self.date_from, self.date_to]],
+        }
+
+    def _segment_note(self, note, segment, several, versions):
+        """A note that says which days, and whose version, it is about."""
+        if not several:
+            return note
+        dates = ', '.join(
+            _('%(date_from)s – %(date_to)s',
+              date_from=format_date(self.env, start),
+              date_to=format_date(self.env, end))
+            for start, end in segment['runs'])
+        if versions:
+            dates = _('version of %(version)s, %(dates)s',
+                      version=format_date(
+                          self.env, segment['version'].date_version),
+                      dates=dates)
+        return _('%(note)s, %(rest)s', note=note, rest=dates) if note else dates
 
     @api.depends('version_id', 'version_id.salary_currency_id')
     def _compute_salary_currency(self):
@@ -655,6 +994,27 @@ class HrPayslip(models.Model):
                     1.0, comp_cur, slip.company_id, slip.date_to, round=False)
             else:
                 slip.salary_rate = 1.0
+
+    @api.depends('company_id', 'date_to')
+    def _compute_tax_rates(self):
+        """Tax rates of the company's payroll parameters for the period.
+
+        The rates used to be constants of the payslip itself, so the rates of
+        the parameters were read nowhere and changing them changed nothing.
+        A payslip that is no longer a draft keeps the rates it was computed
+        with; without parameters the rates stay at zero, and the payslip can
+        be neither computed nor verified (see _check_psp_parameters_known).
+        """
+        Params = self.env['hr.psp.parameters']
+        for payslip in self:
+            if payslip.state != 'draft':
+                continue
+            params = Params.get_parameters(
+                payslip.date_to, payslip.company_id.id) \
+                if payslip.date_to and payslip.company_id else None
+            payslip.pdfo_rate = params.pdfo_rate if params else 0.0
+            payslip.military_tax_rate = params.military_tax_rate if params else 0.0
+            payslip.esv_rate = params.esv_rate if params else 0.0
 
     def _check_psp_parameters_known(self, params):
         """Refuse to compute a payslip without payroll parameters.
@@ -750,7 +1110,7 @@ class HrPayslip(models.Model):
             return amount * self.salary_rate
         return amount
 
-    def _get_effective_wage(self, version):
+    def _get_effective_wage(self, version, on_date=None):
         """Get effective wage (in company currency) considering staffing table.
 
         Оклад може бути встановлений в іноземній валюті (#206) — тут він
@@ -765,9 +1125,10 @@ class HrPayslip(models.Model):
         June.
 
         The anchor is the start of the period, the same one the choice of
-        version already stands on (`_compute_version_id`). Neither mechanism
-        notices a change in the middle of a month; proration will come
-        separately, and for versions and staffing lines at once.
+        version already stands on (`_compute_version_id`), unless a day is
+        named: the accrual engine asks about each day of its own, so a
+        staffing line approved in the middle of a month pays from the day it
+        starts, exactly as a version does.
 
         The two sources return separately, and on purpose. `salary_rate` is the
         rate of the currency the *version's* wage is denominated in, so putting
@@ -792,14 +1153,13 @@ class HrPayslip(models.Model):
             # that the payslip's own company is the one being calculated,
             # and raises AccessError when there is no right to it — where
             # sudo would quietly calculate somebody else's.
+            anchor = on_date or self.date_from or fields.Date.context_today(self)
             staffing = self.env['hr.staffing.table'].with_company(
                 version.company_id)._resolve(
                     version.company_id, version.department_id,
-                    version.job_id,
-                    self.date_from or fields.Date.context_today(self))
+                    version.job_id, anchor)
             if staffing.salary:
-                return staffing._salary_in_company_currency(
-                    self.date_from or fields.Date.context_today(self))
+                return staffing._salary_in_company_currency(anchor)
 
         return 0.0
 
@@ -818,15 +1178,17 @@ class HrPayslip(models.Model):
 
         self._check_salary_rate_known()
 
-        version = self.version_id
-
         salary_type = self.env['hr.accrual.type'].search([('code', '=', 'SALARY')], limit=1)
         params = self.env['hr.psp.parameters'].get_parameters(
             self.date_to, self.company_id.id)
         self._check_psp_parameters_known(params)
 
-        # Форма оплати праці: відрядна замінює окладну/тарифну (#143).
-        is_piece = getattr(version, 'salary_form', 'time') == 'piece'
+        # Every part of the period is paid by what was in force on its days:
+        # its version, its tariff period, its staffing line.
+        segments = self._pay_segments() or [self._whole_period_segment()]
+        several = len(segments) > 1
+        versions = len({segment['version'] for segment in segments}) > 1
+        total_days = sum(segment['days'] for segment in segments)
 
         # If the user already entered a base-wage accrual by hand, don't add the
         # version-based one on top — that would double-count the salary.
@@ -835,76 +1197,104 @@ class HrPayslip(models.Model):
             for a in self.accrual_ids
         )
 
-        if salary_type and not has_manual_salary and not is_piece:
+        for segment in segments:
+            version = segment['version']
+            # Форма оплати праці: відрядна замінює окладну/тарифну (#143).
+            if getattr(version, 'salary_form', 'time') == 'piece':
+                self._generate_piece_work(version, params, segment)
+                continue
+            if not salary_type or has_manual_salary:
+                continue
             # tariff grade calculations
             if version.tariff_grade_id:
-
-                if self.worked_hours > 0:                                   # Guard clause
-                    min_hourly_wage = params.min_hourly_wage
-                    tariff = version.tariff_grade_id
-                    coef = tariff.coefficient or 1.0
-
-                    # Priority: hourly rate -> monthly rate -> 0
-                    if tariff.hourly_rate:
-                        hourly_rate = tariff.hourly_rate * coef
-                    elif tariff.min_salary and self.scheduled_hours > 0:
-                        hourly_rate = (tariff.min_salary * coef) / self.scheduled_hours
-                    else:
-                        hourly_rate = 0.0
-
-
-                    # Floor — never below statutory minimum hourly wage
-                    hourly_rate = max(hourly_rate, min_hourly_wage)
-
-                    if hourly_rate > 0 and self.worked_hours > 0:
-                        amount = round(hourly_rate * self.worked_hours, 2)
+                if segment['hours'] > 0:
+                    tariff = segment['grade']
+                    self._check_tariff_rate(version, tariff, segment['date_from'])
+                    # The grade rate is final: the progression is already in
+                    # it. Floor — never below the statutory minimum hourly
+                    # wage, which is a minimum per hour and so holds for each
+                    # part of the period on its own.
+                    hourly_rate = max(tariff.hourly_rate, params.min_hourly_wage)
+                    if hourly_rate > 0:
                         self.env['hr.payslip.accrual'].create({
                             'payslip_id': self.id,
                             'accrual_type_id': salary_type.id,
-                            'quantity': self.worked_hours,
+                            'quantity': segment['hours'],
                             'rate': hourly_rate,
-                            'amount': amount,
+                            'amount': round(hourly_rate * segment['hours'], 2),
                             'is_auto_generated': True,
-                            'notes': f'Тариф: {tariff.name} (коеф. {coef})',
+                            'notes': self._segment_note(
+                                _('Tariff: %s', tariff.name), segment,
+                                several, versions),
                        })
-            
+
             # monthly wage calculation
             else:
-                effective_wage = self._get_effective_wage(version)
                 # Ставка зайнятості (work_rate): 0.5 ставки → половина окладу.
                 # Тарифний (погодинний) шлях цього не потребує — там
                 # пропорційність дають фактично відпрацьовані години.
-                monthly_wage = effective_wage * (version.work_rate or 1.0)
+                monthly_wage = segment['wage'] * (version.work_rate or 1.0)
                 if monthly_wage and self.scheduled_days > 0:
                     # scheduled_days - number of expected working days in the months
                     daily_rate = monthly_wage / self.scheduled_days
-                    
-                    if self.worked_days >= self.scheduled_days:
+                    if not several and self.worked_days >= self.scheduled_days:
                         amount = monthly_wage  # full (rate-adjusted) amount if worked all days
                     else:
-                        amount = daily_rate * self.worked_days
+                        # More worked days than scheduled never pay more than
+                        # the month: the same ceiling the single segment has
+                        # just above, shared out between the segments.
+                        amount = daily_rate * segment['days'] * min(
+                            1.0, self.scheduled_days / max(total_days, 1))
 
                     self.env['hr.payslip.accrual'].create({
                         'payslip_id': self.id,
                         'accrual_type_id': salary_type.id,
-                        'quantity': self.worked_days,
+                        'quantity': segment['days'],
                         'rate': daily_rate,
                         'amount': round(amount, 2),
                         'is_auto_generated': True,
+                        'notes': self._segment_note(
+                            '', segment, several, versions) or False,
                     })
 
-        # Відрядна оплата — замість окладу (#143).
-        if is_piece:
-            self._generate_piece_work(version, params)
+        self._generate_allowances(segments, several, versions)
 
-        # Version allowances
-        allowance_type = self.env['hr.accrual.type'].search([('code', '=', 'ALLOWANCE')], limit=1)
-        if allowance_type:
-            for allowance in version.allowance_ids.filtered('is_active'):
-                self.env['hr.payslip.accrual'].create({
-                    'payslip_id': self.id,
-                    'accrual_type_id': allowance_type.id,
-                    'quantity': 1,
+        # Авто-доплати за відхилення в табелі (нічні/понаднормові/святкові) — #143.
+        self._generate_time_surcharges(segments, params, several, versions)
+
+        # Індексація заробітної плати — #138.
+        self._generate_indexation(segments, params, several, versions)
+
+        # Надбавка за вислугу років — #143.
+        self._generate_seniority(segments, params, several, versions)
+
+    def _generate_allowances(self, segments, several, versions):
+        """The allowances of each version, shared out by the days of its segment.
+
+        A month with one segment pays every allowance whole, whatever was
+        worked — as allowances always were. A month split between versions
+        pays each version's allowances for its share of the worked days, so
+        the parts add up to one month and never to more. Whether an allowance
+        should shrink for days not worked is a separate question this does
+        not answer.
+
+        The same allowance in successive versions — the n-th allowance of a
+        type in each — is rounded as one whole, so splitting it loses no
+        kopiyka.
+        """
+        self.ensure_one()
+        allowance_type = self.env['hr.accrual.type'].search(
+            [('code', '=', 'ALLOWANCE')], limit=1)
+        if not allowance_type:
+            return
+        groups = defaultdict(list)
+        for segment, share in zip(segments, self._segment_weights(segments)):
+            by_type = defaultdict(list)
+            for allowance in segment['version'].allowance_ids.filtered(
+                    'is_active').sorted('id'):
+                by_type[allowance.allowance_type_id].append(allowance)
+            for kind, allowances in by_type.items():
+                for index, allowance in enumerate(allowances):
                     # Не збережене `calculated_amount`, а сума за курсом
                     # цього листка: воно пораховане на дату початку надбавки,
                     # і для відсотка від валютного окладу це курс, якому може
@@ -912,36 +1302,47 @@ class HrPayslip(models.Model):
                     # бухгалтер може виправити руками — інакше оклад пішов би
                     # за виправленим курсом, а надбавка до нього за
                     # довідниковим.
-                    'amount': allowance._l10n_ua_amount_at(
-                        self.date_to, rate=self.salary_rate),
-                    'notes': allowance.allowance_type_id.name,
+                    exact = allowance._l10n_ua_amount_at(
+                        self.date_to, rate=self.salary_rate) * share
+                    groups[(kind.id, index)].append((segment, allowance, exact))
+        # The amount field rounds by the currency, so the parts do too.
+        rounding = self.company_id.currency_id.round
+        for entries in groups.values():
+            parts = self._rounded_parts([entry[2] for entry in entries], rounding)
+            for (segment, allowance, _exact), amount in zip(entries, parts):
+                if several and not amount:
+                    continue
+                self.env['hr.payslip.accrual'].create({
+                    'payslip_id': self.id,
+                    'accrual_type_id': allowance_type.id,
+                    'quantity': 1,
+                    'amount': amount,
+                    'notes': self._segment_note(
+                        allowance.allowance_type_id.name, segment,
+                        several, versions),
                     'is_auto_generated': True,
                 })
 
-        # Авто-доплати за відхилення в табелі (нічні/понаднормові/святкові) — #143.
-        self._generate_time_surcharges(version, params)
-
-        # Індексація заробітної плати — #138.
-        self._generate_indexation(version, params)
-
-        # Надбавка за вислугу років — #143.
-        self._generate_seniority(version, params)
-
-    def _generate_piece_work(self, version, params):
+    def _generate_piece_work(self, version, params, segment=None):
         """Створити авто-нарахування «Відрядна оплата» за нарядами періоду.
 
         Підсумовує наряди відрядної оплати (hr.piece.work.entry) працівника,
         дата яких потрапляє в період нарахування, у єдине нарахування PIECE.
+
+        An entry carries a date, so when only a part of the month was paid by
+        the piece, the entries of its days are the ones taken.
         """
         self.ensure_one()
         acc_type = self.env['hr.accrual.type'].search(
             [('code', '=', 'PIECE')], limit=1)
         if not acc_type:
             return
+        date_from = segment['date_from'] if segment else self.date_from
+        date_to = segment['date_to'] if segment else self.date_to
         entries = self.env['hr.piece.work.entry'].search([
             ('employee_id', '=', self.employee_id.id),
-            ('date', '>=', self.date_from),
-            ('date', '<=', self.date_to),
+            ('date', '>=', date_from),
+            ('date', '<=', date_to),
             ('company_id', '=', self.company_id.id),
         ])
         if not entries:
@@ -959,7 +1360,7 @@ class HrPayslip(models.Model):
             'notes': _('Відрядна оплата: %d наряд(ів)') % len(entries),
         })
 
-    def _generate_seniority(self, version, params):
+    def _generate_seniority(self, segments, params, several=False, versions=False):
         """Створити авто-надбавку «За вислугу років» на основі стажу.
 
         Відсоток надбавки береться зі ступінчастої шкали (hr.seniority.scale)
@@ -967,45 +1368,55 @@ class HrPayslip(models.Model):
         ставки зайнятості), пропорційно відпрацьованому часу.
         """
         self.ensure_one()
-        if not getattr(version, 'seniority_enabled', False):
-            return
         acc_type = self.env['hr.accrual.type'].search(
             [('code', '=', 'SENIORITY')], limit=1)
         if not acc_type:
             return
-        scale = version.seniority_scale_id
-        if not scale:
-            scale = self.env['hr.seniority.scale'].search(
-                [('company_id', 'in', (self.company_id.id, False))], limit=1)
-        if not scale:
-            return
         # Experience as of the end of the payslip period, not "today": a
         # recomputation of a past month must apply that period's percentage.
         years = self.employee_id._get_company_experience_years(self.date_to)
-        percent = scale.get_percent(years)
-        if percent <= 0:
-            return
-        monthly_wage = self._get_effective_wage(version) * (version.work_rate or 1.0)
-        if monthly_wage <= 0:
-            return
-        full = monthly_wage * percent / 100.0
-        # Пропорція за фактично відпрацьований час (неповний місяць).
-        if self.scheduled_days and self.worked_days < self.scheduled_days:
-            full = full * self.worked_days / self.scheduled_days
-        amount = round(full, 2)
-        if amount <= 0:
-            return
-        self.env['hr.payslip.accrual'].create({
-            'payslip_id': self.id,
-            'accrual_type_id': acc_type.id,
-            'quantity': 1,
-            'rate': percent,
-            'amount': amount,
-            'is_auto_generated': True,
-            'notes': _('Вислуга %.1f р. — %.0f%%') % (years, percent),
-        })
+        worked = sum(segment['days'] for segment in segments)
+        entries = []
+        for segment, share in zip(segments, self._segment_weights(segments)):
+            version = segment['version']
+            if not getattr(version, 'seniority_enabled', False):
+                continue
+            scale = version.seniority_scale_id
+            if not scale:
+                scale = self.env['hr.seniority.scale'].search(
+                    [('company_id', 'in', (self.company_id.id, False))], limit=1)
+            if not scale:
+                continue
+            percent = scale.get_percent(years)
+            if percent <= 0:
+                continue
+            monthly_wage = segment['wage'] * (version.work_rate or 1.0)
+            if monthly_wage <= 0:
+                continue
+            full = monthly_wage * percent / 100.0
+            # Пропорція за фактично відпрацьований час (неповний місяць).
+            if self.scheduled_days and worked < self.scheduled_days:
+                full = full * worked / self.scheduled_days
+            # The part of it this segment pays.
+            entries.append((segment, percent, full * share))
+        parts = self._rounded_parts(
+            [entry[2] for entry in entries], lambda value: round(value, 2))
+        for (segment, percent, _exact), amount in zip(entries, parts):
+            if amount <= 0:
+                continue
+            self.env['hr.payslip.accrual'].create({
+                'payslip_id': self.id,
+                'accrual_type_id': acc_type.id,
+                'quantity': 1,
+                'rate': percent,
+                'amount': amount,
+                'is_auto_generated': True,
+                'notes': self._segment_note(
+                    _('Вислуга %.1f р. — %.0f%%') % (years, percent),
+                    segment, several, versions),
+            })
 
-    def _generate_indexation(self, version, params):
+    def _generate_indexation(self, segments, params, several=False, versions=False):
         """Створити авто-нарахування «Індексація» (Закон про індексацію, Порядок №1078).
 
         Індексується дохід у межах прожиткового мінімуму для працездатних осіб
@@ -1016,117 +1427,180 @@ class HrPayslip(models.Model):
         self.ensure_one()
         if not params:
             return
-        if not getattr(version, 'indexation_enabled', False):
-            return
-        base_month = getattr(version, 'indexation_base_month', False)
-        if not base_month:
-            return
         acc_type = self.env['hr.accrual.type'].search(
             [('code', '=', 'INDEXATION')], limit=1)
         if not acc_type:
             return
-        threshold = params.indexation_threshold or 101.0
-        percent = self.env['hr.cpi.index'].get_indexation_percent(
-            base_month, self.date_to, threshold, self.company_id.id)
-        if percent <= 0:
-            return
         subsistence = params.subsistence_minimum or 0.0
         if subsistence <= 0:
             return
-        # База індексації — дохід у межах ПМ працездатних осіб.
-        monthly_wage = self._get_effective_wage(version) * (version.work_rate or 1.0)
-        base_amount = min(monthly_wage, subsistence) if monthly_wage else subsistence
-        full = base_amount * percent / 100.0
-        # Пропорція за фактично відпрацьований час (неповний місяць).
-        if self.scheduled_days and self.worked_days < self.scheduled_days:
-            full = full * self.worked_days / self.scheduled_days
-        amount = round(full, 2)
-        if amount <= 0:
-            return
-        self.env['hr.payslip.accrual'].create({
-            'payslip_id': self.id,
-            'accrual_type_id': acc_type.id,
-            'quantity': 1,
-            'rate': percent,
-            'amount': amount,
-            'is_auto_generated': True,
-            'notes': _('Індексація %.1f%% (баз. міс. %s)') % (
-                percent, base_month.strftime('%m.%Y')),
-        })
+        threshold = params.indexation_threshold or 101.0
+        worked = sum(segment['days'] for segment in segments)
+        entries = []
+        for segment, share in zip(segments, self._segment_weights(segments)):
+            version = segment['version']
+            if not getattr(version, 'indexation_enabled', False):
+                continue
+            base_month = getattr(version, 'indexation_base_month', False)
+            if not base_month:
+                continue
+            percent = self.env['hr.cpi.index'].get_indexation_percent(
+                base_month, self.date_to, threshold, self.company_id.id)
+            if percent <= 0:
+                continue
+            # База індексації — дохід у межах ПМ працездатних осіб.
+            monthly_wage = segment['wage'] * (version.work_rate or 1.0)
+            base_amount = min(monthly_wage, subsistence) if monthly_wage else subsistence
+            full = base_amount * percent / 100.0
+            # Пропорція за фактично відпрацьований час (неповний місяць).
+            if self.scheduled_days and worked < self.scheduled_days:
+                full = full * worked / self.scheduled_days
+            # The part of it this segment pays.
+            entries.append((segment, percent, base_month, full * share))
+        parts = self._rounded_parts(
+            [entry[3] for entry in entries], lambda value: round(value, 2))
+        for (segment, percent, base_month, _exact), amount in zip(entries, parts):
+            if amount <= 0:
+                continue
+            self.env['hr.payslip.accrual'].create({
+                'payslip_id': self.id,
+                'accrual_type_id': acc_type.id,
+                'quantity': 1,
+                'rate': percent,
+                'amount': amount,
+                'is_auto_generated': True,
+                'notes': self._segment_note(
+                    _('Індексація %.1f%% (баз. міс. %s)') % (
+                        percent, base_month.strftime('%m.%Y')),
+                    segment, several, versions),
+            })
 
-    def _base_hourly_rate(self, version, params):
-        """Базова годинна ставка для доплат.
+    def _check_tariff_rate(self, version, tariff, on_date):
+        """Refuse to pay a day whose rate nobody has entered.
 
-        Тарифна сітка — погодинна ставка × коефіцієнт; інакше — місячний
-        (з урахуванням work_rate) оклад, поділений на норму годин періоду.
-        Не нижче законодавчої мінімальної годинної ставки.
+        Without this the statutory floor would quietly stand in for it.
+        """
+        self.ensure_one()
+        if not tariff.hourly_rate:
+            raise UserError(_(
+                'Tariff grade %(grade)s of %(employee)s has no hourly rate in '
+                'force on %(date)s. Enter it in Tariff Grades.',
+                grade=version.tariff_grade_id.display_name,
+                employee=self.employee_id.name, date=on_date))
+
+    def _tariff_grade(self, version):
+        """The version's tariff grade in force at the period end."""
+        self.ensure_one()
+        tariff = version.tariff_grade_id._l10n_ua_grade_on(self.date_to)
+        self._check_tariff_rate(version, tariff, self.date_to)
+        return tariff
+
+    def _base_hourly_rate(self, version, params, segment=None):
+        """Base hourly rate for surcharges.
+
+        On a tariff grade, the hourly rate of the grade in force; otherwise
+        the monthly salary (with work_rate) over the hours of the period.
+        Never below the statutory minimum hourly wage. With a segment, the
+        grade and the salary are the ones of its days.
         """
         self.ensure_one()
         min_hourly = params.min_hourly_wage or 0.0
-        tariff = getattr(version, 'tariff_grade_id', False)
-        if tariff:
-            coef = tariff.coefficient or 1.0
-            if tariff.hourly_rate:
-                rate = tariff.hourly_rate * coef
-            elif tariff.min_salary and self.scheduled_hours > 0:
-                rate = (tariff.min_salary * coef) / self.scheduled_hours
+        if getattr(version, 'tariff_grade_id', False):
+            if segment:
+                self._check_tariff_rate(
+                    version, segment['grade'], segment['date_from'])
+                rate = segment['grade'].hourly_rate
             else:
-                rate = 0.0
+                rate = self._tariff_grade(version).hourly_rate
         elif self.scheduled_hours > 0:
-            monthly = self._get_effective_wage(version) * (version.work_rate or 1.0)
+            wage = segment['wage'] if segment else self._get_effective_wage(version)
+            monthly = wage * (version.work_rate or 1.0)
             rate = monthly / self.scheduled_hours
         else:
             rate = 0.0
         return max(rate, min_hourly)
 
-    def _generate_time_surcharges(self, version, params):
+    def _generate_time_surcharges(self, segments, params, several=False,
+                                  versions=False):
         """Створити авто-доплати за нічні/понаднормові/святкові години.
 
         Доплати рахуються ЗВЕРХУ базового окладу (модель «доплата»):
         - нічні — % годинної ставки (ст. 108 КЗпП, типово 20%);
         - понаднормові — надлишок до подвійного розміру (ст. 106);
         - святкові — надлишок до подвійного розміру (ст. 107).
+
+        A deviation hour carries a date as a worked hour does, so each is
+        paid at the rate of its own day.
         """
         self.ensure_one()
-        # Для відрядної форми доплати рахуються за середнім заробітком — поза
-        # обсягом авто-розрахунку; не нараховуємо з окладної ставки.
-        if getattr(version, 'salary_form', 'time') == 'piece':
-            return
-        hourly = self._base_hourly_rate(version, params)
-        if hourly <= 0:
-            return
         Accrual = self.env['hr.payslip.accrual']
         AccrualType = self.env['hr.accrual.type']
         night_rate = params.night_surcharge_rate or 0.0
         ot_mult = params.overtime_multiplier or 0.0
         hol_mult = params.holiday_multiplier or 0.0
 
-        surcharges = [
-            ('NIGHT', self.night_hours, hourly * night_rate / 100.0,
-             _('Доплата за нічні (%.0f%%)') % night_rate),
-            ('OVERTIME', self.overtime_hours, hourly * max(ot_mult - 1.0, 0.0),
-             _('Понаднормові (×%.2g)') % ot_mult),
-            ('HOLIDAY', self.holiday_hours, hourly * max(hol_mult - 1.0, 0.0),
-             _('Святкові/неробочі (×%.2g)') % hol_mult),
-        ]
-        for code, hours, per_hour, note in surcharges:
-            if hours <= 0 or per_hour <= 0:
+        for segment in self._surcharge_segments(segments, params):
+            hourly = segment['rate']
+            if hourly <= 0:
                 continue
-            acc_type = AccrualType.search([('code', '=', code)], limit=1)
-            if not acc_type:
+            surcharges = [
+                ('NIGHT', segment['night'], hourly * night_rate / 100.0,
+                 _('Доплата за нічні (%.0f%%)') % night_rate),
+                ('OVERTIME', segment['overtime'], hourly * max(ot_mult - 1.0, 0.0),
+                 _('Понаднормові (×%.2g)') % ot_mult),
+                ('HOLIDAY', segment['holiday'], hourly * max(hol_mult - 1.0, 0.0),
+                 _('Святкові/неробочі (×%.2g)') % hol_mult),
+            ]
+            for code, hours, per_hour, note in surcharges:
+                if hours <= 0 or per_hour <= 0:
+                    continue
+                acc_type = AccrualType.search([('code', '=', code)], limit=1)
+                if not acc_type:
+                    continue
+                amount = round(per_hour * hours, 2)
+                if not amount:
+                    continue
+                Accrual.create({
+                    'payslip_id': self.id,
+                    'accrual_type_id': acc_type.id,
+                    'quantity': hours,
+                    'rate': round(per_hour, 4),
+                    'amount': amount,
+                    'is_auto_generated': True,
+                    'notes': self._segment_note(
+                        note, segment, several, versions),
+                })
+
+    def _surcharge_segments(self, segments, params):
+        """The segments whose rates the deviations are paid at.
+
+        Piece work is paid by average earnings, which the automatic
+        calculation does not do, so its segments are left out.
+
+        A deviation whose days do not add up to the figure on the payslip was
+        entered by hand: it has no date to be placed on, so it is paid whole
+        at the rate of the last segment — what happened before there were
+        segments at all. Nothing is averaged.
+        """
+        self.ensure_one()
+        paid = []
+        for segment in segments:
+            version = segment['version']
+            if getattr(version, 'salary_form', 'time') == 'piece':
                 continue
-            amount = round(per_hour * hours, 2)
-            if not amount:
-                continue
-            Accrual.create({
-                'payslip_id': self.id,
-                'accrual_type_id': acc_type.id,
-                'quantity': hours,
-                'rate': round(per_hour, 4),
-                'amount': amount,
-                'is_auto_generated': True,
-                'notes': note,
-            })
+            paid.append(dict(
+                segment, rate=self._base_hourly_rate(version, params, segment)))
+        if not paid:
+            return []
+        for key, total in (('night', self.night_hours),
+                           ('overtime', self.overtime_hours),
+                           ('holiday', self.holiday_hours)):
+            if float_compare(sum(segment[key] for segment in paid),
+                             total, precision_digits=2) != 0:
+                for segment in paid:
+                    segment[key] = 0.0
+                paid[-1][key] = total
+        return paid
 
     def _generate_deductions(self):
         """Generate deduction lines.

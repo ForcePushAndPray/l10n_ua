@@ -160,7 +160,7 @@ class HrEmployee(models.Model):
 
     tariff_grade_id = fields.Many2one(
         related='version_id.tariff_grade_id', inherited=True,
-        readonly=False, groups="hr.group_hr_user")
+        readonly=False, check_company=True, groups="hr.group_hr_user")
     work_conditions = fields.Selection(
         related='version_id.work_conditions', inherited=True,
         readonly=False, groups="hr.group_hr_user")
@@ -238,3 +238,21 @@ class HrEmployee(models.Model):
             'domain': [('employee_id', '=', self.id)],
             'context': {'default_employee_id': self.id},
         }
+
+    def create_version(self, values):
+        """A version of the same contract keeps the allowances; a new one does not.
+
+        `allowance_ids` is copied with a version, so that a version written
+        for any change of the card keeps them. A hiring order opens a new
+        employment the same way — core copies the version in force on that
+        date, which for a re-hire is the last one of the previous employment
+        — and the allowances agreed then are not the terms of the new one.
+        Passing the field empty is how core keeps a one2many out of the copy.
+        """
+        self.ensure_one()
+        date, start = values.get('date_version'), values.get('contract_date_start')
+        if date and start and 'allowance_ids' not in values:
+            source = self._get_version(fields.Date.to_date(date))
+            if source and source.contract_date_start != fields.Date.to_date(start):
+                values = dict(values, allowance_ids=[])
+        return super().create_version(values)
