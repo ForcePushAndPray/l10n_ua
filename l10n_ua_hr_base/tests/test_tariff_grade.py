@@ -273,6 +273,22 @@ class TestTariffGradeNewPeriod(TestTariffGrade):
         with self.assertRaises(UserError):
             self._wizard(date_from=date(2026, 7, 1)).action_apply()
 
+    def test_an_archived_grade_does_not_block_its_start_date(self):
+        old = self._grades(((1, 1.0, 100.0),), date_from=date(2026, 11, 1))
+        old.action_archive()
+        # Archived in one request, created in the next, as in the interface.
+        self.env.flush_all()
+        new = self._grades(((1, 1.0, 110.0),), date_from=date(2026, 11, 1))
+        self.assertTrue(new.active)
+
+    def test_the_wizard_opens_a_period_over_an_archived_one(self):
+        self._grades(date_to=date(2026, 6, 30))
+        self._grades(date_from=date(2026, 7, 1)).action_archive()
+        self._wizard(date_from=date(2026, 7, 1)).action_apply()
+        opened = self.Grade.search([('company_id', '=', self.company.id),
+                                    ('date_from', '=', date(2026, 7, 1))])
+        self.assertEqual(len(opened), 2, 'grades 1 and 3 opened anew')
+
     def test_company_without_grades_stops_the_wizard(self):
         with self.assertRaises(UserError):
             self._wizard().action_apply()

@@ -47,8 +47,11 @@ class HrTariffGrade(models.Model):
         help='Hourly rate minus computed rate. Any difference, down to a '
              'kopiyka, is highlighted.')
 
-    _grade_uniq = models.Constraint(
-        'unique(company_id, grade, date_from)',
+    # Among active grades only: an archived grade is in force nowhere — the
+    # checks of overlaps and gaps leave it out too — and a period opened
+    # again on its start date must not run into it.
+    _grade_active_uniq = models.UniqueIndex(
+        '(company_id, grade, date_from) WHERE active',
         'Tariff grade must be unique for a company and a start date!',
     )
 

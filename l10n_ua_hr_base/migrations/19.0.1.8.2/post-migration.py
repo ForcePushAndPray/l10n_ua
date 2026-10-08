@@ -170,8 +170,12 @@ def _log_coefficients(env, cr):
                 '%(rate).2f times the coefficient %(coefficient)s, that is '
                 '%(paid).2f an hour. A rate is now paid as it stands, '
                 '%(rate).2f an hour. If the collective agreement states '
-                '%(paid).2f for this grade, correct the rate; if it states '
-                '%(rate).2f, nothing is to be done.', **values)
+                '%(paid).2f for this grade, enter it as the rate. If it states '
+                '%(rate).2f, the rate is right, but the employees of this grade '
+                'were paid %(paid).2f an hour until now: lowering their pay is a '
+                'change of the essential terms of work (art. 32 of the Labour '
+                'Code) — warn them two months ahead, or keep the difference as '
+                'a temporary allowance until then.', **values)
         grade.message_post(body=body)
     cr.execute(f'DROP TABLE {COEFFICIENT_BACKUP}')
 

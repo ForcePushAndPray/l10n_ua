@@ -2354,7 +2354,7 @@ msgid "Tariff Grade Template"
 msgstr "Типовий тарифний розряд"
 
 #. module: l10n_ua_hr_base
-#: model:ir.model.constraint,message:l10n_ua_hr_base.constraint_hr_tariff_grade_grade_uniq
+#: model:ir.model.constraint,message:l10n_ua_hr_base.constraint_hr_tariff_grade_grade_active_uniq
 msgid "Tariff grade must be unique for a company and a start date!"
 msgstr "Тарифний розряд має бути унікальним для компанії та дати початку дії!"
 
@@ -2651,14 +2651,20 @@ msgid ""
 "Until this upgrade payroll paid this grade its rate %(rate).2f times the "
 "coefficient %(coefficient)s, that is %(paid).2f an hour. A rate is now paid "
 "as it stands, %(rate).2f an hour. If the collective agreement states "
-"%(paid).2f for this grade, correct the rate; if it states %(rate).2f, nothing "
-"is to be done."
+"%(paid).2f for this grade, enter it as the rate. If it states %(rate).2f, the "
+"rate is right, but the employees of this grade were paid %(paid).2f an hour "
+"until now: lowering their pay is a change of the essential terms of work "
+"(art. 32 of the Labour Code) — warn them two months ahead, or keep the "
+"difference as a temporary allowance until then."
 msgstr ""
 "До цього оновлення розрахунок платив за цей розряд ставку %(rate).2f, "
 "помножену на коефіцієнт %(coefficient)s, тобто %(paid).2f за годину. Тепер "
 "ставка оплачується як є: %(rate).2f за годину. Якщо колективний договір "
-"встановлює для цього розряду %(paid).2f, виправте ставку; якщо %(rate).2f — "
-"нічого робити не треба."
+"встановлює для цього розряду %(paid).2f, внесіть її як ставку. Якщо "
+"%(rate).2f — ставка правильна, але працівники цього розряду досі отримували "
+"%(paid).2f за годину: зниження їхньої оплати — зміна істотних умов праці "
+"(ст. 32 КЗпП). Попередьте їх за два місяці або до того часу збережіть "
+"різницю тимчасовою доплатою."
 
 #. module: l10n_ua_hr_base
 #. odoo-python

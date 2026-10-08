@@ -1702,3 +1702,18 @@ msgstr ""
 "створення: %(allowances)s. Їх скопійовано з попередньої версії того самого "
 "договору — досі нова версія їх не переносила. Уже пораховані листки не "
 "змінюються; надбавки діють з наступного розрахунку."
+
+#. module: l10n_ua_hr_contract
+#. odoo-python
+#: code:addons/l10n_ua_hr_contract/migrations/19.0.8.2.1/post-migration.py:0
+msgid ""
+"The version of %(date)s has no allowances, while the version before it in the "
+"same contract had: %(allowances)s. A new version did not carry allowances over "
+"until now, but this one also changed the terms of pay, so they may have been "
+"taken off by order: the upgrade does not give them back. If the order for them "
+"still stands, add them to this version."
+msgstr ""
+"Версія від %(date)s не має надбавок, хоча попередня версія того самого "
+"договору мала: %(allowances)s. Досі нова версія не переносила надбавок, але ця "
+"ще й змінила умови оплати, тож їх могли зняти наказом: оновлення їх не "
+"повертає. Якщо наказ про них досі чинний, додайте їх до цієї версії."
