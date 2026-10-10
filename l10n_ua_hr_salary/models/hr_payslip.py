@@ -628,14 +628,15 @@ class HrPayslip(models.Model):
             return
 
         # default if there is no timesheets: the working days of the norm the
-        # employee was not away on — a day of time off is paid by its own
-        # line, not by the salary.
+        # employee was under contract and not away on, as the timesheet
+        # generator would mark them — a day of time off is paid by its own
+        # line, and a day before the hire or after the dismissal by nothing.
         worked, worked_hours = 0, 0.0
         away = self._absence_dates()
         working = self._working_dates(self.date_from, self.date_to)
         curr = self.date_from
         while curr <= self.date_to:
-            if curr in working and curr not in away:
+            if curr in working and curr not in away and self._employed_on(curr):
                 worked += 1
                 worked_hours += self._daily_hour_norm(self._version_on(curr))
             curr += relativedelta(days=1)
@@ -741,6 +742,29 @@ class HrPayslip(models.Model):
         ).sorted('date_version', reverse=True)
         return versions[0] if versions else self.version_id
 
+    def _employed_on(self, day):
+        """Whether the employee was under contract on that day.
+
+        A contract runs from the start date its versions carry to the end
+        date of the latest of them: every version of a contract repeats its
+        start, and only the last one is sure to know its end. A day inside no
+        contract is before the hire, after the dismissal or between two
+        contracts. An employee whose versions carry no contract period at all
+        — data imported without one — is taken to be under contract.
+        """
+        self.ensure_one()
+        latest = {}
+        for version in self.employee_id.version_ids.filtered('contract_date_start'):
+            known = latest.get(version.contract_date_start)
+            if not known or version.date_version > known.date_version:
+                latest[version.contract_date_start] = version
+        if not latest:
+            return True
+        return any(
+            start <= day and (not version.contract_date_end
+                              or version.contract_date_end >= day)
+            for start, version in latest.items())
+
     def _version_periods(self):
         """[(version, date_from, date_to)] over the period of the payslip.
 
@@ -825,7 +849,8 @@ class HrPayslip(models.Model):
         working = self._working_dates(self.date_from, self.date_to) \
             if self.date_from and self.date_to else {}
         while current and self.date_to and current <= self.date_to:
-            if current in working and current not in away:
+            if current in working and current not in away \
+                    and self._employed_on(current):
                 days.append((current, self._daily_hour_norm(
                     self._version_on(current)), 0.0, 0.0, 0.0, 1))
             current += relativedelta(days=1)

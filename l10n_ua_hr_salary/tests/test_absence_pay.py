@@ -217,3 +217,17 @@ class TestAbsencePay(SalaryTestCase):
         })
         with self.assertRaises(UserError):
             slip.action_compute_sheet()
+
+    def test_without_a_timesheet_a_hire_mid_month_is_paid_for_the_days_after_it(self):
+        # Hired on Thursday 17 July: 11 of the 23 weekdays of the month are
+        # under contract, as the timesheet generator would mark them.
+        self._july_with_one_holiday()
+        self.version.write({
+            'wage': 23000,
+            'contract_date_start': date(2025, 7, 17),
+            'date_version': date(2025, 7, 17),
+        })
+        slip = self._payslip(date(2025, 7, 1), date(2025, 7, 31))
+        self.assertEqual((slip.scheduled_days, slip.worked_days), (23, 11))
+        self.assertAlmostEqual(self._of_type(slip, 'SALARY').amount,
+                               round(23000 * 11 / 23, 2), places=2)

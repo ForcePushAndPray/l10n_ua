@@ -1005,20 +1005,24 @@ class HrLeave(models.Model):
         excluded_days = 0
 
         for payslip in payslips:
-            # УВАГА: береться весь нарахований дохід — див. коментар-близнюк
-            # у `hr_sick_leave.py`. Відбір за `is_basic_salary` тут не
-            # застосовується й ніколи не застосовувався.
-            total_earnings += payslip.gross_salary or 0
+            # Everything accrued counts: the selection by `is_basic_salary`
+            # has never been applied here (see the twin note in
+            # `hr_sick_leave.py`). The sickness benefits stay in with their
+            # days: the vacation average counts them as earnings. The
+            # maternity benefit does not count, and its days are days without
+            # pay, so both go.
+            maternity = payslip.accrual_ids.filtered(
+                lambda line: line.accrual_type_id.category == 'maternity')
+            total_earnings += (payslip.gross_salary or 0) - sum(maternity.mapped('amount'))
+            excluded_days += sum(maternity.mapped('quantity'))
 
-        # Calculate excluded days from sick leave and unpaid leave in the period
-        sick_leave_type = self.env['hr.leave.type'].search([
-            ('ua_leave_category', '=', 'sick')
-        ], limit=1)
+        # Days of unpaid leave in the period: no pay was kept for them. Sick
+        # days are not among them, since their benefit is in the earnings.
         unpaid_leave_type = self.env['hr.leave.type'].search([
             ('ua_leave_category', '=', 'unpaid')
         ])
 
-        excluded_leave_types = sick_leave_type.ids + unpaid_leave_type.ids
+        excluded_leave_types = unpaid_leave_type.ids
         if excluded_leave_types:
             excluded_leaves = self.env['hr.leave'].search([
                 ('employee_id', '=', self.employee_id.id),
@@ -1027,7 +1031,7 @@ class HrLeave(models.Model):
                 ('date_from', '>=', date_from),
                 ('date_to', '<=', date_to),
             ])
-            excluded_days = sum(excluded_leaves.mapped('number_of_days'))
+            excluded_days += sum(excluded_leaves.mapped('number_of_days'))
 
         # Count public holidays in the calculation period
         public_holidays = self.env['resource.calendar.leaves'].search_count([
