@@ -28,7 +28,7 @@
 
             /* Ukrainian accounting report styles */
             .ua-report {
-                font-family: 'Times New Roman', Times, serif;
+                font-family: 'Times New Roman', 'Liberation Serif', Times, serif;
                 font-size: 10pt;
                 width: 100%;
                 max-width: 100%;
@@ -128,6 +128,63 @@
             .ua-report table.no-border-all td {
                 border: none !important;
                 padding: 1px 5px;
+            }
+
+            /* Requisites (supplier, buyer, due date) and signature blocks.
+               'separate' keeps wkhtmltopdf from drawing a frame around them. */
+            .ua-report table.ua-requisites,
+            .ua-report table.ua-signatures {
+                border-collapse: separate;
+                border-spacing: 0;
+                border: none !important;
+            }
+            .ua-report table.ua-requisites td,
+            .ua-report table.ua-signatures td {
+                border: none !important;
+                padding: 1px 5px;
+            }
+            .ua-report table.ua-requisites {
+                margin-bottom: 10px;
+            }
+            .ua-report table.ua-requisites td {
+                padding-bottom: 6px;
+            }
+            .ua-report td.ua-requisites-label {
+                width: 18%;
+                font-weight: bold;
+                text-decoration: underline;
+                white-space: nowrap;
+            }
+            .ua-report .ua-report-date {
+                font-size: 11pt;
+                margin-top: 3px;
+            }
+            .ua-report table.ua-totals {
+                border-collapse: separate;
+                border-spacing: 0;
+                border: none !important;
+                margin-bottom: 10px;
+            }
+            .ua-report td.ua-totals-label {
+                width: 87%;
+                border: none !important;
+                text-align: right;
+                font-weight: bold;
+            }
+            .ua-report td.ua-totals-value {
+                width: 13%;
+                border: 1px solid black;
+                border-top: none;
+                text-align: right;
+                font-weight: bold;
+                white-space: nowrap;
+            }
+            .ua-report table.ua-signatures {
+                margin-top: 30px;
+            }
+            .ua-report td.ua-stamp {
+                padding-top: 10px;
+                font-size: 9pt;
             }
         </style>
     </template>
