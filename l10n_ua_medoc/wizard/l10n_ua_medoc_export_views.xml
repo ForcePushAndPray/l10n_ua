@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_medoc_export_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.medoc.export.form</field>
+        <field name="model">l10n_ua.medoc.export</field>
+        <field name="arch" type="xml">
+            <form string="Експорт у M.E.Doc">
+                <group invisible="file_data">
+                    <field name="doc_kind" readonly="tax_invoice_ids"
+                           widget="radio"/>
+                    <field name="tax_invoice_ids" widget="many2many_tags"
+                           invisible="doc_kind != 'pn'" readonly="1"/>
+                    <field name="move_ids" widget="many2many_tags"
+                           invisible="doc_kind == 'pn'" readonly="1"/>
+                </group>
+                <group invisible="not file_data">
+                    <field name="file_name" invisible="1"/>
+                    <field name="file_data" filename="file_name"/>
+                </group>
+                <div class="text-muted" invisible="not file_data">
+                    У M.E.Doc: Файл → Імпорт → Імпорт документів, вкажіть завантажений файл.
+                </div>
+                <footer>
+                    <button name="action_export" type="object" string="Сформувати файл"
+                            class="btn-primary" invisible="file_data"/>
+                    <button string="Закрити" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_medoc_export_tax_invoice_action" model="ir.actions.act_window">
+        <field name="name">Експорт у M.E.Doc</field>
+        <field name="res_model">l10n_ua.medoc.export</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="l10n_ua_account_vat.model_l10n_ua_tax_invoice"/>
+        <field name="binding_view_types">list,form</field>
+    </record>
+
+    <record id="l10n_ua_medoc_export_move_action" model="ir.actions.act_window">
+        <field name="name">Експорт у M.E.Doc</field>
+        <field name="res_model">l10n_ua.medoc.export</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_view_types">list,form</field>
+    </record>
+
+</odoo>
