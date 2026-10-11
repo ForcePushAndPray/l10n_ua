@@ -163,9 +163,9 @@
                 <!-- Signatures -->
                 <table class="ua-signatures">
                     <tr>
-                        <td class="text-right" style="width: 25%;">Виписав(ла):</td>
-                        <td class="text-center" style="width: 35%;"><span class="signature-line"/></td>
-                        <td style="width: 40%;">
+                        <td>Виписав(ла):</td>
+                        <td class="text-center"><span class="signature-line"/></td>
+                        <td>
                             <t t-out="comp_partner.l10n_ua_chief_position or 'Керівник'"/>
                             <t t-out="comp_partner.l10n_ua_chief_name"/>
                         </td>

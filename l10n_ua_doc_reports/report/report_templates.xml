@@ -186,10 +186,14 @@
                 white-space: nowrap;
             }
             .ua-report table.ua-signatures {
+                width: auto;
                 margin-top: 30px;
             }
             .ua-report table.ua-signatures .signature-line {
                 min-width: 200px;
+            }
+            .ua-report table.ua-signatures td {
+                padding-right: 15px;
             }
             .ua-report td.ua-stamp {
                 padding-top: 10px;
