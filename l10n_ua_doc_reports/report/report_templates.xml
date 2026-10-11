@@ -159,6 +159,12 @@
                 font-size: 11pt;
                 margin-top: 3px;
             }
+            /* Fixed layout keeps the amount column of the lines table and
+               the totals table the same width (13%). */
+            .ua-report table.ua-lines,
+            .ua-report table.ua-totals {
+                table-layout: fixed;
+            }
             .ua-report table.ua-totals {
                 border-collapse: separate;
                 border-spacing: 0;
@@ -181,6 +187,9 @@
             }
             .ua-report table.ua-signatures {
                 margin-top: 30px;
+            }
+            .ua-report table.ua-signatures .signature-line {
+                min-width: 200px;
             }
             .ua-report td.ua-stamp {
                 padding-top: 10px;

@@ -18,8 +18,9 @@ class AccountMove(models.Model):
         )
 
     def _get_ua_date_formatted(self, dt=None):
-        """Format date in Ukrainian long format: "15" січня 2026 р."""
-        return format_date_ua(dt or self.invoice_date or self.date)
+        """Format date in Ukrainian long format: «15» січня 2026 р."""
+        text = format_date_ua(dt or self.invoice_date or self.date)
+        return re.sub(r'^"(\d+)"', r'«\1»', text)
 
     def _get_ua_date_short(self, dt):
         """Format date as 15.01.2026, empty string for no date."""

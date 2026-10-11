@@ -94,7 +94,7 @@
                     <thead>
                         <tr>
                             <th style="width: 5%;">№</th>
-                            <th style="width: 40%;">Найменування</th>
+                            <th t-attf-style="width: #{40 if has_discount else 49}%;">Найменування</th>
                             <th style="width: 10%;">Од. вим.</th>
                             <th style="width: 10%;">Кількість</th>
                             <th style="width: 13%;">Ціна, грн</th>
@@ -128,8 +128,8 @@
                         <td class="ua-totals-value" t-out="o._ua_format_number(o.amount_tax)"/>
                     </tr>
                     <tr t-if="not o.amount_tax">
-                        <td class="ua-totals-label" style="font-weight: normal;">ПДВ не нараховується</td>
-                        <td class="ua-totals-value">—</td>
+                        <td class="ua-totals-label">ПДВ:</td>
+                        <td class="ua-totals-value text-center">—</td>
                     </tr>
                     <tr>
                         <td class="ua-totals-label">Всього:</td>
@@ -163,15 +163,17 @@
                 <!-- Signatures -->
                 <table class="ua-signatures">
                     <tr>
-                        <td>Виписав(ла): <span class="signature-line"/></td>
-                        <td class="text-right">
+                        <td class="text-right" style="width: 25%;">Виписав(ла):</td>
+                        <td class="text-center" style="width: 35%;"><span class="signature-line"/></td>
+                        <td style="width: 40%;">
                             <t t-out="comp_partner.l10n_ua_chief_position or 'Керівник'"/>
-                            <span class="signature-line"/>
                             <t t-out="comp_partner.l10n_ua_chief_name"/>
                         </td>
                     </tr>
                     <tr>
-                        <td colspan="2" class="text-center ua-stamp">М.П.</td>
+                        <td/>
+                        <td class="text-center ua-stamp">М.П.</td>
+                        <td/>
                     </tr>
                 </table>
 
