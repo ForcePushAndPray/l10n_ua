@@ -993,14 +993,15 @@ class TestPayslipMonthNorm(SalaryTestCase):
             slip._base_hourly_rate(self.version, self.psp_params),
             23000 / 184, places=2)
 
-    def _july_without_a_timesheet(self, calendar_xmlid, wage=23000):
+    def _july_without_a_timesheet(self, calendar, wage=23000):
         if 'hr.production.calendar' in self.env:
             self.env['hr.production.calendar'].search([
                 ('year', '=', 2025), ('company_id', '=', self.company.id),
             ]).unlink()
         self.version.write({
             'wage': wage,
-            'resource_calendar_id': self.env.ref(calendar_xmlid).id,
+            'resource_calendar_id': (self.env.ref(calendar) if isinstance(calendar, str)
+                                     else calendar).id,
         })
         self.psp_params.write({'min_hourly_wage': 0.0})
         slip = self.env['hr.payslip'].create({
@@ -1031,6 +1032,39 @@ class TestPayslipMonthNorm(SalaryTestCase):
             'l10n_ua_hr_contract.resource_calendar_ua_part20')
         self.assertAlmostEqual(slip.scheduled_hours, 184.0, places=2)
         self.assertAlmostEqual(salary, 11500.0, places=2)
+
+    def _seven_hour_days(self, reduced):
+        """A 35-hour week of 7-hour days, reduced working time or not."""
+        attendances = [(5, 0, 0)]
+        for weekday in range(5):
+            attendances += [
+                (0, 0, {'name': 'Morning', 'dayofweek': str(weekday),
+                        'hour_from': 8, 'hour_to': 12, 'day_period': 'morning'}),
+                (0, 0, {'name': 'Afternoon', 'dayofweek': str(weekday),
+                        'hour_from': 13, 'hour_to': 16, 'day_period': 'afternoon'}),
+            ]
+        calendar = self.env['resource.calendar'].create({
+            'name': 'Seven-hour days (%s)' % ('reduced' if reduced else 'part-time'),
+            'company_id': self.company.id,
+            'attendance_ids': attendances,
+            'ua_reduced_hours': reduced,
+        })
+        self.assertAlmostEqual(calendar.hours_per_week, 35.0, places=2)
+        return calendar
+
+    def test_seven_hour_days_by_agreement_are_paid_in_proportion(self):
+        # The 7-hour day of #342: part-time by agreement, 161 of the 184
+        # hours of July — seven eighths of the salary, with no work rate.
+        slip, salary = self._july_without_a_timesheet(self._seven_hour_days(False))
+        self.assertAlmostEqual(slip.scheduled_hours, 184.0, places=2)
+        self.assertAlmostEqual(salary, 23000 * 7 / 8, places=2)
+
+    def test_seven_hour_days_of_a_reduced_working_time_are_paid_in_full(self):
+        # The same days as a reduced working time by law: they are the
+        # whole norm of the employee, and the salary is paid in full.
+        slip, salary = self._july_without_a_timesheet(self._seven_hour_days(True))
+        self.assertAlmostEqual(slip.scheduled_hours, 23 * 7.0, places=2)
+        self.assertAlmostEqual(salary, 23000.0, places=2)
 
     def test_the_production_calendar_overrides_the_days_it_holds(self):
         if 'hr.production.calendar' not in self.env:
