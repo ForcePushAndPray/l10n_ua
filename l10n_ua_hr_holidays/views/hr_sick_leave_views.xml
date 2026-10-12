@@ -60,6 +60,7 @@
                         <group>
                             <field name="date_from"/>
                             <field name="date_to"/>
+                            <field name="confirmed_date"/>
                             <field name="calendar_days"/>
                         </group>
                     </group>

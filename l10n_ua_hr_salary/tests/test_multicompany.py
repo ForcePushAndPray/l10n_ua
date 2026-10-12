@@ -206,7 +206,9 @@ class TestPayslipCompanyScope(TransactionCase):
         grade_b = grade_of(self.company_b, 200.0)
         employee_a = self._create_employee(self.company_a, date(2030, 1, 1))
         employee_a.current_version_id.tariff_grade_id = grade_a
+        employee_a.current_version_id.salary_form = 'hourly'
         self.employee_b.current_version_id.tariff_grade_id = grade_b
+        self.employee_b.current_version_id.salary_form = 'hourly'
 
         rates = {}
         for employee, company in ((employee_a, self.company_a),

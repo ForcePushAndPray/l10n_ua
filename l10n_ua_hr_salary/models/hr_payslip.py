@@ -2,6 +2,7 @@ from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError, UserError
 from odoo.tools import format_date, float_compare
 from datetime import datetime, time
+from pytz import timezone, utc
 from dateutil.relativedelta import relativedelta
 import calendar
 from collections import defaultdict
@@ -573,26 +574,39 @@ class HrPayslip(models.Model):
         
         return True
 
-    def _daily_hour_norm(self, version=None):
-        """Денна норма годин з урахуванням ставки зайнятості (work_rate).
+    def _norm_hours_of(self, day, company_hours):
+        """The hours a working day adds to the norm of the month.
 
-        0.5 ставки → 4 год/день при 8-годинному дні. Базова денна норма —
-        з графіка/тижневої норми версії, помножена на work_rate. Так табель
-        неповного робочого часу відображає пропорційно зменшену норму, а не
-        фіксовані 8 год (#149).
-
-        The version is named when the norm is needed for a particular day:
-        the work rate may change inside the month, and then every day has a
-        norm of its own. Defaults to the version of the payslip.
+        A full day of the company, or the day of the version's schedule when
+        that schedule is a reduced working time: there the shorter day is the
+        whole norm of the employee, and the salary is paid in full for it. A
+        part-time employee — a work rate below one, or a shorter schedule
+        that is not a reduced working time — is measured against the full
+        day and paid in proportion to the hours worked.
         """
         self.ensure_one()
-        version = version if version is not None else self.version_id
-        if version and getattr(version, 'scheduled_hours_day', 0.0):
-            return version.scheduled_hours_day
-        base = 8.0
-        if version:
-            base *= (version.work_rate or 1.0)
-        return base
+        calendar = self._version_on(day).resource_calendar_id
+        if calendar.ua_reduced_hours and calendar.hours_per_day:
+            return calendar.hours_per_day
+        return company_hours
+
+    def _scheduled_hours_of(self, day, company_hours):
+        """The hours the employee is taken to have worked on a working day
+        when there is no timesheet to say.
+
+        Their schedule's day at their work rate: the weekly hours of the
+        schedule over five days. A shift or summarized schedule runs to the
+        norm over the month rather than week by week, and its long shifts are
+        not every day, so it is taken at the day of the norm.
+        """
+        self.ensure_one()
+        version = self._version_on(day)
+        calendar = version.resource_calendar_id
+        rate = version.work_rate or 1.0
+        if not calendar or calendar.ua_schedule_type in ('shift', 'summarized') \
+                or calendar.ua_reduced_hours or not calendar.hours_per_week:
+            return self._norm_hours_of(day, company_hours) * rate
+        return calendar.hours_per_week / 5.0 * rate
 
     def _compute_working_days(self):
         """Calculate scheduled and worked days"""
@@ -638,7 +652,7 @@ class HrPayslip(models.Model):
         while curr <= self.date_to:
             if curr in working and curr not in away and self._employed_on(curr):
                 worked += 1
-                worked_hours += self._daily_hour_norm(self._version_on(curr))
+                worked_hours += self._scheduled_hours_of(curr, working[curr])
             curr += relativedelta(days=1)
         self.worked_days = worked
         self.worked_hours = worked_hours
@@ -646,9 +660,9 @@ class HrPayslip(models.Model):
     def _l10n_ua_month_norm(self):
         """The working time norm of the month of the period end: (days, hours).
 
-        The norm of the month itself, the same for everyone in the company:
-        an absence, a hire in the middle of the month, a part-time rate or a
-        shift schedule does not shorten it. Each day is read the way the
+        The norm of the month itself: an absence, a hire in the middle of the
+        month, a part-time rate or a shift schedule does not shorten it. Each
+        day is read the way the
         timesheet generator reads it: from the production calendar when the
         company keeps one for the year and has the day in it, otherwise
         Monday to Friday. The calendar is optional on purpose — under martial
@@ -656,13 +670,15 @@ class HrPayslip(models.Model):
         valid setup, not a missing one.
 
         The hours of a day are those of a full-time day of the company's
-        working schedule, 8 when it has none.
+        working schedule, 8 when it has none — or of the employee's schedule
+        on a reduced working time, which is their whole norm.
         """
         self.ensure_one()
         month_start = self.date_to.replace(day=1)
         working = self._working_dates(
             month_start, month_start + relativedelta(months=1, days=-1))
-        return len(working), sum(working.values())
+        return len(working), sum(
+            self._norm_hours_of(day, hours) for day, hours in working.items())
 
     def _working_dates(self, date_from, date_to):
         """{date: full-time hours} of the working days between the two dates.
@@ -741,6 +757,24 @@ class HrPayslip(models.Model):
             lambda v: v.date_version <= day and v.contract_date_start
         ).sorted('date_version', reverse=True)
         return versions[0] if versions else self.version_id
+
+    def _attendance(self, worked_hours, version):
+        """The part of the month the employee was at work, at most whole.
+
+        The hours worked against the norm at the version's work rate: a
+        part-time employee who worked their hours was there the whole month,
+        and so was one who worked more. The amounts this scales already carry
+        the work rate.
+        """
+        self.ensure_one()
+        norm = self.scheduled_hours * (version.work_rate or 1.0)
+        if norm <= 0:
+            return 1.0
+        return min(1.0, worked_hours / norm)
+
+    def _salary_form(self, version):
+        """How the version is paid: 'salary', 'hourly' or 'piece'."""
+        return getattr(version, 'salary_form', False) or 'salary'
 
     def _employed_on(self, day):
         """Whether the employee was under contract on that day.
@@ -851,8 +885,8 @@ class HrPayslip(models.Model):
         while current and self.date_to and current <= self.date_to:
             if current in working and current not in away \
                     and self._employed_on(current):
-                days.append((current, self._daily_hour_norm(
-                    self._version_on(current)), 0.0, 0.0, 0.0, 1))
+                days.append((current, self._scheduled_hours_of(
+                    current, working[current]), 0.0, 0.0, 0.0, 1))
             current += relativedelta(days=1)
         return days
 
@@ -893,13 +927,13 @@ class HrPayslip(models.Model):
                 grades[version] = self.env['hr.tariff.grade'].search([
                     ('company_id', '=', version.tariff_grade_id.company_id.id),
                     ('grade', '=', version.tariff_grade_id.grade),
-                ], order='date_from') if version.tariff_grade_id \
+                ], order='date_from') if self._salary_form(version) == 'hourly' \
                     else self.env['hr.tariff.grade']
             tariff = next(
                 (period for period in grades[version]
                  if period.date_from <= day
                  and (not period.date_to or period.date_to >= day)), None)
-            if version.tariff_grade_id and tariff is None:
+            if self._salary_form(version) == 'hourly' and tariff is None:
                 self._check_tariff_rate(
                     version, self.env['hr.tariff.grade'], day)
             # The wage of a version is one figure; only a version without one
@@ -916,7 +950,7 @@ class HrPayslip(models.Model):
             # On a tariff grade the salary is paid by the hour, and the wage
             # is read only by the seniority and indexation bases; where
             # nothing reads it, it does not split anything either.
-            wage_matters = (not version.tariff_grade_id
+            wage_matters = (self._salary_form(version) != 'hourly'
                             or getattr(version, 'seniority_enabled', False)
                             or getattr(version, 'indexation_enabled', False))
             # Not the version itself: two versions that pay alike — and Odoo
@@ -995,7 +1029,7 @@ class HrPayslip(models.Model):
         self.ensure_one()
         return (
             round(version.work_rate or 1.0, 4),
-            getattr(version, 'salary_form', 'time'),
+            self._salary_form(version),
             tuple(sorted(
                 (allowance.allowance_type_id.id,
                  round(allowance._l10n_ua_amount_at(
@@ -1015,7 +1049,7 @@ class HrPayslip(models.Model):
         return {
             'version': version,
             'grade': version.tariff_grade_id._l10n_ua_grade_on(self.date_to)
-            if version.tariff_grade_id else self.env['hr.tariff.grade'],
+            if self._salary_form(version) == 'hourly' else self.env['hr.tariff.grade'],
             'wage': self._get_effective_wage(version),
             'hours': self.worked_hours, 'days': self.worked_days,
             'night': self.night_hours, 'overtime': self.overtime_hours,
@@ -1256,7 +1290,6 @@ class HrPayslip(models.Model):
         segments = self._pay_segments() or [self._whole_period_segment()]
         several = len(segments) > 1
         versions = len({segment['version'] for segment in segments}) > 1
-        total_days = sum(segment['days'] for segment in segments)
 
         # If the user already entered a base-wage accrual by hand, don't add the
         # version-based one on top — that would double-count the salary.
@@ -1268,13 +1301,13 @@ class HrPayslip(models.Model):
         for segment in segments:
             version = segment['version']
             # Форма оплати праці: відрядна замінює окладну/тарифну (#143).
-            if getattr(version, 'salary_form', 'time') == 'piece':
+            if self._salary_form(version) == 'piece':
                 self._generate_piece_work(version, params, segment)
                 continue
             if not salary_type or has_manual_salary:
                 continue
-            # tariff grade calculations
-            if version.tariff_grade_id:
+            # Hourly: the tariff grade's rate for the hours worked.
+            if self._salary_form(version) == 'hourly':
                 if segment['hours'] > 0:
                     tariff = segment['grade']
                     self._check_tariff_rate(version, tariff, segment['date_from'])
@@ -1296,30 +1329,21 @@ class HrPayslip(models.Model):
                                 several, versions),
                        })
 
-            # monthly wage calculation
+            # Monthly salary: the salary over the norm of the month, for the
+            # hours worked. No ceiling — hours above the norm are paid as
+            # hours, and their overtime surcharge comes on top of them. No
+            # work rate either: a part-time employee's proportion is already
+            # in the hours they work, and the norm is a full-time one.
             else:
-                # Ставка зайнятості (work_rate): 0.5 ставки → половина окладу.
-                # Тарифний (погодинний) шлях цього не потребує — там
-                # пропорційність дають фактично відпрацьовані години.
-                monthly_wage = segment['wage'] * (version.work_rate or 1.0)
-                if monthly_wage and self.scheduled_days > 0:
-                    # scheduled_days - number of expected working days in the months
-                    daily_rate = monthly_wage / self.scheduled_days
-                    if not several and self.worked_days >= self.scheduled_days:
-                        amount = monthly_wage  # full (rate-adjusted) amount if worked all days
-                    else:
-                        # More worked days than scheduled never pay more than
-                        # the month: the same ceiling the single segment has
-                        # just above, shared out between the segments.
-                        amount = daily_rate * segment['days'] * min(
-                            1.0, self.scheduled_days / max(total_days, 1))
-
+                wage = segment['wage']
+                if wage and self.scheduled_hours > 0:
+                    hourly = wage / self.scheduled_hours
                     self.env['hr.payslip.accrual'].create({
                         'payslip_id': self.id,
                         'accrual_type_id': salary_type.id,
-                        'quantity': segment['days'],
-                        'rate': daily_rate,
-                        'amount': round(amount, 2),
+                        'quantity': segment['hours'],
+                        'rate': round(hourly, 4),
+                        'amount': round(hourly * segment['hours'], 2),
                         'is_auto_generated': True,
                         'notes': self._segment_note(
                             '', segment, several, versions) or False,
@@ -1344,17 +1368,24 @@ class HrPayslip(models.Model):
         """Accrue the pay of the absences that fall in the period.
 
         The salary pays the days worked against the norm of the month, so a
-        day away is paid by its own line: a vacation day at the average daily
-        salary of its time off, a sick day at the daily rate of its
-        certificate — the first `employer_days` by the employer, the rest by
-        the fund — and a maternity day by the maternity benefit. The rates are
-        the ones the time off and the certificate already calculate; this only
-        places their days in the payslip of the month each day falls in, so an
-        absence across two months is paid by both.
+        day away is paid by its own line, at the rate the time off or the
+        certificate already calculates:
 
-        A type entered by hand on the payslip is left to it, as the salary
-        is. An absence that cannot be paid stops the calculation instead of
-        leaving its days unpaid without a word.
+        - a vacation day at the average daily salary of its time off, in the
+          payslip of the month the day falls in — a vacation across two months
+          is paid by both. A paid time off whose type has no Ukrainian
+          category is paid the same way, as the time off itself calculates
+          its pay;
+        - a sickness at the daily rate of its certificate — the first
+          `employer_days` by the employer, the rest by the fund, a pregnancy
+          by the maternity benefit — for all its days at once, in the payslip
+          of the month the certificate was confirmed. A certificate often
+          comes after the month the sickness started; until then its days are
+          days away with nothing to pay them, and the payslip is computed all
+          the same. A certificate confirmed before the payslip accrued
+          benefits has no confirmation date and is left to whoever paid it.
+
+        A type entered by hand on the payslip is left to it, as the salary is.
 
         Absences come from `l10n_ua_hr_holidays`, which this module does not
         require: without it there is nothing to read.
@@ -1391,8 +1422,8 @@ class HrPayslip(models.Model):
         certificates = self.env['hr.sick.leave'].search([
             ('employee_id', '=', self.employee_id.id),
             ('state', 'in', ('confirmed', 'paid')),
-            ('date_from', '<=', self.date_to),
-            ('date_to', '>=', self.date_from),
+            ('confirmed_date', '>=', self.date_from),
+            ('confirmed_date', '<=', self.date_to),
         ], order='date_from')
         leaves = self.env['hr.leave'].search([
             ('employee_id', '=', self.employee_id.id),
@@ -1421,31 +1452,11 @@ class HrPayslip(models.Model):
         for leave in leaves:
             category = leave.holiday_status_id.ua_leave_category
             if category in ('sick', 'maternity'):
-                # Paid by its certificate below; without one there is nothing
-                # to pay it by.
-                if not (leave.sick_leave_id & certificates
-                        or certificates.filtered(lambda c: c.leave_id == leave)):
-                    raise UserError(_(
-                        'The time off "%(leave)s" of %(employee)s has no '
-                        'confirmed sick-leave certificate, so its days cannot '
-                        'be paid. Enter and confirm the certificate in Sick '
-                        'Leaves.',
-                        leave=leave.display_name,
-                        employee=self.employee_id.name))
+                # Paid by its certificate, in the month it is confirmed.
                 continue
             if not leave.holiday_status_id.is_paid or category in ('childcare', 'unpaid') \
                     or leave.holiday_status_id.request_unit != 'day':
                 continue
-            if not category:
-                # Without it, a paid sickness or maternity leave would be paid
-                # as a vacation.
-                raise UserError(_(
-                    'The time off type "%(type)s" has no Ukrainian leave '
-                    'category, so the time off "%(leave)s" of %(employee)s '
-                    'cannot be paid. Set the category on the time off type.',
-                    type=leave.holiday_status_id.display_name,
-                    leave=leave.display_name,
-                    employee=self.employee_id.name))
             # The days of the time off in the period, less the public holidays
             # — the same list its length is reduced by.
             first = max(leave.request_date_from, self.date_from)
@@ -1483,21 +1494,16 @@ class HrPayslip(models.Model):
                 certificate.date_from + relativedelta(days=n)
                 for n in range((certificate.date_to - certificate.date_from).days + 1)
             }, certificate.name)
-            employer = fund = 0
-            for n in range((certificate.date_to - certificate.date_from).days + 1):
-                day = certificate.date_from + relativedelta(days=n)
-                if self.date_from <= day <= self.date_to:
-                    if n < certificate.employer_days:
-                        employer += 1
-                    else:
-                        fund += 1
+            days = (certificate.date_to - certificate.date_from).days + 1
+            employer = min(certificate.employer_days, days)
+            fund = days - employer
             accrue('SICK_EMP', employer, rate, certificate.name)
             accrue('MATERNITY' if certificate.sick_leave_type == 'pregnancy'
                    else 'SICK_FSS', fund, rate, certificate.name)
 
     def _absence_dates(self):
         """The days of the period the employee was away on a validated time off
-        counted in days, or on a confirmed sick-leave certificate.
+        counted in days, or on a sick-leave certificate not cancelled.
 
         A public holiday inside a time off is not part of it — the time off is
         shortened by it and does not pay it — so it is not a day away either.
@@ -1528,9 +1534,11 @@ class HrPayslip(models.Model):
             ('request_date_from', '<=', self.date_to),
             ('request_date_to', '>=', self.date_from),
         ])
+        # A certificate still in draft is a sickness all the same: its days
+        # are not worked, whenever its benefit comes.
         certificates = self.env['hr.sick.leave'].search([
             ('employee_id', '=', self.employee_id.id),
-            ('state', 'in', ('confirmed', 'paid')),
+            ('state', 'in', ('draft', 'confirmed', 'paid')),
             ('date_from', '<=', self.date_to),
             ('date_to', '>=', self.date_from),
         ])
@@ -1540,19 +1548,34 @@ class HrPayslip(models.Model):
 
     def _public_holiday_dates(self):
         """The public holidays of the period, from the list time off is
-        shortened by."""
+        shortened by: those of the payslip's company and those of none.
+
+        A holiday is stored in UTC, and a day of the period is a holiday when
+        the holiday covers its noon in the time zone of the company's working
+        schedule. A holiday entered in local time starts the evening before
+        in UTC, and one shipped as a UTC day ends early the next morning in
+        local time; read by noon, both fall on their own day.
+        """
         self.ensure_one()
+        tz = timezone(self.company_id.resource_calendar_id.tz
+                      or self.env.user.tz or 'UTC')
+
+        def to_utc(day, moment):
+            return tz.localize(datetime.combine(day, moment)).astimezone(
+                utc).replace(tzinfo=None)
+
         found = self.env['resource.calendar.leaves'].search([
             ('resource_id', '=', False),
-            ('date_from', '<=', datetime.combine(self.date_to, time.max)),
-            ('date_to', '>=', datetime.combine(self.date_from, time.min)),
+            ('company_id', 'in', (self.company_id.id, False)),
+            ('date_from', '<=', to_utc(self.date_to, time.max)),
+            ('date_to', '>=', to_utc(self.date_from, time.min)),
         ])
-        dates = set()
-        for holiday in found:
-            current = max(holiday.date_from.date(), self.date_from)
-            while current <= min(holiday.date_to.date(), self.date_to):
+        dates, current = set(), self.date_from
+        while current <= self.date_to:
+            noon = to_utc(current, time(12, 0))
+            if any(holiday.date_from <= noon <= holiday.date_to for holiday in found):
                 dates.add(current)
-                current += relativedelta(days=1)
+            current += relativedelta(days=1)
         return dates
 
     def _generate_allowances(self, segments, several, versions):
@@ -1662,7 +1685,7 @@ class HrPayslip(models.Model):
         # Experience as of the end of the payslip period, not "today": a
         # recomputation of a past month must apply that period's percentage.
         years = self.employee_id._get_company_experience_years(self.date_to)
-        worked = sum(segment['days'] for segment in segments)
+        worked = sum(segment['hours'] for segment in segments)
         entries = []
         for segment, share in zip(segments, self._segment_weights(segments)):
             version = segment['version']
@@ -1681,9 +1704,7 @@ class HrPayslip(models.Model):
             if monthly_wage <= 0:
                 continue
             full = monthly_wage * percent / 100.0
-            # Пропорція за фактично відпрацьований час (неповний місяць).
-            if self.scheduled_days and worked < self.scheduled_days:
-                full = full * worked / self.scheduled_days
+            full *= self._attendance(worked, version)
             # The part of it this segment pays.
             entries.append((segment, percent, full * share))
         parts = self._rounded_parts(
@@ -1722,7 +1743,7 @@ class HrPayslip(models.Model):
         if subsistence <= 0:
             return
         threshold = params.indexation_threshold or 101.0
-        worked = sum(segment['days'] for segment in segments)
+        worked = sum(segment['hours'] for segment in segments)
         entries = []
         for segment, share in zip(segments, self._segment_weights(segments)):
             version = segment['version']
@@ -1739,9 +1760,7 @@ class HrPayslip(models.Model):
             monthly_wage = segment['wage'] * (version.work_rate or 1.0)
             base_amount = min(monthly_wage, subsistence) if monthly_wage else subsistence
             full = base_amount * percent / 100.0
-            # Пропорція за фактично відпрацьований час (неповний місяць).
-            if self.scheduled_days and worked < self.scheduled_days:
-                full = full * worked / self.scheduled_days
+            full *= self._attendance(worked, version)
             # The part of it this segment pays.
             entries.append((segment, percent, base_month, full * share))
         parts = self._rounded_parts(
@@ -1785,8 +1804,9 @@ class HrPayslip(models.Model):
     def _base_hourly_rate(self, version, params, segment=None):
         """Base hourly rate for surcharges.
 
-        On a tariff grade, the hourly rate of the grade in force; otherwise
-        the full-time salary over the norm of the month. Both are full-time
+        On the hourly form, the hourly rate of the tariff grade in force;
+        otherwise the full-time salary over the norm of the month — the same
+        rate the salary pays an hour at. Both are full-time
         figures, so the work rate does not enter: an hour of a part-timer
         costs what an hour of the position costs. Never below the statutory
         minimum hourly wage. With a segment, the grade and the salary are the
@@ -1794,7 +1814,7 @@ class HrPayslip(models.Model):
         """
         self.ensure_one()
         min_hourly = params.min_hourly_wage or 0.0
-        if getattr(version, 'tariff_grade_id', False):
+        if self._salary_form(version) == 'hourly':
             if segment:
                 self._check_tariff_rate(
                     version, segment['grade'], segment['date_from'])
@@ -1874,7 +1894,7 @@ class HrPayslip(models.Model):
         paid = []
         for segment in segments:
             version = segment['version']
-            if getattr(version, 'salary_form', 'time') == 'piece':
+            if self._salary_form(version) == 'piece':
                 continue
             paid.append(dict(
                 segment, rate=self._base_hourly_rate(version, params, segment)))

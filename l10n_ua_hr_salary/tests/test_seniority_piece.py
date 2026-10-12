@@ -89,7 +89,7 @@ class TestSeniorityPiece(SalaryTestCase):
         self.version.write({
             'seniority_enabled': True, 'seniority_scale_id': self.scale.id})
         slip = self._payslip()
-        slip.write({'worked_days': 10})  # half of the month
+        slip.write({'worked_days': 10, 'worked_hours': 80.0})  # half of the month
         slip._generate_accruals()
         acc = self._accrual(slip, 'SENIORITY')
         # 25000 * 10% * 10/20 = 1250

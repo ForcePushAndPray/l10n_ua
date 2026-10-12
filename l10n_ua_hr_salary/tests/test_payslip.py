@@ -304,6 +304,7 @@ class TestPayslipTariffGrade(SalaryTestCase):
         Grade.create(dict(common, hourly_rate=174.0, date_from=date(2025, 7, 1),
                           date_to=date(2025, 12, 31)))
         cls.version.tariff_grade_id = cls.grade6
+        cls.version.salary_form = 'hourly'
 
     def _salary(self, month):
         slip = self.env['hr.payslip'].create({
@@ -438,6 +439,7 @@ class TestPayslipSegments(SalaryTestCase):
             'date_version': date(2025, 7, 16),
             'company_id': self.company.id,
             'wage': self.version.wage,
+            'salary_form': self.version.salary_form,
         }, **values))
 
     def _lines(self, slip, accrual_type=None):
@@ -450,6 +452,7 @@ class TestPayslipSegments(SalaryTestCase):
 
     def test_rate_change_inside_the_month_is_paid_by_the_day(self):
         self.version.tariff_grade_id = self.before
+        self.version.salary_form = 'hourly'
         lines = self._lines(self._payslip())
         self.assertEqual(len(lines), 2, 'one line for each rate')
         self.assertAlmostEqual(lines[0].quantity, 88.0, places=2)
@@ -463,6 +466,7 @@ class TestPayslipSegments(SalaryTestCase):
 
     def test_a_month_in_one_period_is_paid_on_one_line(self):
         self.version.tariff_grade_id = self.other_grade
+        self.version.salary_form = 'hourly'
         lines = self._lines(self._payslip())
         self.assertEqual(len(lines), 1)
         self.assertAlmostEqual(lines.amount, 184.0 * 150.0, places=2)
@@ -470,6 +474,7 @@ class TestPayslipSegments(SalaryTestCase):
 
     def test_hours_entered_by_hand_are_not_split(self):
         self.version.tariff_grade_id = self.before
+        self.version.salary_form = 'hourly'
         lines = self._lines(self._payslip(worked_hours=170.0))
         self.assertEqual(len(lines), 1)
         self.assertAlmostEqual(lines.rate, 120.0, places=2)
@@ -477,12 +482,14 @@ class TestPayslipSegments(SalaryTestCase):
 
     def test_a_worked_day_without_a_rate_stops_payroll(self):
         self.version.tariff_grade_id = self.before
+        self.version.salary_form = 'hourly'
         self.before.action_archive()
         with self.assertRaises(UserError):
             self._lines(self._payslip())
 
     def test_the_statutory_floor_holds_for_each_part_on_its_own(self):
         self.version.tariff_grade_id = self.before
+        self.version.salary_form = 'hourly'
         self.psp_params.min_hourly_wage = 110.0
         lines = self._lines(self._payslip())
         self.assertAlmostEqual(lines[0].rate, 110.0, places=2,
@@ -491,6 +498,7 @@ class TestPayslipSegments(SalaryTestCase):
 
     def test_night_hours_entered_by_hand_are_paid_whole_at_the_end_rate(self):
         self.version.tariff_grade_id = self.before
+        self.version.salary_form = 'hourly'
         slip = self._payslip(night_hours=10.0)
         night = self._lines(slip, self.night_type)
         self.assertEqual(len(night), 1)
@@ -504,14 +512,16 @@ class TestPayslipSegments(SalaryTestCase):
         # Odoo writes a version for any change of the card; one that touches
         # no pay must not split the month.
         self.version.tariff_grade_id = self.other_grade
-        self._second_version(tariff_grade_id=self.other_grade.id)
+        self.version.salary_form = 'hourly'
+        self._second_version(salary_form='hourly', tariff_grade_id=self.other_grade.id)
         lines = self._lines(self._payslip())
         self.assertEqual(len(lines), 1)
         self.assertAlmostEqual(lines.amount, 184.0 * 150.0, places=2)
 
     def test_a_grade_change_by_version_is_paid_by_the_day(self):
         self.version.tariff_grade_id = self.other_grade
-        self._second_version(tariff_grade_id=self.before.id)
+        self.version.salary_form = 'hourly'
+        self._second_version(salary_form='hourly', tariff_grade_id=self.before.id)
         lines = self._lines(self._payslip())
         self.assertEqual(len(lines), 2)
         self.assertAlmostEqual(lines[0].amount, 88.0 * 150.0, places=2)
@@ -521,7 +531,7 @@ class TestPayslipSegments(SalaryTestCase):
         self.assertIn('16', lines[1].notes)
 
     def test_a_wage_change_by_version_is_paid_by_the_day(self):
-        self.version.write({'tariff_grade_id': False, 'wage': 23000})
+        self.version.write({'tariff_grade_id': False, 'salary_form': 'salary', 'wage': 23000})
         self._second_version(wage=46000)
         lines = self._lines(self._payslip())
         self.assertEqual(len(lines), 2)
@@ -529,13 +539,13 @@ class TestPayslipSegments(SalaryTestCase):
                                round(23000 / 23 * 11, 2), places=2)
         self.assertAlmostEqual(lines[1].amount,
                                round(46000 / 23 * 12, 2), places=2)
-        self.assertAlmostEqual(sum(lines.mapped('quantity')), 23.0, places=2,
-                               msg='no day is paid twice or lost')
+        self.assertAlmostEqual(sum(lines.mapped('quantity')), 184.0, places=2,
+                               msg='no hour is paid twice or lost')
 
     def test_a_work_rate_change_halves_the_hours_of_its_days(self):
-        self.version.write({'tariff_grade_id': self.other_grade.id,
+        self.version.write({'tariff_grade_id': self.other_grade.id, 'salary_form': 'hourly',
                             'wage': 23000})
-        self._second_version(tariff_grade_id=self.other_grade.id, work_rate=0.5)
+        self._second_version(salary_form='hourly', tariff_grade_id=self.other_grade.id, work_rate=0.5)
         slip = self._payslip()
         slip._compute_working_days()
         # 11 days at 8 hours and 12 days at 4.
@@ -554,16 +564,16 @@ class TestPayslipSegments(SalaryTestCase):
         })
 
     def test_an_allowance_dropped_by_a_version_is_paid_for_the_days_before(self):
-        self.version.write({'tariff_grade_id': self.other_grade.id})
+        self.version.write({'tariff_grade_id': self.other_grade.id, 'salary_form': 'hourly'})
         self._allowance(self.version, 2300)
-        self._second_version(tariff_grade_id=self.other_grade.id)
+        self._second_version(salary_form='hourly', tariff_grade_id=self.other_grade.id)
         lines = self._lines(self._payslip(), self.allowance_type)
         self.assertEqual(len(lines), 1, 'only the first version has one')
         # 11 of the 23 worked days of the month.
         self.assertAlmostEqual(lines.amount, 1100.0, places=2)
 
     def test_a_split_month_pays_one_allowance_not_two(self):
-        self.version.write({'tariff_grade_id': False, 'wage': 23000})
+        self.version.write({'tariff_grade_id': False, 'salary_form': 'salary', 'wage': 23000})
         self._allowance(self.version, 1000)
         second = self._second_version(wage=46000)
         self._allowance(second, 1000)
@@ -575,7 +585,7 @@ class TestPayslipSegments(SalaryTestCase):
     def test_an_allowance_is_paid_whole_for_a_part_of_the_month(self):
         # As always: whether an allowance shrinks for days not worked is a
         # question of its own, not of the split.
-        self.version.write({'tariff_grade_id': False})
+        self.version.write({'tariff_grade_id': False, 'salary_form': 'salary'})
         self._allowance(self.version, 3000)
         slip = self.env['hr.payslip'].create({
             'employee_id': self.employee.id,
@@ -587,7 +597,7 @@ class TestPayslipSegments(SalaryTestCase):
         self.assertAlmostEqual(lines.amount, 3000.0, places=2)
 
     def test_an_allowance_never_exceeds_the_month(self):
-        self.version.write({'tariff_grade_id': False})
+        self.version.write({'tariff_grade_id': False, 'salary_form': 'salary'})
         self._allowance(self.version, 3000)
         slip = self.env['hr.payslip'].create({
             'employee_id': self.employee.id,
@@ -599,10 +609,11 @@ class TestPayslipSegments(SalaryTestCase):
             lambda a: a.accrual_type_id == self.allowance_type)
         self.assertAlmostEqual(sum(lines.mapped('amount')), 3000.0, places=2)
 
-    def test_more_worked_days_than_scheduled_never_pay_more_than_the_month(self):
-        # 17.08–30.09.2025 holds 32 working days against the 22 of September;
-        # split between two wages it pays the month, shared out by the days.
-        self.version.write({'tariff_grade_id': False, 'wage': 22000})
+    def test_a_period_longer_than_the_month_pays_its_hours(self):
+        # 17.08–30.09.2025 holds 32 working days, 256 hours, against the 176
+        # of September: each wage pays its own hours at its own rate, with no
+        # ceiling — the period is a month and a half of work.
+        self.version.write({'tariff_grade_id': False, 'salary_form': 'salary', 'wage': 22000})
         self._second_version(wage=44000, date_version=date(2025, 9, 16))
         slip = self.env['hr.payslip'].create({
             'employee_id': self.employee.id,
@@ -611,12 +622,12 @@ class TestPayslipSegments(SalaryTestCase):
         slip.action_compute_sheet()
         lines = slip.accrual_ids.filtered(
             lambda a: a.accrual_type_id == self.salary_type).sorted('id')
-        self.assertEqual(lines.mapped('quantity'), [21, 11])
-        self.assertAlmostEqual(lines[0].amount, round(22000 * 21 / 32, 2), places=2)
-        self.assertAlmostEqual(lines[1].amount, round(44000 * 11 / 32, 2), places=2)
+        self.assertEqual(lines.mapped('quantity'), [168.0, 88.0])
+        self.assertAlmostEqual(lines[0].amount, round(22000 * 168 / 176, 2), places=2)
+        self.assertAlmostEqual(lines[1].amount, round(44000 * 88 / 176, 2), places=2)
 
     def test_a_version_from_create_version_keeps_the_month_whole(self):
-        self.version.write({'tariff_grade_id': False, 'wage': 23000})
+        self.version.write({'tariff_grade_id': False, 'salary_form': 'salary', 'wage': 23000})
         self._allowance(self.version, 2300)
         self.employee.create_version({'date_version': date(2025, 7, 16)})
         slip = self._payslip()
@@ -635,12 +646,12 @@ class TestPayslipSegments(SalaryTestCase):
                          [2.67], 'a single part is the amount rounded')
 
     def test_the_note_names_only_the_days_of_its_segment(self):
-        self.version.write({'tariff_grade_id': False, 'wage': 23000})
+        self.version.write({'tariff_grade_id': False, 'salary_form': 'salary', 'wage': 23000})
         self._second_version(wage=46000, date_version=date(2025, 7, 11))
         self._second_version(wage=23000, date_version=date(2025, 7, 21))
         lines = self._lines(self._payslip())
         self.assertEqual(len(lines), 2, 'the first and the third pay alike')
-        first = lines.filtered(lambda line: line.rate == 1000.0)
+        first = lines.filtered(lambda line: line.rate == round(23000 / 184, 4))
         self.assertIn(format_date(self.env, date(2025, 7, 10)), first.notes)
         self.assertIn(format_date(self.env, date(2025, 7, 21)), first.notes)
         self.assertNotIn(format_date(self.env, date(2025, 7, 14)), first.notes,
@@ -649,9 +660,9 @@ class TestPayslipSegments(SalaryTestCase):
     def test_piece_work_is_paid_for_the_days_it_was_the_form(self):
         piece_type = self.env['hr.accrual.type'].search(
             [('code', '=', 'PIECE')], limit=1)
-        self.version.write({'tariff_grade_id': False, 'wage': 23000,
+        self.version.write({'tariff_grade_id': False, 'salary_form': 'salary', 'wage': 23000,
                             'salary_form': 'piece'})
-        self._second_version(wage=23000, salary_form='time')
+        self._second_version(wage=23000, salary_form='salary')
         Entry = self.env['hr.piece.work.entry']
         for day, quantity in ((10, 100.0), (20, 50.0)):
             Entry.create({'name': f'Order {day}', 'employee_id': self.employee.id,
@@ -662,23 +673,24 @@ class TestPayslipSegments(SalaryTestCase):
                                msg='only the entries of the piece-work days')
 
     def test_different_salary_currencies_refuse_one_payslip(self):
-        self.version.write({'tariff_grade_id': self.other_grade.id})
+        self.version.write({'tariff_grade_id': self.other_grade.id, 'salary_form': 'hourly'})
         usd = self.env.ref('base.USD')
-        self._second_version(tariff_grade_id=self.other_grade.id,
+        self._second_version(salary_form='hourly', tariff_grade_id=self.other_grade.id,
                              salary_currency_id=usd.id, wage=1000)
         with self.assertRaises(UserError):
             self._lines(self._payslip())
 
     def test_a_diia_city_change_refuses_one_payslip(self):
-        self.version.write({'tariff_grade_id': self.other_grade.id})
-        self._second_version(tariff_grade_id=self.other_grade.id,
+        self.version.write({'tariff_grade_id': self.other_grade.id, 'salary_form': 'hourly'})
+        self._second_version(salary_form='hourly', tariff_grade_id=self.other_grade.id,
                              contract_type_ua='gig', diia_city_employee=True)
         with self.assertRaises(UserError):
             self._lines(self._payslip())
 
     def test_the_payslip_keeps_one_version(self):
         self.version.tariff_grade_id = self.other_grade
-        second = self._second_version(tariff_grade_id=self.before.id)
+        self.version.salary_form = 'hourly'
+        second = self._second_version(salary_form='hourly', tariff_grade_id=self.before.id)
         slip = self._payslip()
         slip._generate_accruals()
         self.assertEqual(slip.version_id, self.version,
@@ -714,6 +726,7 @@ class TestPayslipSegmentsFromTimesheet(SalaryTestCase):
         cls.after = Grade.create(dict(common, hourly_rate=120.0,
                                       date_from=date(2025, 7, 16)))
         cls.version.tariff_grade_id = cls.before
+        cls.version.salary_form = 'hourly'
         cls.work_code = cls.env['hr.timesheet.code'].search(
             [('is_worked', '=', True)], limit=1)
 
@@ -769,10 +782,10 @@ class TestPayslipSegmentsFromTimesheet(SalaryTestCase):
 
     def test_a_day_off_worked_brings_hours_not_a_day_of_salary(self):
         # 16 worked days and 5 sick ones, and a Saturday worked on the
-        # day-off code: the sheet counts 16 worked days, and so does the
-        # salary; the Saturday is paid by its holiday surcharge. The norm is
-        # the 23 working days of July, not the days the sheet schedules.
-        self.version.write({'tariff_grade_id': False, 'wage': 21000})
+        # day-off code: the sheet counts 16 worked days and 136 hours. The
+        # salary pays the hours against the 184 of July — the Saturday's 8
+        # among them — and the Saturday's holiday surcharge comes on top.
+        self.version.write({'tariff_grade_id': False, 'salary_form': 'salary', 'wage': 21000})
         sick = self.env.ref('l10n_ua_hr_attendance_sheet.timesheet_code_sick')
         weekend = self.env.ref('l10n_ua_hr_attendance_sheet.timesheet_code_weekend')
         weekdays = self._july_weekdays()
@@ -783,15 +796,49 @@ class TestPayslipSegmentsFromTimesheet(SalaryTestCase):
         slip = self._payslip()
         slip.action_compute_sheet()
         self.assertEqual((slip.scheduled_days, slip.worked_days), (23, 16))
+        self.assertAlmostEqual(slip.scheduled_hours, 184.0, places=2)
         salary = self._of_type(slip, 'SALARY')
-        self.assertEqual(salary.mapped('quantity'), [16])
-        self.assertAlmostEqual(salary.amount, round(21000 * 16 / 23, 2), places=2)
+        self.assertEqual(salary.mapped('quantity'), [136.0])
+        self.assertAlmostEqual(salary.amount, round(21000 * 136 / 184, 2), places=2)
+
+    def test_a_shift_worker_is_paid_by_the_hours_of_their_shifts(self):
+        # 15 shifts of 12 hours entered by the timekeeper: 180 hours of the
+        # 184 of July, whatever the 15 days are against the 23 of the norm.
+        self.version.write({'tariff_grade_id': False, 'salary_form': 'salary', 'wage': 23000})
+        self._timesheet([(day, 12.0, 0.0) for day in range(1, 31, 2)])
+        slip = self._payslip()
+        slip.action_compute_sheet()
+        self.assertAlmostEqual(slip.worked_hours, 180.0, places=2)
+        self.assertAlmostEqual(self._of_type(slip, 'SALARY').amount,
+                               round(23000 * 180 / 184, 2), places=2)
+
+    def test_a_part_week_is_reduced_once(self):
+        # A 0.6 rate worked as three 8-hour days a week: the hours already are
+        # the part-time, and the rate does not reduce the salary again.
+        self.version.write({'tariff_grade_id': False, 'salary_form': 'salary',
+                            'wage': 23000, 'work_rate': 0.6})
+        days = [day for day in self._july_weekdays()
+                if date(2025, 7, day).weekday() in (0, 2, 4)]
+        self._timesheet([(day, 8.0, 0.0) for day in days])
+        slip = self._payslip()
+        slip.action_compute_sheet()
+        hours = 8.0 * len(days)
+        self.assertAlmostEqual(self._of_type(slip, 'SALARY').amount,
+                               round(23000 * hours / 184, 2), places=2)
+
+    def test_hours_above_the_norm_are_paid_without_a_ceiling(self):
+        self.version.write({'tariff_grade_id': False, 'salary_form': 'salary', 'wage': 23000})
+        self._timesheet([(day, 9.0, 0.0) for day in self._july_weekdays()])
+        slip = self._payslip()
+        slip.action_compute_sheet()
+        self.assertAlmostEqual(self._of_type(slip, 'SALARY').amount,
+                               round(23000 * 207 / 184, 2), places=2)
 
     def test_absent_days_leave_the_norm_and_cut_the_salary(self):
         # The way the generator writes it: the days of a leave are not
         # scheduled. They used to leave the norm with them, and 21 of 23
         # days paid the whole salary next to the vacation pay.
-        self.version.write({'tariff_grade_id': False, 'wage': 23000})
+        self.version.write({'tariff_grade_id': False, 'salary_form': 'salary', 'wage': 23000})
         self.company.resource_calendar_id = self.env.ref(
             'l10n_ua_hr_contract.resource_calendar_ua_std40')
         vacation = self.env.ref(
@@ -809,7 +856,7 @@ class TestPayslipSegmentsFromTimesheet(SalaryTestCase):
         self.assertAlmostEqual(salary.amount, 21000.0, places=2)
 
     def test_two_half_month_payslips_pay_the_month_once(self):
-        self.version.write({'tariff_grade_id': False, 'wage': 23000})
+        self.version.write({'tariff_grade_id': False, 'salary_form': 'salary', 'wage': 23000})
         self._timesheet([(day, 8.0, 0.0) for day in self._july_weekdays()])
         first = self._payslip(date_to=date(2025, 7, 16))
         second = self._payslip(date_from=date(2025, 7, 17))
@@ -880,7 +927,7 @@ class TestPayslipMonthNorm(SalaryTestCase):
         super().setUpClass()
         cls.company.resource_calendar_id = cls.env.ref(
             'l10n_ua_hr_contract.resource_calendar_ua_std40')
-        cls.version.write({'tariff_grade_id': False})
+        cls.version.write({'tariff_grade_id': False, 'salary_form': 'salary'})
 
     def _norm(self, date_from=date(2026, 8, 1), date_to=date(2026, 8, 31)):
         slip = self.env['hr.payslip'].create({
@@ -945,6 +992,45 @@ class TestPayslipMonthNorm(SalaryTestCase):
         self.assertAlmostEqual(
             slip._base_hourly_rate(self.version, self.psp_params),
             23000 / 184, places=2)
+
+    def _july_without_a_timesheet(self, calendar_xmlid, wage=23000):
+        if 'hr.production.calendar' in self.env:
+            self.env['hr.production.calendar'].search([
+                ('year', '=', 2025), ('company_id', '=', self.company.id),
+            ]).unlink()
+        self.version.write({
+            'wage': wage,
+            'resource_calendar_id': self.env.ref(calendar_xmlid).id,
+        })
+        self.psp_params.write({'min_hourly_wage': 0.0})
+        slip = self.env['hr.payslip'].create({
+            'employee_id': self.employee.id,
+            'date_from': date(2025, 7, 1), 'date_to': date(2025, 7, 31),
+        })
+        slip.action_compute_sheet()
+        salary = slip.accrual_ids.filtered(
+            lambda a: a.accrual_type_id.code == 'SALARY' and a.is_auto_generated)
+        return slip, sum(salary.mapped('amount'))
+
+    def test_a_reduced_working_time_is_the_whole_norm(self):
+        # A 36-hour week by law: 7.2 hours a day are the employee's full
+        # norm, and the salary is paid in full for them; an hour of the
+        # surcharges is the salary over those 165.6 hours.
+        slip, salary = self._july_without_a_timesheet(
+            'l10n_ua_hr_contract.resource_calendar_ua_std36')
+        self.assertAlmostEqual(slip.scheduled_hours, 23 * 7.2, places=2)
+        self.assertAlmostEqual(salary, 23000.0, places=2)
+        self.assertAlmostEqual(
+            slip._base_hourly_rate(self.version, self.psp_params),
+            23000 / (23 * 7.2), places=2)
+
+    def test_a_part_time_schedule_is_paid_in_proportion(self):
+        # Half days by agreement, not a reduced working time: 4 hours of a
+        # full 8-hour norm, half the salary — the rate left at one.
+        slip, salary = self._july_without_a_timesheet(
+            'l10n_ua_hr_contract.resource_calendar_ua_part20')
+        self.assertAlmostEqual(slip.scheduled_hours, 184.0, places=2)
+        self.assertAlmostEqual(salary, 11500.0, places=2)
 
     def test_the_production_calendar_overrides_the_days_it_holds(self):
         if 'hr.production.calendar' not in self.env:

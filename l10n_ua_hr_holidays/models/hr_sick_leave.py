@@ -115,6 +115,14 @@ class HrSickLeave(models.Model):
         digits=(16, 2)
     )
     
+    confirmed_date = fields.Date(
+        string='Confirmed On',
+        copy=False,
+        tracking=True,
+        help='The day the certificate was confirmed. The payslip of the month '
+             'this date falls in accrues the benefit for all its days: a '
+             'certificate often arrives after the month the sickness started.'
+    )
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
@@ -378,8 +386,16 @@ class HrSickLeave(models.Model):
 
     def action_confirm(self):
         """Confirm the sick leave. The absence and the order are separate
-        documents, created through their own buttons."""
-        self.write({'state': 'confirmed'})
+        documents, created through their own buttons.
+
+        The first confirmation dates it: the benefit is accrued in the month
+        of that date, and a certificate confirmed again keeps its month.
+        """
+        for rec in self:
+            rec.write({
+                'state': 'confirmed',
+                'confirmed_date': rec.confirmed_date or fields.Date.context_today(rec),
+            })
 
     def action_pay(self):
         self.write({'state': 'paid'})

@@ -71,7 +71,7 @@ class TestIndexation(SalaryTestCase):
         })
         slip.write({
             'scheduled_days': scheduled, 'worked_days': worked,
-            'scheduled_hours': 160.0, 'worked_hours': 160.0,
+            'scheduled_hours': 160.0, 'worked_hours': 160.0 * worked / scheduled,
         })
         return slip
 

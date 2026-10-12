@@ -2425,11 +2425,6 @@ msgid "Відпускні"
 msgstr "Відпускні"
 
 #. module: l10n_ua_hr_salary
-#: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_version__salary_form__piece
-msgid "Відрядна"
-msgstr "Відрядна"
-
-#. module: l10n_ua_hr_salary
 #: model:hr.accrual.type,name:l10n_ua_hr_salary.accrual_type_piece
 msgid "Відрядна оплата"
 msgstr "Відрядна оплата"
@@ -2439,16 +2434,6 @@ msgstr "Відрядна оплата"
 #: code:addons/l10n_ua_hr_salary/models/hr_payslip.py:0
 msgid "Відрядна оплата: %d наряд(ів)"
 msgstr "Відрядна оплата: %d наряд(ів)"
-
-#. module: l10n_ua_hr_salary
-#: model:ir.model.fields,help:l10n_ua_hr_salary.field_hr_employee__salary_form
-#: model:ir.model.fields,help:l10n_ua_hr_salary.field_hr_version__salary_form
-msgid ""
-"Відрядна форма: замість окладу нараховується сума за нарядами відрядної "
-"оплати (виробіток × розцінка) за місяць."
-msgstr ""
-"Відрядна форма: замість окладу нараховується сума за нарядами відрядної "
-"оплати (виробіток × розцінка) за місяць."
 
 #. module: l10n_ua_hr_salary
 #: model:ir.model.constraint,message:l10n_ua_hr_salary.constraint_hr_seniority_scale_line_percent_positive
@@ -3010,11 +2995,6 @@ msgid "Погашено"
 msgstr "Погашено"
 
 #. module: l10n_ua_hr_salary
-#: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_version__salary_form__time
-msgid "Погодинна / окладна"
-msgstr "Погодинна / окладна"
-
-#. module: l10n_ua_hr_salary
 #: model:ir.model.fields,help:l10n_ua_hr_salary.field_hr_psp_parameters__psp_150
 msgid "Податкова соціальна пільга 150% (75% ПМ)"
 msgstr "Податкова соціальна пільга 150% (75% ПМ)"
@@ -3253,12 +3233,6 @@ msgid "Файл у банк"
 msgstr "Файл у банк"
 
 #. module: l10n_ua_hr_salary
-#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_employee__salary_form
-#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_version__salary_form
-msgid "Форма оплати праці"
-msgstr "Форма оплати праці"
-
-#. module: l10n_ua_hr_salary
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_ifobs_employee_export_view_form
 msgid ""
 "Формує DBF «Дані щодо співробітників» для відкриття карток\n"
@@ -3489,18 +3463,6 @@ msgstr ""
 #. odoo-python
 #: code:addons/l10n_ua_hr_salary/models/hr_payslip.py:0
 msgid ""
-"The time off \"%(leave)s\" of %(employee)s has no confirmed sick-leave "
-"certificate, so its days cannot be paid. Enter and confirm the certificate "
-"in Sick Leaves."
-msgstr ""
-"Для відсутності «%(leave)s» працівника %(employee)s немає підтвердженого "
-"листка непрацездатності, тож її дні нема з чого оплатити. Внесіть і "
-"підтвердьте листок у розділі «Лікарняні»."
-
-#. module: l10n_ua_hr_salary
-#. odoo-python
-#: code:addons/l10n_ua_hr_salary/models/hr_payslip.py:0
-msgid ""
 "The timesheet of %(employee)s has %(dates)s as worked, but they fall on "
 "%(document)s. Correct the timesheet or the absence."
 msgstr ""
@@ -3508,13 +3470,34 @@ msgstr ""
 "але на них припадає %(document)s. Виправте табель або відсутність."
 
 #. module: l10n_ua_hr_salary
-#. odoo-python
-#: code:addons/l10n_ua_hr_salary/models/hr_payslip.py:0
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_employee__salary_form
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_version__salary_form
+msgid "Salary Form"
+msgstr "Форма оплати праці"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_version__salary_form__salary
+msgid "Monthly Salary"
+msgstr "Окладна"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_version__salary_form__hourly
+msgid "Hourly Rate"
+msgstr "Погодинна"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_version__salary_form__piece
+msgid "Piece Rate"
+msgstr "Відрядна"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,help:l10n_ua_hr_salary.field_hr_employee__salary_form
+#: model:ir.model.fields,help:l10n_ua_hr_salary.field_hr_version__salary_form
 msgid ""
-"The time off type \"%(type)s\" has no Ukrainian leave category, so the time "
-"off \"%(leave)s\" of %(employee)s cannot be paid. Set the category on the "
-"time off type."
+"Monthly salary: the salary over the norm of the month, for the hours worked. "
+"Hourly rate: the hourly rate of the tariff grade for the hours worked. Piece "
+"rate: the piece-work entries of the month instead of a salary."
 msgstr ""
-"Тип відсутності «%(type)s» не має української категорії, тож відсутність "
-"«%(leave)s» працівника %(employee)s неможливо оплатити. Вкажіть категорію в "
-"типі відсутності."
+"Окладна: оклад, поділений на норму робочого часу місяця, за відпрацьовані "
+"години. Погодинна: годинна ставка тарифного розряду за відпрацьовані години. "
+"Відрядна: замість окладу — сума нарядів відрядної оплати за місяць."

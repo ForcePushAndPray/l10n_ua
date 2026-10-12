@@ -112,6 +112,7 @@ class TestAbsencePay(SalaryTestCase):
             'average_daily_salary': 500.0,
         })
         sick.action_confirm()
+        sick.confirmed_date = date(2025, 7, 21)
         slip = self._payslip(date(2025, 7, 1), date(2025, 7, 31))
         employer = self._of_type(slip, 'SICK_EMP')
         fund = self._of_type(slip, 'SICK_FSS')
@@ -124,14 +125,49 @@ class TestAbsencePay(SalaryTestCase):
         self.assertTrue(self.env.ref(
             'l10n_ua_hr_salary.accrual_type_maternity').is_esv_base)
 
-    def test_a_sick_time_off_without_a_certificate_stops_the_payslip(self):
-        self._leave(self.sick_type, date(2025, 7, 14), date(2025, 7, 16))
-        slip = self.env['hr.payslip'].create({
+    def _sickness(self, day_from, day_to, **values):
+        return self.env['hr.sick.leave'].create(dict({
             'employee_id': self.employee.id,
-            'date_from': date(2025, 7, 1), 'date_to': date(2025, 7, 31),
-        })
-        with self.assertRaises(UserError):
-            slip.action_compute_sheet()
+            'date_from': day_from, 'date_to': day_to,
+            'sick_leave_type': 'illness',
+            'insurance_experience_years': 10,
+            'average_daily_salary': 500.0,
+        }, **values))
+
+    def test_a_sickness_without_a_certificate_leaves_its_days_unpaid(self):
+        # The certificate has not come yet: the days are away and the payslip
+        # is computed all the same, with nothing paid for them.
+        self._july_with_one_holiday()
+        self.version.wage = 23000
+        self._leave(self.sick_type, date(2025, 7, 21), date(2025, 7, 25))
+        slip = self._payslip(date(2025, 7, 1), date(2025, 7, 31))
+        self.assertEqual(slip.worked_days, 18)
+        self.assertFalse(self._of_type(slip, 'SICK_EMP') | self._of_type(slip, 'SICK_FSS'))
+
+    def test_a_certificate_confirmed_next_month_is_paid_there_for_all_its_days(self):
+        # Sick from 28 July to 3 August; the certificate is confirmed on
+        # 5 August. July pays nothing for the sickness, August pays all 7
+        # days: 5 by the employer, 2 by the fund.
+        sick = self._sickness(date(2025, 7, 28), date(2025, 8, 3))
+        july = self._payslip(date(2025, 7, 1), date(2025, 7, 31))
+        sick.action_confirm()
+        sick.confirmed_date = date(2025, 8, 5)
+        august = self._payslip(date(2025, 8, 1), date(2025, 8, 31))
+        self.assertFalse(self._of_type(july, 'SICK_EMP') | self._of_type(july, 'SICK_FSS'))
+        self.assertEqual((self._of_type(august, 'SICK_EMP').quantity,
+                          self._of_type(august, 'SICK_FSS').quantity), (5, 2))
+        self.assertAlmostEqual(
+            sum((self._of_type(august, 'SICK_EMP')
+                 | self._of_type(august, 'SICK_FSS')).mapped('amount')),
+            3500.0, places=2)
+
+    def test_a_certificate_paid_before_the_update_is_not_paid_again(self):
+        # Paid outside the payslip before benefits were accrued in it: it
+        # carries no confirmation date and is left alone.
+        sick = self._sickness(date(2025, 7, 14), date(2025, 7, 20))
+        sick.state = 'paid'
+        slip = self._payslip(date(2025, 7, 1), date(2025, 7, 31))
+        self.assertFalse(self._of_type(slip, 'SICK_EMP') | self._of_type(slip, 'SICK_FSS'))
 
     def _july_with_one_holiday(self):
         """July 2025 with one public holiday, on Wednesday 16th, and no
@@ -182,18 +218,42 @@ class TestAbsencePay(SalaryTestCase):
         slip.action_compute_sheet()
         self.assertFalse(self._of_type(slip, 'VACATION'))
 
-    def test_a_paid_time_off_without_a_ukrainian_category_stops_the_payslip(self):
+    def test_a_paid_time_off_without_a_ukrainian_category_is_paid_as_a_vacation(self):
+        # As the time off itself calculates its pay: at the average daily
+        # salary, without stopping the payslip.
+        self._july_with_one_holiday()
         other = self.env['hr.leave.type'].create({
             'name': 'Paid Time Off (no category)', 'is_paid': True,
             'requires_allocation': False, 'company_id': self.company.id,
         })
-        self._leave(other, date(2025, 7, 14), date(2025, 7, 16))
+        leave = self._leave(other, date(2025, 7, 21), date(2025, 7, 23))
+        leave.average_daily_salary = 1000.0
+        slip = self._payslip(date(2025, 7, 1), date(2025, 7, 31))
+        vacation = self._of_type(slip, 'VACATION')
+        self.assertEqual(vacation.quantity, 3)
+        self.assertAlmostEqual(vacation.amount, 3000.0, places=2)
+
+    def test_a_holiday_is_read_on_its_day_in_the_company_time_zone(self):
+        # Entered in Kyiv time, a holiday on 23 July starts on 22 July at
+        # 21:00 UTC; a holiday of another company does not count.
+        self._july_with_one_holiday()
+        self.company.resource_calendar_id.tz = 'Europe/Kyiv'
+        Holiday = self.env['resource.calendar.leaves']
+        Holiday.create({
+            'name': 'Local holiday',
+            'date_from': '2025-07-22 21:00:00', 'date_to': '2025-07-23 20:59:59',
+        })
+        other = self.env['res.company'].create({'name': 'Holiday Test Other Company'})
+        Holiday.with_company(other).create({
+            'name': 'Holiday of another company',
+            'date_from': '2025-07-24 00:00:00', 'date_to': '2025-07-24 23:59:59',
+        })
         slip = self.env['hr.payslip'].create({
             'employee_id': self.employee.id,
             'date_from': date(2025, 7, 1), 'date_to': date(2025, 7, 31),
         })
-        with self.assertRaises(UserError):
-            slip.action_compute_sheet()
+        self.assertEqual(slip._public_holiday_dates(),
+                         {date(2025, 7, 16), date(2025, 7, 23)})
 
     def test_a_timesheet_that_has_the_vacation_as_worked_stops_the_payslip(self):
         if 'hr.timesheet.line' not in self.env:
