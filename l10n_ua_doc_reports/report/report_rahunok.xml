@@ -12,7 +12,7 @@
         <field name="binding_model_id" ref="account.model_account_move"/>
         <field name="binding_type">report</field>
         <field name="domain">[('move_type', '=', 'out_invoice'), ('currency_id.name', '=', 'UAH')]</field>
-        <field name="paperformat_id" ref="l10n_ua_doc_reports.paperformat_ua_report"/>
+        <field name="paperformat_id" ref="l10n_ua_doc_reports.paperformat_ua_form"/>
     </record>
 
     <!-- Рахунок-фактура on sale.order -->
@@ -25,7 +25,7 @@
         <field name="print_report_name">'Рахунок-фактура_%s' % (object.name)</field>
         <field name="binding_model_id" ref="sale.model_sale_order"/>
         <field name="binding_type">report</field>
-        <field name="paperformat_id" ref="l10n_ua_doc_reports.paperformat_ua_report"/>
+        <field name="paperformat_id" ref="l10n_ua_doc_reports.paperformat_ua_form"/>
     </record>
 
     <!-- ==================== INVOICE VERSION ==================== -->
