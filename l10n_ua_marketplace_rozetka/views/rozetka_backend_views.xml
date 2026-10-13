@@ -7,6 +7,12 @@
         <field name="model">marketplace.backend</field>
         <field name="inherit_id" ref="l10n_ua_marketplace_base.marketplace_backend_view_form"/>
         <field name="arch" type="xml">
+            <!-- Підказка, що саме класти в API Key: для Rozetka це API-токен із кабінету.
+                 Логін і пароль нижче — лише запасний шлях. -->
+            <xpath expr="//field[@name='api_key']" position="attributes">
+                <attribute name="help">Prom.ua: token from the seller cabinet (Settings → API). Rozetka: API token from the seller portal (Settings → API Security → Generate API token). Rozetka disables a token after 24 hours without requests; the module keeps it alive automatically.</attribute>
+            </xpath>
+
             <!-- Add Rozetka-specific fields after api_token_expiry -->
             <xpath expr="//field[@name='api_token_expiry']" position="after">
                 <field name="rozetka_seller_id" invisible="marketplace_type != 'rozetka'"/>
@@ -15,6 +21,12 @@
                 <field name="rozetka_username" invisible="marketplace_type != 'rozetka'"/>
                 <field name="rozetka_password" password="True" invisible="marketplace_type != 'rozetka'"
                        groups="base.group_system"/>
+            </xpath>
+
+            <!-- Кнопка імпорту товарів кабінету (дає rz_item_id для синхронізації) -->
+            <xpath expr="//button[@name='action_sync_prices_now']" position="after">
+                <button name="action_import_products" help="Marketplace → Odoo. Reads the Rozetka catalogue and matches it to Odoo products by internal reference. Nothing is sent to Rozetka." type="object" string="Import Products"
+                        class="btn-secondary" invisible="marketplace_type != 'rozetka' or state != 'active'"/>
             </xpath>
         </field>
     </record>

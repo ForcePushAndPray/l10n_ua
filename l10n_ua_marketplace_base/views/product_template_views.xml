@@ -9,7 +9,7 @@
         <field name="arch" type="xml">
             <!-- Add stat button -->
             <div name="button_box" position="inside">
-                <button name="action_view_marketplace_items" type="object"
+                <button name="action_view_marketplace_items" help="Inside Odoo. Opens the marketplace pricelist items of this product." type="object"
                         class="oe_stat_button" icon="fa-shopping-cart"
                         invisible="marketplace_item_count == 0">
                     <field name="marketplace_item_count" widget="statinfo" string="Marketplaces"/>
@@ -23,10 +23,13 @@
                             <field name="marketplace_published"/>
                         </group>
                     </group>
-                    <group string="Published on Marketplaces" invisible="not marketplace_published">
-                        <field name="marketplace_item_ids" nolabel="1">
+                    <!-- Позиції показуються завжди: галочка вище тепер лише наслідок їх наявності. -->
+                    <group string="Published on Marketplaces">
+                        <field name="marketplace_item_ids" nolabel="1" readonly="1">
                             <list>
+                                <field name="backend_id"/>
                                 <field name="pricelist_id"/>
+                                <field name="external_id" optional="show"/>
                                 <field name="price"/>
                                 <field name="qty_available"/>
                                 <field name="state" widget="badge"
@@ -36,10 +39,6 @@
                             </list>
                         </field>
                     </group>
-                    <div invisible="marketplace_published">
-                        <button name="action_add_to_marketplace" type="object"
-                                string="Add to Marketplace" class="btn-primary"/>
-                    </div>
                 </page>
             </page>
         </field>

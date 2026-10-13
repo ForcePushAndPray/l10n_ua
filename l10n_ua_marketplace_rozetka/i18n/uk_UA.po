@@ -1,0 +1,247 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ua_marketplace_rozetka
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-18 13:13+0000\n"
+"PO-Revision-Date: 2026-09-18 13:13+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid ""
+"%(count)d products imported from Rozetka, %(skipped)d skipped (no Odoo "
+"product with such internal reference)."
+msgstr ""
+"Імпортовано з Rozetka товарів: %(count)d, пропущено: %(skipped)d (в Odoo "
+"немає товару з таким артикулом)."
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid "%d status mappings created/updated for Rozetka."
+msgstr "Відповідностей статусів Rozetka створено або оновлено: %d."
+
+#. module: l10n_ua_marketplace_rozetka
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_rozetka.field_marketplace_backend__rozetka_client_id
+msgid "Client ID"
+msgstr "ID клієнта"
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid "Connection Failed"
+msgstr "Не вдалося підключитися"
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid "Connection Successful"
+msgstr "Підключення успішне"
+
+#. module: l10n_ua_marketplace_rozetka
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_rozetka.field_marketplace_backend__display_name
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_rozetka.field_marketplace_order__display_name
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_rozetka.field_marketplace_order_cancel_wizard__display_name
+msgid "Display Name"
+msgstr "Назва для відображення"
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid "Failed to cancel order on Rozetka: %s"
+msgstr "Не вдалося скасувати замовлення на Rozetka: %s"
+
+#. module: l10n_ua_marketplace_rozetka
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_rozetka.field_marketplace_backend__id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_rozetka.field_marketplace_order__id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_rozetka.field_marketplace_order_cancel_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_marketplace_rozetka
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_rozetka.marketplace_backend_view_form_rozetka
+msgid "Import Products"
+msgstr "Імпорт товарів"
+
+#. module: l10n_ua_marketplace_rozetka
+#: model:ir.model.fields,help:l10n_ua_marketplace_rozetka.field_marketplace_backend__rozetka_username
+msgid "Login for Rozetka Seller Portal"
+msgstr "Логін кабінету продавця Rozetka"
+
+#. module: l10n_ua_marketplace_rozetka
+#: model:ir.model,name:l10n_ua_marketplace_rozetka.model_marketplace_backend
+msgid "Marketplace Backend Configuration"
+msgstr "Налаштування підключення маркетплейсу"
+
+#. module: l10n_ua_marketplace_rozetka
+#: model:ir.model,name:l10n_ua_marketplace_rozetka.model_marketplace_order
+msgid "Marketplace Order"
+msgstr "Замовлення маркетплейсу"
+
+#. module: l10n_ua_marketplace_rozetka
+#: model:ir.model,name:l10n_ua_marketplace_rozetka.model_marketplace_order_cancel_wizard
+msgid "Marketplace Order Cancel Wizard"
+msgstr "Майстер скасування замовлення маркетплейсу"
+
+#. module: l10n_ua_marketplace_rozetka
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_rozetka.marketplace_backend_view_form_rozetka
+msgid ""
+"Marketplace → Odoo. Reads the Rozetka catalogue and matches it to Odoo "
+"products by internal reference. Nothing is sent to Rozetka."
+msgstr ""
+"Маркетплейс → Odoo. Читає каталог Rozetka і зіставляє його з товарами Odoo "
+"за артикулом. У Rozetka нічого не відправляється."
+
+#. module: l10n_ua_marketplace_rozetka
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_rozetka.field_marketplace_backend__rozetka_password
+msgid "Password"
+msgstr "Пароль"
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid "Products Imported"
+msgstr "Товари імпортовано"
+
+#. module: l10n_ua_marketplace_rozetka
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_rozetka.marketplace_backend_view_form_rozetka
+msgid ""
+"Prom.ua: token from the seller cabinet (Settings → API). Rozetka: API token "
+"from the seller portal (Settings → API Security → Generate API token). "
+"Rozetka disables a token after 24 hours without requests; the module keeps "
+"it alive automatically."
+msgstr ""
+"Prom.ua: токен із кабінету (Налаштування → API). Rozetka: API-токен із "
+"кабінету продавця (Налаштування → Безпека API → Генерувати API-токен). "
+"Rozetka вимикає токен після 24 годин без запитів — модуль підтримує його "
+"живим автоматично."
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid "Rozetka API connection error: %s"
+msgstr "Помилка з’єднання з API Rozetka: %s"
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid "Rozetka API error: %s"
+msgstr "Помилка API Rozetka: %s"
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid "Rozetka API returned an unexpected response."
+msgstr "API Rozetka повернув неочікувану відповідь."
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid "Rozetka authentication failed: %s"
+msgstr "Rozetka не прийняла авторизацію: %s"
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid ""
+"Rozetka needs either an API token generated in the seller portal (Settings →"
+" API Security → Generate API token) or the portal login and password."
+msgstr ""
+"Для Rozetka потрібен або API-токен із кабінету продавця (Налаштування → "
+"Безпека API → Генерувати API-токен), або логін і пароль кабінету."
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid ""
+"Rozetka rejected the API token. It is either revoked or became inactive: "
+"Rozetka disables a token that has not been used for more than 24 hours. "
+"Generate a new one in the seller portal: Settings → API Security."
+msgstr ""
+"Rozetka не прийняла API-токен: він відкликаний або став неактивним — Rozetka"
+" вимикає токен, яким не користувались понад 24 години. Згенеруйте новий у "
+"кабінеті продавця: Налаштування → Безпека API."
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid ""
+"Rozetka rejected the API token: it is wrong, revoked or became inactive "
+"(Rozetka disables a token that has not been used for more than 24 hours). "
+"Generate a new one in the seller portal: Settings → API Security."
+msgstr ""
+"Rozetka не прийняла API-токен: він невірний, відкликаний або став неактивним"
+" (Rozetka вимикає токен, яким не користувались понад 24 години). Згенеруйте "
+"новий у кабінеті продавця: Налаштування → Безпека API."
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid ""
+"Rozetka: the token has no rights for this action. Tokens are tied to a "
+"manager role — generate one under a role with access to orders and goods."
+msgstr ""
+"Rozetka: у токена немає прав на цю дію. Токени прив’язані до ролі менеджера "
+"— згенеруйте токен під роллю з доступом до замовлень і товарів."
+
+#. module: l10n_ua_marketplace_rozetka
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_rozetka.field_marketplace_backend__rozetka_seller_id
+msgid "Seller ID"
+msgstr "ID продавця"
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid "Status Mapping"
+msgstr "Відповідність статусів"
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid "Successfully connected to Rozetka Seller API."
+msgstr "Підключення до API продавця Rozetka успішне."
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid "Unknown Product"
+msgstr "Невідомий товар"
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid "Unknown error"
+msgstr "Невідома помилка"
+
+#. module: l10n_ua_marketplace_rozetka
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_rozetka.field_marketplace_backend__rozetka_username
+msgid "Username"
+msgstr "Логін"
+
+#. module: l10n_ua_marketplace_rozetka
+#: model:ir.model.fields,help:l10n_ua_marketplace_rozetka.field_marketplace_backend__rozetka_seller_id
+msgid "Your Rozetka Seller ID"
+msgstr "ID продавця на Rozetka"
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid "Rozetka has no generic \"cancelled by seller\" status — each cancellation is a specific reason. Choose a concrete reason (out of stock, customer changed their mind, price changed, duplicate, delivery conditions, defect)."
+msgstr "У Rozetka немає загального статусу «скасовано продавцем» — кожне скасування має конкретну причину. Виберіть її: немає в наявності, клієнт передумав, ціна змінилася, дубль, умови доставки, брак."
+
+#. module: l10n_ua_marketplace_rozetka
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_rozetka/models/rozetka_backend.py:0
+msgid "To cancel a duplicate Rozetka requires the number of the original order. Put it into the cancellation comment."
+msgstr "Щоб скасувати дубль, Rozetka вимагає номер оригінального замовлення. Вкажіть його в коментарі до скасування."
+

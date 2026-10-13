@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Marketplace Base',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.5.0',
     'category': 'Sales/Sales',
     'summary': 'Ukrainian marketplace integrations base module',
     'description': """
