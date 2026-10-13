@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <template id="redirect_form">
+        <!-- monobank returns a unique payment page URL for each invoice -->
+        <form t-att-action="api_url" method="get"/>
+    </template>
+</odoo>
