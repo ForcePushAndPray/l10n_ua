@@ -10,7 +10,3 @@ class ProductProduct(models.Model):
         stat-button on the template form is also rendered on variant form.
         Strict view validation requires the method to exist on product.product."""
         return self.product_tmpl_id.action_view_marketplace_items()
-
-    def action_add_to_marketplace(self):
-        """Same as action_view_marketplace_items — delegate to template."""
-        return self.product_tmpl_id.action_add_to_marketplace()

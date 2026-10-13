@@ -8,24 +8,24 @@
         <field name="arch" type="xml">
             <form string="Marketplace Backend">
                 <header>
-                    <button name="action_test_connection" type="object" string="Test Connection"
+                    <button name="action_test_connection" help="Marketplace → Odoo. Read-only check of the credentials: Odoo asks the marketplace for a single record and writes nothing." type="object" string="Test Connection"
                             class="btn-secondary" invisible="state == 'active'"/>
-                    <button name="action_activate" type="object" string="Activate"
+                    <button name="action_activate" help="Inside Odoo. Runs the connection test and switches the backend to Active. From that moment the scheduled jobs start working, including the ones that write to the marketplace." type="object" string="Activate"
                             class="btn-primary" invisible="state != 'draft'"/>
-                    <button name="action_import_orders_now" type="object" string="Import Orders"
+                    <button name="action_import_orders_now" help="Marketplace → Odoo. Pulls new and changed orders from the marketplace into Odoo. Nothing is sent back." type="object" string="Import Orders"
                             class="btn-secondary" invisible="state != 'active'"/>
-                    <button name="action_sync_stock_now" type="object" string="Sync Stock"
+                    <button name="action_sync_stock_now" help="Odoo → marketplace. Sends stock quantities from Odoo to the marketplace and overwrites what is there. Stock is never read back." type="object" string="Sync Stock"
                             class="btn-secondary" invisible="state != 'active'"/>
-                    <button name="action_sync_prices_now" type="object" string="Sync Prices"
+                    <button name="action_sync_prices_now" help="Odoo → marketplace. Sends prices from Odoo to the marketplace and overwrites what is there. Prices are never read back." type="object" string="Sync Prices"
                             class="btn-secondary" invisible="state != 'active'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,active"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_view_orders" type="object" class="oe_stat_button" icon="fa-shopping-cart">
+                        <button name="action_view_orders" help="Inside Odoo. Opens the marketplace orders already imported into Odoo." type="object" class="oe_stat_button" icon="fa-shopping-cart">
                             <field name="order_count" widget="statinfo" string="Orders"/>
                         </button>
-                        <button name="action_view_pricelist_items" type="object" class="oe_stat_button" icon="fa-cubes">
+                        <button name="action_view_pricelist_items" help="Inside Odoo. Opens the pricelist items of this backend." type="object" class="oe_stat_button" icon="fa-cubes">
                             <field name="pricelist_item_count" widget="statinfo" string="Products"/>
                         </button>
                     </div>

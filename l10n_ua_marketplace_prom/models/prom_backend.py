@@ -1,9 +1,8 @@
-import hashlib
-import hmac
 import json
 import logging
+import re
 import requests
-from datetime import datetime
+from datetime import datetime, timezone
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
@@ -12,16 +11,52 @@ _logger = logging.getLogger(__name__)
 
 PROM_API_URL = 'https://my.prom.ua/api/v1'
 
-# Prom.ua specific cancel reasons
+# API приймає не більше 100 позицій за один виклик /products/edit
+PROM_BATCH_LIMIT = 100
+# Максимум записів у відповіді /orders/list і /products/list
+PROM_LIST_LIMIT = 100
+
+# Причини скасування замовлення — enum з офіційної специфікації
+# (public-api.docs.prom.ua, Orders/schemas/PostOrdersStatusRequestBody.yaml)
 PROM_CANCEL_REASONS = [
-    ('not_available', 'Product not available'),
-    ('price_changed', 'Price changed'),
-    ('out_of_stock', 'Out of stock'),
-    ('buyer_refused', 'Buyer refused'),
-    ('incorrect_data', 'Incorrect order data'),
-    ('duplicate', 'Duplicate order'),
-    ('other', 'Other'),
+    ('not_available', 'Немає в наявності'),
+    ('no_product_variants', 'Немає різновиду товару'),
+    ('payment_not_received', 'Оплата не надійшла'),
+    ('buyers_request', 'На прохання покупця'),
+    ('duplicate', 'Замовлення-дублікат'),
+    ('invalid_phone_number', 'Не вдається додзвонитись'),
+    ('another', 'Інше'),
 ]
+
+# Причина скасування в Odoo -> причина в Prom.ua
+PROM_CANCEL_REASON_MAP = {
+    'customer_request': 'buyers_request',
+    'out_of_stock': 'not_available',
+    'pricing_error': 'another',
+    'duplicate_order': 'duplicate',
+    'fraud_suspicion': 'another',
+    'delivery_issue': 'another',
+    'other': 'another',
+}
+
+# Статус Prom.ua -> стан marketplace.order
+PROM_STATUS_MAP = {
+    'pending': 'new',
+    'draft': 'new',
+    'received': 'confirmed',
+    'paid': 'processing',
+    'delivered': 'delivered',
+    'canceled': 'cancelled',
+}
+
+# Стан marketplace.order -> статус Prom.ua (enum /orders/set_status)
+PROM_STATUS_MAP_OUT = {
+    'confirmed': 'received',
+    'processing': 'received',
+    'shipped': 'delivered',
+    'delivered': 'delivered',
+    'cancelled': 'canceled',
+}
 
 
 class MarketplaceBackendProm(models.Model):
@@ -47,15 +82,52 @@ class MarketplaceBackendProm(models.Model):
         if self.marketplace_type == 'prom' and not self.api_url:
             self.api_url = PROM_API_URL
 
+    # === Helpers ===
+    @staticmethod
+    def _prom_parse_amount(value):
+        """Привести суму Prom.ua до float.
+
+        API віддає суми рядком разом з валютою: «324 грн», «22 400 грн»,
+        «1 250,50 грн» — прямий float() на такому рядку падає.
+        """
+        if value in (None, False, ''):
+            return 0.0
+        if isinstance(value, (int, float)):
+            return float(value)
+        cleaned = re.sub(r'[^\d,.-]', '', str(value)).replace(',', '.')
+        # якщо крапок кілька (роздільник тисяч), лишаємо тільки останню
+        if cleaned.count('.') > 1:
+            head, _sep, tail = cleaned.rpartition('.')
+            cleaned = head.replace('.', '') + '.' + tail
+        try:
+            return float(cleaned)
+        except ValueError:
+            _logger.warning("Prom.ua: не вдалось розібрати суму %r", value)
+            return 0.0
+
+    @staticmethod
+    def _prom_parse_datetime(value):
+        """Розібрати дату Prom.ua (ISO 8601 з таймзоною) у naive UTC для Odoo."""
+        if not value:
+            return fields.Datetime.now()
+        try:
+            parsed = datetime.fromisoformat(str(value).replace('Z', '+00:00'))
+        except (ValueError, AttributeError, TypeError):
+            return fields.Datetime.now()
+        if parsed.tzinfo:
+            parsed = parsed.astimezone(timezone.utc).replace(tzinfo=None)
+        return parsed
+
     # === API Request Helper ===
     def _prom_api_request(self, method, endpoint, data=None, params=None):
         """Make authenticated request to Prom.ua API."""
         self.ensure_one()
-        url = f'{self.api_url or PROM_API_URL}{endpoint}'
+        url = f'{(self.api_url or PROM_API_URL).rstrip("/")}{endpoint}'
 
         headers = {
-            'Authorization': f'Bearer {self.api_key}',
+            'Authorization': f'Bearer {self.sudo().api_key}',
             'Content-Type': 'application/json',
+            'X-LANGUAGE': 'uk',
         }
 
         try:
@@ -73,13 +145,25 @@ class MarketplaceBackendProm(models.Model):
 
             response.raise_for_status()
 
-            if response.content:
-                return response.json()
-            return {}
+            if not response.content:
+                return {}
+
+            result = response.json()
 
         except requests.exceptions.RequestException as e:
             _logger.error(f"Prom.ua API error: {e}")
             raise UserError(_('Prom.ua API error: %s') % str(e))
+        except ValueError as e:
+            _logger.error(f"Prom.ua API returned non-JSON response: {e}")
+            raise UserError(_('Prom.ua API returned an unexpected response.'))
+
+        # Prom.ua може віддати 200 з описом помилки в тілі
+        if isinstance(result, dict):
+            error = result.get('error') or result.get('errors')
+            if error:
+                raise UserError(_('Prom.ua API error: %s') % error)
+
+        return result
 
     # === Connection Test ===
     def action_test_connection(self):
@@ -89,24 +173,21 @@ class MarketplaceBackendProm(models.Model):
             return super().action_test_connection()
 
         try:
-            # Try to get company info
-            result = self._prom_api_request('GET', '/cabinet/company')
+            # Найлегший ендпоінт, доступний будь-якому токену.
+            # Ендпоінта з інформацією про компанію Prom.ua не має.
+            self._prom_api_request('GET', '/groups/list', params={'limit': 1})
 
-            if result.get('id'):
-                self.prom_company_id = str(result['id'])
-                self._clear_error()
-                return {
-                    'type': 'ir.actions.client',
-                    'tag': 'display_notification',
-                    'params': {
-                        'title': _('Connection Successful'),
-                        'message': _('Successfully connected to Prom.ua API. Company: %s') % result.get('name', ''),
-                        'type': 'success',
-                        'sticky': False,
-                    }
+            self._clear_error()
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Connection Successful'),
+                    'message': _('Successfully connected to Prom.ua API.'),
+                    'type': 'success',
+                    'sticky': False,
                 }
-            else:
-                raise UserError(_('Invalid API response from Prom.ua'))
+            }
 
         except Exception as e:
             self._set_error(str(e))
@@ -127,7 +208,7 @@ class MarketplaceBackendProm(models.Model):
         if self.marketplace_type != 'prom':
             return super()._api_authenticate()
         # Prom uses static Bearer token, no auth flow needed
-        return self.api_key
+        return self.sudo().api_key
 
     def action_refresh_token(self):
         """Prom.ua uses static token."""
@@ -137,6 +218,41 @@ class MarketplaceBackendProm(models.Model):
         # No token refresh for Prom
         return True
 
+    # === Pagination Helper ===
+    def _prom_fetch_all(self, endpoint, result_key, params=None):
+        """Вичитати весь список посторінково.
+
+        Prom.ua гортає списки курсором `last_id` (вибірка записів з id не вище
+        вказаного, сортування — за спаданням id). Параметра `offset` в API немає:
+        з ним кожна ітерація повертала б ту саму першу сторінку.
+        """
+        self.ensure_one()
+        query = dict(params or {})
+        query['limit'] = PROM_LIST_LIMIT
+
+        records = []
+        seen_ids = set()
+
+        while True:
+            page = self._prom_api_request('GET', endpoint, params=query).get(result_key) or []
+            if not page:
+                break
+
+            page_ids = [rec.get('id') for rec in page if rec.get('id') is not None]
+            fresh = [rec for rec in page if rec.get('id') not in seen_ids]
+            if not fresh:
+                break
+
+            records.extend(fresh)
+            seen_ids.update(page_ids)
+
+            if len(page) < PROM_LIST_LIMIT or not page_ids:
+                break
+
+            query['last_id'] = min(page_ids) - 1
+
+        return records
+
     # === Order Import ===
     def _api_get_orders(self, from_date=None):
         """Get orders from Prom.ua API."""
@@ -144,34 +260,12 @@ class MarketplaceBackendProm(models.Model):
         if self.marketplace_type != 'prom':
             return super()._api_get_orders(from_date)
 
-        params = {
-            'limit': 100,
-        }
+        params = {}
+        date_from = from_date or self.import_orders_from_date
+        if date_from:
+            params['date_from'] = fields.Datetime.to_datetime(date_from).strftime('%Y-%m-%dT%H:%M:%S')
 
-        if from_date:
-            params['date_from'] = from_date.strftime('%Y-%m-%d')
-        elif self.import_orders_from_date:
-            params['date_from'] = self.import_orders_from_date.strftime('%Y-%m-%d')
-
-        all_orders = []
-        offset = 0
-
-        while True:
-            params['offset'] = offset
-            result = self._prom_api_request('GET', '/orders/list', params=params)
-
-            orders = result.get('orders', [])
-            if not orders:
-                break
-
-            all_orders.extend(orders)
-
-            if len(orders) < params['limit']:
-                break
-
-            offset += params['limit']
-
-        return all_orders
+        return self._prom_fetch_all('/orders/list', 'orders', params=params)
 
     def _import_orders(self):
         """Import orders from Prom.ua."""
@@ -216,181 +310,129 @@ class MarketplaceBackendProm(models.Model):
 
     def _prepare_prom_order_vals(self, data):
         """Prepare order values from Prom.ua data."""
-        delivery = data.get('delivery_option', {}) or {}
-        client = data.get('client', {}) or {}
+        delivery = data.get('delivery_option') or {}
+        provider = data.get('delivery_provider_data') or {}
+        recipient = provider.get('recipient_address') or {}
+        client = data.get('client') or {}
+        payment = data.get('payment_option') or {}
+        payment_data = data.get('payment_data') or {}
 
-        # Map Prom.ua status to internal status
-        status_map = {
-            'pending': 'new',
-            'received': 'confirmed',
-            'delivered': 'delivered',
-            'canceled': 'cancelled',
-            'draft': 'new',
-            'paid': 'processing',
-        }
+        # Ім'я приходить і всередині client, і полями верхнього рівня
+        name_parts = [
+            client.get('last_name') or data.get('client_last_name'),
+            client.get('first_name') or data.get('client_first_name'),
+            client.get('second_name') or data.get('client_second_name'),
+        ]
+        customer_name = ' '.join(part for part in name_parts if part).strip()
 
-        order_date = data.get('date_created')
-        if order_date:
-            # Parse ISO format
-            try:
-                order_date = datetime.fromisoformat(order_date.replace('Z', '+00:00'))
-            except (ValueError, AttributeError):
-                order_date = fields.Datetime.now()
-
-        # Build delivery address
-        delivery_address_parts = []
-        if data.get('delivery_address'):
-            delivery_address_parts.append(data['delivery_address'])
+        status = data.get('status')
 
         return {
             'backend_id': self.id,
             'external_id': str(data.get('id')),
             'name': f"PROM-{data.get('id')}",
-            'order_date': order_date,
-            'marketplace_state': data.get('status'),
-            'state': status_map.get(data.get('status'), 'new'),
-            'amount_total': float(data.get('price', 0)),
-            'amount_delivery': float(data.get('delivery_cost', 0) or 0),
-            'customer_name': client.get('name') or f"{client.get('first_name', '')} {client.get('last_name', '')}".strip(),
-            'customer_phone': client.get('phone') or client.get('phones', [''])[0] if client.get('phones') else '',
-            'customer_email': client.get('email') or (client.get('emails', [''])[0] if client.get('emails') else ''),
+            'order_date': self._prom_parse_datetime(data.get('date_created')),
+            'marketplace_state': data.get('status_name') or status,
+            'marketplace_state_code': status,
+            'state': PROM_STATUS_MAP.get(status, 'new'),
+            # amount_total — stored compute з рядків замовлення, тут лише доставка
+            'amount_delivery': self._prom_parse_amount(data.get('delivery_cost')),
+            'customer_name': customer_name,
+            'customer_phone': data.get('phone') or client.get('phone'),
+            'customer_email': data.get('email') or client.get('email'),
             'customer_comment': data.get('client_notes'),
             'delivery_method': delivery.get('name'),
-            'delivery_carrier_name': delivery.get('delivery_service_name'),
-            'delivery_city': data.get('delivery_city_name'),
-            'delivery_address': '\n'.join(filter(None, delivery_address_parts)) or data.get('delivery_address'),
-            'delivery_warehouse': data.get('delivery_branch_number'),
-            'tracking_number': data.get('cpa_commission', {}).get('ttn') if isinstance(data.get('cpa_commission'), dict) else None,
-            'payment_method': data.get('payment_option', {}).get('name') if isinstance(data.get('payment_option'), dict) else None,
-            'is_paid': data.get('status') == 'paid',
+            'delivery_carrier_name': delivery.get('shipping_service') or provider.get('provider'),
+            'delivery_city': recipient.get('city_name'),
+            'delivery_address': data.get('delivery_address'),
+            'delivery_warehouse': recipient.get('warehouse_id'),
+            'tracking_number': provider.get('declaration_number'),
+            'payment_method': payment.get('name') or payment_data.get('type'),
+            'is_paid': payment_data.get('status') == 'paid' or status == 'paid',
             'raw_data': json.dumps(data, ensure_ascii=False, indent=2),
         }
 
     # === Order Status Update ===
+    def _prom_set_order_status(self, order, prom_status, cancel_reason=None, cancel_comment=None):
+        """Викликати POST /orders/set_status.
+
+        Статус міняється списком ідентифікаторів: окремого ендпоінта
+        на одне замовлення в API немає.
+        """
+        self.ensure_one()
+        payload = {
+            'status': prom_status,
+            'ids': [int(order.external_id)],
+        }
+        if cancel_reason:
+            payload['cancellation_reason'] = cancel_reason
+            # для причини «another» текст обов'язковий
+            if cancel_reason == 'another' and not cancel_comment:
+                cancel_comment = _('Cancelled in Odoo')
+        if cancel_comment:
+            payload['cancellation_text'] = cancel_comment
+
+        return self._prom_api_request('POST', '/orders/set_status', data=payload)
+
     def _api_update_order_status(self, order, status, tracking=None):
         """Update order status on Prom.ua."""
         self.ensure_one()
         if self.marketplace_type != 'prom':
             return super()._api_update_order_status(order, status, tracking)
 
-        # Map internal status to Prom.ua status
-        status_map = {
-            'confirmed': 'received',
-            'shipped': 'delivered',
-            'delivered': 'delivered',
-            'cancelled': 'canceled',
-        }
-
-        prom_status = status_map.get(status)
+        prom_status = self._get_marketplace_code(status) or PROM_STATUS_MAP_OUT.get(status)
         if not prom_status:
             return False
 
-        data = {
-            'status': prom_status,
-        }
-
-        # Add tracking number for shipped status
-        if tracking and status == 'shipped':
-            data['delivery_type'] = 'nova_poshta'  # Default carrier
-            data['ttn'] = tracking
-
         try:
-            self._prom_api_request(
-                'POST',
-                f'/orders/{order.external_id}/set_status',
-                data=data,
-            )
-            return True
+            self._prom_set_order_status(order, prom_status)
         except Exception as e:
             _logger.error(f"Failed to update Prom.ua order status: {e}")
             return False
 
-    # === Stock Sync ===
-    def _sync_stock(self):
-        """Sync stock to Prom.ua."""
-        self.ensure_one()
-        if self.marketplace_type != 'prom':
-            return super()._sync_stock()
-
-        items = self.env['marketplace.pricelist.item'].search([
-            ('backend_id', '=', self.id),
-            ('state', 'in', ['published', 'pending']),
-            ('active', '=', True),
-            ('external_id', '!=', False),
-        ])
-
-        if not items:
-            return
-
-        # Prom.ua uses product editing for stock updates
-        for item in items:
+        # ТТН передається окремим ендпоінтом служби доставки
+        if tracking and status == 'shipped':
             try:
                 self._prom_api_request(
                     'POST',
-                    f'/products/{item.external_id}/edit',
+                    '/delivery/save_declaration_id',
                     data={
-                        'quantity_in_stock': int(item.qty_to_publish),
-                        'presence': 'available' if item.qty_to_publish > 0 else 'not_available',
+                        'order_id': int(order.external_id),
+                        'declaration_id': tracking,
                     },
                 )
-                item.write({
-                    'last_sync': fields.Datetime.now(),
-                    'sync_error': False,
-                })
             except Exception as e:
-                _logger.error(f"Failed to sync stock for product {item.external_id}: {e}")
-                item.write({
-                    'sync_error': str(e),
-                })
+                _logger.warning(f"Failed to save Prom.ua declaration id: {e}")
 
-        self.sync_stock_last = fields.Datetime.now()
+        return True
 
-    # === Price Sync ===
-    def _sync_prices(self):
-        """Sync prices to Prom.ua."""
+    # === Stock & Price Sync ===
+    def _prom_edit_products(self, products_data):
+        """POST /products/edit — редагування списку товарів, до 100 за виклик."""
         self.ensure_one()
-        if self.marketplace_type != 'prom':
-            return super()._sync_prices()
+        for index in range(0, len(products_data), PROM_BATCH_LIMIT):
+            chunk = products_data[index:index + PROM_BATCH_LIMIT]
+            self._prom_api_request('POST', '/products/edit', data=chunk)
 
-        items = self.env['marketplace.pricelist.item'].search([
-            ('backend_id', '=', self.id),
-            ('state', 'in', ['published', 'pending']),
-            ('active', '=', True),
-            ('external_id', '!=', False),
-        ])
+    @staticmethod
+    def _prom_stock_payload(item):
+        return {
+            'id': int(item.external_id),
+            'presence': 'available' if item.qty_to_publish > 0 else 'not_available',
+            'quantity_in_stock': int(item.qty_to_publish),
+        }
 
-        if not items:
-            return
+    @staticmethod
+    def _prom_price_payload(item):
+        payload = {
+            'id': int(item.external_id),
+            'price': item.price,
+        }
+        # знижка рахується як різниця старої і поточної ціни
+        if item.price_original and item.price_original > item.price:
+            payload['oldprice'] = item.price_original
+        return payload
 
-        for item in items:
-            try:
-                data = {
-                    'price': item.price,
-                }
-                if item.price_original and item.price_original > item.price:
-                    data['discount'] = {
-                        'type': 'amount',
-                        'value': item.price_original - item.price,
-                    }
-
-                self._prom_api_request(
-                    'POST',
-                    f'/products/{item.external_id}/edit',
-                    data=data,
-                )
-                item.write({
-                    'last_sync': fields.Datetime.now(),
-                    'sync_error': False,
-                })
-            except Exception as e:
-                _logger.error(f"Failed to sync price for product {item.external_id}: {e}")
-                item.write({
-                    'sync_error': str(e),
-                })
-
-        self.sync_prices_last = fields.Datetime.now()
-
-    # === Batch Stock Sync ===
     def _api_sync_stock_batch(self, items):
         """Batch stock update via Prom.ua API."""
         self.ensure_one()
@@ -400,24 +442,8 @@ class MarketplaceBackendProm(models.Model):
         if not items:
             return
 
-        # Build batch payload
-        products_data = []
-        for item in items:
-            products_data.append({
-                'id': int(item.external_id),
-                'presence': 'available' if item.qty_to_publish > 0 else 'not_available',
-                'quantity_in_stock': int(item.qty_to_publish),
-            })
-
         try:
-            # Single API call for batch update
-            self._prom_api_request(
-                'POST',
-                '/products/edit',
-                data=products_data,
-            )
-
-            # Update sync timestamps
+            self._prom_edit_products([self._prom_stock_payload(item) for item in items])
             items.write({
                 'last_sync': fields.Datetime.now(),
                 'sync_error': False,
@@ -428,29 +454,20 @@ class MarketplaceBackendProm(models.Model):
             error_msg = str(e)
             _logger.error(f"Batch stock sync failed: {error_msg}")
 
-            # Handle based on error handling strategy
-            if self.sync_error_handling == 'continue':
-                items.write({'sync_error': error_msg})
-            elif self.sync_error_handling == 'retry':
-                # Fallback to individual sync
+            if self.sync_error_handling == 'retry':
+                # той самий ендпоінт, але поштучно — щоб відсіяти проблемні позиції
                 for item in items:
                     try:
-                        self._prom_api_request(
-                            'POST',
-                            f'/products/{item.external_id}/edit',
-                            data={
-                                'quantity_in_stock': int(item.qty_to_publish),
-                                'presence': 'available' if item.qty_to_publish > 0 else 'not_available',
-                            },
-                        )
+                        self._prom_edit_products([self._prom_stock_payload(item)])
                         item.write({'last_sync': fields.Datetime.now(), 'sync_error': False})
                     except Exception as item_error:
                         item.write({'sync_error': str(item_error)})
-            else:  # stop
+            elif self.sync_error_handling == 'stop':
                 items.write({'sync_error': error_msg})
                 raise
+            else:  # continue
+                items.write({'sync_error': error_msg})
 
-    # === Batch Price Sync ===
     def _api_sync_prices_batch(self, items):
         """Batch price update via Prom.ua API."""
         self.ensure_one()
@@ -460,28 +477,8 @@ class MarketplaceBackendProm(models.Model):
         if not items:
             return
 
-        # Build batch payload
-        products_data = []
-        for item in items:
-            product_data = {
-                'id': int(item.external_id),
-                'price': item.price,
-            }
-            # Add discount if original price is higher
-            if item.price_original and item.price_original > item.price:
-                product_data['discount'] = {
-                    'type': 'amount',
-                    'value': item.price_original - item.price,
-                }
-            products_data.append(product_data)
-
         try:
-            self._prom_api_request(
-                'POST',
-                '/products/edit',
-                data=products_data,
-            )
-
+            self._prom_edit_products([self._prom_price_payload(item) for item in items])
             items.write({
                 'last_sync': fields.Datetime.now(),
                 'sync_error': False,
@@ -492,28 +489,18 @@ class MarketplaceBackendProm(models.Model):
             error_msg = str(e)
             _logger.error(f"Batch price sync failed: {error_msg}")
 
-            if self.sync_error_handling == 'continue':
-                items.write({'sync_error': error_msg})
-            elif self.sync_error_handling == 'retry':
+            if self.sync_error_handling == 'retry':
                 for item in items:
                     try:
-                        data = {'price': item.price}
-                        if item.price_original and item.price_original > item.price:
-                            data['discount'] = {
-                                'type': 'amount',
-                                'value': item.price_original - item.price,
-                            }
-                        self._prom_api_request(
-                            'POST',
-                            f'/products/{item.external_id}/edit',
-                            data=data,
-                        )
+                        self._prom_edit_products([self._prom_price_payload(item)])
                         item.write({'last_sync': fields.Datetime.now(), 'sync_error': False})
                     except Exception as item_error:
                         item.write({'sync_error': str(item_error)})
-            else:  # stop
+            elif self.sync_error_handling == 'stop':
                 items.write({'sync_error': error_msg})
                 raise
+            else:  # continue
+                items.write({'sync_error': error_msg})
 
     # === Status Mapping Sync ===
     def action_sync_statuses(self):
@@ -522,14 +509,30 @@ class MarketplaceBackendProm(models.Model):
         if self.marketplace_type != 'prom':
             return super().action_sync_statuses()
 
-        # Prom.ua order status options
+        # Базові статуси Prom.ua з enum /orders/set_status
         prom_statuses = [
-            ('pending', 'Новый', 'new'),
-            ('received', 'Принят', 'confirmed'),
-            ('delivered', 'Доставлен', 'delivered'),
-            ('canceled', 'Отменен', 'cancelled'),
-            ('paid', 'Оплачен', 'processing'),
+            ('pending', 'Нове', 'new'),
+            ('received', 'Прийнято', 'confirmed'),
+            ('paid', 'Оплачено', 'processing'),
+            ('delivered', 'Виконано', 'delivered'),
+            ('canceled', 'Скасовано', 'cancelled'),
+            ('draft', 'Чернетка', 'new'),
         ]
+
+        # Кабінет може мати ще й власні статуси — доливаємо їх з API
+        try:
+            custom = self._prom_api_request('GET', '/order_status_options/list')
+            known = [status[0] for status in prom_statuses]
+            for option in custom.get('order_status_options') or []:
+                code = option.get('name') or str(option.get('id'))
+                if code and code not in known:
+                    prom_statuses.append((
+                        code,
+                        option.get('title') or code,
+                        PROM_STATUS_MAP.get(code, 'processing'),
+                    ))
+        except Exception as e:
+            _logger.warning(f"Prom.ua: не вдалось прочитати кастомні статуси: {e}")
 
         StatusMapping = self.env['marketplace.status.mapping']
         count = 0
@@ -574,34 +577,12 @@ class MarketplaceBackendProm(models.Model):
         if self.marketplace_type != 'prom':
             return super()._api_cancel_order(order, reason, comment)
 
-        # Map cancel reasons
-        prom_reason_map = {
-            'customer_request': 'buyer_refused',
-            'out_of_stock': 'out_of_stock',
-            'pricing_error': 'price_changed',
-            'duplicate_order': 'duplicate',
-            'fraud_suspicion': 'other',
-            'delivery_issue': 'other',
-            'other': 'other',
-        }
-
-        data = {
-            'status': 'canceled',
-        }
-
-        # Add cancellation reason if supported
-        cancellation_reason = prom_reason_map.get(reason, 'other')
-        if cancellation_reason:
-            data['cancellation_reason'] = cancellation_reason
-
-        if comment:
-            data['cancellation_text'] = comment
-
         try:
-            self._prom_api_request(
-                'POST',
-                f'/orders/{order.external_id}/set_status',
-                data=data,
+            self._prom_set_order_status(
+                order,
+                'canceled',
+                cancel_reason=PROM_CANCEL_REASON_MAP.get(reason, 'another'),
+                cancel_comment=comment,
             )
             _logger.info(f"Order {order.name} cancelled on Prom.ua")
             return True
@@ -614,22 +595,9 @@ class MarketplaceBackendProm(models.Model):
         """Import products from Prom.ua to pricelist items."""
         self.ensure_one()
         if self.marketplace_type != 'prom':
-            raise UserError(_('This action is only available for Prom.ua backends.'))
+            return super().action_import_products()
 
-        params = {'limit': 100}
-        all_products = []
-        offset = 0
-
-        while True:
-            params['offset'] = offset
-            result = self._prom_api_request('GET', '/products/list', params=params)
-            products = result.get('products', [])
-            if not products:
-                break
-            all_products.extend(products)
-            if len(products) < params['limit']:
-                break
-            offset += params['limit']
+        all_products = self._prom_fetch_all('/products/list', 'products')
 
         # Find or create pricelist
         pricelist = self.feed_pricelist_id
@@ -641,7 +609,9 @@ class MarketplaceBackendProm(models.Model):
             self.feed_pricelist_id = pricelist
 
         count = 0
+        skipped = 0
         Item = self.env['marketplace.pricelist.item']
+        Template = self.env['product.template']
 
         for prod_data in all_products:
             external_id = str(prod_data.get('id'))
@@ -654,22 +624,30 @@ class MarketplaceBackendProm(models.Model):
             if existing:
                 continue
 
-            # Try to find matching Odoo product
-            product = None
+            # Позиція прайс-листа прив'язується до товару Odoo (product_tmpl_id
+            # обов'язковий), тому без збігу за артикулом рядок не створюємо
             sku = prod_data.get('sku')
-            if sku:
-                product = self.env['product.template'].search([
-                    ('default_code', '=', sku),
-                ], limit=1)
+            product = Template.search([('default_code', '=', sku)], limit=1) if sku else Template
+
+            if not product:
+                skipped += 1
+                continue
+
+            if Item.search_count([
+                ('pricelist_id', '=', pricelist.id),
+                ('product_tmpl_id', '=', product.id),
+            ]):
+                skipped += 1
+                continue
 
             Item.create({
                 'pricelist_id': pricelist.id,
                 'external_id': external_id,
-                'product_tmpl_id': product.id if product else False,
+                'product_tmpl_id': product.id,
                 'sku': sku,
                 'name_override': prod_data.get('name'),
-                'price': float(prod_data.get('price', 0)),
-                'qty_available': float(prod_data.get('quantity_in_stock', 0) or 0),
+                'price': self._prom_parse_amount(prod_data.get('price')),
+                'qty_available': float(prod_data.get('quantity_in_stock') or 0),
                 'state': 'published' if prod_data.get('presence') == 'available' else 'draft',
             })
             count += 1
@@ -679,7 +657,11 @@ class MarketplaceBackendProm(models.Model):
             'tag': 'display_notification',
             'params': {
                 'title': _('Products Imported'),
-                'message': _('%d products imported from Prom.ua.') % count,
+                'message': _(
+                    '%(count)d products imported from Prom.ua, %(skipped)d skipped '
+                    '(no Odoo product with such internal reference).',
+                    count=count, skipped=skipped,
+                ),
                 'type': 'success',
                 'sticky': False,
             }
@@ -692,41 +674,38 @@ class MarketplaceBackendProm(models.Model):
         if self.marketplace_type != 'prom':
             return super()._process_webhook(data, headers)
 
-        event_type = data.get('event_type')
+        event_type = data.get('event_type') or data.get('event')
+        order_data = data.get('order') or data.get('data') or {}
+        if not order_data:
+            return False
 
-        if event_type in ('order_created', 'new_order'):
-            order_data = data.get('order', data.get('data', {}))
-            if order_data:
-                external_id = str(order_data.get('id'))
-                existing = self.env['marketplace.order'].search([
-                    ('backend_id', '=', self.id),
-                    ('external_id', '=', external_id),
-                ], limit=1)
+        external_id = str(order_data.get('id'))
+        order = self.env['marketplace.order'].search([
+            ('backend_id', '=', self.id),
+            ('external_id', '=', external_id),
+        ], limit=1)
 
-                if not existing:
-                    order_vals = self._prepare_prom_order_vals(order_data)
-                    order = self.env['marketplace.order'].create(order_vals)
-                    order._create_lines_from_prom(order_data.get('products', []))
+        if event_type in ('order_created', 'new_order', 'order.created'):
+            if order:
+                return True
+            order = self.env['marketplace.order'].create(self._prepare_prom_order_vals(order_data))
+            order._create_lines_from_prom(order_data.get('products', []))
 
-                    if self.auto_create_sale_order:
-                        try:
-                            order.action_create_sale_order()
-                            if self.auto_confirm_sale_order and order.sale_order_id:
-                                order.sale_order_id.action_confirm()
-                        except Exception as e:
-                            _logger.warning(f"Failed to create sale order: {e}")
+            if self.auto_create_sale_order:
+                try:
+                    order.action_create_sale_order()
+                    if self.auto_confirm_sale_order and order.sale_order_id:
+                        order.sale_order_id.action_confirm()
+                except Exception as e:
+                    _logger.warning(f"Failed to create sale order: {e}")
+            return True
 
-        elif event_type in ('order_status_changed', 'status_changed'):
-            order_data = data.get('order', data.get('data', {}))
-            external_id = str(order_data.get('id'))
-            order = self.env['marketplace.order'].search([
-                ('backend_id', '=', self.id),
-                ('external_id', '=', external_id),
-            ], limit=1)
+        if event_type in ('order_status_changed', 'status_changed', 'order.status_changed'):
             if order:
                 order._update_from_prom(order_data)
+                return True
 
-        return True
+        return False
 
 
 class MarketplaceOrderProm(models.Model):
@@ -736,22 +715,21 @@ class MarketplaceOrderProm(models.Model):
         """Update order from Prom.ua data."""
         self.ensure_one()
 
-        status_map = {
-            'pending': 'new',
-            'received': 'confirmed',
-            'delivered': 'delivered',
-            'canceled': 'cancelled',
-            'draft': 'new',
-            'paid': 'processing',
-        }
+        status = data.get('status')
+        payment_data = data.get('payment_data') or {}
 
         vals = {
-            'marketplace_state': data.get('status'),
-            'state': status_map.get(data.get('status'), self.state),
+            'marketplace_state': data.get('status_name') or status,
+            'marketplace_state_code': status,
+            'state': PROM_STATUS_MAP.get(status, self.state),
         }
 
-        if data.get('status') == 'paid':
+        if payment_data.get('status') == 'paid' or status == 'paid':
             vals['is_paid'] = True
+
+        declaration = (data.get('delivery_provider_data') or {}).get('declaration_number')
+        if declaration:
+            vals['tracking_number'] = declaration
 
         self.write(vals)
 
@@ -759,6 +737,7 @@ class MarketplaceOrderProm(models.Model):
         """Create order lines from Prom.ua products data."""
         self.ensure_one()
         Line = self.env['marketplace.order.line']
+        Backend = self.env['marketplace.backend']
 
         for item in products_data:
             product = None
@@ -773,14 +752,14 @@ class MarketplaceOrderProm(models.Model):
 
             Line.create({
                 'order_id': self.id,
-                'external_id': str(item.get('id', '')),
+                'external_product_id': str(item.get('id') or ''),
                 'product_id': product.id if product else False,
                 'sku': sku,
-                'name': item.get('name', 'Unknown Product'),
-                'quantity': float(item.get('quantity', 1)),
-                'price_unit': float(item.get('price', 0)),
-                'discount': float(item.get('discount', 0) or 0),
-                'price_total': float(item.get('total_price', 0) or (item.get('price', 0) * item.get('quantity', 1))),
+                'name': item.get('name') or _('Unknown Product'),
+                'quantity': float(item.get('quantity') or 1),
+                # ціни Prom.ua приходять рядком разом з валютою
+                'price_unit': Backend._prom_parse_amount(item.get('price')),
+                'discount': float(item.get('discount') or 0),
             })
 
 

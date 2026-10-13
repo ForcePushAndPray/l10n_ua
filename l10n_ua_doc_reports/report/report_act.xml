@@ -32,7 +32,7 @@
                         </div>
                         <div class="text-center" style="margin-bottom: 15px; font-size: 11pt;">
                             № <span t-field="o.name"/>
-                            від <span t-esc="o._get_ua_date_formatted()"/> року
+                            від <span t-esc="o._get_ua_date_formatted()"/>
                         </div>
 
                         <!-- Parties -->

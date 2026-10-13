@@ -1,0 +1,2629 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ua_marketplace_base
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-09-18 13:13+0000\n"
+"PO-Revision-Date: 2026-09-18 13:13+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: uk\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+msgid ""
+"\n"
+"Comment: %s"
+msgstr ""
+"\n"
+"Коментар: %s"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_pricelist.py:0
+msgid "%d new items added."
+msgstr "Додано нових позицій: %d."
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_backend.py:0
+msgid "%d orders imported."
+msgstr "Імпортовано замовлень: %d."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "<span class=\"o_stat_text\">Sale Order</span>"
+msgstr "<span class=\"o_stat_text\">Замовлення на продаж</span>"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "API Configuration"
+msgstr "Налаштування API"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__api_key
+msgid "API Key"
+msgstr "Ключ API"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__api_secret
+msgid "API Secret"
+msgstr "Секрет API"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "API Settings"
+msgstr "Налаштування API"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__api_url
+msgid "API URL"
+msgstr "Адреса API"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__message_needaction
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__message_needaction
+msgid "Action Needed"
+msgstr "Необхідна дія"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Activate"
+msgstr "Активувати"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__active
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_category__active
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_payment_status__active
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__active
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__active
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_status_mapping__active
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_backend__state__active
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_status_mapping_view_search
+msgid "Active"
+msgstr "Активно"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__activity_ids
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__activity_ids
+msgid "Activities"
+msgstr "Дії"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__activity_exception_decoration
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Оформлення виключення дії"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__activity_state
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__activity_state
+msgid "Activity State"
+msgstr "Стан дії"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__activity_type_icon
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Іконка типу дії"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/product_template.py:0
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.product_template_form_view_marketplace
+msgid "Add to Marketplace"
+msgstr "Додати в маркетплейс"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_order_cancel_wizard__cancel_comment
+msgid "Additional comment about cancellation"
+msgstr "Додатковий коментар до скасування"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_pricelist__price_margin
+msgid "Additional margin to apply on prices"
+msgstr "Додаткова націнка на ціни"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_view_form
+msgid "Adjustments"
+msgstr "Корегування"
+
+#. module: l10n_ua_marketplace_base
+#: model:res.groups,name:l10n_ua_marketplace_base.group_marketplace_admin
+msgid "Administrator"
+msgstr "Адміністратор"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+msgid "All orders must belong to the same backend."
+msgstr "Усі замовлення мають належати одному підключенню маркетплейсу."
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_payment_status__marketplace_type__allo
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__res_partner__marketplace_source__allo
+msgid "Allo"
+msgstr "Алло"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_order_cancel_wizard__cancel_sale_order
+msgid "Also cancel the linked Odoo Sale Order"
+msgstr "Також скасувати пов’язане замовлення на продаж в Odoo"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_backend__partner_creation_mode__always
+msgid "Always Create New"
+msgstr "Завжди створювати нового"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_cancel_wizard_view_form
+msgid "Are you sure you want to cancel the selected order(s)?"
+msgstr "Точно скасувати вибрані замовлення?"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__partner_assign_salesperson
+msgid "Assign Salesperson"
+msgstr "Призначати продавця"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Assignment"
+msgstr "Призначення"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__message_attachment_count
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__message_attachment_count
+msgid "Attachment Count"
+msgstr "Кількість вкладень"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__auto_confirm_sale_order
+msgid "Auto Confirm Sale Order"
+msgstr "Автоматично підтверджувати замовлення на продаж"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__auto_create_sale_order
+msgid "Auto Create Sale Order"
+msgstr "Автоматично створювати замовлення на продаж"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__auto_register_payment
+msgid "Auto-Register Payments"
+msgstr "Автоматично реєструвати оплати"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_backend__auto_create_sale_order
+msgid "Automatically create sale.order when importing marketplace order"
+msgstr ""
+"Створювати замовлення на продаж під час імпорту замовлення з маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_backend__auto_register_payment
+msgid "Automatically register payments when marketplace marks order as paid"
+msgstr "Реєструвати оплату, коли маркетплейс позначає замовлення оплаченим"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__qty_available
+msgid "Available Qty"
+msgstr "Доступна кількість"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__backend_id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_cancel_wizard__backend_id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_status_mapping__backend_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_status_mapping_view_search
+msgid "Backend"
+msgstr "Підключення"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Backend Name"
+msgstr "Назва підключення"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.constraint,message:l10n_ua_marketplace_base.constraint_marketplace_backend_code_uniq
+msgid "Backend code must be unique!"
+msgstr "Код підключення має бути унікальним!"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.ui.menu,name:l10n_ua_marketplace_base.menu_marketplace_backends
+msgid "Backends"
+msgstr "Підключення"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__barcode
+msgid "Barcode"
+msgstr "Штрих-код"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_view_form
+msgid "Base Pricing"
+msgstr "Базове ціноутворення"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_backend__api_url
+msgid "Base URL for marketplace API"
+msgstr "Базова адреса API маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__sync_batch_size
+msgid "Batch Size"
+msgstr "Розмір пакета"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_backend__partner_search_by__email
+msgid "By Email"
+msgstr "За email"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_backend__partner_search_by__phone
+msgid "By Phone"
+msgstr "За телефоном"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_backend__partner_search_by__both
+msgid "By Phone or Email"
+msgstr "За телефоном або email"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_backend__feed_format__csv
+msgid "CSV"
+msgstr "CSV"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Cancel"
+msgstr "Скасувати"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__cancel_comment
+msgid "Cancel Comment"
+msgstr "Коментар до скасування"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_order.py:0
+#: model:ir.actions.act_window,name:l10n_ua_marketplace_base.marketplace_order_cancel_wizard_action
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_cancel_wizard_view_form
+msgid "Cancel Marketplace Order"
+msgstr "Скасувати замовлення маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_cancel_wizard_view_form
+msgid "Cancel Order(s)"
+msgstr "Скасувати замовлення"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__cancel_reason
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_cancel_wizard__cancel_reason
+msgid "Cancel Reason"
+msgstr "Причина скасування"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_cancel_wizard__cancel_sale_order
+msgid "Cancel Sale Order"
+msgstr "Скасувати замовлення на продаж"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Cancellation Info"
+msgstr "Дані скасування"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_order__state__cancelled
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_status_mapping__internal_state__cancelled
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_search
+msgid "Cancelled"
+msgstr "Скасовано"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+msgid ""
+"Cannot cancel orders that are already delivered, cancelled or returned: %s"
+msgstr ""
+"Не можна скасувати замовлення, які вже доставлені, скасовані або повернені: "
+"%s"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_order.py:0
+msgid "Cannot create sale order without a customer."
+msgstr "Не можна створити замовлення на продаж без клієнта."
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_order.py:0
+msgid "Cannot register payment: no payment journal configured on backend."
+msgstr ""
+"Не вдалося зареєструвати оплату: у підключенні не вказано журнал оплат."
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_order.py:0
+msgid ""
+"Cannot register payment: no sale order linked. Create a sale order first."
+msgstr ""
+"Не вдалося зареєструвати оплату: немає пов’язаного замовлення на продаж. "
+"Спершу створіть його."
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__delivery_carrier_name
+msgid "Carrier Name"
+msgstr "Перевізник"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.ui.menu,name:l10n_ua_marketplace_base.menu_marketplace_catalog
+msgid "Catalog"
+msgstr "Каталог"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.ui.menu,name:l10n_ua_marketplace_base.menu_marketplace_categories
+msgid "Categories"
+msgstr "Категорії"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_item_view_search
+msgid "Category"
+msgstr "Категорія"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_category__external_id
+msgid "Category ID in marketplace system"
+msgstr "ID категорії в системі маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_category_view_form
+msgid "Category Name"
+msgstr "Назва категорії"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_category__child_ids
+msgid "Child Categories"
+msgstr "Дочірні категорії"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__delivery_city
+msgid "City"
+msgstr "Місто"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__code
+msgid "Code"
+msgstr "Код"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_cancel_wizard__cancel_comment
+msgid "Comment"
+msgstr "Коментар"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__commission_amount
+msgid "Commission"
+msgstr "Комісія"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__company_id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__company_id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__company_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_search
+msgid "Company"
+msgstr "Компанія"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.ui.menu,name:l10n_ua_marketplace_base.menu_marketplace_config
+msgid "Configuration"
+msgstr "Налаштування"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.actions.act_window,help:l10n_ua_marketplace_base.marketplace_backend_action
+msgid "Configure your first marketplace integration"
+msgstr "Налаштуйте перше підключення маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Confirm"
+msgstr "Підтвердити"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__confirm_date
+msgid "Confirm Date"
+msgstr "Дата підтвердження"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_order__state__confirmed
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_status_mapping__internal_state__confirmed
+msgid "Confirmed"
+msgstr "Підтверджено"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.actions.act_window,help:l10n_ua_marketplace_base.marketplace_backend_action
+msgid ""
+"Connect your Odoo to Rozetka, Prom.ua, Epicentr and other Ukrainian "
+"marketplaces."
+msgstr ""
+"Підключіть Odoo до Rozetka, Prom.ua, Епіцентру та інших українських "
+"маркетплейсів."
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_backend.py:0
+msgid "Connection Test"
+msgstr "Перевірка підключення"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_backend.py:0
+msgid "Connection test not implemented for this marketplace type."
+msgstr "Для цього маркетплейсу перевірку підключення не реалізовано."
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model,name:l10n_ua_marketplace_base.model_res_partner
+msgid "Contact"
+msgstr "Контакт"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_item_view_form
+msgid "Content Override"
+msgstr "Власний вміст"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_backend__sync_error_handling__continue
+msgid "Continue with others"
+msgstr "Продовжувати з іншими"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_backend__partner_creation_mode__if_not_found
+msgid "Create If Not Found"
+msgstr "Створювати, якщо не знайдено"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Create Sale Order"
+msgstr "Створити замовлення на продаж"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_category__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_cancel_wizard__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_line__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_payment_status__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_status_mapping__create_uid
+msgid "Created by"
+msgstr "Створив"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__create_date
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_category__create_date
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__create_date
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_cancel_wizard__create_date
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_line__create_date
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_payment_status__create_date
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__create_date
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__create_date
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_status_mapping__create_date
+msgid "Created on"
+msgstr "Створено"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_line__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__currency_id
+msgid "Currency"
+msgstr "Валюта"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__api_token
+msgid "Current Token"
+msgstr "Поточний токен"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__partner_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Customer"
+msgstr "Клієнт"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__customer_comment
+msgid "Customer Comment"
+msgstr "Коментар клієнта"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__customer_email
+msgid "Customer Email"
+msgstr "Email клієнта"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_res_partner__marketplace_customer_id
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_res_users__marketplace_customer_id
+msgid "Customer ID in marketplace system"
+msgstr "ID клієнта в системі маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__customer_name
+msgid "Customer Name"
+msgstr "Ім’я клієнта"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__customer_phone
+msgid "Customer Phone"
+msgstr "Телефон клієнта"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_order__cancel_reason__customer_request
+msgid "Customer Request"
+msgstr "На прохання клієнта"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_res_partner__is_marketplace_customer
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_res_users__is_marketplace_customer
+msgid "Customer was created from marketplace order"
+msgstr "Клієнта створено із замовлення маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Customers"
+msgstr "Клієнти"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__delivery_carrier_id
+msgid "Default Delivery Carrier"
+msgstr "Перевізник за замовчуванням"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__partner_default_category_id
+msgid "Default Partner Category"
+msgstr "Категорія контакту за замовчуванням"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__partner_default_user_id
+msgid "Default Salesperson"
+msgstr "Продавець за замовчуванням"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_product_product__marketplace_category_ids
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_product_template__marketplace_category_ids
+msgid "Default marketplace categories for this product"
+msgstr "Категорії маркетплейсів для цього товару за замовчуванням"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_order__state__delivered
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_status_mapping__internal_state__delivered
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_search
+msgid "Delivered"
+msgstr "Доставлено"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_order.py:0
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Deliveries"
+msgstr "Доставки"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Delivery"
+msgstr "Доставка"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__delivery_address
+msgid "Delivery Address"
+msgstr "Адреса доставки"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__amount_delivery
+msgid "Delivery Amount"
+msgstr "Вартість доставки"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_order__cancel_reason__delivery_issue
+msgid "Delivery Issue"
+msgstr "Проблема з доставкою"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__delivery_method
+msgid "Delivery Method"
+msgstr "Спосіб доставки"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_line__name
+msgid "Description"
+msgstr "Опис"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__description_override
+msgid "Description Override"
+msgstr "Власний опис"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_cancel_wizard_view_form
+msgid "Discard"
+msgstr "Відмінити"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_line__discount
+msgid "Discount %"
+msgstr "Знижка %"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__display_name
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_category__display_name
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__display_name
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_cancel_wizard__display_name
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_line__display_name
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_payment_status__display_name
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__display_name
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__display_name
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_status_mapping__display_name
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_product_product__display_name
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_product_template__display_name
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_res_partner__display_name
+msgid "Display Name"
+msgstr "Назва для відображення"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_status_mapping__external_name
+msgid "Display name of status from marketplace"
+msgstr "Назва статусу в маркетплейсі"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_backend__state__draft
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_pricelist_item__state__draft
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_item_view_search
+msgid "Draft"
+msgstr "Чернетка"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_order__cancel_reason__duplicate_order
+msgid "Duplicate Order"
+msgstr "Дубль замовлення"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__feed_enabled
+msgid "Enable Feed"
+msgstr "Увімкнути фід"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__webhook_enabled
+msgid "Enable Webhook"
+msgstr "Увімкнути вебхук"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_payment_status__marketplace_type__epicentr
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__res_partner__marketplace_source__epicentr
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_category_view_search
+msgid "Epicentr"
+msgstr "Епіцентр"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_backend__state__error
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_pricelist_item__state__error
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_item_view_search
+msgid "Error"
+msgstr "Помилка"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__sync_error_handling
+msgid "Error Handling"
+msgstr "Обробка помилок"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Errors"
+msgstr "Помилки"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__exclude_no_image
+msgid "Exclude Without Image"
+msgstr "Без товарів без фото"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_category__external_id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__external_id
+msgid "External ID"
+msgstr "Зовнішній ID"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.constraint,message:l10n_ua_marketplace_base.constraint_marketplace_pricelist_item_external_backend_uniq
+msgid "External ID must be unique per backend!"
+msgstr "Зовнішній ID має бути унікальним у межах підключення!"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.constraint,message:l10n_ua_marketplace_base.constraint_marketplace_category_external_marketplace_uniq
+msgid "External ID must be unique per marketplace!"
+msgstr "Зовнішній ID має бути унікальним у межах маркетплейсу!"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__external_id
+msgid "External Order ID"
+msgstr "ID замовлення в маркетплейсі"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_line__external_product_id
+msgid "External Product ID"
+msgstr "ID товару в маркетплейсі"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.constraint,message:l10n_ua_marketplace_base.constraint_marketplace_status_mapping_external_code_uniq
+msgid "External code must be unique per backend!"
+msgstr "Зовнішній код має бути унікальним у межах підключення!"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.constraint,message:l10n_ua_marketplace_base.constraint_marketplace_order_external_backend_uniq
+msgid "External order ID must be unique per backend!"
+msgstr "ID замовлення має бути унікальним у межах підключення!"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_payment_status_view_search
+msgid "Failed"
+msgstr "Не пройшла"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+msgid "Failed to cancel sale order: %s"
+msgstr "Не вдалося скасувати замовлення на продаж: %s"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_order.py:0
+msgid "Failed to register payment. Check the logs for details."
+msgstr "Не вдалося зареєструвати оплату. Подробиці — в журналі сервера."
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+msgid "Failed to sync cancellation to marketplace: %s"
+msgstr "Не вдалося передати скасування в маркетплейс: %s"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Feed"
+msgstr "Фід"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__feed_auth_enabled
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Feed Authentication"
+msgstr "Захист фіду паролем"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__feed_format
+msgid "Feed Format"
+msgstr "Формат фіду"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__feed_auth_login
+msgid "Feed Login"
+msgstr "Логін фіду"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__feed_auth_password
+msgid "Feed Password"
+msgstr "Пароль фіду"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__feed_pricelist_id
+msgid "Feed Pricelist"
+msgstr "Прайс-лист фіду"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Feed Settings"
+msgstr "Налаштування фіду"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__feed_url
+msgid "Feed URL"
+msgstr "Адреса фіду"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Financial"
+msgstr "Фінанси"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__message_follower_ids
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__message_follower_ids
+msgid "Followers"
+msgstr "Підписники"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__message_partner_ids
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Підписники (Партнери)"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_backend__activity_type_icon
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_order__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Іконка з чудовим шрифтом, напр. fa-tasks"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_order__cancel_reason__fraud_suspicion
+msgid "Fraud Suspicion"
+msgstr "Підозра на шахрайство"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_category__full_path
+msgid "Full Path"
+msgstr "Повний шлях"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_view_form
+msgid "Generate Items from Products"
+msgstr "Згенерувати позиції з товарів"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__has_message
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__has_message
+msgid "Has Message"
+msgstr "Є повідомлення"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_item_view_search
+msgid "Has Stock to Publish"
+msgstr "Є залишок для публікації"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_backend__sync_error_handling
+msgid "How to handle errors during batch sync"
+msgstr "Що робити з помилками під час пакетної синхронізації"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_category__id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_cancel_wizard__id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_line__id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_payment_status__id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_status_mapping__id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_product_product__id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_product_template__id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_res_partner__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__activity_exception_icon
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__activity_exception_icon
+msgid "Icon"
+msgstr "Значок"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_backend__activity_exception_icon
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_order__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Іконка для визначення виключення дії."
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_payment_status__is_failed
+msgid "If True, this status means payment has failed"
+msgstr "Статус означає, що оплата не пройшла"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_payment_status__is_pending
+msgid "If True, this status means payment is awaiting confirmation"
+msgstr "Статус означає, що оплата чекає підтвердження"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_payment_status__is_paid
+msgid "If True, this status means the order is paid"
+msgstr "Статус означає, що замовлення оплачене"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_backend__message_needaction
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_order__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Якщо позначено, то нові повідомлення будуть потребувати вашої уваги."
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_backend__message_has_error
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_backend__message_has_sms_error
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_order__message_has_error
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_order__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Якщо позначено, деякі повідомлення мають помилку доставки."
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__image_urls
+msgid "Image URLs"
+msgstr "Адреси зображень"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__import_date
+msgid "Import Date"
+msgstr "Дата імпорту"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__import_orders_enabled
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Import Orders"
+msgstr "Імпорт замовлень"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__import_orders_from_date
+msgid "Import Orders From"
+msgstr "Імпортувати замовлення з дати"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__include_out_of_stock
+msgid "Include Out of Stock"
+msgstr "Включати відсутні товари"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.product_template_form_view_marketplace
+msgid ""
+"Inside Odoo. Adds the product to a marketplace pricelist. Publication "
+"happens later, through the feed or Sync Stock / Sync Prices."
+msgstr ""
+"Лише в Odoo. Додає товар у прайс-лист маркетплейсу. Сама публікація "
+"відбувається пізніше — через фід або Sync Stock / Sync Prices."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid ""
+"Inside Odoo. Creates a sale order from this marketplace order. The "
+"marketplace is not notified."
+msgstr ""
+"Лише в Odoo. Створює замовлення на продаж із цього замовлення маркетплейсу. "
+"Маркетплейс про це не дізнається."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_view_form
+msgid ""
+"Inside Odoo. Fills the pricelist with products from the Odoo catalogue that "
+"match the filter. Nothing is sent to the marketplace."
+msgstr ""
+"Лише в Odoo. Наповнює прайс-лист товарами з каталогу Odoo за фільтром. У "
+"маркетплейс нічого не відправляється."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_view_form
+msgid "Inside Odoo. Opens the items of this pricelist."
+msgstr "Лише в Odoo. Відкриває позиції цього прайс-листа."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Inside Odoo. Opens the linked invoices."
+msgstr "Лише в Odoo. Відкриває повʼязані рахунки."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Inside Odoo. Opens the linked sale order."
+msgstr "Лише в Odoo. Відкриває повʼязане замовлення на продаж."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Inside Odoo. Opens the linked transfers."
+msgstr "Лише в Odoo. Відкриває повʼязані складські переміщення."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Inside Odoo. Opens the marketplace orders already imported into Odoo."
+msgstr ""
+"Лише в Odoo. Відкриває замовлення маркетплейсу, уже імпортовані в Odoo."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.product_template_form_view_marketplace
+msgid "Inside Odoo. Opens the marketplace pricelist items of this product."
+msgstr ""
+"Лише в Odoo. Відкриває позиції прайс-листів маркетплейсів для цього товару."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Inside Odoo. Opens the pricelist items of this backend."
+msgstr "Лише в Odoo. Відкриває позиції прайс-листа цього бекенда."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_view_form
+msgid ""
+"Inside Odoo. Recalculates item prices from the Odoo pricelist. Use Sync "
+"Prices on the backend to send them to the marketplace."
+msgstr ""
+"Лише в Odoo. Перераховує ціни позицій за прайс-листом Odoo. Щоб відправити "
+"їх у маркетплейс, скористайтесь «Sync Prices» на бекенді."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid ""
+"Inside Odoo. Registers the payment in Odoo accounting. The marketplace is "
+"not notified."
+msgstr ""
+"Лише в Odoo. Реєструє оплату в обліку Odoo. Маркетплейс про це не "
+"дізнається."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid ""
+"Inside Odoo. Runs the connection test and switches the backend to Active. "
+"From that moment the scheduled jobs start working, including the ones that "
+"write to the marketplace."
+msgstr ""
+"Лише в Odoo. Перевіряє зʼєднання і переводить бекенд у стан «Активний». Від "
+"цієї миті починають працювати крони, зокрема ті, що пишуть у маркетплейс."
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_pricelist.py:0
+msgid "Invalid product filter domain: %s"
+msgstr "Невірний фільтр товарів: %s"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__invoice_ids
+msgid "Invoice"
+msgstr "Рахунок"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__invoice_count
+msgid "Invoice Count"
+msgstr "Кількість рахунків"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_order.py:0
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Invoices"
+msgstr "Рахунки"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__message_is_follower
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__message_is_follower
+msgid "Is Follower"
+msgstr "Стежить"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__item_count
+msgid "Item Count"
+msgstr "Кількість позицій"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__item_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_view_form
+msgid "Items"
+msgstr "Позиції"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_pricelist.py:0
+msgid "Items Generated"
+msgstr "Позиції згенеровано"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_pricelist_item__image_urls
+msgid "JSON array of image URLs"
+msgstr "JSON-масив адрес зображень"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_backend__payment_journal_id
+msgid "Journal for auto-registering marketplace payments"
+msgstr "Журнал для автоматичної реєстрації оплат із маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__last_error
+msgid "Last Error"
+msgstr "Остання помилка"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__last_error_date
+msgid "Last Error Date"
+msgstr "Дата останньої помилки"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__last_generation
+msgid "Last Feed Generation"
+msgstr "Остання генерація фіду"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__import_orders_last
+msgid "Last Order Import"
+msgstr "Останній імпорт замовлень"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__sync_prices_last
+msgid "Last Price Sync"
+msgstr "Остання синхронізація цін"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__sync_stock_last
+msgid "Last Stock Sync"
+msgstr "Остання синхронізація залишків"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__last_sync
+msgid "Last Sync"
+msgstr "Остання синхронізація"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_category__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_cancel_wizard__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_line__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_payment_status__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_status_mapping__write_uid
+msgid "Last Updated by"
+msgstr "Востаннє оновив"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__write_date
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_category__write_date
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__write_date
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_cancel_wizard__write_date
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_line__write_date
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_payment_status__write_date
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__write_date
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__write_date
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_status_mapping__write_date
+msgid "Last Updated on"
+msgstr "Останнє оновлення"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__line_count
+msgid "Line Count"
+msgstr "Кількість рядків"
+
+#. module: l10n_ua_marketplace_base
+#: model:res.groups,name:l10n_ua_marketplace_base.group_marketplace_manager
+msgid "Manager"
+msgstr "Менеджер"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_category__odoo_category_ids
+msgid "Map this marketplace category to Odoo product categories"
+msgstr "Відповідність категорії маркетплейсу категоріям товарів Odoo"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Mark Delivered"
+msgstr "Позначити доставленим"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__marketplace_type
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_category__marketplace_type
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_cancel_wizard__marketplace_type
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_payment_status__marketplace_type
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__marketplace_type
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__marketplace_type
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_status_mapping__marketplace_type
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_category_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_payment_status_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_item_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_status_mapping_view_search
+msgid "Marketplace"
+msgstr "Маркетплейс"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__backend_id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__backend_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Marketplace Backend"
+msgstr "Підключення маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model,name:l10n_ua_marketplace_base.model_marketplace_backend
+msgid "Marketplace Backend Configuration"
+msgstr "Налаштування підключення маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.actions.act_window,name:l10n_ua_marketplace_base.marketplace_backend_action
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_tree
+msgid "Marketplace Backends"
+msgstr "Підключення маркетплейсів"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.actions.act_window,name:l10n_ua_marketplace_base.marketplace_category_action
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_product_product__marketplace_category_ids
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_product_template__marketplace_category_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_category_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_category_view_tree
+msgid "Marketplace Categories"
+msgstr "Категорії маркетплейсів"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model,name:l10n_ua_marketplace_base.model_marketplace_category
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__marketplace_category_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_category_view_form
+msgid "Marketplace Category"
+msgstr "Категорія маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_status_mapping__external_code
+msgid "Marketplace Code"
+msgstr "Код у маркетплейсі"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_res_partner__is_marketplace_customer
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_res_users__is_marketplace_customer
+msgid "Marketplace Customer"
+msgstr "Клієнт маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_res_partner__marketplace_customer_id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_res_users__marketplace_customer_id
+msgid "Marketplace Customer ID"
+msgstr "ID клієнта в маркетплейсі"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_product_product__marketplace_item_count
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_product_template__marketplace_item_count
+msgid "Marketplace Item Count"
+msgstr "Позицій у маркетплейсах"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/product_template.py:0
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_product_product__marketplace_item_ids
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_product_template__marketplace_item_ids
+msgid "Marketplace Items"
+msgstr "Позиції в маркетплейсах"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_status_mapping__external_name
+msgid "Marketplace Name"
+msgstr "Назва в маркетплейсі"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model,name:l10n_ua_marketplace_base.model_marketplace_order
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Marketplace Order"
+msgstr "Замовлення маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model,name:l10n_ua_marketplace_base.model_marketplace_order_cancel_wizard
+msgid "Marketplace Order Cancel Wizard"
+msgstr "Майстер скасування замовлення маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_res_partner__marketplace_order_count
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_res_users__marketplace_order_count
+msgid "Marketplace Order Count"
+msgstr "Замовлень маркетплейсів"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model,name:l10n_ua_marketplace_base.model_marketplace_order_line
+msgid "Marketplace Order Line"
+msgstr "Рядок замовлення маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_backend.py:0
+#: code:addons/l10n_ua_marketplace_base/models/res_partner.py:0
+#: model:ir.actions.act_window,name:l10n_ua_marketplace_base.marketplace_order_action
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_res_partner__marketplace_order_ids
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_res_users__marketplace_order_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_tree
+msgid "Marketplace Orders"
+msgstr "Замовлення маркетплейсів"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model,name:l10n_ua_marketplace_base.model_marketplace_payment_status
+msgid "Marketplace Payment Status"
+msgstr "Статус оплати маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model,name:l10n_ua_marketplace_base.model_marketplace_pricelist
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_view_form
+msgid "Marketplace Pricelist"
+msgstr "Прайс-лист маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model,name:l10n_ua_marketplace_base.model_marketplace_pricelist_item
+msgid "Marketplace Pricelist Item"
+msgstr "Позиція прайс-листа маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_view_tree
+msgid "Marketplace Pricelists"
+msgstr "Прайс-листи маркетплейсів"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_backend.py:0
+msgid "Marketplace Products"
+msgstr "Товари в маркетплейсі"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_res_partner__marketplace_source
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_res_users__marketplace_source
+msgid "Marketplace Source"
+msgstr "Джерело маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__marketplace_state
+msgid "Marketplace State"
+msgstr "Статус у маркетплейсі"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__marketplace_state_code
+msgid "Marketplace State Code"
+msgstr "Код статусу в маркетплейсі"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_status_mapping_view_form
+msgid "Marketplace Status"
+msgstr "Статус маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model,name:l10n_ua_marketplace_base.model_marketplace_status_mapping
+msgid "Marketplace Status Mapping"
+msgstr "Відповідність статусів маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__marketplace_type
+msgid "Marketplace Type"
+msgstr "Тип маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_order__commission_amount
+msgid "Marketplace commission"
+msgstr "Комісія маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid ""
+"Marketplace → Odoo. Pulls new and changed orders from the marketplace into "
+"Odoo. Nothing is sent back."
+msgstr ""
+"Маркетплейс → Odoo. Забирає нові й змінені замовлення з маркетплейсу в Odoo."
+" Назад нічого не відправляється."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid ""
+"Marketplace → Odoo. Read-only check of the credentials: Odoo asks the "
+"marketplace for a single record and writes nothing."
+msgstr ""
+"Маркетплейс → Odoo. Перевірка доступу на читання: Odoo запитує один запис і "
+"нічого не записує."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid ""
+"Marketplace → Odoo. Reads the current order status from the marketplace and "
+"updates it in Odoo."
+msgstr ""
+"Маркетплейс → Odoo. Читає поточний статус замовлення з маркетплейсу й "
+"оновлює його в Odoo."
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.actions.server,name:l10n_ua_marketplace_base.ir_cron_marketplace_import_orders_ir_actions_server
+msgid "Marketplace: Import Orders"
+msgstr "Маркетплейси: імпорт замовлень"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.actions.server,name:l10n_ua_marketplace_base.ir_cron_marketplace_refresh_tokens_ir_actions_server
+msgid "Marketplace: Refresh API Tokens"
+msgstr "Маркетплейси: оновлення токенів API"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.actions.server,name:l10n_ua_marketplace_base.ir_cron_marketplace_sync_prices_ir_actions_server
+msgid "Marketplace: Sync Prices"
+msgstr "Маркетплейси: відправка цін"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.actions.server,name:l10n_ua_marketplace_base.ir_cron_marketplace_sync_stock_ir_actions_server
+msgid "Marketplace: Sync Stock"
+msgstr "Маркетплейси: відправка залишків"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.ui.menu,name:l10n_ua_marketplace_base.menu_marketplace_root
+#: model:res.groups.privilege,name:l10n_ua_marketplace_base.res_groups_privilege_marketplace
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.product_template_form_view_marketplace
+msgid "Marketplaces"
+msgstr "Маркетплейси"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_payment_status__is_paid
+msgid "Marks as Paid"
+msgstr "Означає «оплачено»"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__message_has_error
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__message_has_error
+msgid "Message Delivery error"
+msgstr "Помилка доставлення повідомлення"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__message_ids
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__message_ids
+msgid "Messages"
+msgstr "Повідомлення"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__min_price
+msgid "Minimum Price"
+msgstr "Мінімальна ціна"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__min_qty_available
+msgid "Minimum Quantity"
+msgstr "Мінімальна кількість"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_pricelist__min_qty_available
+msgid "Minimum available quantity to include product"
+msgstr "Мінімальний залишок, з якого товар потрапляє в прайс"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_pricelist__min_price
+msgid "Minimum price for products"
+msgstr "Мінімальна ціна товарів"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__my_activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Дедлайн моєї дії"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__name
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_category__name
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__name
+msgid "Name"
+msgstr "Назва"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__name_override
+msgid "Name Override"
+msgstr "Власна назва"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_backend__partner_creation_mode__never
+msgid "Never Create"
+msgstr "Ніколи не створювати"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_order__state__new
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_status_mapping__internal_state__new
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_search
+msgid "New"
+msgstr "Новий"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__activity_calendar_event_id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Наступна подія календаря дій"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Дедлайн наступної дії"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__activity_summary
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__activity_summary
+msgid "Next Activity Summary"
+msgstr "Підсумок наступної дії"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__activity_type_id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__activity_type_id
+msgid "Next Activity Type"
+msgstr "Тип наступної дії"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+msgid "No orders selected for cancellation."
+msgstr "Не вибрано жодного замовлення для скасування."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.actions.act_window,help:l10n_ua_marketplace_base.marketplace_order_action
+msgid "No orders yet"
+msgstr "Замовлень ще немає"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_order.py:0
+msgid "No sale order linked."
+msgstr "Немає пов’язаного замовлення на продаж."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_search
+msgid "Not Paid"
+msgstr "Не оплачено"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__message_needaction_counter
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Кількість дій"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__message_has_error_counter
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__message_has_error_counter
+msgid "Number of errors"
+msgstr "Кількість помилок"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_backend__message_needaction_counter
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_order__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Кількість повідомлень, які вимагають дії"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_backend__message_has_error_counter
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_order__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Кількість повідомлень з помилкою доставки"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_backend__sync_batch_size
+msgid "Number of products to sync in a single API call"
+msgstr "Скільки товарів передавати одним запитом до API"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_backend__api_token
+msgid "OAuth token or session token"
+msgstr "Токен OAuth або сесії"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_category__odoo_category_ids
+msgid "Odoo Categories"
+msgstr "Категорії Odoo"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_status_mapping_view_form
+msgid "Odoo Mapping"
+msgstr "Відповідність в Odoo"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__pricelist_id
+msgid "Odoo Pricelist"
+msgstr "Прайс-лист Odoo"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_status_mapping__internal_state
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_status_mapping_view_search
+msgid "Odoo State"
+msgstr "Стан в Odoo"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_pricelist__product_domain
+msgid "Odoo domain to filter products"
+msgstr "Фільтр товарів (домен Odoo)"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid ""
+"Odoo → marketplace. Asks for a cancellation reason, then cancels the order "
+"both in Odoo and on the marketplace."
+msgstr ""
+"Odoo → маркетплейс. Запитує причину скасування, потім скасовує замовлення і "
+"в Odoo, і в маркетплейсі."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid ""
+"Odoo → marketplace. Asks for the tracking number, then sends the shipped "
+"status and that number to the marketplace."
+msgstr ""
+"Odoo → маркетплейс. Запитує номер ТТН, потім надсилає статус «відвантажено» "
+"і цей номер у маркетплейс."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_cancel_wizard_view_form
+msgid ""
+"Odoo → marketplace. Cancels the orders in Odoo and sends the cancellation "
+"with its reason to the marketplace."
+msgstr ""
+"Odoo → маркетплейс. Скасовує замовлення в Odoo і надсилає скасування разом "
+"із причиною в маркетплейс."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid ""
+"Odoo → marketplace. Confirms the order in Odoo and sends the new status to "
+"the marketplace."
+msgstr ""
+"Odoo → маркетплейс. Підтверджує замовлення в Odoo і надсилає новий статус у "
+"маркетплейс."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid ""
+"Odoo → marketplace. Marks the order delivered in Odoo and sends the status "
+"to the marketplace."
+msgstr ""
+"Odoo → маркетплейс. Позначає замовлення як доставлене в Odoo і надсилає "
+"статус у маркетплейс."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid ""
+"Odoo → marketplace. Sends prices from Odoo to the marketplace and overwrites"
+" what is there. Prices are never read back."
+msgstr ""
+"Odoo → маркетплейс. Надсилає ціни з Odoo і перезаписує те, що є в кабінеті. "
+"Ціни звідти ніколи не читаються."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid ""
+"Odoo → marketplace. Sends stock quantities from Odoo to the marketplace and "
+"overwrites what is there. Stock is never read back."
+msgstr ""
+"Odoo → маркетплейс. Надсилає залишки з Odoo і перезаписує те, що є в "
+"кабінеті. Залишки звідти ніколи не читаються."
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_backend__import_orders_from_date
+msgid "Only import orders created after this date"
+msgstr "Імпортувати лише замовлення, створені після цієї дати"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_pricelist__category_ids
+msgid "Only include products from these categories"
+msgstr "Лише товари з цих категорій"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_cancel_wizard_view_form
+msgid "Optional comment..."
+msgstr "Коментар (необов’язково)…"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_line__order_id
+msgid "Order"
+msgstr "Замовлення"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__order_date
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_search
+msgid "Order Date"
+msgstr "Дата замовлення"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_backend.py:0
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Order Import"
+msgstr "Імпорт замовлень"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__import_orders_interval
+msgid "Order Import Interval (min)"
+msgstr "Інтервал імпорту замовлень (хв)"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Order Info"
+msgstr "Дані замовлення"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__line_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Order Lines"
+msgstr "Рядки замовлення"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Order Processing"
+msgstr "Обробка замовлень"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__name
+msgid "Order Reference"
+msgstr "Номер замовлення"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+msgid "Order cancelled. Reason: %s"
+msgstr "Замовлення скасовано. Причина: %s"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_order.py:0
+msgid "Order cancelled. Reason: %s. %s"
+msgstr "Замовлення скасовано. Причина: %s. %s"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__order_count
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_cancel_wizard__order_ids
+#: model:ir.ui.menu,name:l10n_ua_marketplace_base.menu_marketplace_orders
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Orders"
+msgstr "Замовлення"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.actions.act_window,help:l10n_ua_marketplace_base.marketplace_order_action
+msgid "Orders from connected marketplaces will appear here."
+msgstr "Тут з’являться замовлення з підключених маркетплейсів."
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_order__raw_data
+msgid "Original JSON data from marketplace"
+msgstr "Вихідні дані JSON із маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__price_original
+msgid "Original Price"
+msgstr "Стара ціна"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_order__marketplace_state
+msgid "Original state from marketplace"
+msgstr "Вихідний статус у маркетплейсі"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_order__cancel_reason__other
+msgid "Other"
+msgstr "Інше"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_order__cancel_reason__out_of_stock
+msgid "Out of Stock"
+msgstr "Немає в наявності"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_pricelist_item__qty_to_publish
+msgid "Override quantity to publish (0 = use actual)"
+msgstr "Кількість для публікації вручну (0 — брати фактичний залишок)"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__is_paid
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_payment_status_view_search
+msgid "Paid"
+msgstr "Оплачено"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_category_view_search
+msgid "Parent"
+msgstr "Батьківська"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_category__parent_id
+msgid "Parent Category"
+msgstr "Батьківська категорія"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_category__parent_path
+msgid "Parent Path"
+msgstr "Батьківський шлях"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__partner_creation_mode
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Partner Creation"
+msgstr "Створення контактів"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__payment_amount
+msgid "Payment Amount"
+msgstr "Сума оплати"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__payment_date
+msgid "Payment Date"
+msgstr "Дата оплати"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_payment_status__is_failed
+msgid "Payment Failed"
+msgstr "Оплата не пройшла"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__payment_journal_id
+msgid "Payment Journal"
+msgstr "Журнал оплат"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__payment_method
+msgid "Payment Method"
+msgstr "Спосіб оплати"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_payment_status__is_pending
+msgid "Payment Pending"
+msgstr "Оплата очікується"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__payment_status_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_payment_status_view_form
+msgid "Payment Status"
+msgstr "Статус платежу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.actions.act_window,name:l10n_ua_marketplace_base.marketplace_payment_status_action
+#: model:ir.ui.menu,name:l10n_ua_marketplace_base.menu_marketplace_payment_statuses
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_payment_status_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_payment_status_view_tree
+msgid "Payment Statuses"
+msgstr "Статуси оплати"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_order.py:0
+msgid "Payment of %s %s registered automatically from marketplace."
+msgstr "Оплату %s %s зареєстровано автоматично з маркетплейсу."
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_payment_status__code
+msgid "Payment status code from marketplace API"
+msgstr "Код статусу оплати з API маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.constraint,message:l10n_ua_marketplace_base.constraint_marketplace_payment_status_payment_code_uniq
+msgid "Payment status code must be unique per marketplace!"
+msgstr "Код статусу оплати має бути унікальним у межах маркетплейсу!"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_pricelist_item__state__pending
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_payment_status_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_item_view_search
+msgid "Pending"
+msgstr "Очікує"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__picking_ids
+msgid "Picking"
+msgstr "Переміщення"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__picking_count
+msgid "Picking Count"
+msgstr "Кількість переміщень"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_backend.py:0
+msgid "Please configure a pricelist for the feed."
+msgstr "Вкажіть прайс-лист для фіду."
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__price
+msgid "Price"
+msgstr "Ціна"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__price_margin
+msgid "Price Margin %"
+msgstr "Націнка, %"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__price_round
+msgid "Price Rounding"
+msgstr "Округлення ціни"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_backend.py:0
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Price Sync"
+msgstr "Синхронізація цін"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__sync_prices_interval
+msgid "Price Sync Interval (min)"
+msgstr "Інтервал відправки цін (хв)"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_pricelist_item__price_original
+msgid "Price before discount (for crossed-out price)"
+msgstr "Ціна до знижки (закреслена ціна)"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_backend.py:0
+msgid "Price synchronization completed."
+msgstr "Ціни відправлено."
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__pricelist_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_item_view_search
+msgid "Pricelist"
+msgstr "Прайс-лист"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_item_view_form
+msgid "Pricelist Item"
+msgstr "Позиція прайс-листа"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_pricelist.py:0
+#: model:ir.actions.act_window,name:l10n_ua_marketplace_base.marketplace_pricelist_item_action
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_item_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_item_view_tree
+msgid "Pricelist Items"
+msgstr "Позиції прайс-листа"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_view_form
+msgid "Pricelist Name"
+msgstr "Назва прайс-листа"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.actions.act_window,name:l10n_ua_marketplace_base.marketplace_pricelist_action
+#: model:ir.ui.menu,name:l10n_ua_marketplace_base.menu_marketplace_pricelists
+msgid "Pricelists"
+msgstr "Прайс-листи"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_pricelist.py:0
+msgid "Prices Refreshed"
+msgstr "Ціни оновлено"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_pricelist.py:0
+msgid "Prices updated for %d items."
+msgstr "Ціни оновлено для позицій: %d."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_item_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_view_form
+msgid "Pricing"
+msgstr "Ціноутворення"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_order__cancel_reason__pricing_error
+msgid "Pricing Error"
+msgstr "Помилка в ціні"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_order__state__processing
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_status_mapping__internal_state__processing
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_search
+msgid "Processing"
+msgstr "В обробці"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model,name:l10n_ua_marketplace_base.model_product_template
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_line__product_id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__product_tmpl_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_item_view_form
+msgid "Product"
+msgstr "Товар"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__category_ids
+msgid "Product Categories"
+msgstr "Категорії товару"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist__product_domain
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_view_form
+msgid "Product Filter"
+msgstr "Фільтр товарів"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_pricelist_item__external_id
+msgid "Product ID on marketplace"
+msgstr "ID товару в маркетплейсі"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model,name:l10n_ua_marketplace_base.model_product_product
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__product_id
+msgid "Product Variant"
+msgstr "Варіант товару"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.constraint,message:l10n_ua_marketplace_base.constraint_marketplace_pricelist_item_product_pricelist_uniq
+msgid "Product already exists in this pricelist!"
+msgstr "Товар уже є в цьому прайс-листі!"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_backend.py:0
+msgid "Product import is not implemented for this marketplace type."
+msgstr "Для цього маркетплейсу імпорт товарів не реалізовано."
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_product_product__marketplace_published
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_product_template__marketplace_published
+msgid "Product is available for marketplace publishing"
+msgstr "Товар можна публікувати на маркетплейсах"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__pricelist_item_count
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_category__product_count
+#: model:ir.ui.menu,name:l10n_ua_marketplace_base.menu_marketplace_pricelist_items
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Products"
+msgstr "Товари"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_payment_status__marketplace_type__prom
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__res_partner__marketplace_source__prom
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_category_view_search
+msgid "Prom.ua"
+msgstr "Prom.ua"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__price_promo
+msgid "Promo Price"
+msgstr "Акційна ціна"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_pricelist_item__state__published
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_item_view_search
+msgid "Published"
+msgstr "Опубліковано"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.product_template_search_view_marketplace
+msgid "Published on Marketplace"
+msgstr "Опубліковано в маркетплейсі"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_product_product__marketplace_published
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_product_template__marketplace_published
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.product_template_form_view_marketplace
+msgid "Published on Marketplaces"
+msgstr "Опубліковано в маркетплейсах"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_status_mapping__sync_from_marketplace
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_status_mapping_view_search
+msgid "Pull from Marketplace"
+msgstr "Отримувати з маркетплейсу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_status_mapping__sync_to_marketplace
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_status_mapping_view_search
+msgid "Push to Marketplace"
+msgstr "Відправляти в маркетплейс"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__qty_to_publish
+msgid "Qty to Publish"
+msgstr "Кількість для публікації"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_line__quantity
+msgid "Quantity"
+msgstr "Кількість"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__raw_data
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Raw Data"
+msgstr "Вихідні дані"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_view_form
+msgid "Refresh Prices"
+msgstr "Перерахувати ціни"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__delivery_region
+msgid "Region"
+msgstr "Область"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Register Payment"
+msgstr "Зареєструвати оплату"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__payment_id
+msgid "Registered Payment"
+msgstr "Зареєстрована оплата"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__activity_user_id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__activity_user_id
+msgid "Responsible User"
+msgstr "Відповідальний користувач"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_backend__sync_error_handling__retry
+msgid "Retry failed items"
+msgstr "Повторити невдалі позиції"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_order__state__returned
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_status_mapping__internal_state__returned
+msgid "Returned"
+msgstr "Повернено"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_pricelist__price_round
+msgid "Round prices to this precision (e.g., 1.0 for whole numbers)"
+msgstr "Округлення цін (наприклад, 1.0 — до цілих гривень)"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_payment_status__marketplace_type__rozetka
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__res_partner__marketplace_source__rozetka
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_category_view_search
+msgid "Rozetka"
+msgstr "Rozetka"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_line__sku
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__sku
+msgid "SKU"
+msgstr "Артикул"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__message_has_sms_error
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Помилка доставки SMS"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__sale_order_id
+msgid "Sale Order"
+msgstr "Замовлення на продаж"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_order.py:0
+msgid "Sale order already exists for this marketplace order."
+msgstr "Для цього замовлення маркетплейсу вже є замовлення на продаж."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Sales"
+msgstr "Продажі"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__sale_team_id
+msgid "Sales Team"
+msgstr "Команда продажу"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__partner_search_by
+msgid "Search Partner By"
+msgstr "Шукати контакт"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_order_cancel_wizard__sync_to_marketplace
+msgid "Send cancellation to marketplace API"
+msgstr "Передати скасування в маркетплейс"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__sequence
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_line__sequence
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_payment_status__sequence
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_status_mapping__sequence
+msgid "Sequence"
+msgstr "Послідовність"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Ship"
+msgstr "Відвантажити"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__ship_date
+msgid "Ship Date"
+msgstr "Дата відвантаження"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_order.py:0
+msgid "Ship Order"
+msgstr "Відвантажити замовлення"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_order__state__shipped
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_status_mapping__internal_state__shipped
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_search
+msgid "Shipped"
+msgstr "Відвантажено"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_pricelist_item__price_promo
+msgid "Special promotional price"
+msgstr "Спеціальна акційна ціна"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_pricelist_item__product_id
+msgid "Specific variant (if empty, uses template)"
+msgstr "Конкретний варіант (порожньо — товар загалом)"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__state
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__state
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__state
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_item_view_search
+msgid "State"
+msgstr "Стан"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_payment_status__code
+msgid "Status Code"
+msgstr "Код статусу"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_status_mapping_view_form
+msgid "Status Mapping"
+msgstr "Відповідність статусів"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_backend.py:0
+#: model:ir.actions.act_window,name:l10n_ua_marketplace_base.marketplace_status_mapping_action
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__status_mapping_count
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__status_mapping_ids
+#: model:ir.ui.menu,name:l10n_ua_marketplace_base.menu_marketplace_status_mappings
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_status_mapping_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_status_mapping_view_tree
+msgid "Status Mappings"
+msgstr "Відповідності статусів"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_payment_status__name
+msgid "Status Name"
+msgstr "Назва статусу"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_backend.py:0
+msgid "Status Sync"
+msgstr "Синхронізація статусів"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_backend__activity_state
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_order__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Етап заснований на діях\n"
+"Протерміновано: термін виконання вже минув\n"
+"Сьогодні: дата дії сьогодні\n"
+"Заплановано: майбутні дії."
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_status_mapping__external_code
+msgid "Status code from marketplace API (e.g., \"pending\", \"1\")"
+msgstr "Код статусу з API маркетплейсу (наприклад, «pending», «1»)"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_backend.py:0
+msgid "Status sync not implemented for this marketplace type."
+msgstr "Для цього маркетплейсу синхронізацію статусів не реалізовано."
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_order.py:0
+msgid "Status sync not implemented for this marketplace."
+msgstr "Для цього маркетплейсу синхронізацію статусів не реалізовано."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_item_view_form
+msgid "Stock"
+msgstr "Залишки"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_backend.py:0
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Stock Sync"
+msgstr "Синхронізація залишків"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__sync_stock_interval
+msgid "Stock Sync Interval (min)"
+msgstr "Інтервал відправки залишків (хв)"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__sync_stock_warehouse_id
+msgid "Stock Warehouse"
+msgstr "Склад для залишків"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_backend.py:0
+msgid "Stock synchronization completed."
+msgstr "Залишки відправлено."
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_backend__sync_error_handling__stop
+msgid "Stop on first error"
+msgstr "Зупинятися на першій помилці"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_pricelist_item_view_form
+msgid "Sync"
+msgstr "Синхронізація"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__sync_error
+msgid "Sync Error"
+msgstr "Помилка синхронізації"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__sync_prices_enabled
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Sync Prices"
+msgstr "Відправити ціни"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_order.py:0
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_form
+msgid "Sync Status"
+msgstr "Прочитати статус"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__sync_stock_enabled
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Sync Stock"
+msgstr "Відправити залишки"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_cancel_wizard__sync_to_marketplace
+msgid "Sync to Marketplace"
+msgstr "Передавати в маркетплейс"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Synchronization"
+msgstr "Синхронізація"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__amount_tax
+msgid "Taxes"
+msgstr "Податки"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Test Connection"
+msgstr "Перевірити зʼєднання"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_order.py:0
+msgid "This order is already marked as paid."
+msgstr "Це замовлення вже позначене оплаченим."
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_search
+msgid "Today"
+msgstr "Сьогодні"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__api_token_expiry
+msgid "Token Expiry"
+msgstr "Токен дійсний до"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_backend.py:0
+msgid "Token refresh not implemented for this marketplace type."
+msgstr "Для цього маркетплейсу оновлення токена не реалізовано."
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__amount_total
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_line__price_total
+msgid "Total"
+msgstr "Разом"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__tracking_number
+msgid "Tracking Number (TTN)"
+msgstr "Номер ТТН"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_backend__activity_exception_decoration
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_order__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Тип дії виключення на записі."
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_line__price_unit
+msgid "Unit Price"
+msgstr "Ціна одиниці"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order_line__uom_id
+msgid "Unit of Measure"
+msgstr "Одиниця вимірювання"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_pricelist.py:0
+msgid "Unknown feed format: %s"
+msgstr "Невідомий формат фіду: %s"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__amount_untaxed
+msgid "Untaxed Amount"
+msgstr "Сума без податків"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_pricelist__pricelist_id
+msgid "Use prices from this Odoo pricelist"
+msgstr "Брати ціни з цього прайс-листа Odoo"
+
+#. module: l10n_ua_marketplace_base
+#: model:res.groups,name:l10n_ua_marketplace_base.group_marketplace_user
+msgid "User"
+msgstr "Користувач"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__warehouse_id
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_pricelist_item__warehouse_id
+msgid "Warehouse"
+msgstr "Склад"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_pricelist_item__warehouse_id
+msgid "Warehouse for stock calculation (empty = all)"
+msgstr "Склад для розрахунку залишку (порожньо — усі склади)"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__delivery_warehouse
+msgid "Warehouse/Post Office"
+msgstr "Відділення / поштомат"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_backend_view_form
+msgid "Webhook"
+msgstr "Вебхук"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__webhook_secret
+msgid "Webhook Secret"
+msgstr "Секрет вебхука"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__webhook_url
+msgid "Webhook URL"
+msgstr "Адреса вебхука"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_backend__website_message_ids
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__website_message_ids
+msgid "Website Messages"
+msgstr "Повідомлення з веб-сайту"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_backend__website_message_ids
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_order__website_message_ids
+msgid "Website communication history"
+msgstr "Історія бесіди на сайті"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_status_mapping__sync_to_marketplace
+msgid "When Odoo state changes, send this status to marketplace"
+msgstr "Коли змінюється стан в Odoo — передавати цей статус у маркетплейс"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_marketplace_status_mapping__sync_from_marketplace
+msgid "When marketplace sends this status, update Odoo state"
+msgstr "Коли маркетплейс надсилає цей статус — оновлювати стан в Odoo"
+
+#. module: l10n_ua_marketplace_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_marketplace_base.marketplace_order_view_search
+msgid "Without Sale Order"
+msgstr "Без замовлення на продаж"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_backend__feed_format__xml
+msgid "XML"
+msgstr "XML"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields.selection,name:l10n_ua_marketplace_base.selection__marketplace_backend__feed_format__yml
+msgid "YML (Yandex Market)"
+msgstr "YML"
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,field_description:l10n_ua_marketplace_base.field_marketplace_order__delivery_zip
+msgid "ZIP Code"
+msgstr "Індекс"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_backend.py:0
+msgid "backend_id"
+msgstr ""
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+msgid "delivery_issue"
+msgstr ""
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+msgid "duplicate_order"
+msgstr ""
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+msgid "fraud_suspicion"
+msgstr ""
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_order.py:0
+msgid "id"
+msgstr "id"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+msgid "other"
+msgstr ""
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+msgid "out_of_stock"
+msgstr ""
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/res_partner.py:0
+msgid "partner_id"
+msgstr "partner_id"
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/marketplace_pricelist.py:0
+msgid "pricelist_id"
+msgstr ""
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/wizard/marketplace_order_cancel_wizard.py:0
+msgid "pricing_error"
+msgstr ""
+
+#. module: l10n_ua_marketplace_base
+#. odoo-python
+#: code:addons/l10n_ua_marketplace_base/models/product_template.py:0
+msgid "product_tmpl_id"
+msgstr ""
+
+#. module: l10n_ua_marketplace_base
+#: model:ir.model.fields,help:l10n_ua_marketplace_base.field_product_template__marketplace_published
+msgid "Set automatically: the product has at least one active item in a marketplace pricelist."
+msgstr "Встановлюється автоматично: товар має хоча б одну активну позицію в прайс-листі маркетплейсу."

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="payment_provider_form" model="ir.ui.view">
+        <field name="name">monobank Provider Form</field>
+        <field name="model">payment.provider</field>
+        <field name="inherit_id" ref="payment.payment_provider_form"/>
+        <field name="arch" type="xml">
+            <group name="provider_credentials" position="inside">
+                <group invisible="code != 'mono'">
+                    <field name="mono_token" string="Token"
+                           required="code == 'mono' and state != 'disabled'" password="True"/>
+                    <field name="mono_charge_currency"/>
+                </group>
+            </group>
+        </field>
+    </record>
+</odoo>

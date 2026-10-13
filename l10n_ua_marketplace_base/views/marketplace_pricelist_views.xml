@@ -9,7 +9,7 @@
             <form string="Marketplace Pricelist">
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_view_items" type="object" class="oe_stat_button" icon="fa-cubes">
+                        <button name="action_view_items" help="Inside Odoo. Opens the items of this pricelist." type="object" class="oe_stat_button" icon="fa-cubes">
                             <field name="item_count" widget="statinfo" string="Items"/>
                         </button>
                     </div>
@@ -56,9 +56,9 @@
                                 </group>
                             </group>
                             <div class="oe_button_box">
-                                <button name="action_generate_items" type="object"
+                                <button name="action_generate_items" help="Inside Odoo. Fills the pricelist with products from the Odoo catalogue that match the filter. Nothing is sent to the marketplace." type="object"
                                         string="Generate Items from Products" class="btn-primary"/>
-                                <button name="action_refresh_prices" type="object"
+                                <button name="action_refresh_prices" help="Inside Odoo. Recalculates item prices from the Odoo pricelist. Use Sync Prices on the backend to send them to the marketplace." type="object"
                                         string="Refresh Prices" class="btn-secondary"/>
                             </div>
                         </page>

@@ -8,34 +8,34 @@
         <field name="arch" type="xml">
             <form string="Marketplace Order">
                 <header>
-                    <button name="action_create_sale_order" type="object" string="Create Sale Order"
+                    <button name="action_create_sale_order" help="Inside Odoo. Creates a sale order from this marketplace order. The marketplace is not notified." type="object" string="Create Sale Order"
                             class="btn-primary" invisible="sale_order_id or state in ('cancelled', 'returned')"/>
-                    <button name="action_confirm" type="object" string="Confirm"
+                    <button name="action_confirm" help="Odoo → marketplace. Confirms the order in Odoo and sends the new status to the marketplace." type="object" string="Confirm"
                             class="btn-primary" invisible="state != 'new'"/>
-                    <button name="action_ship" type="object" string="Ship"
+                    <button name="action_ship" help="Odoo → marketplace. Asks for the tracking number, then sends the shipped status and that number to the marketplace." type="object" string="Ship"
                             class="btn-primary" invisible="state not in ('processing', 'confirmed')"/>
-                    <button name="action_deliver" type="object" string="Mark Delivered"
+                    <button name="action_deliver" help="Odoo → marketplace. Marks the order delivered in Odoo and sends the status to the marketplace." type="object" string="Mark Delivered"
                             class="btn-secondary" invisible="state != 'shipped'"/>
-                    <button name="action_cancel" type="object" string="Cancel"
+                    <button name="action_cancel" help="Odoo → marketplace. Asks for a cancellation reason, then cancels the order both in Odoo and on the marketplace." type="object" string="Cancel"
                             class="btn-secondary" invisible="state in ('cancelled', 'delivered', 'returned')"/>
-                    <button name="action_register_payment" type="object" string="Register Payment"
+                    <button name="action_register_payment" help="Inside Odoo. Registers the payment in Odoo accounting. The marketplace is not notified." type="object" string="Register Payment"
                             class="btn-secondary" invisible="is_paid or not sale_order_id"/>
-                    <button name="action_sync_status" type="object" string="Sync Status"
+                    <button name="action_sync_status" help="Marketplace → Odoo. Reads the current order status from the marketplace and updates it in Odoo." type="object" string="Sync Status"
                             class="btn-secondary"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="new,processing,confirmed,shipped,delivered"/>
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="button_box">
-                        <button name="action_view_sale_order" type="object" class="oe_stat_button"
+                        <button name="action_view_sale_order" help="Inside Odoo. Opens the linked sale order." type="object" class="oe_stat_button"
                                 icon="fa-file-text-o" invisible="not sale_order_id">
                             <span class="o_stat_text">Sale Order</span>
                         </button>
-                        <button name="action_view_pickings" type="object" class="oe_stat_button"
+                        <button name="action_view_pickings" help="Inside Odoo. Opens the linked transfers." type="object" class="oe_stat_button"
                                 icon="fa-truck" invisible="picking_count == 0">
                             <field name="picking_count" widget="statinfo" string="Deliveries"/>
                         </button>
-                        <button name="action_view_invoices" type="object" class="oe_stat_button"
+                        <button name="action_view_invoices" help="Inside Odoo. Opens the linked invoices." type="object" class="oe_stat_button"
                                 icon="fa-pencil-square-o" invisible="invoice_count == 0">
                             <field name="invoice_count" widget="statinfo" string="Invoices"/>
                         </button>

@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Marketplace Base',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.5.0',
     'category': 'Sales/Sales',
     'summary': 'Ukrainian marketplace integrations base module',
     'description': """
@@ -25,7 +25,7 @@ Supported marketplaces (via specific modules):
 * Price.ua (price feed only)
     """,
     'author': 'Svyatoslav Nadozirny',
-    'website': 'https://many2one.online',
+    'website': 'https://1c-to-odoo.many2one.online',
     'license': 'LGPL-3',
     'depends': [
         'sale',
