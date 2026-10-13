@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Accounting Document Reports',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.2.0',
     'category': 'Accounting/Localization',
     'summary': 'Ukrainian commercial documents: Рахунок-фактура, Видаткова накладна, Акт',
     'description': """
@@ -21,7 +21,7 @@ All templates include:
 * Shared Ukrainian report styles and A4 paper format
     """,
     'author': 'Svyatoslav Nadozirny',
-    'website': 'https://many2one.online',
+    'website': 'https://1c-to-odoo.many2one.online',
     'license': 'LGPL-3',
     'depends': [
         'l10n_ua_account_base',
@@ -29,7 +29,6 @@ All templates include:
     ],
     'data': [
         'report/report_templates.xml',
-        'report/invoice_report_inherit.xml',
         'report/report_rahunok.xml',
         'report/report_vydatkova.xml',
         'report/report_act.xml',

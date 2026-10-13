@@ -630,6 +630,21 @@ class MarketplaceBackend(models.Model):
         """
         _logger.info(f"Cancel order {order.name} on {self.name} - not implemented")
 
+    def action_import_products(self):
+        """Витягти товари з кабінету майданчика. Перевизначається в модулях майданчиків."""
+        self.ensure_one()
+        raise UserError(_('Product import is not implemented for this marketplace type.'))
+
+    def _process_webhook(self, data, headers=None):
+        """Обробити вхідний вебхук маркетплейсу.
+
+        Перевизначається в модулях конкретних майданчиків. Повертає True,
+        якщо подію оброблено, інакше контролер відпрацює її типовим шляхом.
+        """
+        self.ensure_one()
+        _logger.info(f"Webhook for {self.name}: no specific handler, falling back to generic processing")
+        return False
+
     def _api_sync_stock(self, items):
         """Sync stock via API (single item). Override in child modules."""
         raise NotImplementedError()

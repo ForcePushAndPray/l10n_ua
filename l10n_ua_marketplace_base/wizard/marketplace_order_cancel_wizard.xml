@@ -21,7 +21,7 @@
                     <field name="cancel_sale_order"/>
                 </group>
                 <footer>
-                    <button name="action_cancel" type="object" string="Cancel Order(s)"
+                    <button name="action_cancel" help="Odoo → marketplace. Cancels the orders in Odoo and sends the cancellation with its reason to the marketplace." type="object" string="Cancel Order(s)"
                             class="btn-primary" confirm="Are you sure you want to cancel the selected order(s)?"/>
                     <button string="Discard" special="cancel"/>
                 </footer>

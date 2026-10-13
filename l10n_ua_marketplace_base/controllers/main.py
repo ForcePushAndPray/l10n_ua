@@ -87,8 +87,11 @@ class MarketplaceWebhookController(http.Controller):
         if not backend.webhook_enabled:
             return {'error': 'Webhook disabled'}
 
-        # Get request data
-        data = request.jsonrequest
+        # Get request data (request.jsonrequest прибрали ще в Odoo 17)
+        try:
+            data = request.get_json_data()
+        except Exception:
+            data = kwargs or {}
 
         # Verify webhook signature if secret is configured
         if backend.webhook_secret:
@@ -100,8 +103,10 @@ class MarketplaceWebhookController(http.Controller):
         _logger.info(f"Webhook received for backend {backend.name}: {json.dumps(data)[:500]}")
 
         try:
-            # Process webhook based on event type
-            result = self._process_webhook(backend, data)
+            # Спершу — обробник конкретного майданчика, далі типовий шлях
+            result = backend._process_webhook(data, request.httprequest.headers)
+            if not result:
+                result = self._process_webhook(backend, data)
             return {'success': True, 'result': result}
         except Exception as e:
             _logger.exception(f"Error processing webhook for backend {backend_id}: {e}")

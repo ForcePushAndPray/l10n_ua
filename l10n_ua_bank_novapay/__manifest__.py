@@ -17,7 +17,7 @@ NovaPay Business cabinet API (business.novapay.ua) integration providing:
 Extends l10n_ua_bank_sync with NovaPay-specific functionality.
     """,
     'author': 'Svyatoslav Nadozirny',
-    'website': 'https://many2one.online',
+    'website': 'https://1c-to-odoo.many2one.online',
     'license': 'LGPL-3',
     'depends': [
         'l10n_ua_bank_sync',

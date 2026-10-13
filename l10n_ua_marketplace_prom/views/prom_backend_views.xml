@@ -14,7 +14,7 @@
 
             <!-- Add Import Products button for Prom.ua -->
             <xpath expr="//button[@name='action_sync_prices_now']" position="after">
-                <button name="action_import_products" type="object" string="Import Products"
+                <button name="action_import_products" help="Marketplace → Odoo. Reads the Prom.ua catalogue and matches it to Odoo products by internal reference. Nothing is sent to Prom.ua." type="object" string="Import Products"
                         class="btn-secondary" invisible="marketplace_type != 'prom' or state != 'active'"/>
             </xpath>
         </field>
