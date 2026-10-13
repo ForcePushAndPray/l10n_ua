@@ -452,6 +452,7 @@ class HrPayslip(models.Model):
 
     @api.depends(
         'accrual_ids.amount',
+        'accrual_ids.period_month',
         'deduction_ids.amount',
         'psp_amount',
         'pdfo_rate',
@@ -509,11 +510,24 @@ class HrPayslip(models.Model):
             payslip.military_tax_base = military_taxable
             payslip.military_tax_amount = round(military_taxable * military_rate / 100, 2)
 
-            # ESV (employer contribution) — на звичайну вартість, без гросс-апу
-            esv_taxable = sum(
-                a.amount for a in payslip.accrual_ids
-                if a.is_esv_base
-            )
+            # ESV (employer contribution) — on the plain value, with no gross-up.
+            # An amount for another month — a sickness benefit for the days of
+            # an earlier one — has the ceiling of that month on its own; the
+            # rest of the base is the payslip's own month.
+            month = payslip.date_to.replace(day=1) if payslip.date_to else False
+            esv_taxable, other_months = 0.0, {}
+            for a in payslip.accrual_ids.filtered('is_esv_base'):
+                if a.period_month and a.period_month != month:
+                    other_months[a.period_month] = \
+                        other_months.get(a.period_month, 0.0) + a.amount
+                else:
+                    esv_taxable += a.amount
+            other_base = 0.0
+            for period, amount in other_months.items():
+                period_params = self.env['hr.psp.parameters'].get_parameters(
+                    period, payslip.company_id.id)
+                other_base += min(amount, period_params.max_esv_base) \
+                    if period_params and period_params.max_esv_base else amount
 
             if payslip.is_diia_city:
                 # No ESV for Diia.City
@@ -521,13 +535,14 @@ class HrPayslip(models.Model):
                 payslip.esv_amount = 0.0
             else:
                 if params:
+                    floor = params.min_wage if payslip._l10n_ua_min_esv_applies() else 0.0
                     payslip.esv_base = min(
-                        max(esv_taxable, params.min_wage), params.max_esv_base)
+                        max(esv_taxable, floor), params.max_esv_base) + other_base
                 else:
                     # No parameters for the period, so no statutory floor or
                     # ceiling to apply. Such a payslip can be neither computed
                     # nor verified: see _check_psp_parameters_known.
-                    payslip.esv_base = esv_taxable
+                    payslip.esv_base = esv_taxable + other_base
                 payslip.esv_amount = round(payslip.esv_base * esv_rate / 100, 2)
             
             # Other deductions (excluding taxes)
@@ -594,19 +609,25 @@ class HrPayslip(models.Model):
         """The hours the employee is taken to have worked on a working day
         when there is no timesheet to say.
 
-        Their schedule's day at their work rate: the weekly hours of the
-        schedule over five days. A shift or summarized schedule runs to the
-        norm over the month rather than week by week, and its long shifts are
-        not every day, so it is taken at the day of the norm.
+        The part-time is taken from one source only: the work rate and a
+        shorter schedule both describe it, and applying both would shorten
+        the day twice. A schedule shorter than the company's full week says
+        it itself — its weekly hours over five days, whatever the rate; on a
+        full or reduced schedule the day of the norm is shortened by the
+        work rate. A shift or summarized schedule runs to the norm over the
+        month rather than week by week, and its long shifts are not every
+        day, so it is taken at the day of the norm too.
         """
         self.ensure_one()
         version = self._version_on(day)
         calendar = version.resource_calendar_id
         rate = version.work_rate or 1.0
-        if not calendar or calendar.ua_schedule_type in ('shift', 'summarized') \
-                or calendar.ua_reduced_hours or not calendar.hours_per_week:
-            return self._norm_hours_of(day, company_hours) * rate
-        return calendar.hours_per_week / 5.0 * rate
+        full_week = self.company_id.resource_calendar_id.hours_per_week or 40.0
+        if calendar and calendar.ua_schedule_type not in ('shift', 'summarized') \
+                and not calendar.ua_reduced_hours \
+                and 0 < calendar.hours_per_week < full_week:
+            return calendar.hours_per_week / 5.0
+        return self._norm_hours_of(day, company_hours) * rate
 
     def _compute_working_days(self):
         """Calculate scheduled and worked days"""
@@ -771,6 +792,123 @@ class HrPayslip(models.Model):
         if norm <= 0:
             return 1.0
         return min(1.0, worked_hours / norm)
+
+    def _l10n_ua_legacy_method(self):
+        """Whether the payslip's period ended before the salary was calculated
+        by the hours worked.
+
+        The date of the change is kept by the upgrade in a system parameter;
+        a database installed afterwards has none and no such payslips. The end
+        of the period, not the date of the last change, tells it: a closed
+        payslip is still written to after the upgrade — by its accounting
+        entry, for one — and would otherwise pass for a new one.
+        """
+        self.ensure_one()
+        switch = self.env['ir.config_parameter'].sudo().get_param(
+            'l10n_ua_hr_salary.hours_method_date')
+        return bool(switch and self.date_to
+                    and self.date_to < fields.Date.to_date(switch))
+
+    def _l10n_ua_min_esv_applies(self):
+        """Whether the contribution base is raised to the minimum wage.
+
+        Only for a month the employee was under contract every calendar day
+        of, or worked every working day of: hired or dismissed in the middle
+        of the month and not at work all its working days, the contribution
+        is charged on what was accrued.
+        """
+        self.ensure_one()
+        if not (self.employee_id and self.date_to):
+            return True
+        start = self.date_to.replace(day=1)
+        end = start + relativedelta(months=1, days=-1)
+        days = [start + relativedelta(days=n) for n in range((end - start).days + 1)]
+        if all(self._employed_on(day) for day in days):
+            return True
+        away = self._absence_dates()
+        return all(self._employed_on(day) and day not in away
+                   for day in self._working_dates(start, end))
+
+    def _correct_closed_periods(self, certificates):
+        """Take back the salary closed payslips paid for days of sickness.
+
+        A certificate is accrued in the month it is confirmed, and its days
+        may fall in a month already closed — one that, not knowing of the
+        sickness, paid them by the salary. Recomputed now, that month sees
+        the days as away, and the difference is taken back in this payslip,
+        as a retro recalculation would: a manual one later replaces it.
+
+        A month closed before the hours-worked calculation cannot be
+        recomputed that way, nor can a month whose timesheet has the days as
+        worked: both are left to the accountant, with a note on the payslip.
+        """
+        self.ensure_one()
+        if self.env.context.get('l10n_ua_skip_closed_correction'):
+            return
+        Retro = self.env['hr.payslip.retro']
+        retro_type = self.env['hr.accrual.type'].search([('code', '=', 'RETRO')], limit=1)
+        for certificate in certificates:
+            closed = self.search([
+                ('employee_id', '=', self.employee_id.id),
+                ('company_id', '=', self.company_id.id),
+                ('state', '=', 'done'),
+                ('id', '!=', self.id),
+                ('date_to', '<', self.date_from),
+                ('date_from', '<=', certificate.date_to),
+                ('date_to', '>=', certificate.date_from),
+            ], order='date_from')
+            for slip in closed:
+                first = max(certificate.date_from, slip.date_from)
+                last = min(certificate.date_to, slip.date_to)
+                days = '%s–%s' % (format_date(self.env, first), format_date(self.env, last))
+                line = slip._timesheet_line()
+                sick = {first + relativedelta(days=n) for n in range((last - first).days + 1)}
+                worked = {day.date for day in slip._timesheet_days(line)
+                          if day.code_id.is_worked} if line else set()
+                if slip._l10n_ua_legacy_method() or worked & sick or not retro_type:
+                    self.message_post(body=_(
+                        'The days %(days)s of the sick leave %(certificate)s fall '
+                        'in the closed payslip %(payslip)s, which may have paid '
+                        'them by the salary. Correct it by hand.',
+                        days=days, certificate=certificate.name, payslip=slip.name))
+                    continue
+                prior = Retro.search([
+                    ('source_payslip_id', '=', slip.id),
+                    ('target_payslip_id', '=', self.id),
+                ])
+                prior.accrual_line_id.unlink()
+                prior.unlink()
+                try:
+                    with self.env.cr.savepoint():
+                        new_gross = slip._recompute_period_gross()
+                except UserError as error:
+                    self.message_post(body=_(
+                        'The days %(days)s of the sick leave %(certificate)s fall '
+                        'in the closed payslip %(payslip)s, which could not be '
+                        'recomputed: %(error)s Correct it by hand.',
+                        days=days, certificate=certificate.name,
+                        payslip=slip.name, error=error.args[0]))
+                    continue
+                delta = round(new_gross - slip.gross_salary, 2)
+                if delta > -0.01:
+                    continue
+                accrual = self.env['hr.payslip.accrual'].create({
+                    'payslip_id': self.id,
+                    'accrual_type_id': retro_type.id,
+                    'quantity': 1,
+                    'amount': delta,
+                    'is_auto_generated': True,
+                    'notes': _('Salary paid in %(payslip)s for the sick days %(days)s',
+                               payslip=slip.name, days=days),
+                })
+                Retro.create({
+                    'source_payslip_id': slip.id,
+                    'target_payslip_id': self.id,
+                    'accrual_line_id': accrual.id,
+                    'old_gross': slip.gross_salary,
+                    'new_gross': new_gross,
+                    'gross_delta': delta,
+                })
 
     def _salary_form(self, version):
         """How the version is paid: 'salary', 'hourly' or 'piece'."""
@@ -1405,7 +1543,7 @@ class HrPayslip(models.Model):
         manual = {line.accrual_type_id for line in self.accrual_ids
                   if not line.is_auto_generated}
 
-        def accrue(code, days, rate, note):
+        def accrue(code, days, rate, note, period_month=False):
             kind = kinds[code]
             if not kind or kind in manual or not days or not rate:
                 return
@@ -1417,6 +1555,7 @@ class HrPayslip(models.Model):
                 'amount': round(rate * days, 2),
                 'is_auto_generated': True,
                 'notes': note,
+                'period_month': period_month,
             })
 
         certificates = self.env['hr.sick.leave'].search([
@@ -1494,12 +1633,23 @@ class HrPayslip(models.Model):
                 certificate.date_from + relativedelta(days=n)
                 for n in range((certificate.date_to - certificate.date_from).days + 1)
             }, certificate.name)
-            days = (certificate.date_to - certificate.date_from).days + 1
-            employer = min(certificate.employer_days, days)
-            fund = days - employer
-            accrue('SICK_EMP', employer, rate, certificate.name)
-            accrue('MATERNITY' if certificate.sick_leave_type == 'pregnancy'
-                   else 'SICK_FSS', fund, rate, certificate.name)
+            # One line per payer and per month the days are in: the ceiling
+            # of the contribution base applies to each month on its own.
+            by_month = {}
+            for n in range((certificate.date_to - certificate.date_from).days + 1):
+                day = certificate.date_from + relativedelta(days=n)
+                counts = by_month.setdefault(day.replace(day=1), [0, 0])
+                counts[0 if n < certificate.employer_days else 1] += 1
+            fund_code = 'MATERNITY' if certificate.sick_leave_type == 'pregnancy' \
+                else 'SICK_FSS'
+            own_month = self.date_to.replace(day=1)
+            for month, (employer, fund) in sorted(by_month.items()):
+                period = month if month != own_month else False
+                note = certificate.name if not period else '%s, %s' % (
+                    certificate.name, month.strftime('%m.%Y'))
+                accrue('SICK_EMP', employer, rate, note, period)
+                accrue(fund_code, fund, rate, note, period)
+        self._correct_closed_periods(certificates)
 
     def _absence_dates(self):
         """The days of the period the employee was away on a validated time off
@@ -2057,7 +2207,9 @@ class HrPayslip(models.Model):
         Тимчасовий листок одразу видаляється — self не змінюється.
         """
         self.ensure_one()
-        temp = self.copy({
+        # The copy is computed as its own month: it does not correct the
+        # periods before it, which is the caller's business.
+        temp = self.with_context(l10n_ua_skip_closed_correction=True).copy({
             'state': 'draft',
             'payslip_run_id': False,
             'name': _('%s (перерахунок)') % (self.name or ''),
@@ -2103,6 +2255,14 @@ class HrPayslip(models.Model):
                 raise UserError(_(
                     'Ретро-перерахунок можливий лише для закритих (Done) '
                     'листків. Листок «%s» у стані «%s».') % (slip.name, slip.state))
+
+            if slip._l10n_ua_legacy_method():
+                raise UserError(_(
+                    'The payslip %(payslip)s for %(period)s was closed before '
+                    'the salary was calculated by the hours worked. Recomputing '
+                    'it would show only the difference between the two methods, '
+                    'not a change in its data. Enter the correction by hand.',
+                    payslip=slip.name, period=slip.date_to.strftime('%m.%Y')))
 
             target = slip._find_current_draft_payslip()
             if not target:

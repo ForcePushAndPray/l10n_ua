@@ -28,8 +28,8 @@ class HrVersion(models.Model):
 
     # --- Форма оплати праці (#143) ---
     salary_form = fields.Selection(
-        [('salary', 'Monthly Salary'),
-         ('hourly', 'Hourly Rate'),
+        [('salary', 'Salaried'),
+         ('hourly', 'Hourly'),
          ('piece', 'Piece Rate')],
         string='Salary Form', default='salary', required=True,
         help='Monthly salary: the salary over the norm of the month, for the '

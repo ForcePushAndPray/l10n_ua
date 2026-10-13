@@ -3477,12 +3477,12 @@ msgstr "Форма оплати праці"
 
 #. module: l10n_ua_hr_salary
 #: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_version__salary_form__salary
-msgid "Monthly Salary"
+msgid "Salaried"
 msgstr "Окладна"
 
 #. module: l10n_ua_hr_salary
 #: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_version__salary_form__hourly
-msgid "Hourly Rate"
+msgid "Hourly"
 msgstr "Погодинна"
 
 #. module: l10n_ua_hr_salary
@@ -3501,3 +3501,65 @@ msgstr ""
 "Окладна: оклад, поділений на норму робочого часу місяця, за відпрацьовані "
 "години. Погодинна: годинна ставка тарифного розряду за відпрацьовані години. "
 "Відрядна: замість окладу — сума нарядів відрядної оплати за місяць."
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_payslip.py:0
+msgid ""
+"The payslip %(payslip)s for %(period)s was closed before the salary was "
+"calculated by the hours worked. Recomputing it would show only the "
+"difference between the two methods, not a change in its data. Enter the "
+"correction by hand."
+msgstr ""
+"Листок %(payslip)s за %(period)s закрито до того, як оклад почали рахувати "
+"за відпрацьованими годинами. Його перерахунок показав би лише різницю двох "
+"методик, а не зміну даних. Внесіть коригування вручну."
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_payslip.py:0
+msgid ""
+"The days %(days)s of the sick leave %(certificate)s fall in the closed "
+"payslip %(payslip)s, which may have paid them by the salary. Correct it by "
+"hand."
+msgstr ""
+"Дні %(days)s листка непрацездатності %(certificate)s припадають на закритий "
+"розрахунковий лист %(payslip)s, який міг оплатити їх окладом. Скоригуйте "
+"вручну."
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_payslip.py:0
+msgid ""
+"The days %(days)s of the sick leave %(certificate)s fall in the closed "
+"payslip %(payslip)s, which could not be recomputed: %(error)s Correct it by "
+"hand."
+msgstr ""
+"Дні %(days)s листка непрацездатності %(certificate)s припадають на закритий "
+"розрахунковий лист %(payslip)s, який не вдалося перерахувати: %(error)s "
+"Скоригуйте вручну."
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_payslip.py:0
+msgid ""
+"Salary paid in %(payslip)s for the sick days %(days)s"
+msgstr ""
+"Оклад, виплачений у %(payslip)s за дні непрацездатності %(days)s"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_payslip_accrual__period_month
+msgid "Period Month"
+msgstr "За місяць"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,help:l10n_ua_hr_salary.field_hr_payslip_accrual__period_month
+msgid ""
+"The month the amount is for, when it is not the month of the payslip: a "
+"sickness benefit accrued in the month its certificate was confirmed may be "
+"for the days of an earlier month. Empty means the month of the payslip."
+msgstr ""
+"Місяць, за який нараховано суму, якщо він не збігається з місяцем "
+"розрахункового листа: допомога по тимчасовій непрацездатності, нарахована в "
+"місяці підтвердження листка, може стосуватися днів попереднього місяця. "
+"Порожнє поле означає місяць розрахункового листа."

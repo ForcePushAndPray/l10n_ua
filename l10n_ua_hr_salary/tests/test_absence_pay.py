@@ -154,8 +154,12 @@ class TestAbsencePay(SalaryTestCase):
         sick.confirmed_date = date(2025, 8, 5)
         august = self._payslip(date(2025, 8, 1), date(2025, 8, 31))
         self.assertFalse(self._of_type(july, 'SICK_EMP') | self._of_type(july, 'SICK_FSS'))
-        self.assertEqual((self._of_type(august, 'SICK_EMP').quantity,
-                          self._of_type(august, 'SICK_FSS').quantity), (5, 2))
+        employer = self._of_type(august, 'SICK_EMP')
+        self.assertEqual(sum(employer.mapped('quantity')), 5)
+        self.assertEqual(sum(self._of_type(august, 'SICK_FSS').mapped('quantity')), 2)
+        # A line per month: the 4 days of July carry their month.
+        july_days = employer.filtered(lambda a: a.period_month == date(2025, 7, 1))
+        self.assertEqual(july_days.quantity, 4)
         self.assertAlmostEqual(
             sum((self._of_type(august, 'SICK_EMP')
                  | self._of_type(august, 'SICK_FSS')).mapped('amount')),
@@ -291,3 +295,113 @@ class TestAbsencePay(SalaryTestCase):
         self.assertEqual((slip.scheduled_days, slip.worked_days), (23, 11))
         self.assertAlmostEqual(self._of_type(slip, 'SALARY').amount,
                                round(23000 * 11 / 23, 2), places=2)
+
+    # --- closed months, retro recalculation, minimum contribution ---
+
+    def _closed(self, month_from, month_to):
+        slip = self._payslip(month_from, month_to)
+        slip.state = 'done'
+        return slip
+
+    def test_sick_days_paid_by_a_closed_month_are_taken_back(self):
+        # July is closed paying 28-31 July by the salary; the certificate for
+        # 28 July - 3 August is confirmed on 5 August. August pays the
+        # benefit for all 7 days and takes back the salary of the 4 weekdays
+        # of July: 32 of its 184 hours.
+        self.version.wage = 23000
+        july = self._closed(date(2025, 7, 1), date(2025, 7, 31))
+        sick = self._sickness(date(2025, 7, 28), date(2025, 8, 3))
+        sick.action_confirm()
+        sick.confirmed_date = date(2025, 8, 5)
+        august = self._payslip(date(2025, 8, 1), date(2025, 8, 31))
+        retro = self._of_type(august, 'RETRO')
+        self.assertAlmostEqual(retro.amount, -round(23000 * 32 / 184, 2), places=2)
+        self.assertEqual(
+            self.env['hr.payslip.retro'].search([('target_payslip_id', '=', august.id)])
+            .source_payslip_id, july)
+
+    def test_a_month_closed_before_the_hours_method_is_left_to_the_accountant(self):
+        params = self.env['ir.config_parameter'].sudo()
+        params.set_param('l10n_ua_hr_salary.hours_method_date', '2025-08-01')
+        # The parameter is cached: clear it before the test's rollback.
+        self.addCleanup(params.set_param, 'l10n_ua_hr_salary.hours_method_date', False)
+        july = self._closed(date(2025, 7, 1), date(2025, 7, 31))
+        sick = self._sickness(date(2025, 7, 28), date(2025, 8, 3))
+        sick.action_confirm()
+        sick.confirmed_date = date(2025, 8, 5)
+        august = self._payslip(date(2025, 8, 1), date(2025, 8, 31))
+        self.assertFalse(self._of_type(august, 'RETRO'))
+        self.assertTrue(august.message_ids.filtered(lambda m: july.name in (m.body or '')))
+        with self.assertRaises(UserError):
+            july.action_retro_recalculate()
+
+    def test_retro_of_an_unchanged_month_finds_no_difference(self):
+        self._closed(date(2025, 7, 1), date(2025, 7, 31))
+        july = self.env['hr.payslip'].search([
+            ('employee_id', '=', self.employee.id), ('state', '=', 'done')])
+        august = self.env['hr.payslip'].create({
+            'employee_id': self.employee.id,
+            'date_from': date(2025, 8, 1), 'date_to': date(2025, 8, 31),
+        })
+        july.action_retro_recalculate()
+        self.assertFalse(self._of_type(august, 'RETRO'))
+
+    def test_a_part_time_schedule_and_rate_reduce_once(self):
+        # Both the 20-hour schedule and the 0.5 rate say the same half time.
+        self._july_with_one_holiday()
+        self.version.write({
+            'wage': 23000, 'work_rate': 0.5,
+            'resource_calendar_id': self.env.ref(
+                'l10n_ua_hr_contract.resource_calendar_ua_part20').id,
+        })
+        slip = self._payslip(date(2025, 7, 1), date(2025, 7, 31))
+        self.assertAlmostEqual(self._of_type(slip, 'SALARY').amount, 11500.0, places=2)
+
+    def test_the_minimum_contribution_skips_a_hire_in_the_middle_of_the_month(self):
+        # Hired on 17 July for a salary below the minimum wage: the
+        # contribution is charged on what was accrued.
+        self._july_with_one_holiday()
+        self.version.write({
+            'wage': 7000,
+            'contract_date_start': date(2025, 7, 17),
+            'date_version': date(2025, 7, 17),
+        })
+        slip = self._payslip(date(2025, 7, 1), date(2025, 7, 31))
+        self.assertAlmostEqual(slip.esv_base, round(7000 * 11 / 23, 2), places=2)
+
+    def test_the_minimum_contribution_holds_for_a_month_under_contract(self):
+        # Under contract all July with unpaid days off: raised to the minimum.
+        self._july_with_one_holiday()
+        unpaid = self.env['hr.leave.type'].create({
+            'name': 'Unpaid (absence pay test)', 'ua_leave_category': 'unpaid',
+            'is_paid': False, 'requires_allocation': False,
+            'company_id': self.company.id,
+        })
+        self.version.wage = 7000
+        self._leave(unpaid, date(2025, 7, 21), date(2025, 7, 25))
+        slip = self._payslip(date(2025, 7, 1), date(2025, 7, 31))
+        self.assertAlmostEqual(slip.esv_base, self.psp_params.min_wage, places=2)
+
+    def test_the_minimum_contribution_holds_for_a_hire_on_the_first_working_day(self):
+        # June 2025 starts on a Sunday: hired on Monday the 2nd and at work
+        # every working day of the month, the base is raised to the minimum.
+        self.version.write({
+            'wage': 7000,
+            'contract_date_start': date(2025, 6, 2),
+            'date_version': date(2025, 6, 2),
+        })
+        slip = self._payslip(date(2025, 6, 1), date(2025, 6, 30))
+        self.assertAlmostEqual(slip.esv_base, self.psp_params.min_wage, places=2)
+
+    def test_the_contribution_ceiling_applies_to_each_month_of_a_benefit(self):
+        # A salary above the ceiling, and a benefit confirmed in August for
+        # days of July and August: July's part has the ceiling of July on its
+        # own, August's part shares August's ceiling with the salary.
+        ceiling = self.psp_params.max_esv_base
+        self.version.wage = ceiling * 3
+        sick = self._sickness(date(2025, 7, 28), date(2025, 8, 3),
+                              average_daily_salary=10000.0)
+        sick.action_confirm()
+        sick.confirmed_date = date(2025, 8, 5)
+        august = self._payslip(date(2025, 8, 1), date(2025, 8, 31))
+        self.assertAlmostEqual(august.esv_base, ceiling + 4 * 10000.0, places=2)
