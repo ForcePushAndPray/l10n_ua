@@ -3,6 +3,7 @@ import uuid
 
 from odoo import models, _
 from odoo.exceptions import UserError
+from odoo.tools import float_compare
 
 from ..tools.medoc_xml import MedocCard, fmt_date, fmt_number
 
@@ -58,13 +59,47 @@ class L10nUaTaxInvoice(models.Model):
         return bool(country) and country.code != 'UA'
 
     def _medoc_rate(self, line):
+        """(код ставки, поле обсягу, поле суми ПДВ) рядка ПН або РК."""
+        is_rk = self.doc_type == 'rk'
         if line.vat_rate == '0':
-            return _ZERO_EXPORT if self._medoc_is_export() else _ZERO_DOMESTIC
-        return _RATE_TOTALS.get(line.vat_rate, _RATE_TOTALS['20'])
+            if self._medoc_is_export():
+                return _RK_ZERO_EXPORT if is_rk else _ZERO_EXPORT
+            return _RK_ZERO_DOMESTIC if is_rk else _ZERO_DOMESTIC
+        rate = (_RK_RATE_TOTALS if is_rk else _RATE_TOTALS).get(line.vat_rate)
+        if not rate:
+            # Мовчазна підстановка 20 % дала б у ЄРПН чужу суму ПДВ
+            raise UserError(_(
+                '%(name)s: експорт у M.E.Doc не підтримує ставку ПДВ '
+                'рядка «%(line)s».',
+                name=self.display_name, line=line.name))
+        return rate
 
     def _medoc_buyer_ipn(self):
-        # partner.ipn вміщує лише 10 цифр, тож 12-значний ІПН юрособи — у vat
-        return self.partner_id.ipn or self.partner_id.vat or ''
+        """ІПН покупця-платника ПДВ; порожній — покупець неплатник.
+
+        Платника визначає позначка контрагента, а не заповнений код:
+        ``ipn`` — це й РНОКПП фізособи чи ФОП-неплатника, на яких ПН
+        складається з умовним ІПН.
+        """
+        partner = self.partner_id
+        # partner.ipn приймає лише 10 цифр, тож 12-значний ІПН юрособи — у vat
+        ipn = (partner.ipn or partner.vat or '').strip()
+        if partner.is_vat_payer:
+            if not ipn:
+                raise UserError(_(
+                    '%(name)s: контрагент %(partner)s позначений платником '
+                    'ПДВ, але не має ІПН.',
+                    name=self.display_name, partner=partner.display_name))
+            return ipn
+        # 12-значний ІПН видається лише платникам ПДВ: без позначки ПН пішла
+        # б на «Неплатника», і покупець втратив би податковий кредит.
+        if len(ipn) == 12 and ipn.isdigit():
+            raise UserError(_(
+                '%(name)s: контрагент %(partner)s має 12-значний ІПН, але не '
+                'позначений платником ПДВ. Поставте позначку «Платник ПДВ» '
+                'або приберіть ІПН.',
+                name=self.display_name, partner=partner.display_name))
+        return ''
 
     def _medoc_new_card(self, form):
         """Картка з реквізитами продавця, спільними для ПН і РК."""
@@ -96,6 +131,11 @@ class L10nUaTaxInvoice(models.Model):
             raise UserError(_(
                 'У M.E.Doc вивантажуються лише видані документи; '
                 '%(name)s — отриманий.', name=self.display_name))
+        # Чернетка вивантажується: саме з M.E.Doc її реєструють у ЄРПН
+        if self.state == 'cancelled':
+            raise UserError(_(
+                '%(name)s скасовано — у M.E.Doc такий документ не '
+                'вивантажується.', name=self.display_name))
         if self.doc_type == 'rk':
             return self._medoc_rk_card()
         return self._medoc_pn_card()
@@ -151,20 +191,31 @@ class L10nUaTaxInvoice(models.Model):
         """Рядок РК → номер рядка ПН, що коригується (гр. 1 додатка 2).
 
         Зіставляємо за номенклатурою, а без неї — за описом: інакше РК не
-        знає, який рядок оригіналу змінює, і ЄРПН його не прийме.
+        знає, який рядок оригіналу змінює, і ЄРПН його не прийме. Один товар
+        може стояти в ПН кількома рядками, тому серед збігів беремо ще не
+        зайнятий рядок, найперше — з тією самою ціною (РК змінює кількість
+        за незмінної ціни).
         """
         numbers = {}
+        used = set()
         unmatched = self.env['l10n_ua.tax.invoice.line']
         originals = list(enumerate(self.original_invoice_id.line_ids, 1))
         for line in self.line_ids:
-            match = next((
-                number for number, orig in originals
+            candidates = [
+                (number, orig) for number, orig in originals
                 if (line.product_id and orig.product_id == line.product_id)
-                or (not line.product_id and orig.name == line.name)), None)
-            if match:
-                numbers[line.id] = match
-            else:
+                or (not line.product_id and orig.name == line.name)]
+            if not candidates:
                 unmatched |= line
+                continue
+            # False сортується перед True: вільний рядок, потім та сама ціна
+            match = min(candidates, key=lambda item: (
+                item[0] in used,
+                float_compare(item[1].price_unit, line.price_unit,
+                              precision_digits=6) != 0,
+                item[0]))[0]
+            used.add(match)
+            numbers[line.id] = match
         if unmatched:
             raise UserError(_(
                 '%(name)s: рядків немає в оригінальній ПН, тож невідомо, '
@@ -212,17 +263,7 @@ class L10nUaTaxInvoice(models.Model):
         totals = {}
         vat_by_field = {}
         for idx, line in enumerate(self.line_ids):
-            if line.vat_rate == '0':
-                rate = (_RK_ZERO_EXPORT if self._medoc_is_export()
-                        else _RK_ZERO_DOMESTIC)
-            else:
-                rate = _RK_RATE_TOTALS.get(line.vat_rate)
-            if not rate:
-                raise UserError(_(
-                    '%(name)s: експорт РК у M.E.Doc не підтримує ставку '
-                    'ПДВ рядка «%(line)s».',
-                    name=self.display_name, line=line.name))
-            rate_code, base_field, vat_field = rate
+            rate_code, base_field, vat_field = self._medoc_rate(line)
             totals[base_field] = totals.get(base_field, 0.0) + line.base_amount
             if vat_field:
                 vat_by_field[vat_field] = (

@@ -38,6 +38,10 @@ class AccountMove(models.Model):
             raise UserError(_(
                 'У M.E.Doc вивантажуються лише рахунки клієнтам; '
                 '%(name)s до них не належить.', name=self.display_name))
+        if self.state != 'posted':
+            raise UserError(_(
+                'У M.E.Doc вивантажуються лише проведені рахунки; '
+                'проведіть %(name)s.', name=self.display_name))
         company = self.company_id
         code = medoc_company_code(company)
         if not code:

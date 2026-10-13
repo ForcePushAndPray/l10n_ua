@@ -27,6 +27,7 @@ class TestMedocExport(AccountTestInvoicingCommon):
             'company_type': 'company',
             'edrpou': '30000005',
             'ipn': '3184710691',
+            'is_vat_payer': True,
         })
         cls.vat_20 = cls.env['account.tax'].create({
             'name': 'ПДВ 20% (medoc)', 'amount': 20.0, 'amount_type': 'percent',
@@ -109,11 +110,51 @@ class TestMedocExport(AccountTestInvoicingCommon):
         self.assertEqual(head['N13'], '1')
         self.assertEqual(head['N14'], '02')
 
+    def test_non_payer_with_rnokpp(self):
+        """РНОКПП ФОП-неплатника не робить його платником ПДВ."""
+        buyer = self.env['res.partner'].create({
+            'name': 'ФОП Неплатник', 'ipn': '3184710691'})
+        head = self._rows(self._export(self._tax_invoice(buyer)).find('ORG/CARD'))
+        self.assertEqual(head['N4'], '100000000000')
+        self.assertEqual(head['N3'], 'Неплатник')
+        self.assertEqual(head['N13'], '1')
+        self.assertNotIn('EDR_POK', head)
+        # Зменшення для неплатника реєструє постачальник
+        head = self._rows(self._export(
+            self._adjustment(self._tax_invoice(buyer))).find('ORG/CARD'))
+        self.assertEqual(head['N26'], '1')
+        self.assertNotIn('N16', head)
+        self.assertEqual(head['N4'], '100000000000')
+
+    def test_payer_flag_and_ipn_must_agree(self):
+        """Платник без ІПН і 12-значний ІПН без позначки — помилка, не здогад."""
+        no_ipn = self.env['res.partner'].create({
+            'name': 'ТОВ Без ІПН', 'is_vat_payer': True})
+        with self.assertRaises(UserError):
+            self._export(self._tax_invoice(no_ipn))
+        no_flag = self.env['res.partner'].create({
+            'name': 'ТОВ Без позначки', 'vat': '300000026594'})
+        with self.assertRaises(UserError):
+            self._export(self._tax_invoice(no_flag))
+
+    def test_cancelled_is_rejected(self):
+        pn = self._tax_invoice()
+        pn.action_cancel()
+        with self.assertRaises(UserError):
+            self._export(pn)
+
+    def test_unknown_rate_is_rejected(self):
+        """Рядок без ставки не стає мовчки 20 %."""
+        pn = self._tax_invoice()
+        pn.line_ids[0].vat_rate = False
+        with self.assertRaises(UserError):
+            self._export(pn)
+
     def test_buyer_ipn_falls_back_to_vat(self):
         """12-значний ІПН юрособи зберігається у стандартному полі vat."""
         buyer = self.env['res.partner'].create({
             'name': 'ТОВ Платник', 'company_type': 'company',
-            'vat': '300000026594'})
+            'vat': '300000026594', 'is_vat_payer': True})
         head = self._rows(self._export(self._tax_invoice(buyer)).find('ORG/CARD'))
         self.assertEqual(head['N4'], '300000026594')
         self.assertNotIn('N13', head)
@@ -209,6 +250,28 @@ class TestMedocExport(AccountTestInvoicingCommon):
                 'name': 'Чужий товар', 'quantity': -1, 'price_unit': 5.0,
                 'vat_rate': '20'})]))
 
+    def test_adjustment_same_item_on_several_lines(self):
+        """Один товар кількома рядками ПН: кожен рядок РК — свій рядок ПН."""
+        original = self._tax_invoice(line_ids=[
+            (0, 0, {'name': 'Ринва', 'quantity': 3, 'price_unit': 100.0,
+                    'vat_rate': '20'}),
+            (0, 0, {'name': 'Ринва', 'quantity': 2, 'price_unit': 90.0,
+                    'vat_rate': '20'}),
+            (0, 0, {'name': 'Ринва', 'quantity': 1, 'price_unit': 90.0,
+                    'vat_rate': '20'}),
+        ])
+        card = self._export(self._adjustment(original, line_ids=[
+            (0, 0, {'name': 'Ринва', 'quantity': -1, 'price_unit': 90.0,
+                    'vat_rate': '20'}),
+            (0, 0, {'name': 'Ринва', 'quantity': -1, 'price_unit': 90.0,
+                    'vat_rate': '20'}),
+            (0, 0, {'name': 'Ринва', 'quantity': -1, 'price_unit': 100.0,
+                    'vat_rate': '20'}),
+        ])).find('ORG/CARD')
+        self.assertEqual(
+            [self._rows(card, tab=1, line=idx)['TAB1_A01'] for idx in range(3)],
+            ['2', '3', '1'])
+
     def test_mixed_pn_and_rk_in_one_file(self):
         original = self._tax_invoice()
         cards = self._export(
@@ -258,6 +321,16 @@ class TestMedocExport(AccountTestInvoicingCommon):
         line = self._rows(card, tab=1)
         self.assertEqual(line['TAB1_A1'], 'Консультація')
         self.assertNotIn('TAB1_SPR1_NAME', line)
+
+    def test_draft_move_is_rejected(self):
+        move = self.env['account.move'].create({
+            'move_type': 'out_invoice', 'partner_id': self.customer.id,
+            'invoice_date': '2026-09-17',
+            'invoice_line_ids': [(0, 0, {
+                'name': 'Консультація', 'quantity': 1, 'price_unit': 500.0})],
+        })
+        with self.assertRaises(UserError):
+            self._export(move, 'act')
 
     def test_vendor_bill_is_rejected(self):
         bill = self.env['account.move'].create({
