@@ -12,14 +12,16 @@ class AccountMove(models.Model):
     _inherit = 'account.move'
 
     def _get_ua_report_lines(self):
-        """Return invoice lines excluding sections and notes."""
-        return self.invoice_line_ids.filtered(
-            lambda l: l.display_type not in ('line_section', 'line_note')
-        )
+        """Return product lines only: no sections, subsections or notes."""
+        return self.invoice_line_ids.filtered(lambda l: l.display_type == 'product')
+
+    def _get_ua_doc_date(self):
+        """Document date: invoice date, for drafts without it the accounting date."""
+        return self.invoice_date or self.date
 
     def _get_ua_date_formatted(self, dt=None):
         """Format date in Ukrainian long format: «15» січня 2026 р."""
-        text = format_date_ua(dt or self.invoice_date or self.date)
+        text = format_date_ua(dt or self._get_ua_doc_date())
         return re.sub(r'^"(\d+)"', r'«\1»', text)
 
     def _get_ua_date_short(self, dt):
@@ -40,12 +42,16 @@ class AccountMove(models.Model):
 
     def _get_ua_bank_account(self):
         """Company bank account to print: the one chosen on the invoice,
-        otherwise the first company account in the invoice currency."""
+        otherwise the first company account in the invoice currency
+        (an account without currency is in the company currency)."""
         self.ensure_one()
         if self.partner_bank_id:
             return self.partner_bank_id
+        company_currency = self.company_id.currency_id
         accounts = self.company_id.partner_id.bank_ids
-        return accounts.filtered(lambda a: a.currency_id == self.currency_id)[:1] or accounts[:1]
+        return accounts.filtered(
+            lambda a: (a.currency_id or company_currency) == self.currency_id
+        )[:1] or accounts[:1]
 
     def _get_ua_bank_mfo(self, partner_bank):
         """MFO of the bank. `res.bank.bic` holds the SWIFT code, so the MFO
@@ -60,7 +66,7 @@ class AccountMove(models.Model):
         return ''
 
     def _get_ua_bank_line(self, partner_bank):
-        """'в банку АТ КБ «ПриватБанк», МФО 305299'"""
+        """'в банку АТ «Тестовий банк», МФО 123456'"""
         parts = []
         if partner_bank.bank_id:
             parts.append('в банку %s' % partner_bank.bank_id.name)
@@ -93,7 +99,7 @@ class AccountMove(models.Model):
     @api.model
     def _ua_format_number(self, value, digits=2):
         """1234567.5 -> '1 234 567,50' (non-breaking space between thousands)."""
-        return f'{value or 0.0:,.{digits}f}'.replace(',', ' ').replace('.', ',')
+        return f'{value or 0.0:,.{digits}f}'.replace(',', '\u00a0').replace('.', ',')
 
     @api.model
     def _ua_format_quantity(self, value):
@@ -109,3 +115,13 @@ class AccountMove(models.Model):
             text = text[:-1]
             digits -= 1
         return text
+
+    def _get_ua_line_price_unit_excl(self, line):
+        """Unit price without VAT (before discount), also for taxes included in price."""
+        if not line.tax_ids:
+            return line.price_unit
+        taxes = line.tax_ids.compute_all(
+            line.price_unit, currency=line.currency_id, quantity=1.0,
+            product=line.product_id, partner=line.partner_id,
+        )
+        return taxes['total_excluded']

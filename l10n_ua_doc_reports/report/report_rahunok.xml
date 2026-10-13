@@ -11,7 +11,7 @@
         <field name="print_report_name">'Рахунок-фактура_%s' % (object.name)</field>
         <field name="binding_model_id" ref="account.model_account_move"/>
         <field name="binding_type">report</field>
-        <field name="domain">[('move_type', '=', 'out_invoice')]</field>
+        <field name="domain">[('move_type', '=', 'out_invoice'), ('currency_id.name', '=', 'UAH')]</field>
         <field name="paperformat_id" ref="l10n_ua_doc_reports.paperformat_ua_report"/>
     </record>
 
@@ -89,17 +89,19 @@
                     <div class="ua-report-date">від <t t-out="o._get_ua_date_formatted()"/></div>
                 </div>
 
-                <!-- Lines table -->
+                <!-- Lines and totals: one table, totals rows merge the cells left of the last column -->
+                <t t-set="col_count" t-value="8 if has_discount else 7"/>
                 <table class="ua-lines">
                     <thead>
                         <tr>
-                            <th style="width: 5%;">№</th>
-                            <th t-attf-style="width: #{40 if has_discount else 49}%;">Найменування</th>
-                            <th style="width: 10%;">Од. вим.</th>
+                            <th style="width: 4%;">№</th>
+                            <th t-attf-style="width: #{30 if has_discount else 37}%;">Найменування</th>
+                            <th style="width: 8%;">Од. вим.</th>
                             <th style="width: 10%;">Кількість</th>
-                            <th style="width: 13%;">Ціна, грн</th>
-                            <th t-if="has_discount" style="width: 9%;">Знижка, %</th>
-                            <th style="width: 13%;">Сума, грн</th>
+                            <th style="width: 13%;">Ціна без ПДВ, грн</th>
+                            <th t-if="has_discount" style="width: 7%;">Знижка, %</th>
+                            <th style="width: 14%;">Сума без ПДВ, грн</th>
+                            <th style="width: 14%;">Сума з ПДВ, грн</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -109,32 +111,26 @@
                                 <td t-out="line.name"/>
                                 <td class="text-center" t-out="line.product_uom_id.name or '-'"/>
                                 <td class="money" t-out="o._ua_format_quantity(line.quantity)"/>
-                                <td class="money" t-out="o._ua_format_price(line.price_unit)"/>
+                                <td class="money" t-out="o._ua_format_price(o._get_ua_line_price_unit_excl(line))"/>
                                 <td t-if="has_discount" class="money" t-out="o._ua_format_number(line.discount, 1) if line.discount else ''"/>
                                 <td class="money" t-out="o._ua_format_number(line.price_subtotal)"/>
+                                <td class="money" t-out="o._ua_format_number(line.price_total)"/>
                             </tr>
                         </t>
+                        <tr>
+                            <td class="ua-totals-label" t-att-colspan="col_count - 1">Разом без ПДВ:</td>
+                            <td class="ua-totals-value" t-out="o._ua_format_number(o.amount_untaxed)"/>
+                        </tr>
+                        <tr>
+                            <td class="ua-totals-label" t-att-colspan="col_count - 1">ПДВ:</td>
+                            <td t-if="o.amount_tax" class="ua-totals-value" t-out="o._ua_format_number(o.amount_tax)"/>
+                            <td t-else="" class="ua-totals-value text-center">—</td>
+                        </tr>
+                        <tr>
+                            <td class="ua-totals-label" t-att-colspan="col_count - 1">Всього:</td>
+                            <td class="ua-totals-value" t-out="o._ua_format_number(o.amount_total)"/>
+                        </tr>
                     </tbody>
-                </table>
-
-                <!-- Totals, aligned under the amount column -->
-                <table class="ua-totals">
-                    <tr>
-                        <td class="ua-totals-label">Разом без ПДВ:</td>
-                        <td class="ua-totals-value" t-out="o._ua_format_number(o.amount_untaxed)"/>
-                    </tr>
-                    <tr t-if="o.amount_tax">
-                        <td class="ua-totals-label">ПДВ:</td>
-                        <td class="ua-totals-value" t-out="o._ua_format_number(o.amount_tax)"/>
-                    </tr>
-                    <tr t-if="not o.amount_tax">
-                        <td class="ua-totals-label">ПДВ:</td>
-                        <td class="ua-totals-value text-center">—</td>
-                    </tr>
-                    <tr>
-                        <td class="ua-totals-label">Всього:</td>
-                        <td class="ua-totals-value" t-out="o._ua_format_number(o.amount_total)"/>
-                    </tr>
                 </table>
 
                 <!-- Summary -->
@@ -156,7 +152,7 @@
                     <p>
                         Увага! При заповненні платіжного доручення у графі "призначення платежу"
                         слід вказувати: Оплата згідно з рахунком № <t t-out="o.name"/>
-                        від <t t-out="o._get_ua_date_short(o.invoice_date)"/>
+                        від <t t-out="o._get_ua_date_short(o._get_ua_doc_date())"/>
                     </p>
                 </div>
 

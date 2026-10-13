@@ -159,31 +159,40 @@
                 font-size: 11pt;
                 margin-top: 3px;
             }
-            /* Fixed layout keeps the amount column of the lines table and
-               the totals table the same width (13%). */
-            .ua-report table.ua-lines,
-            .ua-report table.ua-totals {
+            /* Lines and totals in one table. 'separate' + explicit right/bottom
+               borders let the merged label cells of the totals rows stay
+               borderless in wkhtmltopdf ('collapse' redraws neighbour borders). */
+            .ua-report table.ua-lines {
                 table-layout: fixed;
-            }
-            .ua-report table.ua-totals {
                 border-collapse: separate;
                 border-spacing: 0;
-                border: none !important;
                 margin-bottom: 10px;
             }
-            .ua-report td.ua-totals-label {
-                width: 87%;
-                border: none !important;
+            .ua-report table.ua-lines th,
+            .ua-report table.ua-lines td {
+                border: none;
+                border-right: 1px solid black;
+                border-bottom: 1px solid black;
+            }
+            .ua-report table.ua-lines tr > :first-child {
+                border-left: 1px solid black;
+            }
+            .ua-report table.ua-lines thead th {
+                border-top: 1px solid black;
+            }
+            .ua-report table.ua-lines td.ua-totals-label {
+                border: none;
                 text-align: right;
                 font-weight: bold;
             }
-            .ua-report td.ua-totals-value {
-                width: 13%;
-                border: 1px solid black;
-                border-top: none;
+            .ua-report table.ua-lines td.ua-totals-value {
+                border-left: 1px solid black;
                 text-align: right;
                 font-weight: bold;
                 white-space: nowrap;
+            }
+            .ua-report table.ua-lines td.ua-totals-value.text-center {
+                text-align: center;
             }
             .ua-report table.ua-signatures {
                 width: auto;

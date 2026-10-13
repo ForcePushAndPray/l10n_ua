@@ -31,7 +31,7 @@
                         <div class="ua-report-title" style="margin: 10px 0;">
                             Видаткова накладна № <span t-field="o.name"/><br/>
                             <span style="font-size: 11pt;">
-                                від <span t-esc="o._get_ua_date_formatted()"/> року
+                                від <span t-esc="o._get_ua_date_formatted()"/>
                             </span>
                         </div>
 
