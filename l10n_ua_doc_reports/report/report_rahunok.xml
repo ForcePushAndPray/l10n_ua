@@ -147,6 +147,11 @@
                     <p>Сума знижки: <strong t-out="o._ua_format_number(o.l10n_ua_discount_total)"/> грн.</p>
                 </div>
 
+                <!-- Примітка рахунку (вкладка «Інша інформація» → «Умови»): розрахунок суми, курс тощо -->
+                <div t-if="not is_html_empty(o.narration)" style="margin-bottom: 10px;">
+                    <div t-field="o.narration"/>
+                </div>
+
                 <!-- Payment note -->
                 <div class="small" style="margin-bottom: 15px;">
                     <p>
@@ -208,6 +213,9 @@
                                     <t t-if="comp_partner.l10n_ua_legal_address">
                                         <span t-field="comp_partner.l10n_ua_legal_address"/><br/>
                                     </t>
+                                    <t t-elif="comp_partner.contact_address">
+                                        <span t-esc="comp_partner.contact_address"/><br/>
+                                    </t>
                                     <t t-if="comp_partner.phone">
                                         тел. <span t-field="comp_partner.phone"/><br/>
                                     </t>
@@ -215,7 +223,7 @@
                                         ЄДРПОУ: <span t-field="comp_partner.edrpou"/>
                                     </t>
                                     <t t-if="comp_partner.ipn">
-                                        , ІПН: <span t-field="comp_partner.ipn"/>
+                                        <t t-if="comp_partner.edrpou">, </t>ІПН: <span t-field="comp_partner.ipn"/>
                                     </t>
                                     <t t-if="comp_partner.is_vat_payer">
                                         , платник ПДВ
@@ -242,7 +250,13 @@
                                         ЄДРПОУ: <span t-field="partner.edrpou"/>
                                     </t>
                                     <t t-if="partner.ipn">
-                                        , ІПН: <span t-field="partner.ipn"/>
+                                        <t t-if="partner.edrpou">, </t>ІПН: <span t-field="partner.ipn"/>
+                                    </t>
+                                    <t t-if="partner.l10n_ua_legal_address">
+                                        <br/><span t-field="partner.l10n_ua_legal_address"/>
+                                    </t>
+                                    <t t-elif="partner.contact_address">
+                                        <br/><span t-esc="partner.contact_address"/>
                                     </t>
                                     <t t-if="partner.phone">
                                         <br/>тел. <span t-esc="partner.phone"/>
@@ -308,6 +322,11 @@
                             <t t-if="o.l10n_ua_amount_words">
                                 <p><strong t-esc="o.l10n_ua_amount_words.capitalize()"/></p>
                             </t>
+                        </div>
+
+                        <!-- Умови замовлення (поле «Умови й положення») -->
+                        <div t-if="not is_html_empty(o.note)" style="margin-bottom: 10px;">
+                            <div t-field="o.note"/>
                         </div>
 
                         <!-- Validity -->
