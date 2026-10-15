@@ -2212,3 +2212,19 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_holidays.report_vacation_order_document
 msgid "тривалістю"
 msgstr ""
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__confirmed_date
+msgid "Confirmed On"
+msgstr "Дата підтвердження"
+
+#. module: l10n_ua_hr_holidays
+#: model:ir.model.fields,help:l10n_ua_hr_holidays.field_hr_sick_leave__confirmed_date
+msgid ""
+"The day the certificate was confirmed. The payslip of the month this date "
+"falls in accrues the benefit for all its days: a certificate often arrives "
+"after the month the sickness started."
+msgstr ""
+"День підтвердження листка непрацездатності. Допомогу за всі його дні "
+"нараховує розрахунковий лист місяця, на який припадає ця дата: листок часто "
+"надходить уже після місяця, в якому почалася хвороба."

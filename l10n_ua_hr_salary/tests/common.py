@@ -12,6 +12,15 @@ class SalaryTestCase(TransactionCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
+        # A database upgraded to the hours-worked salary keeps the date of the
+        # change, and every payslip of the fixtures falls before it. The tests
+        # run as on a fresh installation, without it; the cached value is put
+        # back before the class's rollback.
+        params = cls.env['ir.config_parameter'].sudo()
+        method_date = params.get_param('l10n_ua_hr_salary.hours_method_date')
+        params.set_param('l10n_ua_hr_salary.hours_method_date', False)
+        cls.addClassCleanup(params.set_param,
+                            'l10n_ua_hr_salary.hours_method_date', method_date)
         cls.company = cls.env.company
         # Тестова компанія Odoo за замовчуванням у доларах, а весь цей набір
         # тестів — про українську зарплату: мінімалка 8000, прожитковий

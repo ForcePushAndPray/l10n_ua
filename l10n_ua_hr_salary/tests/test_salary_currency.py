@@ -101,10 +101,10 @@ class TestSalaryCurrency(SalaryTestCase):
             'salary_currency_id': self.usd.id, 'wage': 1000.0})
         slip = self._payslip()
         slip.salary_rate = 40.0
-        slip.write({'worked_days': 10})
+        slip.write({'worked_days': 10, 'worked_hours': 80.0})
         slip._generate_accruals()
         acc = self._salary_accrual(slip)
-        # 1000 × 40 × 10/20 = 20000
+        # 1000 × 40 × 80/160 = 20000
         self.assertAlmostEqual(acc.amount, 20000.0, places=2)
 
     def _payslip_for(self, date_from, date_to):

@@ -15,6 +15,16 @@
                 <field name="seniority_enabled"/>
                 <field name="seniority_scale_id" invisible="not seniority_enabled"/>
             </xpath>
+            <!-- The salary form decides how the version is paid; the tariff
+                 grade only gives the rate of the hourly form, so it stands
+                 beside the form and only for it. -->
+            <xpath expr="//field[@name='tariff_grade_id']" position="attributes">
+                <attribute name="invisible">salary_form != 'hourly'</attribute>
+                <attribute name="required">salary_form == 'hourly'</attribute>
+            </xpath>
+            <xpath expr="//field[@name='salary_form']" position="after">
+                <xpath expr="//field[@name='tariff_grade_id']" position="move"/>
+            </xpath>
         </field>
     </record>
 
