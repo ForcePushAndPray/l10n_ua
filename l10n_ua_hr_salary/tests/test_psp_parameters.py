@@ -43,8 +43,8 @@ class TestPspParameters(SalaryTestCase):
         self.assertAlmostEqual(self.psp_params.income_limit, expected, places=2)
 
     def test_max_esv_base_computed(self):
-        """Max ESV base = 15 * min_wage."""
-        expected = 15 * self.psp_params.min_wage
+        """Max ESV base = minimum wage × the multiplier of the period."""
+        expected = self.psp_params.max_esv_base_multiplier * self.psp_params.min_wage
         self.assertAlmostEqual(self.psp_params.max_esv_base, expected, places=2)
 
     def test_get_parameters(self):
@@ -72,7 +72,10 @@ class TestPspParameters(SalaryTestCase):
             'company_id': self.company.id,
         })
         self.assertEqual(params_2030.year, 2030)
+        # No budget law known for the year: the ESV law's 15 minimum wages.
         self.assertAlmostEqual(params_2030.max_esv_base, 15 * 8500, places=2)
+        params_2030.max_esv_base_multiplier = 20
+        self.assertAlmostEqual(params_2030.max_esv_base, 20 * 8500, places=2)
 
 
 
