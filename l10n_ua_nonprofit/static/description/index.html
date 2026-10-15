@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; color: #333;">
+
+    <div style="text-align: center; padding: 40px 20px; background: linear-gradient(135deg, #005BBB 0%, #FFD500 100%); border-radius: 8px; margin-bottom: 30px;">
+        <h1 style="color: white; margin: 0; font-size: 2.3em; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Україна — Неприбуткові організації</h1>
+        <p style="color: white; font-size: 1.2em; margin-top: 10px;">Громадські організації та благодійні фонди в Odoo 19: цільове фінансування (рах. 48) і Звіт про використання доходів</p>
+    </div>
+
+    <div style="background: #f8f9fa; padding: 25px; border-radius: 8px; margin-bottom: 25px;">
+        <h2 style="color: #005BBB; margin-top: 0;">Про модуль</h2>
+        <p>Облік неприбуткової організації за українськими правилами: цільові надходження обліковуються на рахунку
+           48 «Цільове фінансування і цільові надходження» в розрізі програм і донорів, а доходом визнаються в тих
+           періодах, коли понесено витрати, на які вони призначені (П(С)БО 15 «Дохід», п. 17).</p>
+        <p>Модуль формує Звіт про використання доходів (прибутків) неприбуткової організації за формою, затвердженою
+           наказом Мінфіну від 17.06.2016 № 553 (у редакції наказу від 28.04.2017 № 469).</p>
+    </div>
+
+    <div style="background: #e8f4fd; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+        <h3 style="color: #005BBB; margin-top: 0;">Основні можливості</h3>
+        <ul>
+            <li><strong>Налаштування компанії</strong>: ознака «неприбуткова організація», код ознаки неприбутковості
+                (0031–0048, постанова КМУ № 440), дата й номер рішення про включення до Реєстру; кнопка, що знаходить
+                або створює рахунки 48x і 718 та журнал «Цільове фінансування».</li>
+            <li><strong>Цільові програми / джерела фінансування</strong>: донор, тип фінансування (благодійна,
+                гуманітарна допомога, грант, членські внески…), бюджет, період, рахунок 48x і рахунок доходу.
+                Кожна програма — аналітичний рахунок плану «Цільові програми».</li>
+            <li><strong>Визнання доходу</strong> Дт 48 – Кт 718 у сумі витрат програми, але не більше залишку на 48;
+                непокриті витрати визнаються пізніше, сторнування враховуються автоматично.</li>
+            <li><strong>Закриття періоду</strong>: визнання цільового доходу виконується перед закриттям рахунків
+                доходів і витрат; повторний запуск нічого не дублює, сторно закриття сторнує визнання.</li>
+            <li><strong>Звіт про використання доходів НПО</strong>: Частина І заповнюється з оборотів за рік
+                (рядки 1.1–1.11, 2.1–2.6) з розшифровкою за програмами й рахунками; Частина ІІ та виправлення —
+                вручну; друк за офіційною формою.</li>
+            <li><strong>Звіт за програмами</strong>: залишок на початок, отримано, визнано доходом, повернено,
+                залишок на кінець, витрачено, непокриті витрати, використання бюджету — для звіту донору.</li>
+            <li>Мультикомпанійні правила доступу, українські переклади.</li>
+        </ul>
+    </div>
+
+    <div style="background: #f8f9fa; padding: 25px; border-radius: 8px; margin-bottom: 25px;">
+        <h3 style="color: #005BBB; margin-top: 0;">Типові проводки</h3>
+        <table style="width: 100%; border-collapse: collapse;">
+            <tr style="background: #005BBB; color: white;"><th style="padding: 6px; text-align: left;">Операція</th><th style="padding: 6px;">Дт</th><th style="padding: 6px;">Кт</th></tr>
+            <tr><td style="padding: 6px; border-bottom: 1px solid #ddd;">Надійшла благодійна допомога / грант / членський внесок</td><td style="text-align: center;">311, 301</td><td style="text-align: center;">48x</td></tr>
+            <tr><td style="padding: 6px; border-bottom: 1px solid #ddd;">Витрати за рахунок програми (з аналітикою)</td><td style="text-align: center;">92, 94</td><td style="text-align: center;">631, 661…</td></tr>
+            <tr><td style="padding: 6px; border-bottom: 1px solid #ddd;">Визнано дохід (модуль, закриття місяця)</td><td style="text-align: center;">48x</td><td style="text-align: center;">718</td></tr>
+        </table>
+    </div>
+
+    <div style="background: #fff3cd; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+        <h3 style="color: #856404; margin-top: 0;">Обмеження</h3>
+        <ul>
+            <li>XML-вивантаження звіту (електронна форма ДПС J0101911) не формується: XSD-схему ще не перевірено.
+                Звіт друкується; суми переносяться до Електронного кабінету вручну.</li>
+            <li>Додатки ГД і ВП не друкуються — у звіті ставляться лише позначки їх наявності.</li>
+        </ul>
+        <h3 style="color: #856404;">Вимоги</h3>
+        <ul>
+            <li>Модуль <strong>l10n_ua_accounting</strong> (закриття періоду, бухгалтерські звіти).</li>
+        </ul>
+    </div>
+
+    <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 25px;">
+        <h3 style="color: #005BBB; margin-top: 0;">Нормативна база</h3>
+        <ul>
+            <li>Податковий кодекс України, п. 133.4, п. 46.2, п. 136.1.</li>
+            <li>Постанова КМУ від 13.07.2016 № 440 (Порядок ведення Реєстру неприбуткових установ та організацій).</li>
+            <li>Наказ Мінфіну від 17.06.2016 № 553 у ред. наказу від 28.04.2017 № 469 (форма Звіту).</li>
+            <li>НП(С)БО 15 «Дохід», пп. 16–18 (наказ Мінфіну від 29.11.1999 № 290).</li>
+        </ul>
+        <p>Покроковий гайд — <code>docs/howto/nonprofit.md</code>.</p>
+    </div>
+
+    <div style="text-align: center; padding: 20px; background: #005BBB; border-radius: 8px; color: white;">
+        <p style="margin: 0;">Розроблено для Odoo 19 Community Edition</p>
+    </div>
+
+</div>
+</body>
+</html>

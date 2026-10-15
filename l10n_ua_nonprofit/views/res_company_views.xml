@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_company_form_l10n_ua_nonprofit" model="ir.ui.view">
+        <field name="name">res.company.form.l10n_ua_nonprofit</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Non-profit Organization" name="l10n_ua_nonprofit"
+                      groups="account.group_account_manager">
+                    <group>
+                        <group string="Register of Non-profit Organizations">
+                            <field name="l10n_ua_is_nonprofit"/>
+                            <field name="l10n_ua_nonprofit_code"
+                                   invisible="not l10n_ua_is_nonprofit"
+                                   required="l10n_ua_is_nonprofit"/>
+                            <field name="l10n_ua_nonprofit_register_date"
+                                   invisible="not l10n_ua_is_nonprofit"/>
+                            <field name="l10n_ua_nonprofit_register_number"
+                                   invisible="not l10n_ua_is_nonprofit"/>
+                        </group>
+                        <group string="Target Financing" invisible="not l10n_ua_is_nonprofit">
+                            <field name="l10n_ua_npo_target_account_id"/>
+                            <field name="l10n_ua_npo_income_account_id"/>
+                            <field name="l10n_ua_npo_journal_id"/>
+                            <field name="l10n_ua_npo_expense_prefixes"/>
+                            <field name="l10n_ua_npo_recognise_on_closing"/>
+                        </group>
+                    </group>
+                    <button name="action_l10n_ua_npo_setup" type="object"
+                            string="Set Up Accounts and Journal"
+                            class="btn-secondary"
+                            help="Find or create accounts 48x and 718 and the journal of target financing."/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

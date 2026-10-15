@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Аналітичний план цільових програм: кожна програма — аналітичний
+             рахунок цього плану. Опційний: проводки без програми дозволені. -->
+        <record id="analytic_plan_npo_programs" model="account.analytic.plan">
+            <field name="name">Цільові програми</field>
+            <field name="default_applicability">optional</field>
+            <field name="description">Цільові програми та джерела фінансування неприбуткової організації (рах. 48).</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_npo_recognition_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.npo.recognition.form</field>
+        <field name="model">l10n_ua.npo.recognition</field>
+        <field name="arch" type="xml">
+            <form string="Target Income Recognition">
+                <header>
+                    <button name="action_compute" type="object" string="Compute"
+                            invisible="state != 'draft'"/>
+                    <button name="action_post" type="object" string="Post"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state != 'posted' or closing_id"
+                            confirm="The recognition entry will be reversed. Continue?"/>
+                    <button name="action_draft" type="object" string="Reset to Draft"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_move" type="object" class="oe_stat_button"
+                                icon="fa-book" invisible="not move_id">
+                            <span>Journal Entry</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="journal_id" readonly="state != 'draft'"/>
+                            <field name="program_ids" widget="many2many_tags"
+                                   readonly="state != 'draft'"/>
+                        </group>
+                        <group>
+                            <field name="amount_total"/>
+                            <field name="move_id"/>
+                            <field name="closing_id" invisible="not closing_id"/>
+                            <field name="company_id" groups="base.group_multi_company"
+                                   readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+                    <field name="line_ids" readonly="1">
+                        <list>
+                            <field name="program_id"/>
+                            <field name="partner_id" optional="show"/>
+                            <field name="expense_total"/>
+                            <field name="recognised_before"/>
+                            <field name="balance_available"/>
+                            <field name="amount" sum="Total"/>
+                            <field name="currency_id" column_invisible="1"/>
+                        </list>
+                    </field>
+                    <div class="text-muted">
+                        Income = program expenses to date − income recognised before,
+                        but not more than the balance of 48 (P(S)BO 15 "Income", para. 17).
+                    </div>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_npo_recognition_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.npo.recognition.list</field>
+        <field name="model">l10n_ua.npo.recognition</field>
+        <field name="arch" type="xml">
+            <list string="Target Income Recognition" decoration-muted="state == 'cancelled'">
+                <field name="date"/>
+                <field name="name"/>
+                <field name="amount_total" sum="Total"/>
+                <field name="closing_id" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'posted'"
+                       decoration-info="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_npo_recognition_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.npo.recognition.search</field>
+        <field name="model">l10n_ua.npo.recognition</field>
+        <field name="arch" type="xml">
+            <search string="Target Income Recognition">
+                <field name="name"/>
+                <field name="line_ids" string="Program" filter_domain="[('line_ids.program_id', 'ilike', self)]"/>
+                <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Posted" name="filter_posted" domain="[('state', '=', 'posted')]"/>
+                <group>
+                    <filter string="Status" name="groupby_state" domain="[]" context="{'group_by': 'state'}"/>
+                    <filter string="Date" name="groupby_date" domain="[]" context="{'group_by': 'date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_npo_recognition_action" model="ir.actions.act_window">
+        <field name="name">Target Income Recognition</field>
+        <field name="res_model">l10n_ua.npo.recognition</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Recognise target financing as income</p>
+            <p>The period closing does it automatically for a non-profit company.
+               Create a recognition here to do it on any date.</p>
+        </field>
+    </record>
+
+</odoo>
