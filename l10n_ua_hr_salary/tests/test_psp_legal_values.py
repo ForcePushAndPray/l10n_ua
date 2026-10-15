@@ -10,7 +10,9 @@
   з 01.04.2025 не було), 8647 з 01.01.2026;
 - граничний дохід для ПСП = ПМ × 1,4, округлений до найближчих 10 грн:
   4240 грн у 2025, 4660 грн у 2026 (а не ПМ × 1,4 × 10);
-- ПСП 100 % = 50 % ПМ: 1514 грн у 2025, 1664 грн у 2026.
+- ПСП 100 % = 50 % ПМ: 1514 грн у 2025, 1664 грн у 2026;
+- максимальна база ЄСВ: 15 мінзарплат у 2024 (106 500 / 120 000 грн), 20 — у 2025
+  (160 000 грн) і 2026 (172 940 грн) (#378).
 """
 
 from datetime import date
@@ -51,8 +53,16 @@ class TestPspLegalValues(TransactionCase):
         self.assertEqual(params.psp_150, 2496)
         self.assertEqual(params.psp_200, 3328)
 
-    def test_max_esv_base_2026(self):
-        self.assertEqual(self._params(date(2026, 6, 1)).max_esv_base, 15 * 8647)
+    def test_max_esv_base(self):
+        cases = [
+            (date(2024, 2, 1), 106500),
+            (date(2024, 5, 1), 120000),
+            (date(2025, 6, 1), 160000),
+            (date(2026, 6, 1), 172940),
+        ]
+        for on_date, ceiling in cases:
+            with self.subTest(on_date=on_date):
+                self.assertEqual(self._params(on_date).max_esv_base, ceiling)
 
     def test_no_fictitious_april_2025_increase(self):
         self.assertEqual(self._params(date(2025, 6, 1)).date_from, date(2025, 1, 1))

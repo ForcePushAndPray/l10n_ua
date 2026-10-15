@@ -2706,8 +2706,29 @@ msgstr "Лікарняні (за рахунок роботодавця)"
 
 #. module: l10n_ua_hr_salary
 #: model:ir.model.fields,help:l10n_ua_hr_salary.field_hr_psp_parameters__max_esv_base
-msgid "Максимальна база нарахування ЄСВ (15 мін. зарплат)"
-msgstr "Максимальна база нарахування ЄСВ (15 мін. зарплат)"
+msgid ""
+"The maximum base of the unified social contribution: the minimum wage times "
+"the multiplier of the period."
+msgstr ""
+"Максимальна величина бази нарахування ЄСВ: мінімальна заробітна плата, "
+"помножена на кратність періоду."
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_psp_parameters__max_esv_base_multiplier
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_psp_parameters_template__max_esv_base_multiplier
+msgid "Max ESV Base (Minimum Wages)"
+msgstr "Макс. база ЄСВ (мінзарплат)"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,help:l10n_ua_hr_salary.field_hr_psp_parameters__max_esv_base_multiplier
+msgid ""
+"How many minimum wages make the maximum base of the unified social "
+"contribution. The ESV law sets 15; the State Budget law of a year may set "
+"another: 20 for 2025 and 2026."
+msgstr ""
+"Скільки мінімальних заробітних плат становить максимальна величина бази "
+"нарахування ЄСВ. Закон про ЄСВ встановлює 15; закон про Державний бюджет на "
+"рік може встановити іншу кратність: 20 на 2025 і 2026 роки."
 
 #. module: l10n_ua_hr_salary
 #: model:hr.accrual.type,name:l10n_ua_hr_salary.accrual_type_material_aid

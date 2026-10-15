@@ -22,6 +22,8 @@ class HrPspParametersTemplate(models.Model):
     pdfo_rate = fields.Float(string='PDFO Rate (%)', default=18.0)
     military_tax_rate = fields.Float(string='Military Tax Rate (%)', default=5.0)
     esv_rate = fields.Float(string='ESV Rate (%)', default=22.0)
+    max_esv_base_multiplier = fields.Float(
+        string='Max ESV Base (Minimum Wages)', required=True, default=15.0)
 
     _unique_date_from = models.Constraint(
         'unique(date_from)',
@@ -40,5 +42,6 @@ class HrPspParametersTemplate(models.Model):
             'pdfo_rate': self.pdfo_rate,
             'military_tax_rate': self.military_tax_rate,
             'esv_rate': self.esv_rate,
+            'max_esv_base_multiplier': self.max_esv_base_multiplier,
             'company_id': company.id,
         }
