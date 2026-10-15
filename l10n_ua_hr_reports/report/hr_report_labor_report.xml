@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="action_report_hr_report_labor" model="ir.actions.report">
+        <field name="name">Labour Report 1-PV</field>
+        <field name="model">hr.report.labor</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_hr_reports.report_hr_report_labor</field>
+        <field name="report_file">l10n_ua_hr_reports.report_hr_report_labor</field>
+        <field name="print_report_name">'1-PV_%s' % (object.period_key or '')</field>
+        <field name="binding_model_id" ref="model_hr_report_labor"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Layout of the forms annexed to наказ Держстату від 15.04.2024 № 117
+         (117_mis.pdf, 117_kv.pdf): the header block, then the tables of the
+         sections with «Назва показників / Код рядка / графи». -->
+    <template id="report_hr_report_labor">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <div class="page" style="font-size: 10pt;">
+                        <div style="text-align: center; font-size: 9pt;">
+                            Державне статистичне спостереження<br/>
+                            Статистична конфіденційність забезпечується статтею 29
+                            Закону України "Про офіційну статистику"
+                        </div>
+                        <table style="width: 100%; margin-top: 8px;">
+                            <tr>
+                                <td style="width: 30%; vertical-align: top; font-size: 9pt;">
+                                    Подають: юридичні особи, відокремлені підрозділи
+                                    юридичних осіб – територіальному органу Держстату<br/>
+                                    Термін подання: не пізніше 7-го числа місяця,
+                                    наступного за звітним періодом
+                                </td>
+                                <td style="width: 40%; text-align: center; vertical-align: top;">
+                                    <strong style="font-size: 12pt;">ЗВІТ ІЗ ПРАЦІ</strong><br/>
+                                    <t t-if="o.period_type == 'month'">у </t>
+                                    <t t-else="">за </t>
+                                    <span t-out="o._period_label()"/>
+                                </td>
+                                <td style="width: 30%; text-align: right; vertical-align: top; font-size: 9pt;">
+                                    <strong>№ 1-ПВ</strong><br/>
+                                    <t t-if="o.period_type == 'month'">(місячна)</t>
+                                    <t t-else="">(квартальна)</t><br/>
+                                    ЗАТВЕРДЖЕНО<br/>
+                                    Наказ Держстату<br/>
+                                    15 квітня 2024 р. № 117
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="table table-sm table-bordered" style="margin-top: 8px;">
+                            <tr>
+                                <td style="width: 35%;">Ідентифікаційний код ЄДРПОУ</td>
+                                <td><span t-out="o.company_id.edrpou"/></td>
+                            </tr>
+                            <tr>
+                                <td>Найменування</td>
+                                <td><span t-out="o.company_id.name"/></td>
+                            </tr>
+                            <tr>
+                                <td>Місцезнаходження</td>
+                                <td>
+                                    <span t-out="', '.join(p for p in [o.company_id.zip, o.company_id.state_id.name, o.company_id.city, o.company_id.street, o.company_id.street2] if p)"/>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <t t-foreach="o._sections()" t-as="section">
+                            <h6 style="margin-top: 12px;"><strong t-out="section['title']"/></h6>
+                            <table class="table table-sm table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 55%;">Назва показників</th>
+                                        <th class="text-center">Код рядка</th>
+                                        <t t-foreach="section['columns']" t-as="column">
+                                            <th class="text-center" t-out="column[1]"/>
+                                        </t>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-center">А</th>
+                                        <th class="text-center">Б</th>
+                                        <t t-foreach="section['columns']" t-as="column">
+                                            <th class="text-center" t-out="column[0]"/>
+                                        </t>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="section['rows']" t-as="row">
+                                        <td t-out="row['name']"/>
+                                        <td class="text-center" t-out="row['code']"/>
+                                        <t t-foreach="section['columns']" t-as="column">
+                                            <t t-set="cell" t-value="row['cells'].get(column[0])"/>
+                                            <td class="text-end">
+                                                <t t-if="cell">
+                                                    <t t-if="cell.unit == 'kuah'" t-out="'%.1f' % cell.value"/>
+                                                    <t t-elif="cell.unit == 'uah'" t-out="'%.2f' % cell.value"/>
+                                                    <t t-else="" t-out="'%d' % round(cell.value)"/>
+                                                </t>
+                                                <t t-else="">X</t>
+                                            </td>
+                                        </t>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <t t-if="o.period_type == 'month'">
+                            <h6><strong>Пояснення до розділу І</strong></h6>
+                            <table class="table table-sm table-bordered">
+                                <tr>
+                                    <th style="width: 50%;">Назва показників</th>
+                                    <th>Основна причина відхилення</th>
+                                </tr>
+                                <tr>
+                                    <td>Середньооблікова кількість штатних працівників (ряд.1040)
+                                        + ; – 25% і більше порівняно з попереднім періодом</td>
+                                    <td><span t-out="o.explanation_headcount or ''"/></td>
+                                </tr>
+                                <tr>
+                                    <td>Середня заробітна плата штатного працівника
+                                        (ряд.1070 / ряд.1040 × 1000) + ; – 10% і більше
+                                        порівняно з попереднім періодом</td>
+                                    <td><span t-out="o.explanation_avg_wage or ''"/></td>
+                                </tr>
+                            </table>
+                        </t>
+
+                        <table style="width: 100%; margin-top: 24px; font-size: 9pt;">
+                            <tr>
+                                <td style="width: 50%;">
+                                    ______________________________________<br/>
+                                    Місце підпису керівника (власника) або особи,
+                                    відповідальної за достовірність наданої інформації
+                                </td>
+                                <td style="width: 50%;">
+                                    ______________________________________<br/>
+                                    (Власне ім’я ПРІЗВИЩЕ)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>телефон: <span t-out="o.company_id.phone or '__________________'"/></td>
+                                <td>електронна пошта: <span t-out="o.company_id.email or '__________________'"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
