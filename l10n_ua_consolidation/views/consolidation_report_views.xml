@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_consolidation_report_form" model="ir.ui.view">
+        <field name="name">l10n_ua.consolidation.report.form</field>
+        <field name="model">l10n_ua.consolidation.report</field>
+        <field name="arch" type="xml">
+            <form string="Consolidated Statements">
+                <header>
+                    <button name="action_compute" type="object" string="Calculate"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_confirm" type="object" string="Confirm"
+                            invisible="state != 'draft'"/>
+                    <button name="action_draft" type="object" string="Set to Draft"
+                            invisible="state != 'confirmed'"/>
+                    <button name="action_print_balance" type="object" string="Print 1-к"
+                            icon="fa-print" invisible="not line_ids"/>
+                    <button name="action_print_pnl" type="object" string="Print 2-к"
+                            icon="fa-print" invisible="not line_ids"/>
+                    <button name="action_open_worksheet" type="object" string="Worksheet"
+                            icon="fa-table" invisible="not line_ids"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed"/>
+                </header>
+                <sheet>
+                    <div class="alert alert-warning" role="alert" invisible="not warning_text">
+                        <field name="warning_text" nolabel="1"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Parameters">
+                            <field name="group_id" readonly="state == 'confirmed'"/>
+                            <field name="parent_company_id"/>
+                            <field name="date_from" readonly="state == 'confirmed'"/>
+                            <field name="date_to" readonly="state == 'confirmed'"/>
+                            <field name="with_comparison" readonly="state == 'confirmed'"/>
+                        </group>
+                        <group string="Totals">
+                            <field name="total_assets"/>
+                            <field name="total_liabilities"/>
+                            <field name="balance_difference"
+                                   decoration-danger="balance_difference != 0"/>
+                            <field name="nci_equity"/>
+                            <field name="net_profit"/>
+                            <field name="nci_profit"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <field name="line_ids" invisible="1"/>
+                    <notebook>
+                        <page string="Form 1-к" name="balance">
+                            <field name="balance_line_ids" readonly="1">
+                                <list decoration-bf="line_type in ('subtotal', 'total')"
+                                      decoration-info="line_type == 'section'">
+                                    <field name="line_type" column_invisible="1"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="companies_amount"/>
+                                    <field name="elimination_amount"/>
+                                    <field name="current_amount"/>
+                                    <field name="previous_amount"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Form 2-к" name="pnl">
+                            <field name="pnl_line_ids" readonly="1">
+                                <list decoration-bf="line_type in ('subtotal', 'total', 'attribution')">
+                                    <field name="line_type" column_invisible="1"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                    <field name="name"/>
+                                    <field name="code"/>
+                                    <field name="companies_amount"/>
+                                    <field name="elimination_amount"/>
+                                    <field name="current_amount"/>
+                                    <field name="previous_amount"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Manual Adjustments" name="adjustments">
+                            <field name="adjustment_ids" readonly="state == 'confirmed'">
+                                <list editable="bottom">
+                                    <field name="period"/>
+                                    <field name="form"/>
+                                    <field name="row_key"/>
+                                    <field name="company_id" options="{'no_create': True}"/>
+                                    <field name="amount"/>
+                                    <field name="name"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                            <div class="text-muted small">
+                                Amounts change the row as printed (+ increases, − decreases).
+                                Examples: unrealised profit in inventory — 1-к: 1100 −X and 1420 −X,
+                                2-к: 2050 +X. Recalculate the report after editing.
+                            </div>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_consolidation_report_list" model="ir.ui.view">
+        <field name="name">l10n_ua.consolidation.report.list</field>
+        <field name="model">l10n_ua.consolidation.report</field>
+        <field name="arch" type="xml">
+            <list string="Consolidated Statements" decoration-muted="state == 'draft'">
+                <field name="name"/>
+                <field name="group_id"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="total_assets"/>
+                <field name="net_profit"/>
+                <field name="balance_difference" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'confirmed'"
+                       decoration-info="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_consolidation_report_search" model="ir.ui.view">
+        <field name="name">l10n_ua.consolidation.report.search</field>
+        <field name="model">l10n_ua.consolidation.report</field>
+        <field name="arch" type="xml">
+            <search string="Consolidated Statements">
+                <field name="name"/>
+                <field name="group_id"/>
+                <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Confirmed" name="filter_confirmed" domain="[('state', '=', 'confirmed')]"/>
+                <separator/>
+                <group>
+                    <filter string="Group" name="groupby_group" domain="[]" context="{'group_by': 'group_id'}"/>
+                    <filter string="Period End" name="groupby_date" domain="[]" context="{'group_by': 'date_to:year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_consolidation_report" model="ir.actions.act_window">
+        <field name="name">Consolidated Statements</field>
+        <field name="res_model">l10n_ua.consolidation.report</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Build consolidated statements</p>
+            <p>Consolidated balance (form 1-к) and statement of financial results (form 2-к)
+               of a group of companies under НП(С)БО 2.</p>
+        </field>
+    </record>
+
+    <!-- Worksheet: rows × companies / eliminations / consolidated -->
+    <record id="view_consolidation_cell_pivot" model="ir.ui.view">
+        <field name="name">l10n_ua.consolidation.cell.pivot</field>
+        <field name="model">l10n_ua.consolidation.cell</field>
+        <field name="arch" type="xml">
+            <pivot string="Consolidation Worksheet" disable_linking="1">
+                <field name="row_label" type="row"/>
+                <field name="column_label" type="col"/>
+                <field name="amount" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_consolidation_cell_list" model="ir.ui.view">
+        <field name="name">l10n_ua.consolidation.cell.list</field>
+        <field name="model">l10n_ua.consolidation.cell</field>
+        <field name="arch" type="xml">
+            <list string="Consolidation Worksheet">
+                <field name="form"/>
+                <field name="period"/>
+                <field name="row_label"/>
+                <field name="column_label"/>
+                <field name="column_type" optional="hide"/>
+                <field name="elimination_kind" optional="hide"/>
+                <field name="company_id" optional="show"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="amount" sum="Total"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_consolidation_cell_search" model="ir.ui.view">
+        <field name="name">l10n_ua.consolidation.cell.search</field>
+        <field name="model">l10n_ua.consolidation.cell</field>
+        <field name="arch" type="xml">
+            <search string="Consolidation Worksheet">
+                <field name="row_label"/>
+                <field name="company_id"/>
+                <filter string="Form 1-к" name="filter_balance" domain="[('form', '=', 'balance')]"/>
+                <filter string="Form 2-к" name="filter_pnl" domain="[('form', '=', 'pnl')]"/>
+                <separator/>
+                <filter string="Reporting Period" name="filter_current" domain="[('period', '=', 'current')]"/>
+                <filter string="Comparison Period" name="filter_previous" domain="[('period', '=', 'previous')]"/>
+                <separator/>
+                <filter string="Eliminations" name="filter_eliminations" domain="[('column_type', '=', 'elimination')]"/>
+                <group>
+                    <filter string="Row" name="groupby_row" domain="[]" context="{'group_by': 'row_label'}"/>
+                    <filter string="Column" name="groupby_column" domain="[]" context="{'group_by': 'column_label'}"/>
+                    <filter string="Elimination Kind" name="groupby_kind" domain="[]" context="{'group_by': 'elimination_kind'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+</odoo>
