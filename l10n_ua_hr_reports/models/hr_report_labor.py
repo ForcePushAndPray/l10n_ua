@@ -164,6 +164,12 @@ MONTH_NAMES_UK = {
     6: 'червень', 7: 'липень', 8: 'серпень', 9: 'вересень', 10: 'жовтень',
     11: 'листопад', 12: 'грудень',
 }
+# «у березні» in the title of the monthly form
+MONTH_NAMES_UK_LOCATIVE = {
+    1: 'січні', 2: 'лютому', 3: 'березні', 4: 'квітні', 5: 'травні',
+    6: 'червні', 7: 'липні', 8: 'серпні', 9: 'вересні', 10: 'жовтні',
+    11: 'листопаді', 12: 'грудні',
+}
 QUARTER_NAMES_UK = {1: 'I квартал', 2: 'II квартал', 3: 'III квартал', 4: 'IV квартал'}
 
 
@@ -246,10 +252,11 @@ class HrReportLabor(models.Model):
                 deadline += timedelta(days=1)
             rec.date_deadline = deadline
 
-    def _period_label(self):
+    def _period_label(self, locative=False):
         self.ensure_one()
         if self.period_type == 'month' and self.month:
-            return '%s %s р.' % (MONTH_NAMES_UK[int(self.month)], self.year)
+            names = MONTH_NAMES_UK_LOCATIVE if locative else MONTH_NAMES_UK
+            return '%s %s р.' % (names[int(self.month)], self.year)
         if self.period_type == 'quarter' and self.quarter:
             return '%s %s р.' % (QUARTER_NAMES_UK[int(self.quarter)], self.year)
         return ''

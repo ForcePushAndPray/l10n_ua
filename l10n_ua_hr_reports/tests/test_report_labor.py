@@ -262,6 +262,7 @@ class TestReportLabor(TransactionCase):
             self.assertIn('ЗВІТ ІЗ ПРАЦІ', html)
             self.assertIn('15 квітня 2024 р. № 117', html)
             self.assertIn('1070' if vals['period_type'] == 'month' else '8040', html)
+            self.assertIn('у січні' if vals['period_type'] == 'month' else 'за IV квартал', html)
 
     def test_export_xlsx(self):
         report = self._report(period_type='quarter', quarter='1')

@@ -35,9 +35,8 @@
                                 </td>
                                 <td style="width: 40%; text-align: center; vertical-align: top;">
                                     <strong style="font-size: 12pt;">ЗВІТ ІЗ ПРАЦІ</strong><br/>
-                                    <t t-if="o.period_type == 'month'">у </t>
-                                    <t t-else="">за </t>
-                                    <span t-out="o._period_label()"/>
+                                    <t t-if="o.period_type == 'month'" t-out="'у ' + o._period_label(locative=True)"/>
+                                    <t t-else="" t-out="'за ' + o._period_label()"/>
                                 </td>
                                 <td style="width: 30%; text-align: right; vertical-align: top; font-size: 9pt;">
                                     <strong>№ 1-ПВ</strong><br/>
