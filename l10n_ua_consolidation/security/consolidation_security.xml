@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Група охоплює кілька компаній: бачити її та її звітність може лише той,
+         кому дозволено ВСІ компанії групи (user.company_ids), а не лише
+         материнську. -->
+    <data noupdate="1">
+        <record id="consolidation_group_all_companies_rule" model="ir.rule">
+            <field name="name">Consolidation group: all companies allowed</field>
+            <field name="model_id" ref="model_l10n_ua_consolidation_group"/>
+            <field name="domain_force">[('company_ids', 'not any', [('id', 'not in', user.company_ids.ids)])]</field>
+        </record>
+        <record id="consolidation_member_all_companies_rule" model="ir.rule">
+            <field name="name">Consolidation subsidiary: all companies allowed</field>
+            <field name="model_id" ref="model_l10n_ua_consolidation_member"/>
+            <field name="domain_force">[('group_id.company_ids', 'not any', [('id', 'not in', user.company_ids.ids)])]</field>
+        </record>
+        <record id="consolidation_report_all_companies_rule" model="ir.rule">
+            <field name="name">Consolidated statements: all companies allowed</field>
+            <field name="model_id" ref="model_l10n_ua_consolidation_report"/>
+            <field name="domain_force">[('group_id.company_ids', 'not any', [('id', 'not in', user.company_ids.ids)])]</field>
+        </record>
+        <record id="consolidation_line_all_companies_rule" model="ir.rule">
+            <field name="name">Consolidated statement rows: all companies allowed</field>
+            <field name="model_id" ref="model_l10n_ua_consolidation_line"/>
+            <field name="domain_force">[('report_id.group_id.company_ids', 'not any', [('id', 'not in', user.company_ids.ids)])]</field>
+        </record>
+        <record id="consolidation_cell_all_companies_rule" model="ir.rule">
+            <field name="name">Consolidation worksheet: all companies allowed</field>
+            <field name="model_id" ref="model_l10n_ua_consolidation_cell"/>
+            <field name="domain_force">[('report_id.group_id.company_ids', 'not any', [('id', 'not in', user.company_ids.ids)])]</field>
+        </record>
+        <record id="consolidation_adjustment_all_companies_rule" model="ir.rule">
+            <field name="name">Consolidation adjustments: all companies allowed</field>
+            <field name="model_id" ref="model_l10n_ua_consolidation_adjustment"/>
+            <field name="domain_force">[('report_id.group_id.company_ids', 'not any', [('id', 'not in', user.company_ids.ids)])]</field>
+        </record>
+    </data>
+</odoo>

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Поруч із Ф№1-Ф№3 у «Бухгалтерські звіти» (l10n_ua_accounting) -->
+    <menuitem id="menu_consolidation_reports"
+              name="Consolidated Statements (1-к, 2-к)"
+              parent="l10n_ua_accounting.menu_ua_reports"
+              action="action_consolidation_report"
+              groups="account.group_account_manager"
+              sequence="60"/>
+
+    <menuitem id="menu_consolidation_groups"
+              name="Consolidation Groups"
+              parent="account.account_account_menu"
+              action="action_consolidation_group"
+              groups="account.group_account_manager"
+              sequence="90"/>
+</odoo>

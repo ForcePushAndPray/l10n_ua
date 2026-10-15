@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_consolidation_group_form" model="ir.ui.view">
+        <field name="name">l10n_ua.consolidation.group.form</field>
+        <field name="model">l10n_ua.consolidation.group</field>
+        <field name="arch" type="xml">
+            <form string="Consolidation Group">
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_reports" type="object" class="oe_stat_button"
+                                icon="fa-files-o" string="Statements"/>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="e.g. Holding group"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="parent_company_id"/>
+                            <field name="currency_id"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="company_ids" widget="many2many_tags"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Subsidiaries" name="members">
+                            <field name="member_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="company_id"/>
+                                    <field name="method"/>
+                                    <field name="ownership_pct"/>
+                                    <field name="nci_pct"/>
+                                    <field name="acquisition_date"/>
+                                    <field name="investment_source"/>
+                                    <field name="investment_amount_manual"
+                                           readonly="investment_source != 'manual'"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Eliminations" name="eliminations">
+                            <group>
+                                <field name="intragroup_partner_ids" widget="many2many_tags"/>
+                                <field name="elimination_account_prefixes"/>
+                                <field name="investment_account_prefixes"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_consolidation_group_list" model="ir.ui.view">
+        <field name="name">l10n_ua.consolidation.group.list</field>
+        <field name="model">l10n_ua.consolidation.group</field>
+        <field name="arch" type="xml">
+            <list string="Consolidation Groups">
+                <field name="name"/>
+                <field name="parent_company_id"/>
+                <field name="company_ids" widget="many2many_tags"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_consolidation_group_search" model="ir.ui.view">
+        <field name="name">l10n_ua.consolidation.group.search</field>
+        <field name="model">l10n_ua.consolidation.group</field>
+        <field name="arch" type="xml">
+            <search string="Consolidation Groups">
+                <field name="name"/>
+                <field name="parent_company_id"/>
+                <filter string="Archived" name="filter_archived" domain="[('active', '=', False)]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_consolidation_group" model="ir.actions.act_window">
+        <field name="name">Consolidation Groups</field>
+        <field name="res_model">l10n_ua.consolidation.group</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create a group of companies</p>
+            <p>Parent company, subsidiaries with ownership share and acquisition date —
+               the basis for consolidated forms 1-к and 2-к (НП(С)БО 2).</p>
+        </field>
+    </record>
+
+</odoo>
