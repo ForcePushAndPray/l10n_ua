@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- ==================== Розподіл ЗВВ (#373) ==================== -->
+
+    <record id="l10n_ua_overhead_allocation_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.overhead.allocation.form</field>
+        <field name="model">l10n_ua.overhead.allocation</field>
+        <field name="arch" type="xml">
+            <form string="Overhead Allocation">
+                <header>
+                    <button name="action_compute" string="Compute" type="object"
+                            class="btn-secondary" invisible="state != 'draft'"/>
+                    <button name="action_post" string="Post" type="object"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state != 'posted'"
+                            confirm="Cancel this allocation? The journal entry will be reversed and the overhead removed from the finished products."/>
+                    <button name="action_draft" string="Reset to Draft" type="object"
+                            invisible="state != 'cancelled'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                </header>
+                <sheet>
+                    <div name="button_box" class="oe_button_box">
+                        <button name="action_open_moves" type="object"
+                                class="oe_stat_button" icon="fa-bars"
+                                string="Journal Entries"
+                                invisible="not move_id"/>
+                        <button name="action_open_productions" type="object"
+                                class="oe_stat_button" icon="fa-wrench"
+                                string="Manufacturing Orders"
+                                invisible="not line_ids"/>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Period">
+                            <field name="date_from" readonly="state != 'draft'"/>
+                            <field name="date_to" readonly="state != 'draft'"/>
+                            <field name="base" readonly="state != 'draft'"/>
+                            <field name="normal_base" readonly="state != 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company"
+                                   readonly="state != 'draft'"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Result">
+                            <field name="variable_amount"/>
+                            <field name="fixed_amount"/>
+                            <field name="actual_base"/>
+                            <field name="allocation_rate"/>
+                            <field name="fixed_allocated_amount"/>
+                            <field name="allocated_amount" class="oe_subtotal_footer_separator"/>
+                            <field name="unallocated_amount"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Manufacturing Orders" name="lines">
+                            <field name="line_ids" readonly="1">
+                                <list>
+                                    <field name="production_id"/>
+                                    <field name="product_id"/>
+                                    <field name="quantity"/>
+                                    <field name="material_cost" sum="Total" optional="show"/>
+                                    <field name="labour_cost" sum="Total" optional="show"/>
+                                    <field name="base_value" sum="Total"/>
+                                    <field name="share"/>
+                                    <field name="amount" sum="Total"/>
+                                    <field name="amount_stock" sum="Total" optional="show"/>
+                                    <field name="amount_sold" sum="Total" optional="show"/>
+                                    <field name="valuation_adjusted" optional="hide"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Overhead Balances" name="sources">
+                            <field name="source_line_ids" readonly="1">
+                                <list>
+                                    <field name="account_id"/>
+                                    <field name="kind" widget="badge"
+                                           decoration-info="kind == 'variable'"
+                                           decoration-warning="kind == 'fixed'"/>
+                                    <field name="amount" sum="Total"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Accounting" name="accounting">
+                            <group>
+                                <group string="Overhead (91)">
+                                    <field name="variable_account_ids" widget="many2many_tags"
+                                           readonly="state != 'draft'"/>
+                                    <field name="fixed_account_ids" widget="many2many_tags"
+                                           readonly="state != 'draft'"/>
+                                </group>
+                                <group string="Allocation">
+                                    <field name="journal_id" readonly="state != 'draft'"/>
+                                    <field name="wip_account_id" readonly="state != 'draft'"/>
+                                    <field name="unallocated_account_id" readonly="state != 'draft'"/>
+                                    <field name="finished_account_id" readonly="state != 'draft'"/>
+                                    <field name="cogs_account_id" readonly="state != 'draft'"/>
+                                </group>
+                                <group string="Entries">
+                                    <field name="move_id"/>
+                                    <field name="reversal_move_id" invisible="not reversal_move_id"/>
+                                    <field name="closing_id" invisible="not closing_id"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_overhead_allocation_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.overhead.allocation.list</field>
+        <field name="model">l10n_ua.overhead.allocation</field>
+        <field name="arch" type="xml">
+            <list string="Overhead Allocations"
+                  decoration-muted="state == 'cancelled'"
+                  decoration-info="state == 'draft'">
+                <field name="name"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="base"/>
+                <field name="total_amount" sum="Total"/>
+                <field name="allocated_amount" sum="Allocated"/>
+                <field name="unallocated_amount" sum="Unallocated"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'draft'"
+                       decoration-success="state == 'posted'"
+                       decoration-muted="state == 'cancelled'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_overhead_allocation_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.overhead.allocation.search</field>
+        <field name="model">l10n_ua.overhead.allocation</field>
+        <field name="arch" type="xml">
+            <search string="Overhead Allocations">
+                <field name="name"/>
+                <field name="line_ids" string="Manufacturing Order"
+                       filter_domain="[('line_ids.production_id.name', 'ilike', self)]"/>
+                <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Posted" name="filter_posted" domain="[('state', '=', 'posted')]"/>
+                <filter string="Cancelled" name="filter_cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <group>
+                    <filter string="Status" name="groupby_state" domain="[]"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Allocation Base" name="groupby_base" domain="[]"
+                            context="{'group_by': 'base'}"/>
+                    <filter string="Period" name="groupby_date" domain="[]"
+                            context="{'group_by': 'date_to:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_overhead_allocation_action" model="ir.actions.act_window">
+        <field name="name">Overhead Allocation</field>
+        <field name="res_model">l10n_ua.overhead.allocation</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">
+                Allocate the production overhead of a period
+            </p>
+            <p>
+                Overhead collected on account 91 is allocated to the
+                manufacturing orders of the period (23 → 26) by the chosen base;
+                fixed overhead above normal capacity goes to the cost of sales
+                (NP(S)BO 16, items 15-16). The period closing does it
+                automatically when no allocation was posted.
+            </p>
+        </field>
+    </record>
+
+    <!-- Виробниче замовлення: розподілені ЗВВ на вкладці «Інше» -->
+    <record id="mrp_production_form_view_l10n_ua_overhead" model="ir.ui.view">
+        <field name="name">mrp.production.form.l10n_ua.overhead</field>
+        <field name="model">mrp.production</field>
+        <field name="inherit_id" ref="mrp.mrp_production_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Overhead" name="l10n_ua_overhead"
+                      invisible="not l10n_ua_overhead_line_ids"
+                      groups="account.group_account_readonly">
+                    <field name="l10n_ua_overhead_line_ids" readonly="1">
+                        <list>
+                            <field name="allocation_id"/>
+                            <field name="state" widget="badge"/>
+                            <field name="base_value"/>
+                            <field name="share"/>
+                            <field name="amount" sum="Total"/>
+                            <field name="currency_id" column_invisible="True"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

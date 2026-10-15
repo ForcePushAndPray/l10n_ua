@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+</head>
+<body>
+<div style="font-family: 'Segoe UI', Arial, sans-serif; max-width: 900px; margin: 0 auto; color: #333;">
+
+    <div style="text-align: center; padding: 40px 20px; background: linear-gradient(135deg, #005BBB 0%, #FFD500 100%); border-radius: 8px; margin-bottom: 30px;">
+        <h1 style="color: white; margin: 0; font-size: 2.5em; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">Розподіл загальновиробничих витрат</h1>
+        <p style="color: white; font-size: 1.2em; margin-top: 10px;">Собівартість продукції за П(С)БО 16 «Витрати» поверх стандартного «Виробництва»</p>
+    </div>
+
+    <div style="background: #f8f9fa; padding: 25px; border-radius: 8px; margin-bottom: 25px;">
+        <h2 style="color: #005BBB; margin-top: 0;">Документ «Розподіл ЗВВ»</h2>
+        <p>
+            Загальновиробничі витрати збираються на рахунку 91. Документ за період
+            бере сальдо рахунків 91, ділить їх на змінні й постійні та розподіляє
+            між виробничими замовленнями, завершеними в цьому періоді (п. 15–16 П(С)БО 16):
+        </p>
+        <ul>
+            <li>змінні ЗВВ — повністю на виробництво (23);</li>
+            <li>постійні ЗВВ — за нормальної потужності:
+                <code>розподілено = постійні × min(1, фактична база / нормальна база)</code>;</li>
+            <li>нерозподілені постійні ЗВВ — на собівартість реалізації (90x);</li>
+            <li>база розподілу на вибір компанії: пряма оплата праці (вартість робочих центрів),
+                машино-години, прямі матеріальні витрати, обсяг випуску.</li>
+        </ul>
+        <table style="border-collapse: collapse; margin-top: 10px;">
+            <tr><td style="padding: 4px 12px; border: 1px solid #ccc;">Дт 23 Кт 91</td><td style="padding: 4px 12px; border: 1px solid #ccc;">розподілені ЗВВ</td></tr>
+            <tr><td style="padding: 4px 12px; border: 1px solid #ccc;">Дт 90x Кт 91</td><td style="padding: 4px 12px; border: 1px solid #ccc;">нерозподілені постійні ЗВВ</td></tr>
+            <tr><td style="padding: 4px 12px; border: 1px solid #ccc;">Дт 26 Кт 23</td><td style="padding: 4px 12px; border: 1px solid #ccc;">ЗВВ у собівартості продукції на складі</td></tr>
+            <tr><td style="padding: 4px 12px; border: 1px solid #ccc;">Дт 901 Кт 23</td><td style="padding: 4px 12px; border: 1px solid #ccc;">ЗВВ продукції, що вже вибула зі складу</td></tr>
+        </table>
+    </div>
+
+    <div style="background: #f8f9fa; padding: 25px; border-radius: 8px; margin-bottom: 25px;">
+        <h2 style="color: #005BBB; margin-top: 0;">Собівартість запасів</h2>
+        <p>
+            Частка ЗВВ кожного замовлення додається до вартості руху випуску
+            готової продукції — так само, як «Додаткові витрати» Odoo, — і
+            перераховує середню собівартість / FIFO продукту. Скасування документа
+            сторнує проводку й повертає попередню вартість.
+        </p>
+    </div>
+
+    <div style="background: #f8f9fa; padding: 25px; border-radius: 8px; margin-bottom: 25px;">
+        <h2 style="color: #005BBB; margin-top: 0;">Закриття періоду</h2>
+        <p>
+            Закриття місяця проводить чернетки розподілу або створює розподіл
+            автоматично ще до закриття рахунків 9x — нерозподілені постійні ЗВВ
+            потрапляють у фінансовий результат того самого місяця. Автоматичний
+            розподіл можна вимкнути: тоді закриття не виконується, доки на 91
+            лишається сальдо. Сторно закриття скасовує й розподіл.
+        </p>
+    </div>
+
+    <div style="background: #f8f9fa; padding: 25px; border-radius: 8px; margin-bottom: 25px;">
+        <h2 style="color: #005BBB; margin-top: 0;">Калькуляція собівартості</h2>
+        <p>
+            Друкована форма з виробничого замовлення: прямі матеріальні витрати,
+            витрати робочих центрів, розподілені ЗВВ, фактична собівартість
+            випуску та одиниці продукції.
+        </p>
+    </div>
+
+</div>
+</body>
+</html>

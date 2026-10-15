@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Налаштування розподілу ЗВВ на картці компанії (#373), поруч з
+         іншими UA-налаштуваннями обліку з l10n_ua_accounting. -->
+    <record id="view_company_form_l10n_ua_overhead" model="ir.ui.view">
+        <field name="name">res.company.form.l10n_ua.overhead</field>
+        <field name="model">res.company</field>
+        <field name="inherit_id" ref="base.view_company_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <group string="Production Overhead (UA)" name="l10n_ua_overhead"
+                       groups="account.group_account_manager">
+                    <group>
+                        <field name="l10n_ua_overhead_base"/>
+                        <field name="l10n_ua_overhead_normal_base"/>
+                        <field name="l10n_ua_overhead_variable_account_ids" widget="many2many_tags"/>
+                        <field name="l10n_ua_overhead_fixed_account_ids" widget="many2many_tags"/>
+                        <field name="l10n_ua_overhead_auto_allocate"/>
+                    </group>
+                    <group>
+                        <field name="l10n_ua_overhead_journal_id"/>
+                        <field name="l10n_ua_overhead_wip_account_id"/>
+                        <field name="l10n_ua_overhead_unallocated_account_id"/>
+                        <field name="l10n_ua_overhead_finished_account_id"/>
+                        <field name="l10n_ua_overhead_cogs_account_id"/>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

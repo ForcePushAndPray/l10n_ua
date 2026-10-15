@@ -1,0 +1,1022 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ua_mrp_account
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260103\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 13:30+0000\n"
+"PO-Revision-Date: 2026-10-15 13:30+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: uk_UA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/stock_move.py:0
+msgid "+ %(value)s production overhead (%(documents)s)"
+msgstr "+ %(value)s загальновиробничих витрат (%(documents)s)"
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "A posted overhead allocation cannot be deleted; cancel it first."
+msgstr "Проведений розподіл ЗВВ не можна видалити; спочатку скасуйте його."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_source__account_id
+msgid "Account"
+msgstr "Рахунок"
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "Account %s cannot be both variable and fixed overhead."
+msgstr "Рахунок %s не може бути одночасно рахунком змінних і постійних ЗВВ."
+
+#. module: l10n_ua_mrp_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
+msgid "Accounting"
+msgstr "Облік"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__message_needaction
+msgid "Action Needed"
+msgstr "Необхідна дія"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__activity_ids
+msgid "Activities"
+msgstr "Дії"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Оформлення виключення дії"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__activity_state
+msgid "Activity State"
+msgstr "Стан дії"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Іконка типу дії"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__actual_base
+msgid "Actual Base"
+msgstr "Фактична база"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_auto_allocate
+msgid "Allocate Overhead on Period Closing"
+msgstr "Розподіляти ЗВВ під час закриття періоду"
+
+#. module: l10n_ua_mrp_account
+#: model_terms:ir.actions.act_window,help:l10n_ua_mrp_account.l10n_ua_overhead_allocation_action
+msgid "Allocate the production overhead of a period"
+msgstr "Розподіліть загальновиробничі витрати за період"
+
+#. module: l10n_ua_mrp_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_list
+msgid "Allocated"
+msgstr "Розподілено"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_mrp_production__l10n_ua_overhead_amount
+msgid "Allocated Overhead"
+msgstr "Розподілені ЗВВ"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__allocated_amount
+msgid "Allocated to Production (23)"
+msgstr "Розподілено на виробництво (23)"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__allocation_id
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_source__allocation_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
+msgid "Allocation"
+msgstr "Розподіл"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_search
+msgid "Allocation Base"
+msgstr "База розподілу"
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "An overhead account cannot be both variable and fixed."
+msgstr "Рахунок ЗВВ не може бути одночасно змінним і постійним."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__message_attachment_count
+msgid "Attachment Count"
+msgstr "Підрахунок прикріплення"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_source__amount
+msgid "Balance"
+msgstr "Сальдо"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__base_value
+msgid "Base"
+msgstr "База"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_base
+msgid ""
+"Base used to allocate production overhead (account 91) to manufacturing "
+"orders (NP(S)BO 16, item 15): work center cost, work center hours, cost of "
+"consumed components or quantity produced."
+msgstr ""
+"База розподілу загальновиробничих витрат (рахунок 91) між виробничими "
+"замовленнями (П(С)БО 16, п. 15): витрати робочих центрів, години роботи "
+"робочих центрів, вартість спожитих матеріалів або обсяг випуску."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_source__kind
+msgid "Behaviour"
+msgstr "Характер"
+
+#. module: l10n_ua_mrp_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
+msgid "Cancel"
+msgstr "Скасувати"
+
+#. module: l10n_ua_mrp_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
+msgid ""
+"Cancel this allocation? The journal entry will be reversed and the overhead "
+"removed from the finished products."
+msgstr ""
+"Скасувати розподіл? Проводку буде сторновано, а ЗВВ вилучено із собівартості"
+" готової продукції."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields.selection,name:l10n_ua_mrp_account.selection__l10n_ua_overhead_allocation__state__cancelled
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_search
+msgid "Cancelled"
+msgstr "Скасовано"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model,name:l10n_ua_mrp_account.model_res_company
+msgid "Companies"
+msgstr "Компанії"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__company_id
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__company_id
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_source__company_id
+msgid "Company"
+msgstr "Компанія"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_mrp_production__l10n_ua_currency_id
+msgid "Company Currency"
+msgstr "Валюта компанії"
+
+#. module: l10n_ua_mrp_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
+msgid "Compute"
+msgstr "Розрахувати"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.actions.report,name:l10n_ua_mrp_account.action_report_cost_calculation
+msgid "Cost Calculation"
+msgstr "Калькуляція собівартості"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__cogs_account_id
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_cogs_account_id
+msgid "Cost of Sales Account (901)"
+msgstr "Рахунок собівартості реалізації (901)"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_unallocated_account_id
+msgid ""
+"Cost of sales sub-account receiving the fixed overhead not allocated because"
+" production was below normal capacity (usually 901)."
+msgstr ""
+"Субрахунок собівартості реалізації, на який списуються нерозподілені "
+"постійні ЗВВ, коли виробництво нижче нормальної потужності (зазвичай 901)."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_source__create_uid
+msgid "Created by"
+msgstr "Створив"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__create_date
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__create_date
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_source__create_date
+msgid "Created on"
+msgstr "Створено"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_source__currency_id
+msgid "Currency"
+msgstr "Валюта"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields.selection,name:l10n_ua_mrp_account.selection__l10n_ua_overhead_allocation__base__labour
+#: model:ir.model.fields.selection,name:l10n_ua_mrp_account.selection__res_company__l10n_ua_overhead_base__labour
+msgid "Direct Labour Cost"
+msgstr "Пряма оплата праці"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields.selection,name:l10n_ua_mrp_account.selection__l10n_ua_overhead_allocation__base__material
+#: model:ir.model.fields.selection,name:l10n_ua_mrp_account.selection__res_company__l10n_ua_overhead_base__material
+msgid "Direct Material Cost"
+msgstr "Прямі матеріальні витрати"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__display_name
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__display_name
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_source__display_name
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_period_closing__display_name
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_mrp_production__display_name
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_res_company__display_name
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_stock_move__display_name
+msgid "Display Name"
+msgstr "Назва для відображення"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields.selection,name:l10n_ua_mrp_account.selection__l10n_ua_overhead_allocation__state__draft
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_search
+msgid "Draft"
+msgstr "Чернетка"
+
+#. module: l10n_ua_mrp_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
+msgid "Entries"
+msgstr "Проводки"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__finished_account_id
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_finished_account_id
+msgid "Finished Goods Account (26)"
+msgstr "Рахунок готової продукції (26)"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields.selection,name:l10n_ua_mrp_account.selection__l10n_ua_overhead_allocation_source__kind__fixed
+msgid "Fixed"
+msgstr "Постійні"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__fixed_amount
+msgid "Fixed Overhead"
+msgstr "Постійні ЗВВ"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__fixed_account_ids
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_fixed_account_ids
+msgid "Fixed Overhead Accounts"
+msgstr "Рахунки постійних ЗВВ"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__fixed_allocated_amount
+msgid "Fixed Overhead Allocated"
+msgstr "Розподілені постійні ЗВВ"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__allocation_rate
+msgid "Fixed Overhead Rate"
+msgstr "Коефіцієнт розподілу постійних ЗВВ"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__message_follower_ids
+msgid "Followers"
+msgstr "Підписники"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Підписники (Партнери)"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Іконка з чудовим шрифтом, напр. fa-tasks"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__has_message
+msgid "Has Message"
+msgstr "Є повідомлення"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__id
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__id
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_source__id
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_period_closing__id
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_mrp_production__id
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_res_company__id
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_stock_move__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__activity_exception_icon
+msgid "Icon"
+msgstr "Значок"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Іконка для визначення виключення дії."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Якщо позначено, то нові повідомлення будуть потребувати вашої уваги."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__message_has_error
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Якщо позначено, деякі повідомлення мають помилку доставки."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__message_is_follower
+msgid "Is Follower"
+msgstr "Стежить"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__journal_id
+msgid "Journal"
+msgstr "Журнал"
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
+msgid "Journal Entries"
+msgstr "Проводки"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__move_id
+msgid "Journal Entry"
+msgstr "Проводка"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_source__write_uid
+msgid "Last Updated by"
+msgstr "Востаннє оновив"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__write_date
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__write_date
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_source__write_date
+msgid "Last Updated on"
+msgstr "Останнє оновлення"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields.selection,name:l10n_ua_mrp_account.selection__l10n_ua_overhead_allocation__base__machine_hours
+#: model:ir.model.fields.selection,name:l10n_ua_mrp_account.selection__res_company__l10n_ua_overhead_base__machine_hours
+msgid "Machine Hours"
+msgstr "Машино-години"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model,name:l10n_ua_mrp_account.model_mrp_production
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__production_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_search
+msgid "Manufacturing Order"
+msgstr "Виробниче замовлення"
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__line_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
+msgid "Manufacturing Orders"
+msgstr "Виробничі замовлення"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__material_cost
+msgid "Materials"
+msgstr "Матеріали"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__message_has_error
+msgid "Message Delivery error"
+msgstr "Помилка доставлення повідомлення"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__message_ids
+msgid "Messages"
+msgstr "Повідомлення"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Дедлайн моєї дії"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Дедлайн наступної дії"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__activity_summary
+msgid "Next Activity Summary"
+msgstr "Підсумок наступної дії"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__activity_type_id
+msgid "Next Activity Type"
+msgstr "Тип наступної дії"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__normal_base
+msgid "Normal Capacity"
+msgstr "Нормальна потужність"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_normal_base
+msgid "Normal Capacity per Month"
+msgstr "Нормальна потужність за місяць"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_normal_base
+msgid ""
+"Normal capacity for one month, in units of the allocation base (UAH, hours "
+"or units). Fixed overhead is allocated to production in the ratio actual "
+"base / normal capacity, at most in full; the rest goes to the cost of sales."
+" Zero means that fixed overhead is always allocated in full."
+msgstr ""
+"Нормальна потужність за місяць в одиницях бази розподілу (грн, години або "
+"штуки). Постійні ЗВВ розподіляються на виробництво у співвідношенні фактична"
+" база / нормальна потужність, не більше ніж повністю; решта списується на "
+"собівартість реалізації. Нуль — постійні ЗВВ завжди розподіляються повністю."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__note
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
+msgid "Notes"
+msgstr "Примітки"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Кількість дій"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__message_has_error_counter
+msgid "Number of errors"
+msgstr "Кількість помилок"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Кількість повідомлень, які вимагають дії"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Кількість повідомлень з помилковою дставкою"
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "Only a cancelled allocation can be reset to draft."
+msgstr "У чернетку можна повернути лише скасований розподіл."
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "Only a draft allocation can be computed."
+msgstr "Розрахувати можна лише чернетку розподілу."
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "Only a draft allocation can be posted."
+msgstr "Провести можна лише чернетку розподілу."
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "Only a posted allocation can be cancelled."
+msgstr "Скасувати можна лише проведений розподіл."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__amount
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.mrp_production_form_view_l10n_ua_overhead
+msgid "Overhead"
+msgstr "ЗВВ"
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "Overhead %(account)s → allocation"
+msgstr "ЗВВ %(account)s → розподіл"
+
+#. module: l10n_ua_mrp_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
+msgid "Overhead (91)"
+msgstr "Загальновиробничі витрати (91)"
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/period_closing.py:0
+#: model:ir.actions.act_window,name:l10n_ua_mrp_account.l10n_ua_overhead_allocation_action
+#: model:ir.ui.menu,name:l10n_ua_mrp_account.menu_l10n_ua_overhead_allocation
+#: model:ir.ui.menu,name:l10n_ua_mrp_account.menu_l10n_ua_overhead_allocation_mrp
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_period_closing_view_form_overhead
+msgid "Overhead Allocation"
+msgstr "Розподіл ЗВВ"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_base
+msgid "Overhead Allocation Base"
+msgstr "База розподілу ЗВВ"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_journal_id
+msgid "Overhead Allocation Journal"
+msgstr "Журнал розподілу ЗВВ"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_period_closing__overhead_allocation_ids
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_mrp_production__l10n_ua_overhead_line_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_search
+msgid "Overhead Allocations"
+msgstr "Розподіли ЗВВ"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__source_line_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
+msgid "Overhead Balances"
+msgstr "Сальдо ЗВВ"
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "Overhead allocated to production"
+msgstr "ЗВВ, розподілені на виробництво"
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid ""
+"Overhead allocation %(other)s already covers part of the period "
+"%(date_from)s - %(date_to)s."
+msgstr ""
+"Розподіл ЗВВ %(other)s уже охоплює частину періоду %(date_from)s – "
+"%(date_to)s."
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "Overhead allocation %s"
+msgstr "Розподіл ЗВВ %s"
+
+#. module: l10n_ua_mrp_account
+#: model_terms:ir.actions.act_window,help:l10n_ua_mrp_account.l10n_ua_overhead_allocation_action
+msgid ""
+"Overhead collected on account 91 is allocated to the\n"
+"                manufacturing orders of the period (23 → 26) by the chosen base;\n"
+"                fixed overhead above normal capacity goes to the cost of sales\n"
+"                (NP(S)BO 16, items 15-16). The period closing does it\n"
+"                automatically when no allocation was posted."
+msgstr ""
+"Загальновиробничі витрати, зібрані на рахунку 91, розподіляються\n"
+"                між виробничими замовленнями періоду (23 → 26) за обраною базою;\n"
+"                нерозподілені постійні ЗВВ списуються на собівартість реалізації\n"
+"                (П(С)БО 16, п. 15–16). Закриття періоду робить це\n"
+"                автоматично, якщо розподіл не проведено."
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "Overhead: %s"
+msgstr "ЗВВ: %s"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__amount_sold
+msgid ""
+"Part of the overhead of products already issued from stock when posted; "
+"their issue value is not re-valued, so this share is charged straight to the"
+" cost of sales."
+msgstr ""
+"Частка ЗВВ продукції, що на дату проведення вже вибула зі складу; вартість "
+"вибуття не переоцінюється, тому ця частка списується одразу на собівартість "
+"реалізації."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__amount_stock
+msgid "Part of the overhead of products still in stock when posted."
+msgstr "Частка ЗВВ продукції, що на дату проведення ще на складі."
+
+#. module: l10n_ua_mrp_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_search
+msgid "Period"
+msgstr "Період"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model,name:l10n_ua_mrp_account.model_l10n_ua_period_closing
+msgid "Period Closing"
+msgstr "Закриття періоду"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__date_from
+msgid "Period From"
+msgstr "Період з"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__date_to
+msgid "Period To"
+msgstr "Період по"
+
+#. module: l10n_ua_mrp_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
+msgid "Post"
+msgstr "Провести"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields.selection,name:l10n_ua_mrp_account.selection__l10n_ua_overhead_allocation__state__posted
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_search
+msgid "Posted"
+msgstr "Проведено"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__closing_id
+msgid "Posted by Closing"
+msgstr "Проведено закриттям"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__product_id
+msgid "Product"
+msgstr "Продукт"
+
+#. module: l10n_ua_mrp_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.view_company_form_l10n_ua_overhead
+msgid "Production Overhead (UA)"
+msgstr "Загальновиробничі витрати (UA)"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model,name:l10n_ua_mrp_account.model_l10n_ua_overhead_allocation
+msgid "Production Overhead Allocation"
+msgstr "Розподіл загальновиробничих витрат"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model,name:l10n_ua_mrp_account.model_l10n_ua_overhead_allocation_line
+msgid "Production Overhead Allocation Line"
+msgstr "Рядок розподілу загальновиробничих витрат"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model,name:l10n_ua_mrp_account.model_l10n_ua_overhead_allocation_source
+msgid "Production Overhead Balance"
+msgstr "Сальдо загальновиробничих витрат"
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/period_closing.py:0
+msgid ""
+"Production overhead (account 91) is not allocated for %s. Post the overhead "
+"allocation before closing the period."
+msgstr ""
+"Загальновиробничі витрати (рахунок 91) за %s не розподілено. Проведіть "
+"розподіл ЗВВ перед закриттям періоду."
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/period_closing.py:0
+msgid ""
+"Production overhead (account 91) was posted after the overhead allocation "
+"%(allocation)s. Cancel it and post it again before closing %(period)s."
+msgstr ""
+"Загальновиробничі витрати (рахунок 91) проведено після розподілу ЗВВ "
+"%(allocation)s. Скасуйте його і проведіть знову перед закриттям %(period)s."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_period_closing__overhead_allocation_ids
+msgid ""
+"Production overhead allocations (91 → 23 / 90) of the period. Closing the "
+"period posts the draft ones, or creates one, before the 9x accounts are "
+"closed."
+msgstr ""
+"Розподіли ЗВВ (91 → 23 / 90) за період. Закриття періоду проводить чернетки "
+"або створює розподіл до закриття рахунків 9x."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__quantity
+msgid "Quantity"
+msgstr "Кількість"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields.selection,name:l10n_ua_mrp_account.selection__l10n_ua_overhead_allocation__base__quantity
+#: model:ir.model.fields.selection,name:l10n_ua_mrp_account.selection__res_company__l10n_ua_overhead_base__quantity
+msgid "Quantity Produced"
+msgstr "Обсяг випуску"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_cogs_account_id
+msgid ""
+"Receives the overhead attributable to finished products already issued from "
+"stock when the allocation is posted."
+msgstr ""
+"Сюди списуються ЗВВ продукції, що на дату проведення розподілу вже вибула зі"
+" складу."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__name
+msgid "Reference"
+msgstr "Номер"
+
+#. module: l10n_ua_mrp_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
+msgid "Reset to Draft"
+msgstr "У чернетку"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__activity_user_id
+msgid "Responsible User"
+msgstr "Відповідальний користувач"
+
+#. module: l10n_ua_mrp_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
+msgid "Result"
+msgstr "Результат"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__reversal_move_id
+msgid "Reversal Entry"
+msgstr "Сторнувальна проводка"
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "Reversal of %s"
+msgstr "Сторно: %s"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Помилка доставки SMS"
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "Set the accounts: %s."
+msgstr "Вкажіть рахунки: %s."
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "Set the cost of sales account (901)."
+msgstr "Вкажіть рахунок собівартості реалізації (901)."
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid ""
+"Set the finished goods account (26) for the allocation or a stock valuation "
+"account for %s."
+msgstr ""
+"Вкажіть у розподілі рахунок готової продукції (26) або рахунок оцінки "
+"запасів для %s."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__share
+msgid "Share (%)"
+msgstr "Частка (%)"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__state
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__state
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_search
+msgid "Status"
+msgstr "Статус"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Етап заснований на діях\n"
+"Протерміновано: термін виконання вже минув\n"
+"Сьогодні: дата дії сьогодні\n"
+"Заплановано: майбутні дії."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model,name:l10n_ua_mrp_account.model_stock_move
+msgid "Stock Move"
+msgstr "Складський рух"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__valuation_adjusted
+msgid "Stock Value Adjusted"
+msgstr "Вартість запасу скориговано"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_fixed_account_ids
+msgid ""
+"Sub-accounts of 91 holding fixed overhead, allocated at normal capacity. "
+"Empty: every account 91* that is not variable."
+msgstr ""
+"Субрахунки 91 з постійними ЗВВ, що розподіляються за нормальною потужністю. "
+"Порожньо — усі рахунки 91*, крім змінних."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_variable_account_ids
+msgid ""
+"Sub-accounts of 91 holding variable overhead, allocated to production in "
+"full."
+msgstr ""
+"Субрахунки 91 зі змінними ЗВВ, що повністю розподіляються на виробництво."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__valuation_adjusted
+msgid ""
+"The overhead is added to the value of the finished product move (products "
+"valued at average cost or FIFO). Products at standard price keep their "
+"value; the overhead is only in the accounts."
+msgstr ""
+"ЗВВ додано до вартості руху випуску готової продукції (оцінка за середньою "
+"собівартістю або FIFO). Продукція за стандартною ціною зберігає вартість; "
+"ЗВВ відображаються лише на рахунках."
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "The period is closed by %s; reverse the period closing first."
+msgstr "Період закрито документом %s; спочатку сторнуйте закриття періоду."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.constraint,message:l10n_ua_mrp_account.constraint_l10n_ua_overhead_allocation_check_dates
+msgid "The period start must not be after its end."
+msgstr "Початок періоду не може бути пізніше за його кінець."
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "There is no overhead on the selected accounts up to %s."
+msgstr "На обраних рахунках немає ЗВВ станом на %s."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__amount_sold
+msgid "To Cost of Sales"
+msgstr "На собівартість реалізації"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__amount_stock
+msgid "To Stock (26)"
+msgstr "На склад (26)"
+
+#. module: l10n_ua_mrp_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_period_closing_view_form_overhead
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.mrp_production_form_view_l10n_ua_overhead
+msgid "Total"
+msgstr "Разом"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__total_amount
+msgid "Total Overhead"
+msgstr "Усього ЗВВ"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Тип дії виключення на записі."
+
+#. module: l10n_ua_mrp_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_list
+msgid "Unallocated"
+msgstr "Нерозподілено"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__unallocated_amount
+msgid "Unallocated (90x)"
+msgstr "Нерозподілено (90x)"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_unallocated_account_id
+msgid "Unallocated Fixed Overhead Account (90x)"
+msgstr "Рахунок нерозподілених постійних ЗВВ (90x)"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__unallocated_account_id
+msgid "Unallocated Overhead Account (90x)"
+msgstr "Рахунок нерозподілених ЗВВ (90x)"
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "Unallocated fixed overhead (NP(S)BO 16, item 16)"
+msgstr "Нерозподілені постійні ЗВВ (П(С)БО 16, п. 16)"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_finished_account_id
+msgid "Used when the product has no perpetual stock valuation account."
+msgstr ""
+"Використовується, якщо продукт не має рахунку безперервної оцінки запасів."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__normal_base
+msgid ""
+"Value of the allocation base at normal capacity for the period. Zero: fixed "
+"overhead is allocated in full."
+msgstr ""
+"Значення бази розподілу за нормальної потужності за період. Нуль — постійні "
+"ЗВВ розподіляються повністю."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields.selection,name:l10n_ua_mrp_account.selection__l10n_ua_overhead_allocation_source__kind__variable
+msgid "Variable"
+msgstr "Змінні"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__variable_amount
+msgid "Variable Overhead"
+msgstr "Змінні ЗВВ"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__variable_account_ids
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_variable_account_ids
+msgid "Variable Overhead Accounts"
+msgstr "Рахунки змінних ЗВВ"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__website_message_ids
+msgid "Website Messages"
+msgstr "Повідомлення з веб-сайту"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__website_message_ids
+msgid "Website communication history"
+msgstr "Історія бесіди на сайті"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_auto_allocate
+msgid ""
+"When closing a period with a balance on the overhead accounts and no posted "
+"allocation, create and post the allocation automatically. Off: the closing "
+"refuses until it is posted."
+msgstr ""
+"Під час закриття періоду із сальдо на рахунках ЗВВ без проведеного розподілу"
+" — створити й провести розподіл автоматично. Вимкнено — закриття не "
+"виконується, доки розподіл не проведено."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__labour_cost
+msgid "Work Centers"
+msgstr "Робочі центри"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__wip_account_id
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_wip_account_id
+msgid "Work in Progress Account (23)"
+msgstr "Рахунок виробництва (23)"
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+#: code:addons/l10n_ua_mrp_account/models/period_closing.py:0
+msgid "id"
+msgstr "id"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__allocation_rate
+msgid ""
+"min(1, actual base / normal capacity): share of fixed overhead allocated to "
+"production."
+msgstr ""
+"min(1, фактична база / нормальна потужність): частка постійних ЗВВ, "
+"розподілена на виробництво."
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "unallocated overhead (90x)"
+msgstr "нерозподілених ЗВВ (90x)"
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid "work in progress (23)"
+msgstr "виробництва (23)"
