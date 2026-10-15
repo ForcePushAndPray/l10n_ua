@@ -21,6 +21,7 @@
                             <field name="subsistence_minimum"/>
                             <field name="min_wage"/>
 			    <field name="min_hourly_wage"/>
+                            <field name="max_esv_base_multiplier"/>
                             <field name="max_esv_base"/>
                         </group>
                     </group>

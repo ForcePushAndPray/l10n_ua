@@ -65,6 +65,14 @@ class HrPayslipAccrual(models.Model):
     
     notes = fields.Char(string='Notes')
 
+    period_month = fields.Date(
+        string='Period Month',
+        help='The month the amount is for, when it is not the month of the '
+             'payslip: a sickness benefit accrued in the month its certificate '
+             'was confirmed may be for the days of an earlier month. Empty '
+             'means the month of the payslip.'
+    )
+
     is_auto_generated = fields.Boolean(
         string='Auto-generated',
         default=False,

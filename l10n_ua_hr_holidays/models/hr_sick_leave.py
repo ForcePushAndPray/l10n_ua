@@ -115,6 +115,14 @@ class HrSickLeave(models.Model):
         digits=(16, 2)
     )
     
+    confirmed_date = fields.Date(
+        string='Confirmed On',
+        copy=False,
+        tracking=True,
+        help='The day the certificate was confirmed. The payslip of the month '
+             'this date falls in accrues the benefit for all its days: a '
+             'certificate often arrives after the month the sickness started.'
+    )
     state = fields.Selection([
         ('draft', 'Draft'),
         ('confirmed', 'Confirmed'),
@@ -263,14 +271,11 @@ class HrSickLeave(models.Model):
 
         if not payslips:
             # Fallback to contract wage (version in Odoo 19)
-            version = self.employee_id.current_version_id
-            if version and version.wage:
-                # Average days in month for fallback calculation.
-                # Оклад може бути у валюті — курс на кінець розрахункового
-                # періоду, тобто перед настанням страхового випадку.
-                wage = version._l10n_ua_wage_in_company_currency(date_to)
-                return round(wage / 30.44, 2)
-            return 0.0
+            # Average days in month for fallback calculation.
+            # The wage may be in a foreign currency: the rate of the end of
+            # the period, that is, before the case.
+            wage = self.employee_id._l10n_ua_fallback_wage(date_to)
+            return round(wage / 30.44, 2) if wage else 0.0
 
         # Calculate total earnings from payslip lines
         total_earnings = 0.0
@@ -279,14 +284,16 @@ class HrSickLeave(models.Model):
         for payslip in payslips:
             # Calculate calendar days in payslip period
             payslip_days = (payslip.date_to - payslip.date_from).days + 1
-            total_calendar_days += payslip_days
 
-            # УВАГА: береться весь нарахований дохід. `hr.accrual.type` має
-            # прапорець `is_basic_salary` («Include in average salary
-            # calculation»), і саме за ним мав би йти відбір — але тут він
-            # ніколи не застосовувався, тож зміна одразу зрушила б суми
-            # лікарняних. Питання відбору за П. 100 / № 1266 заведено окремо.
-            total_earnings += payslip.gross_salary or 0
+            # Everything accrued counts except the sickness and maternity
+            # benefits paid in the payslip, left out together with their days:
+            # a benefit is averaged from the pay of the days worked, not from
+            # earlier benefits. Selecting by `is_basic_salary` is a question of
+            # its own and has never been done here.
+            benefits = payslip.accrual_ids.filtered(
+                lambda line: line.accrual_type_id.category in ('sick', 'maternity'))
+            total_calendar_days += payslip_days - sum(benefits.mapped('quantity'))
+            total_earnings += (payslip.gross_salary or 0) - sum(benefits.mapped('amount'))
 
         if total_calendar_days > 0:
             return round(total_earnings / total_calendar_days, 2)
@@ -379,8 +386,16 @@ class HrSickLeave(models.Model):
 
     def action_confirm(self):
         """Confirm the sick leave. The absence and the order are separate
-        documents, created through their own buttons."""
-        self.write({'state': 'confirmed'})
+        documents, created through their own buttons.
+
+        The first confirmation dates it: the benefit is accrued in the month
+        of that date, and a certificate confirmed again keeps its month.
+        """
+        for rec in self:
+            rec.write({
+                'state': 'confirmed',
+                'confirmed_date': rec.confirmed_date or fields.Date.context_today(rec),
+            })
 
     def action_pay(self):
         self.write({'state': 'paid'})

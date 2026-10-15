@@ -2,9 +2,26 @@
 <odoo>
 
     <!-- Paper format for Ukrainian accounting reports - A4, minimal margins.
-         Forms use web.basic_layout (no company header/footer): requisites are part of the form itself. -->
+         For reports with web.external_layout: leaves room for the company header.
+         Used by other l10n_ua modules (accounting, assets, FOP, business trips). -->
     <record id="paperformat_ua_report" model="report.paperformat">
         <field name="name">Ukrainian Report A4</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Portrait</field>
+        <field name="margin_top">30</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">20</field>
+        <field name="margin_right">10</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">25</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <!-- Paper format for forms with web.basic_layout (no company header/footer):
+         requisites are part of the form itself, so no room for a header is needed. -->
+    <record id="paperformat_ua_form" model="report.paperformat">
+        <field name="name">Ukrainian Form A4 (no header)</field>
         <field name="default" eval="False"/>
         <field name="format">A4</field>
         <field name="orientation">Portrait</field>

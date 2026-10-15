@@ -53,11 +53,20 @@ class HrPspParameters(models.Model):
         help='Граничний дохід для застосування ПСП'
     )
     
+    max_esv_base_multiplier = fields.Float(
+        string='Max ESV Base (Minimum Wages)',
+        required=True,
+        default=15.0,
+        help='How many minimum wages make the maximum base of the unified '
+             'social contribution. The ESV law sets 15; the State Budget law '
+             'of a year may set another: 20 for 2025 and 2026.'
+    )
     max_esv_base = fields.Float(
         string='Max ESV Base',
         compute='_compute_max_esv_base',
         store=True,
-        help='Максимальна база нарахування ЄСВ (15 мін. зарплат)'
+        help='The maximum base of the unified social contribution: the minimum '
+             'wage times the multiplier of the period.'
     )
     
     pdfo_rate = fields.Float(
@@ -142,10 +151,10 @@ class HrPspParameters(models.Model):
             rec.income_limit = float_round(
                 rec.subsistence_minimum * 1.4, precision_rounding=10)
 
-    @api.depends('min_wage')
+    @api.depends('min_wage', 'max_esv_base_multiplier')
     def _compute_max_esv_base(self):
         for rec in self:
-            rec.max_esv_base = rec.min_wage * 15
+            rec.max_esv_base = rec.min_wage * rec.max_esv_base_multiplier
 
     @api.depends('year', 'date_from')
     def _compute_display_name(self):

@@ -28,10 +28,14 @@ class HrVersion(models.Model):
 
     # --- Форма оплати праці (#143) ---
     salary_form = fields.Selection(
-        [('time', 'Погодинна / окладна'), ('piece', 'Відрядна')],
-        string='Форма оплати праці', default='time', required=True,
-        help='Відрядна форма: замість окладу нараховується сума за нарядами '
-             'відрядної оплати (виробіток × розцінка) за місяць.')
+        [('salary', 'Salaried'),
+         ('hourly', 'Hourly'),
+         ('piece', 'Piece Rate')],
+        string='Salary Form', default='salary', required=True,
+        help='Monthly salary: the salary over the norm of the month, for the '
+             'hours worked. Hourly rate: the hourly rate of the tariff grade '
+             'for the hours worked. Piece rate: the piece-work entries of the '
+             'month instead of a salary.')
 
     # --- Надбавка за вислугу років (#143) ---
     seniority_enabled = fields.Boolean(
