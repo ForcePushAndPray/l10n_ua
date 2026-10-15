@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Form No 1-TN: appendix 7 to the Rules for the carriage of goods by
+         road in Ukraine (Ministry of Transport order No 363 of 14.10.1997),
+         as worded by the orders of the Ministry for Communities and
+         Territories Development No 1332 of 14.11.2024 and No 1727 of
+         12.12.2025 (https://zakon.rada.gov.ua/laws/show/z0128-98).
+         The form has a front and a back side; the back side carries the
+         cargo table, which is twelve columns wide, hence landscape. -->
+    <record id="paperformat_ua_ttn" model="report.paperformat">
+        <field name="name">UA Consignment Note A4 Landscape</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">8</field>
+        <field name="margin_bottom">8</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_ttn" model="ir.actions.report">
+        <field name="name">Consignment Note (TTN)</field>
+        <field name="model">stock.picking</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_stock_forms.report_ttn</field>
+        <field name="report_file">l10n_ua_stock_forms.report_ttn</field>
+        <field name="paperformat_id" ref="paperformat_ua_ttn"/>
+        <field name="binding_model_id" ref="stock.model_stock_picking"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'TTN %s' % (object.l10n_ua_ttn_number or object.name or '').replace('/', '-')</field>
+    </record>
+
+    <template id="report_ttn">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="l10n_ua_stock_forms.report_ttn_document" t-lang="o._l10n_ua_ttn_report_lang()"/>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_ttn_document">
+        <t t-call="web.basic_layout">
+            <t t-set="o" t-value="o.with_context(lang=o._l10n_ua_ttn_report_lang())"/>
+            <t t-set="lines" t-value="o._l10n_ua_ttn_lines()"/>
+            <t t-set="totals" t-value="o._l10n_ua_ttn_totals(lines)"/>
+            <t t-set="currency" t-value="totals['currency']"/>
+            <t t-set="package_count" t-value="o.l10n_ua_ttn_package_count"/>
+            <div class="page o_ua_ttn">
+                <style>
+                    .o_ua_ttn { font-size: 10pt; }
+                    .o_ua_ttn .title { text-align: center; font-weight: bold; font-size: 12pt; margin: 2px 0; }
+                    .o_ua_ttn .appendix { text-align: right; font-size: 7.5pt; }
+                    .o_ua_ttn table { width: 100%; border-collapse: collapse; }
+                    .o_ua_ttn .plain td { border: none; padding: 4px 4px; vertical-align: top; }
+                    .o_ua_ttn .value { border-bottom: 1px solid #000; font-weight: bold; min-height: 12px; }
+                    .o_ua_ttn .caption { font-size: 7pt; font-style: italic; text-align: center; }
+                    .o_ua_ttn .grid th, .o_ua_ttn .grid td { border: 1px solid #000; padding: 2px; }
+                    .o_ua_ttn .grid th { text-align: center; font-weight: normal; font-size: 7.5pt; }
+                    .o_ua_ttn .num { text-align: right; white-space: nowrap; }
+                    .o_ua_ttn .mid { text-align: center; }
+                    .o_ua_ttn .total td { font-weight: bold; }
+                    .o_ua_ttn .side { text-align: center; font-weight: bold; margin: 6px 0 2px 0; }
+                    .o_ua_ttn .note { font-size: 6.5pt; }
+                </style>
+
+                <!-- ========================= FRONT SIDE ========================= -->
+                <div class="appendix">
+                    Appendix 7 to the Rules for the carriage of goods by road in Ukraine (clause 11.1 of chapter 11)
+                </div>
+                <div class="title">
+                    CONSIGNMENT NOTE No. <span class="o_ua_ttn_number" t-out="o._l10n_ua_ttn_display_number()"/>
+                    <span>dated</span> <span t-out="o._l10n_ua_ttn_display_date()" t-options="{'widget': 'date'}"/>
+                </div>
+                <table class="plain">
+                    <tr>
+                        <td style="width: 70%;">
+                            Place of issue: <span class="value" t-out="o.l10n_ua_ttn_place or ''"/>
+                        </td>
+                        <td style="width: 30%; text-align: right;"><strong>Form No. 1-TN</strong></td>
+                    </tr>
+                </table>
+                <table class="plain">
+                    <tr>
+                        <td style="width: 38%;">
+                            Vehicle: <span class="value o_ua_ttn_vehicle"><t t-out="o.l10n_ua_ttn_vehicle or ''"/> <t t-out="o.l10n_ua_ttn_vehicle_plate or ''"/></span>
+                            <div class="caption">(make, model, type, registration number)</div>
+                        </td>
+                        <td style="width: 38%;">
+                            Trailer/semi-trailer: <span class="value"><t t-out="o.l10n_ua_ttn_trailer or ''"/> <t t-out="o.l10n_ua_ttn_trailer_plate or ''"/></span>
+                            <div class="caption">(make, model, type, registration number)</div>
+                        </td>
+                        <td style="width: 24%;">
+                            Type of carriage: <span class="value" t-out="o.l10n_ua_ttn_transport_kind or ''"/>
+                        </td>
+                    </tr>
+                </table>
+                <table class="plain">
+                    <tr>
+                        <td>
+                            Place where the vehicle is kept*: <span class="value" t-out="o.l10n_ua_ttn_vehicle_storage or ''"/>
+                            <div class="caption">(address of the road carrier, its unit or branch where the vehicle is kept)</div>
+                        </td>
+                    </tr>
+                </table>
+                <table class="plain">
+                    <tr>
+                        <td style="width: 55%;">
+                            Road carrier: <span class="value" t-out="o._l10n_ua_ttn_party(o.l10n_ua_ttn_carrier_id)"/>
+                            <div class="caption">(full name / last name, first name and patronymic, taxpayer code under EDRPOU or tax number)</div>
+                        </td>
+                        <td style="width: 45%;">
+                            Driver: <span class="value o_ua_ttn_driver"><t t-out="o.l10n_ua_ttn_driver_name or ''"/><t t-if="o.l10n_ua_ttn_driver_license">, <t t-out="o.l10n_ua_ttn_driver_license"/></t></span>
+                            <div class="caption">(last name, first name and patronymic, driver's license number)</div>
+                        </td>
+                    </tr>
+                </table>
+                <table class="plain">
+                    <tr>
+                        <td>
+                            Consignor: <span class="value o_ua_ttn_shipper" t-out="o._l10n_ua_ttn_party(o._l10n_ua_ttn_shipper())"/>
+                            <div class="caption">(full name / last name, first name and patronymic, taxpayer code under EDRPOU or tax number)</div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Consignee: <span class="value o_ua_ttn_consignee" t-out="o._l10n_ua_ttn_party(o.partner_id)"/>
+                            <div class="caption">(full name / last name, first name and patronymic, taxpayer code under EDRPOU or tax number)</div>
+                        </td>
+                    </tr>
+                </table>
+                <table class="plain">
+                    <tr>
+                        <td style="width: 50%;">
+                            Loading point: <span class="value" t-out="o.l10n_ua_ttn_loading_point or ''"/>
+                            <div class="caption">(location)</div>
+                        </td>
+                        <td style="width: 50%;">
+                            Unloading point: <span class="value" t-out="o.l10n_ua_ttn_unloading_point or ''"/>
+                            <div class="caption">(location)</div>
+                        </td>
+                    </tr>
+                </table>
+                <table class="plain">
+                    <tr>
+                        <td style="width: 25%;">
+                            number of packages: <span class="value o_ua_ttn_packages"><t t-if="package_count"><t t-out="package_count"/> (<t t-out="o._l10n_ua_ttn_number_in_words(package_count)"/>)</t></span>
+                            <div class="caption">(in words)</div>
+                        </td>
+                        <td style="width: 30%;">
+                            gross weight, t: <span class="value o_ua_ttn_gross_weight"><t t-if="totals['gross_weight']"><t t-out="totals['gross_weight']" t-options="{'widget': 'float', 'precision': 3}"/> (<t t-out="o._l10n_ua_ttn_number_in_words(round(totals['gross_weight'], 3))"/>)</t></span>
+                            <div class="caption">(in words)</div>
+                        </td>
+                        <td style="width: 45%;">
+                            received by the driver/forwarder: <span class="value" t-out="o.l10n_ua_ttn_driver_name or ''"/>
+                            <div class="caption">(last name, first name and patronymic, position, signature)</div>
+                        </td>
+                    </tr>
+                </table>
+                <table class="plain">
+                    <tr>
+                        <td style="width: 28%;">
+                            Vehicle details
+                            <div class="caption">(vehicle / road train / combined vehicle)</div>
+                        </td>
+                        <td style="width: 12%;">
+                            <div class="value mid"><t t-if="o.l10n_ua_ttn_vehicle_length" t-out="o.l10n_ua_ttn_vehicle_length" t-options="{'widget': 'float', 'precision': 2}"/></div>
+                            <div class="caption">(length, m)</div>
+                        </td>
+                        <td style="width: 12%;">
+                            <div class="value mid"><t t-if="o.l10n_ua_ttn_vehicle_width" t-out="o.l10n_ua_ttn_vehicle_width" t-options="{'widget': 'float', 'precision': 2}"/></div>
+                            <div class="caption">(width, m)</div>
+                        </td>
+                        <td style="width: 12%;">
+                            <div class="value mid"><t t-if="o.l10n_ua_ttn_vehicle_height" t-out="o.l10n_ua_ttn_vehicle_height" t-options="{'widget': 'float', 'precision': 2}"/></div>
+                            <div class="caption">(height, m)</div>
+                        </td>
+                        <td style="width: 36%;">
+                            <div class="value mid"><t t-if="o.l10n_ua_ttn_vehicle_total_weight" t-out="o.l10n_ua_ttn_vehicle_total_weight" t-options="{'widget': 'float', 'precision': 3}"/></div>
+                            <div class="caption">(total weight/mass with the goods and gross weight, t)</div>
+                        </td>
+                    </tr>
+                </table>
+                <table class="plain">
+                    <tr>
+                        <td style="width: 70%;">
+                            Total released for the amount of: <span class="value o_ua_ttn_amount_words" t-out="o._l10n_ua_ttn_amount_in_words(totals['amount_total'], currency)"/>
+                            <div class="caption">(in words, VAT included)</div>
+                        </td>
+                        <td style="width: 30%;">
+                            including VAT: <span class="value o_ua_ttn_amount_tax" t-out="totals['amount_tax']" t-options="{'widget': 'float', 'precision': currency.decimal_places}"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            Accompanying documents for the goods: <span class="value" t-out="o.l10n_ua_ttn_documents or ''"/>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- ========================= BACK SIDE ========================= -->
+                <div style="page-break-before: always;"/>
+                <div class="note">Back side</div>
+                <div class="side">CARGO DETAILS</div>
+                <table class="grid">
+                    <thead>
+                        <tr>
+                            <th>No.</th>
+                            <th>Name of goods (carcasses, half-carcasses, quarters, cuts, pieces of meat)**/container number; class of dangerous goods, when dangerous goods are carried</th>
+                            <th>Identification number of the animal the raw material comes from**</th>
+                            <th>Animal species**</th>
+                            <th>Transport temperature***</th>
+                            <th>Unit of measure</th>
+                            <th>Number of packages</th>
+                            <th>Price per unit excl. VAT, UAH</th>
+                            <th>Total amount incl. VAT, UAH</th>
+                            <th>Type of packaging</th>
+                            <th>Documents with the goods</th>
+                            <th>Gross weight, t</th>
+                        </tr>
+                        <tr>
+                            <th>1</th><th>2</th><th>3</th><th>4</th><th/><th>5</th>
+                            <th>6</th><th>7</th><th>8</th><th>9</th><th>10</th><th>11</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr t-foreach="lines" t-as="line" class="o_ua_ttn_line">
+                            <td class="mid" t-out="line_index + 1"/>
+                            <td t-out="line['name']"/>
+                            <td/>
+                            <td/>
+                            <td/>
+                            <td class="mid" t-out="line['uom']"/>
+                            <td class="num" t-out="line['qty']" t-options="{'widget': 'float', 'decimal_precision': 'Product Unit'}"/>
+                            <td class="num" t-out="line['price_unit']" t-options="{'widget': 'float', 'precision': currency.decimal_places}"/>
+                            <td class="num" t-out="line['amount_total']" t-options="{'widget': 'float', 'precision': currency.decimal_places}"/>
+                            <td t-out="line['packaging']"/>
+                            <td/>
+                            <td class="num"><t t-if="line['weight']" t-out="line['weight']" t-options="{'widget': 'float', 'precision': 3}"/></td>
+                        </tr>
+                        <tr class="total">
+                            <td colspan="6">Total:</td>
+                            <td class="num" t-out="totals['qty']" t-options="{'widget': 'float', 'decimal_precision': 'Product Unit'}"/>
+                            <td/>
+                            <td class="num o_ua_ttn_amount_total" t-out="totals['amount_total']" t-options="{'widget': 'float', 'precision': currency.decimal_places}"/>
+                            <td/>
+                            <td/>
+                            <td class="num"><t t-if="totals['lines_weight']" t-out="totals['lines_weight']" t-options="{'widget': 'float', 'precision': 3}"/></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="plain" style="margin-top: 10px;">
+                    <tr>
+                        <td style="width: 50%;">
+                            Handed over (person in charge for the consignor)
+                            <div class="value" style="margin-top: 14px;" t-out="o.user_id.name or ''"/>
+                            <div class="caption">(last name, first name and patronymic, position, signature)</div>
+                        </td>
+                        <td style="width: 50%;">
+                            Received (person in charge for the consignee)
+                            <div class="value" style="margin-top: 14px;"/>
+                            <div class="caption">(last name, first name and patronymic, position, signature)</div>
+                        </td>
+                    </tr>
+                </table>
+
+                <div class="side">LOADING AND UNLOADING OPERATIONS</div>
+                <table class="grid">
+                    <thead>
+                        <tr>
+                            <th rowspan="2">Operation</th>
+                            <th rowspan="2">Gross weight, t</th>
+                            <th colspan="3">Time (h min)</th>
+                            <th rowspan="2">Signature of the person in charge</th>
+                        </tr>
+                        <tr>
+                            <th>arrival</th>
+                            <th>departure</th>
+                            <th>waiting</th>
+                        </tr>
+                        <tr>
+                            <th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Loading</td>
+                            <td class="num"><t t-if="totals['gross_weight']" t-out="totals['gross_weight']" t-options="{'widget': 'float', 'precision': 3}"/></td>
+                            <td/><td/><td/><td/>
+                        </tr>
+                        <tr>
+                            <td>Unloading</td>
+                            <td/><td/><td/><td/><td/>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="note" style="margin-top: 6px;">
+                    <div>* filled in in the cases provided for by the Regulation on working time and rest time of drivers of wheeled vehicles approved by order of the Ministry of Transport and Communications of Ukraine No. 340 of 7 June 2010.</div>
+                    <div>** filled in when carcasses, half-carcasses, quarters, cuts or pieces of meat are carried.</div>
+                    <div>*** filled in when foodstuffs requiring a temperature regime are carried.</div>
+                </div>
+            </div>
+        </t>
+    </template>
+
+</odoo>
