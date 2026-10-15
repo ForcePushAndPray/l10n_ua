@@ -5,17 +5,13 @@ from ``BALANCE_LINES`` (Form 1) and ``PNL_LINES`` (Form 2) of
 ``l10n_ua_accounting`` and only extended with what forms № 1-к / № 2-к
 (додатки 1, 2 до НП(С)БО 1, наказ Мінфіну № 73) add on top of them:
 
-* 1030 «Довгострокові фінансові інвестиції» (рах. 14) — the parent's
-  investment that is eliminated against the subsidiary's equity;
 * 1055 «Гудвіл при консолідації», 1490 «Неконтрольована частка» — rows that
   only consolidation entries fill;
-* 1425/1430 «Неоплачений / Вилучений капітал» (рах. 46/45);
-* contra accounts 131/132/133/135 (знос/амортизація) and 38 (резерв сумнівних
-  боргів), so that rows show net book value;
-* 1420 also takes the unclosed balance of classes 7–9 (поточний результат
-  до закриття періоду), otherwise a balance built mid-year never balances;
 * 2-к: 2470/2475 «Чистий прибуток, що належить власникам материнської
   компанії / неконтрольованій частці».
+
+Form 1 itself carries 1030 (рах. 14), 1425/1430 (46/45), the contra accounts
+131–135 and 38, and classes 7–9 in 1420 (#386).
 
 Balance amounts are signed (assets = debit balance, equity and liabilities =
 credit balance) and every account is assigned to exactly one row (the
@@ -34,23 +30,10 @@ from odoo.addons.l10n_ua_accounting.models.l10n_ua_pnl_report import PNL_LINES
 ASSET_SECTIONS = ('asset_noncurrent', 'asset_current')
 LIABILITY_SECTIONS = ('equity', 'liability_longterm', 'liability_current')
 
-# Extra prefixes for Form 1 rows (key -> prefixes)
-_BALANCE_EXTRA_PREFIXES = {
-    'intangible_assets': ['133'],
-    'fixed_assets': ['131', '132'],
-    'investment_property': ['135'],
-    'receivables_goods': ['38'],
-    'retained_earnings': ['7', '8', '9'],
-}
-
 # Rows of form 1-к that Form 1 of l10n_ua_accounting does not have.
 # (sequence, key, name, code, section, prefixes)
 _BALANCE_EXTRA_ROWS = [
-    (145, 'lt_financial_investments', 'Довгострокові фінансові інвестиції',
-     '1030', 'asset_noncurrent', ['14']),
     (165, 'goodwill', 'Гудвіл при консолідації', '1055', 'asset_noncurrent', []),
-    (445, 'unpaid_capital', 'Неоплачений капітал', '1425', 'equity', ['46']),
-    (446, 'withdrawn_capital', 'Вилучений капітал', '1430', 'equity', ['45']),
     (480, 'nci', 'Неконтрольована частка', '1490', 'equity', []),
 ]
 
@@ -69,13 +52,13 @@ def _build_balance_rows():
     rows = []
     for seq, key, name, code, section, line_type, acct_codes, _bal in BALANCE_LINES:
         rows.append({
-            'sequence': seq * 10,
+            'sequence': seq,
             'key': key,
             'name': name,
             'code': code,
             'section': section or False,
             'line_type': line_type,
-            'prefixes': _prefixes(acct_codes) + _BALANCE_EXTRA_PREFIXES.get(key, []),
+            'prefixes': _prefixes(acct_codes),
         })
     for seq, key, name, code, section, prefixes in _BALANCE_EXTRA_ROWS:
         rows.append({
