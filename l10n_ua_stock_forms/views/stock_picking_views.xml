@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- The consignment note (TTN) is drawn up for goods leaving the
+         warehouse, so the tab is shown on delivery orders only. Anchored by
+         the page name alone, which community and enterprise share. -->
+    <record id="view_picking_form_l10n_ua_ttn" model="ir.ui.view">
+        <field name="name">stock.picking.form.l10n_ua_ttn</field>
+        <field name="model">stock.picking</field>
+        <field name="inherit_id" ref="stock.view_picking_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[@name='extra']" position="after">
+                <page string="Consignment Note" name="l10n_ua_ttn"
+                      invisible="picking_type_code != 'outgoing'">
+                    <group>
+                        <group string="Document">
+                            <field name="l10n_ua_ttn_number" placeholder="Transfer reference"/>
+                            <field name="l10n_ua_ttn_date"/>
+                            <field name="l10n_ua_ttn_place"/>
+                            <field name="l10n_ua_ttn_documents"/>
+                        </group>
+                        <group string="Carriage">
+                            <field name="l10n_ua_ttn_carrier_id"/>
+                            <field name="l10n_ua_ttn_transport_kind"/>
+                            <field name="l10n_ua_ttn_driver_name"/>
+                            <field name="l10n_ua_ttn_driver_license"/>
+                        </group>
+                        <group string="Vehicle">
+                            <field name="l10n_ua_ttn_vehicle"/>
+                            <field name="l10n_ua_ttn_vehicle_plate"/>
+                            <field name="l10n_ua_ttn_trailer"/>
+                            <field name="l10n_ua_ttn_trailer_plate"/>
+                            <field name="l10n_ua_ttn_vehicle_storage"/>
+                            <field name="l10n_ua_ttn_vehicle_length"/>
+                            <field name="l10n_ua_ttn_vehicle_width"/>
+                            <field name="l10n_ua_ttn_vehicle_height"/>
+                            <field name="l10n_ua_ttn_vehicle_total_weight"/>
+                        </group>
+                        <group string="Cargo">
+                            <field name="l10n_ua_ttn_loading_point"/>
+                            <field name="l10n_ua_ttn_unloading_point"/>
+                            <field name="l10n_ua_ttn_package_count"/>
+                            <!-- The gross weight is the shipping weight of
+                                 the transfer, not a field of its own: delivery
+                                 pricing and the note must not disagree. -->
+                            <label for="shipping_weight" string="Gross Weight"/>
+                            <div class="o_row">
+                                <field name="shipping_weight"/>
+                                <field name="l10n_ua_ttn_weight_uom_name" nolabel="1"/>
+                            </div>
+                        </group>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

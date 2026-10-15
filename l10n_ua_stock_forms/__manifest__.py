@@ -1,8 +1,8 @@
 {
     'name': 'Ukraine - Stock Reports',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Inventory/Localization',
-    'summary': 'Ukrainian warehouse forms: the material report',
+    'summary': 'Ukrainian warehouse forms: material report, consignment note (TTN)',
     'description': """
 Ukraine - Stock Reports
 =======================
@@ -14,6 +14,12 @@ pulling in the accounting localization.
   per product and storage place of one store, for a period,
   shown as a list with product-category and storage-place search panels or
   as a pivot table, and printable as the paper form.
+* Consignment note (TTN, form No 1-TN) — appendix 7 to the Rules for the
+  carriage of goods by road in Ukraine (Ministry of Transport order No 363
+  of 14.10.1997, as worded on 12.12.2025), printed from a delivery order:
+  carrier, vehicle, trailer, driver, loading and unloading points, packages
+  and gross weight are kept on the transfer; prices come from the sale order
+  when Sales is installed, from the sales price otherwise.
 
 The order that approved the form (Minstat No 193 of 21.06.1996) has been
 repealed, but the obligation to account for materials held by a person in
@@ -29,6 +35,8 @@ charge has not, so the form is still what Ukrainian accountants ask for.
         'security/ir.model.access.csv',
         'security/material_report_security.xml',
         'report/material_report.xml',
+        'report/ttn_report.xml',
+        'views/stock_picking_views.xml',
         # The screen first, then the dialog it opens: the period form is
         # referenced by name from the wizard, not by the views above.
         'views/material_report_views.xml',

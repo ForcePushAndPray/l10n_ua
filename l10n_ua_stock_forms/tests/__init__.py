@@ -7,4 +7,5 @@ from . import (
     test_material_report_movements,
     test_material_report_security,
     test_material_report_tour,
+    test_ttn_report,
 )

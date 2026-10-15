@@ -393,6 +393,7 @@ msgstr "Категорія товару:"
 
 #. module: l10n_ua_stock_forms
 #: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_material_report
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
 msgid "No."
 msgstr "№ з/п"
 
@@ -484,3 +485,580 @@ msgid ""
 msgstr ""
 "'Матеріальний звіт %s %s..%s' % ((object.location_id.complete_name or "
 "'').replace('/', '-'), object.date_from, object.date_to)"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.actions.report,print_report_name:l10n_ua_stock_forms.action_report_ttn
+msgid ""
+"'TTN %s' % (object.l10n_ua_ttn_number or object.name or '').replace('/', "
+"'-')"
+msgstr ""
+"'ТТН %s' % (object.l10n_ua_ttn_number or object.name or '').replace('/', "
+"'-')"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid ""
+"(address of the road carrier, its unit or branch where the vehicle is kept)"
+msgstr ""
+"(адреса місцезнаходження автомобільного перевізника, його структурного "
+"підрозділу або філії, де зберігається транспортний засіб)"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid ""
+"(full name / last name, first name and patronymic, taxpayer code under "
+"EDRPOU or tax number)"
+msgstr ""
+"(повне найменування (прізвище, власне ім’я та по батькові), код платника "
+"податків згідно з ЄДРПОУ або податковий номер)"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "(height, m)"
+msgstr "(висота, м)"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "(in words)"
+msgstr "(словами)"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "(in words, VAT included)"
+msgstr "(словами, з урахуванням ПДВ)"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "(last name, first name and patronymic, driver's license number)"
+msgstr "(прізвище, власне ім’я та по батькові, номер посвідчення водія)"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "(last name, first name and patronymic, position, signature)"
+msgstr "(прізвище, власне ім’я та по батькові, посада, підпис)"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "(length, m)"
+msgstr "(довжина, м)"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "(location)"
+msgstr "(місцезнаходження)"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "(make, model, type, registration number)"
+msgstr "(марка, модель, тип, реєстраційний номер)"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "(total weight/mass with the goods and gross weight, t)"
+msgstr "(загальна вага/маса з вантажем та маса брутто, т)"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "(vehicle / road train / combined vehicle)"
+msgstr "(автомобіль/автопоїзд/комбінований транспортний засіб)"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "(width, m)"
+msgstr "(ширина, м)"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid ""
+"* filled in in the cases provided for by the Regulation on working time and "
+"rest time of drivers of wheeled vehicles approved by order of the Ministry "
+"of Transport and Communications of Ukraine No. 340 of 7 June 2010."
+msgstr ""
+"*відомості заповнюються у випадках передбачених Положенням про робочий час і"
+" час відпочинку водіїв колісних транспортних засобів, затвердженого наказом "
+"Міністерства транспорту та зв’язку України від 07 червня 2010 року № 340."
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid ""
+"** filled in when carcasses, half-carcasses, quarters, cuts or pieces of "
+"meat are carried."
+msgstr ""
+"**відомості заповнюються у разі перевезення туш, напівтуш, четвертин, "
+"відрубів, шматків м’яса."
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid ""
+"*** filled in when foodstuffs requiring a temperature regime are carried."
+msgstr ""
+"***відомості заповнюються у разі перевезення харчових продуктів, які "
+"потребують дотримання температурного режиму."
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "<span>dated</span>"
+msgstr "<span>від</span>"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "<strong>Form No. 1-TN</strong>"
+msgstr "<strong>Форма № 1-ТН</strong>"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_documents
+msgid "Accompanying Documents"
+msgstr "Супровідні документи"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Accompanying documents for the goods:"
+msgstr "Супровідні документи на вантаж:"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,help:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_vehicle_storage
+msgid ""
+"Address of the carrier, its unit or branch where the vehicle is kept. Filled"
+" in when the regulation on working time and rest of drivers requires it."
+msgstr ""
+"Адреса перевізника, його структурного підрозділу або філії, де зберігається "
+"транспортний засіб. Заповнюється, коли цього вимагає Положення про робочий "
+"час і час відпочинку водіїв."
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Animal species**"
+msgstr "Вид тварини**"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid ""
+"Appendix 7 to the Rules for the carriage of goods by road in Ukraine (clause"
+" 11.1 of chapter 11)"
+msgstr ""
+"Додаток 7 до Правил перевезень вантажів автомобільним транспортом в Україні "
+"(пункт 11.1 глави 11)"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Back side"
+msgstr "Зворотний бік"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "CARGO DETAILS"
+msgstr "ВІДОМОСТІ ПРО ВАНТАЖ"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "CONSIGNMENT NOTE No."
+msgstr "ТОВАРНО-ТРАНСПОРТНА НАКЛАДНА №"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.view_picking_form_l10n_ua_ttn
+msgid "Cargo"
+msgstr "Вантаж"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.view_picking_form_l10n_ua_ttn
+msgid "Carriage"
+msgstr "Перевезення"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Consignee:"
+msgstr "Вантажоодержувач:"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.view_picking_form_l10n_ua_ttn
+msgid "Consignment Note"
+msgstr "Товарно-транспортна накладна"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.actions.report,name:l10n_ua_stock_forms.action_report_ttn
+msgid "Consignment Note (TTN)"
+msgstr "Товарно-транспортна накладна (ТТН)"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_date
+msgid "Consignment Note Date"
+msgstr "Дата ТТН"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_number
+msgid "Consignment Note No."
+msgstr "Номер ТТН"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Consignor:"
+msgstr "Вантажовідправник:"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,help:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_date
+msgid ""
+"Date of the consignment note. The date of the transfer is printed when left "
+"empty."
+msgstr ""
+"Дата товарно-транспортної накладної. Якщо не заповнено, друкується дата "
+"переміщення."
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.view_picking_form_l10n_ua_ttn
+msgid "Document"
+msgstr "Документ"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,help:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_documents
+msgid "Documents accompanying the goods: certificates, invoices, etc."
+msgstr "Документи, що супроводжують вантаж: сертифікати, накладні тощо."
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Documents with the goods"
+msgstr "Документи з вантажем"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_driver_name
+msgid "Driver"
+msgstr "Водій"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_driver_license
+msgid "Driver's License No."
+msgstr "Номер посвідчення водія"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Driver:"
+msgstr "Водій:"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.view_picking_form_l10n_ua_ttn
+msgid "Gross Weight"
+msgstr "Маса брутто"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Gross weight, t"
+msgstr "Маса брутто, т"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Handed over (person in charge for the consignor)"
+msgstr "Здав (відповідальна особа вантажовідправника)"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Identification number of the animal the raw material comes from**"
+msgstr "Ідентифікаційний номер тварини від якої отримано сировину**"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "LOADING AND UNLOADING OPERATIONS"
+msgstr "ВАНТАЖНО-РОЗВАНТАЖУВАЛЬНІ ОПЕРАЦІЇ"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_vehicle_total_weight
+msgid "Laden Vehicle Weight, t"
+msgstr "Маса транспортного засобу з вантажем, т"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Loading"
+msgstr "Завантаження"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_loading_point
+msgid "Loading Point"
+msgstr "Пункт навантаження"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Loading point:"
+msgstr "Пункт навантаження:"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,help:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_trailer
+msgid "Make, model and type of the trailer or semi-trailer."
+msgstr "Марка, модель і тип причепа або напівпричепа."
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,help:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_vehicle
+msgid "Make, model and type of the vehicle."
+msgstr "Марка, модель і тип автомобіля."
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid ""
+"Name of goods (carcasses, half-carcasses, quarters, cuts, pieces of "
+"meat)**/container number; class of dangerous goods, when dangerous goods are"
+" carried"
+msgstr ""
+"Найменування вантажу (туші, напівтуші, четвертини, відруби, шматки "
+"м’яса)**/номер контейнера; клас небезпечних речовин, до якого віднесено "
+"вантаж, у разі перевезення небезпечних вантажів"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_package_count
+msgid "Number of Packages"
+msgstr "Кількість місць"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Number of packages"
+msgstr "Кількість місць"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,help:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_number
+msgid ""
+"Number of the consignment note (TTN). The reference of the transfer is "
+"printed when left empty."
+msgstr ""
+"Номер товарно-транспортної накладної. Якщо не заповнено, друкується номер "
+"переміщення."
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Operation"
+msgstr "Операція"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_place
+msgid "Place of Issue"
+msgstr "Місце складання"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Place of issue:"
+msgstr "Місце складання:"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Place where the vehicle is kept*:"
+msgstr "Місце де зберігається автомобіль*:"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Price per unit excl. VAT, UAH"
+msgstr "Ціна без ПДВ за одиницю, грн"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Received (person in charge for the consignee)"
+msgstr "Прийняв (відповідальна особа вантажоодержувача)"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_carrier_id
+msgid "Road Carrier"
+msgstr "Автомобільний перевізник"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Road carrier:"
+msgstr "Автомобільний перевізник:"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Signature of the person in charge"
+msgstr "Підпис відповідальної особи"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,help:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_loading_point
+msgid "The address of the warehouse by default."
+msgstr "За замовчуванням — адреса складу."
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,help:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_unloading_point
+msgid "The delivery address by default."
+msgstr "За замовчуванням — адреса доставки."
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,help:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_package_count
+msgid "The number of packages of the transfer by default."
+msgstr "За замовчуванням — кількість упаковок переміщення."
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,help:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_carrier_id
+msgid "The road carrier. Its tax code is taken from the partner."
+msgstr ""
+"Автомобільний перевізник. Код платника податків береться з контрагента."
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Time (h min)"
+msgstr "Час (год хв)"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Total amount incl. VAT, UAH"
+msgstr "Загальна сума з ПДВ, грн"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Total released for the amount of:"
+msgstr "Усього відпущено на загальну суму:"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,help:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_vehicle_total_weight
+msgid "Total weight of the vehicle with the goods."
+msgstr "Загальна маса транспортного засобу з вантажем."
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Total:"
+msgstr "Усього:"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_trailer_plate
+msgid "Trailer Plate"
+msgstr "Номер причепа"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_trailer
+msgid "Trailer/Semi-trailer"
+msgstr "Причіп/напівпричіп"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Trailer/semi-trailer:"
+msgstr "Причіп/напівпричіп:"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.view_picking_form_l10n_ua_ttn
+msgid "Transfer reference"
+msgstr "Номер переміщення"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Transport temperature***"
+msgstr "Температурний режим транспортування***"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_transport_kind
+msgid "Type of Carriage"
+msgstr "Вид перевезень"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Type of carriage:"
+msgstr "Вид перевезень:"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Type of packaging"
+msgstr "Вид пакування"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Unit of measure"
+msgstr "Одиниця вимірювання"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Unloading"
+msgstr "Розвантаження"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_unloading_point
+msgid "Unloading Point"
+msgstr "Пункт розвантаження"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Unloading point:"
+msgstr "Пункт розвантаження:"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_vehicle
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.view_picking_form_l10n_ua_ttn
+msgid "Vehicle"
+msgstr "Автомобіль"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_vehicle_height
+msgid "Vehicle Height, m"
+msgstr "Висота транспортного засобу, м"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_vehicle_length
+msgid "Vehicle Length, m"
+msgstr "Довжина транспортного засобу, м"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_vehicle_plate
+msgid "Vehicle Plate"
+msgstr "Номер автомобіля"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_vehicle_storage
+msgid "Vehicle Storage Place"
+msgstr "Місце зберігання автомобіля"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_vehicle_width
+msgid "Vehicle Width, m"
+msgstr "Ширина транспортного засобу, м"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Vehicle details"
+msgstr "Відомості про транспортний засіб"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "Vehicle:"
+msgstr "Автомобіль:"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,field_description:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_weight_uom_name
+msgid "Weight Unit"
+msgstr "Одиниця ваги"
+
+#. module: l10n_ua_stock_forms
+#: model:ir.model.fields,help:l10n_ua_stock_forms.field_stock_picking__l10n_ua_ttn_place
+msgid ""
+"Where the consignment note is drawn up: the city of the warehouse by "
+"default."
+msgstr "Де складено накладну: за замовчуванням — місто складу."
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "arrival"
+msgstr "прибуття"
+
+#. module: l10n_ua_stock_forms
+#. odoo-python
+#: code:addons/l10n_ua_stock_forms/models/stock_picking.py:0
+msgid "code %s"
+msgstr "код %s"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "departure"
+msgstr "вибуття"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "gross weight, t:"
+msgstr "масою брутто, т:"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "including VAT:"
+msgstr "у тому числі ПДВ:"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "number of packages:"
+msgstr "кількість місць:"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "received by the driver/forwarder:"
+msgstr "отримав водій/експедитор:"
+
+#. module: l10n_ua_stock_forms
+#: model_terms:ir.ui.view,arch_db:l10n_ua_stock_forms.report_ttn_document
+msgid "waiting"
+msgstr "простою"
