@@ -12,6 +12,7 @@ import {
 
 import "@web_apps_grid/navbar_patch";
 import { browser } from "@web/core/browser/browser";
+import { Deferred } from "@web/core/utils/concurrency";
 import { NavBar } from "@web/webclient/navbar/navbar";
 import {
     appGroupKey,
@@ -146,6 +147,31 @@ describe("grid", () => {
         await animationFrame();
         expect(".o_apps_grid_search input").toHaveValue("");
         await keyDown("Escape");
+        await animationFrame();
+        expect(".o_apps_grid").toHaveCount(0);
+    });
+
+    test("grid stays until the chosen app is mounted", async () => {
+        await mountWithCleanup(NavBar);
+        const def = new Deferred();
+        const selected = [];
+        patchWithCleanup(getService("menu"), {
+            selectMenu: (menu) => {
+                selected.push(menu.id);
+                return def;
+            },
+        });
+        await contains(".o_apps_grid_toggle button").click();
+        await contains(".o_apps_grid_tile[data-menu-xmlid='stock.menu_stock_root']").click();
+        expect(".o_apps_grid").toHaveCount(1);
+        expect(".o_apps_grid").toHaveClass("o_apps_grid_busy");
+        expect(".o_apps_grid_tile[data-menu-xmlid='stock.menu_stock_root']").toHaveClass(
+            "o_apps_grid_loading"
+        );
+        // a second click while loading is ignored
+        await contains(".o_apps_grid_tile[data-menu-xmlid='hr.menu_hr_root']").click();
+        expect(selected).toEqual([3]);
+        def.resolve();
         await animationFrame();
         expect(".o_apps_grid").toHaveCount(0);
     });

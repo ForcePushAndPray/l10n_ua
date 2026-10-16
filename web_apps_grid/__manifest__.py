@@ -1,6 +1,6 @@
 {
     'name': 'Apps Grid Menu',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Hidden/Tools',
     'summary': 'Повноекранне меню додатків плитками для Odoo Community: пошук, закріплені, групи',
     'description': """

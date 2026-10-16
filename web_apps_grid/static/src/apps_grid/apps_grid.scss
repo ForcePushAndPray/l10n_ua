@@ -384,3 +384,33 @@ $o-apps-grid-icon: 64px;
 .o_main_navbar .o_apps_grid_toggle .dropdown-toggle.active {
     background: rgba(0, 0, 0, .1);
 }
+
+// Waiting for the chosen app: the tile pulses, the rest steps back.
+.o_apps_grid_busy {
+    cursor: progress;
+
+    .o_apps_grid_item:not(.o_apps_grid_loading) {
+        opacity: .45;
+        transition: opacity .2s;
+    }
+}
+
+.o_apps_grid_tile.o_apps_grid_loading .o_apps_grid_icon {
+    animation: o-apps-grid-pulse .9s ease-in-out infinite;
+    box-shadow: 0 0 0 3px rgba($primary, .35), 0 10px 24px rgba(0, 0, 0, .18);
+}
+
+.o_apps_grid_result.o_apps_grid_loading {
+    background: rgba($primary, .08);
+}
+
+@keyframes o-apps-grid-pulse {
+    0%, 100% { transform: translateY(-3px) scale(1); }
+    50% { transform: translateY(-3px) scale(1.08); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .o_apps_grid_tile.o_apps_grid_loading .o_apps_grid_icon {
+        animation: none;
+    }
+}

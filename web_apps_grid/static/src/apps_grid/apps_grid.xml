@@ -6,6 +6,7 @@
            t-att-class="{
                'o_apps_grid_current': currentApp and currentApp.id === app.id,
                'o_apps_grid_dragging': state.dragId === app.id,
+               'o_apps_grid_loading': state.loadingId === app.id,
            }"
            t-att-href="href(app)"
            t-att-data-menu-xmlid="app.xmlid"
@@ -31,6 +32,7 @@
 
     <t t-name="web_apps_grid.AppsGrid">
             <div class="o_apps_grid" t-ref="root" t-on-click="onBackdropClick"
+                 t-att-class="{ 'o_apps_grid_busy': state.loadingId }"
                  role="dialog" aria-modal="true" aria-label="Apps">
                 <div class="o_apps_grid_inner">
                     <div class="o_apps_grid_head">
@@ -62,6 +64,7 @@
                         <ul t-if="res.items.length" class="o_apps_grid_results list-unstyled">
                             <li t-foreach="res.items" t-as="item" t-key="item.menu.id">
                                 <a class="o_apps_grid_item o_apps_grid_result"
+                                   t-att-class="{ 'o_apps_grid_loading': state.loadingId === item.menu.id }"
                                    t-att-href="href(item.menu)"
                                    t-att-data-menu-xmlid="item.menu.xmlid"
                                    t-on-click="(ev) => this.onTileClick(ev, item.menu, item.app)">
