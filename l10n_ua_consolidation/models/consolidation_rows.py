@@ -16,7 +16,8 @@ Form 1 itself carries 1030 (рах. 14), 1425/1430 (46/45), the contra accounts
 Balance amounts are signed (assets = debit balance, equity and liabilities =
 credit balance) and every account is assigned to exactly one row (the
 longest matching prefix; prefixes shared by an asset and a liability row —
-63, 641, 642 — go by the sign of the balance per account and partner).
+36, 37, 63, 641, 642, 643, 644, 68 — go by the sign of the balance per
+account and partner; ПДВ 643/644 between 1190 and 1690).
 Eliminations need this: a row built from ``abs()`` of a net balance cannot be
 reduced by the intra-group part of it.
 
@@ -120,7 +121,7 @@ def match_balance_row(code, amount):
     """Return the key of the 1-к detail row an account code belongs to.
 
     Longest matching prefix wins; when it is shared by an asset and a
-    liability row (63, 641, 642), a debit balance goes to the asset row and a
+    liability row (36, 37, 63, 641, 642, 643, 644, 68), a debit balance goes to the asset row and a
     credit balance to the liability row. ``None`` = unmapped.
     """
     best_len = 0
