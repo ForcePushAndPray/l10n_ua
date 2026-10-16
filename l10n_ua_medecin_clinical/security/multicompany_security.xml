@@ -16,5 +16,16 @@
             </field>
         </record>
 
+        <!-- Діагнози: company_id — збережене related-поле від прийому;
+             без правила звіт «Захворюваність» показував би діагнози всіх компаній. -->
+        <record id="l10n_ua_medecin_diagnosis_company_rule" model="ir.rule">
+            <field name="name">Діагноз: multi-company</field>
+            <field name="model_id" ref="model_l10n_ua_medecin_diagnosis"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">
+                ['|', ('company_id', '=', False), ('company_id', 'in', company_ids)]
+            </field>
+        </record>
+
     </data>
 </odoo>

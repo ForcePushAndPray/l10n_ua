@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Medecin Patient',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Healthcare',
     'summary': 'Пацієнти медичних закладів та декларації з лікарем (ПМД)',
     'description': """

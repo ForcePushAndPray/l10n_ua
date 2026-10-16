@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Medecin НСЗУ Contract',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Healthcare',
     'summary': 'Договори з НСЗУ, пакети медичних послуг, капітація ПМД',
     'description': """

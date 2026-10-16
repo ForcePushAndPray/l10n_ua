@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Medecin Clinical',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Healthcare',
     'summary': 'Клінічна картка пацієнта: прийоми, діагнози, МКХ-10',
     'description': """
