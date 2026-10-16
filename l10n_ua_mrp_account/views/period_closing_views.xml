@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Закриття періоду: розподіл ЗВВ виконується перед закриттям 9x (#373) -->
+    <record id="l10n_ua_period_closing_view_form_overhead" model="ir.ui.view">
+        <field name="name">l10n_ua.period.closing.form.overhead</field>
+        <field name="model">l10n_ua.period.closing</field>
+        <field name="inherit_id" ref="l10n_ua_accounting.l10n_ua_period_closing_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//button[@name='action_open_currency_revaluation']" position="after">
+                <button name="action_open_overhead_allocations" string="Overhead Allocation"
+                        type="object" class="btn-secondary" invisible="state != 'draft'"/>
+            </xpath>
+            <xpath expr="//page[@name='closing_lines']" position="after">
+                <page string="Overhead Allocation" name="overhead_allocations">
+                    <field name="overhead_allocation_ids" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="allocated_amount" sum="Total"/>
+                            <field name="unallocated_amount" sum="Total"/>
+                            <field name="currency_id" column_invisible="True"/>
+                            <field name="state" widget="badge"
+                                   decoration-info="state == 'draft'"
+                                   decoration-success="state == 'posted'"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
