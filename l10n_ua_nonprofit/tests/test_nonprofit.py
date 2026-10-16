@@ -139,6 +139,64 @@ class TestNonprofitRecognition(NonprofitTestCase):
         recognition.action_compute()
         self.assertEqual(recognition.line_ids.amount, 800.0)
 
+    def test_backdated_recognition_does_not_recognise_twice(self):
+        self._receipt(self.program, date(2035, 8, 1), 10000.0)
+        self._expense(self.program, date(2035, 8, 10), 1000.0)
+        self._expense(self.program, date(2035, 9, 10), 2000.0)
+        september = self._recognition(date(2035, 9, 30), self.program)
+        self.assertEqual(september.line_ids.amount, 3000.0)
+        september.action_post()
+        # August was covered by the September recognition: nothing to add.
+        august = self._recognition(date(2035, 8, 31), self.program)
+        self.assertEqual(august.line_ids.amount, 0.0)
+        self.assertEqual(august.line_ids.recognised_before, 3000.0)
+        with self.assertRaises(UserError):
+            august.action_post()
+        # A late August bill: recognising it back-dated is refused while the
+        # September recognition is posted.
+        self._expense(self.program, date(2035, 8, 20), 5000.0)
+        august.action_compute()
+        self.assertEqual(august.line_ids.amount, 3000.0)
+        with self.assertRaises(UserError):
+            august.action_post()
+        figures = self.program._get_ledger_figures(False)[self.program.id]
+        self.assertEqual(figures['recognised'], 3000.0)
+        # Cancel September, recognise in date order: total = expenses.
+        september.action_cancel()
+        august.action_compute()
+        self.assertEqual(august.line_ids.amount, 6000.0)
+        august.action_post()
+        again = self._recognition(date(2035, 9, 30), self.program)
+        self.assertEqual(again.line_ids.amount, 2000.0)
+        again.action_post()
+        figures = self.program._get_ledger_figures(False)[self.program.id]
+        self.assertEqual(figures['recognised'], 8000.0)
+        self.assertEqual(figures['spent'], 8000.0)
+
+    def test_program_journal(self):
+        own_journal = self.env['account.journal'].create({
+            'name': 'Грант (тест)',
+            'code': 'GRNT',
+            'type': 'general',
+            'company_id': self.company.id,
+        })
+        self.program.journal_id = own_journal
+        self._receipt(self.program, date(2035, 10, 1), 1000.0)
+        self._expense(self.program, date(2035, 10, 2), 400.0)
+        self._receipt(self.membership, date(2035, 10, 1), 1000.0)
+        self._expense(self.membership, date(2035, 10, 3), 300.0)
+        recognition = self._recognition(date(2035, 10, 31), self.program | self.membership)
+        recognition.action_post()
+        self.assertEqual(len(recognition.move_ids), 2)
+        own = recognition.move_ids.filtered(lambda m: m.journal_id == own_journal)
+        other = recognition.move_ids - own
+        self.assertEqual(own.amount_total, 400.0)
+        self.assertEqual(other.journal_id, self.journal)
+        self.assertEqual(other.amount_total, 300.0)
+        recognition.action_cancel()
+        self.assertEqual(self.env['account.move'].search_count([
+            ('reversed_entry_id', 'in', recognition.move_ids.ids)]), 2)
+
 
 @tagged('post_install', '-at_install', 'l10n_ua_nonprofit')
 class TestNonprofitPeriodClosing(NonprofitTestCase):
@@ -319,3 +377,5 @@ class TestNonprofitSetup(NonprofitTestCase):
             self.company.l10n_ua_npo_expense_prefixes = '7'
         self.company.l10n_ua_npo_expense_prefixes = '8, 9'
         self.assertEqual(self.company._l10n_ua_npo_expense_prefixes(), ('8', '9'))
+        new_company = self.env['res.company'].create({'name': 'НПО (тест)'})
+        self.assertEqual(new_company._l10n_ua_npo_expense_prefixes(), ('9',))

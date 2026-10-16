@@ -2262,3 +2262,27 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
 msgid "року"
 msgstr ""
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_recognition.py:0
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__move_ids
+msgid "Journal Entries"
+msgstr "Проводки"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__move_ids
+msgid ""
+"One entry per journal: programs with their own journal are posted there."
+msgstr "Одна проводка на журнал: програми з власним журналом проводяться в ньому."
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_recognition.py:0
+msgid ""
+"Program %(program)s already has a posted recognition dated %(date)s, later "
+"than %(this)s. Cancel the later recognition before recognising income for an "
+"earlier date."
+msgstr ""
+"Програма %(program)s уже має проведене визнання від %(date)s — пізніше за "
+"%(this)s. Скасуйте пізніше визнання, перш ніж визнавати дохід на ранішу дату."

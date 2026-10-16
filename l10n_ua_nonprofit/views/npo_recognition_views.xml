@@ -37,7 +37,8 @@
                         </group>
                         <group>
                             <field name="amount_total"/>
-                            <field name="move_id"/>
+                            <field name="move_id" invisible="1"/>
+                            <field name="move_ids" widget="many2many_tags"/>
                             <field name="closing_id" invisible="not closing_id"/>
                             <field name="company_id" groups="base.group_multi_company"
                                    readonly="state != 'draft'"/>

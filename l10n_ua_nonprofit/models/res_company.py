@@ -87,7 +87,7 @@ class ResCompany(models.Model):
     )
     l10n_ua_npo_expense_prefixes = fields.Char(
         string='Program Expense Accounts',
-        default='8,9',
+        default='9',
         help='Comma-separated code prefixes of the expense accounts whose '
              'amounts, tagged with a program analytic account, count as '
              'program spending. If expenses are booked on class 8 and then '

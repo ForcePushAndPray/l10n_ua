@@ -319,6 +319,8 @@ class L10nUaNpoProgram(models.Model):
     def _get_ledger_figures(self, date_to, date_from=None):
         """Program figures from posted journal items.
 
+        ``date_to`` may be empty: all posted items, whatever their date.
+
         :returns: ``{program_id: {key: amount}}`` with keys
 
             * ``received`` — credits of 48 (receipts of target financing);
@@ -340,9 +342,10 @@ class L10nUaNpoProgram(models.Model):
             ('parent_state', '=', 'posted'),
             ('company_id', 'in', companies.ids),
             ('analytic_distribution', 'in', programs.analytic_account_id.ids),
-            ('date', '<=', date_to),
             ('move_id', 'not in', self._get_closing_moves(companies).ids),
         ]
+        if date_to:
+            domain.append(('date', '<=', date_to))
         if date_from:
             domain.append(('date', '>=', date_from))
         lines = self.env['account.move.line'].sudo().search(domain)
@@ -381,27 +384,36 @@ class L10nUaNpoProgram(models.Model):
     def _get_recognition_amounts(self, date):
         """Income to recognise on ``date`` per program (П(С)БО 15, п. 17).
 
-        Income equals the program expenses not yet covered by recognised
-        income, capped by the balance of 48 (a program cannot recognise more
-        than it received). Expenses above the balance stay uncovered and are
-        recognised later, once new receipts arrive. A negative amount gives
-        income back to 48 (expenses were credited after recognition).
+        Income equals the program expenses up to ``date`` not yet covered by
+        recognised income, capped by the balance of 48 (a program cannot
+        recognise more than it received). Expenses above the balance stay
+        uncovered and are recognised later, once new receipts arrive. A
+        negative amount gives income back to 48 (expenses were credited after
+        recognition).
+
+        Income already recognised (and transferred from 48) is taken whatever
+        its date: a back-dated recognition must not cover again the expenses
+        that a later one has already covered, so the total recognised never
+        exceeds the expenses.
 
         :returns: ``{program_id: dict(spent, recognised, balance, amount)}``
         """
         figures = self._get_ledger_figures(date)
+        figures_all = self._get_ledger_figures(False)
         res = {}
         for program in self:
             data = figures[program.id]
-            balance = data['received'] - data['other_debit'] - data['transferred']
-            uncovered = data['spent'] - data['recognised']
+            data_all = figures_all[program.id]
+            balance = data['received'] - data['other_debit'] - data_all['transferred']
+            uncovered = data['spent'] - data_all['recognised']
             if uncovered > 0:
                 amount = min(uncovered, max(balance, 0.0))
             else:
-                amount = uncovered
+                # Give back only what was recognised up to ``date``.
+                amount = max(uncovered, min(data['spent'] - data['recognised'], 0.0))
             res[program.id] = {
                 'spent': data['spent'],
-                'recognised': data['recognised'],
+                'recognised': data_all['recognised'],
                 'balance': balance,
                 'amount': program.currency_id.round(amount),
             }

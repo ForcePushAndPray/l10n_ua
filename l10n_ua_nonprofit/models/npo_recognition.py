@@ -68,6 +68,14 @@ class L10nUaNpoRecognition(models.Model):
         readonly=True,
         copy=False,
     )
+    move_ids = fields.Many2many(
+        'account.move',
+        string='Journal Entries',
+        readonly=True,
+        copy=False,
+        help='One entry per journal: programs with their own journal are '
+             'posted there.',
+    )
     closing_id = fields.Many2one(
         'l10n_ua.period.closing',
         string='Period Closing',
@@ -134,10 +142,12 @@ class L10nUaNpoRecognition(models.Model):
             rec.line_ids = lines
         return True
 
-    def _get_journal(self):
+    def _get_journal(self, program=None):
+        """Journal of the program entry: the program journal, else the
+        recognition / company / closing journal."""
         self.ensure_one()
-        journal = self.journal_id or self.company_id.l10n_ua_npo_journal_id \
-            or self.closing_id.journal_id
+        journal = (program and program.journal_id) or self.journal_id \
+            or self.company_id.l10n_ua_npo_journal_id or self.closing_id.journal_id
         if not journal:
             journal = self.env['account.journal'].search([
                 ('type', '=', 'general'),
@@ -147,11 +157,11 @@ class L10nUaNpoRecognition(models.Model):
             raise UserError(_('Set the target financing journal of the company.'))
         return journal
 
-    def _prepare_move_vals(self):
+    def _prepare_move_vals(self, lines=None):
         self.ensure_one()
+        lines = self.line_ids if lines is None else lines
         line_vals = []
-        for line in self.line_ids.filtered(
-                lambda l: not l.currency_id.is_zero(l.amount)):
+        for line in lines.filtered(lambda l: not l.currency_id.is_zero(l.amount)):
             program = line.program_id
             distribution = {str(program.analytic_account_id.id): 100.0}
             label = _('Target financing recognised as income: %s', program.name)
@@ -177,12 +187,36 @@ class L10nUaNpoRecognition(models.Model):
             ]
         return {
             'move_type': 'entry',
-            'journal_id': self._get_journal().id,
+            'journal_id': self._get_journal(lines[:1].program_id).id,
             'date': self.date,
             'ref': self.name,
             'company_id': self.company_id.id,
             'line_ids': line_vals,
         }
+
+    def _check_later_recognitions(self):
+        """A back-dated recognition is refused while a later one is posted.
+
+        The later recognition already covered the expenses up to its date;
+        cancel it first, then recognise in date order.
+        """
+        for rec in self:
+            programs = rec.line_ids.filtered(
+                lambda l: not l.currency_id.is_zero(l.amount)).program_id
+            later = self.env['l10n_ua.npo.recognition.line'].search([
+                ('program_id', 'in', programs.ids),
+                ('recognition_id.state', '=', 'posted'),
+                ('recognition_id.date', '>', rec.date),
+                ('recognition_id', '!=', rec.id),
+            ], limit=1)
+            if later:
+                raise UserError(_(
+                    'Program %(program)s already has a posted recognition dated '
+                    '%(date)s, later than %(this)s. Cancel the later recognition '
+                    'before recognising income for an earlier date.',
+                    program=later.program_id.name,
+                    date=later.recognition_id.date.strftime('%d.%m.%Y'),
+                    this=rec.date.strftime('%d.%m.%Y')))
 
     def action_post(self):
         for rec in self:
@@ -195,9 +229,18 @@ class L10nUaNpoRecognition(models.Model):
                     'Nothing to recognise on %s: the programs have no expenses '
                     'not yet covered by income, or no balance on 48.',
                     rec.date.strftime('%d.%m.%Y')))
-            move = self.env['account.move'].create(rec._prepare_move_vals())
-            move.action_post()
-            rec.write({'move_id': move.id, 'state': 'posted'})
+            rec._check_later_recognitions()
+            lines = rec.line_ids.filtered(lambda l: not l.currency_id.is_zero(l.amount))
+            moves = self.env['account.move']
+            for journal in lines.mapped(lambda l: rec._get_journal(l.program_id)):
+                moves |= self.env['account.move'].create(rec._prepare_move_vals(
+                    lines.filtered(lambda l: rec._get_journal(l.program_id) == journal)))
+            moves.action_post()
+            rec.write({
+                'move_id': moves[:1].id,
+                'move_ids': [(6, 0, moves.ids)],
+                'state': 'posted',
+            })
         return True
 
     def action_cancel(self):
@@ -205,12 +248,14 @@ class L10nUaNpoRecognition(models.Model):
         for rec in self:
             if rec.state != 'posted':
                 continue
-            if rec.move_id.state == 'posted':
-                rec.move_id._reverse_moves(
+            moves = (rec.move_ids | rec.move_id).filtered(
+                lambda m: m.state == 'posted')
+            if moves:
+                moves._reverse_moves(
                     default_values_list=[{
-                        'date': rec.move_id.date,
-                        'ref': _('Reversal of: %s', rec.move_id.ref),
-                    }],
+                        'date': move.date,
+                        'ref': self.env._('Reversal of: %s', move.ref),
+                    } for move in moves],
                     cancel=True,
                 )
             rec.state = 'cancelled'
@@ -220,7 +265,12 @@ class L10nUaNpoRecognition(models.Model):
         for rec in self:
             if rec.state != 'cancelled':
                 raise UserError(_('Only a cancelled recognition can be reset to draft.'))
-            rec.write({'state': 'draft', 'move_id': False, 'closing_id': False})
+            rec.write({
+                'state': 'draft',
+                'move_id': False,
+                'move_ids': [(5, 0, 0)],
+                'closing_id': False,
+            })
         return True
 
     def unlink(self):
@@ -230,6 +280,14 @@ class L10nUaNpoRecognition(models.Model):
 
     def action_open_move(self):
         self.ensure_one()
+        if len(self.move_ids) > 1:
+            return {
+                'type': 'ir.actions.act_window',
+                'name': _('Journal Entries'),
+                'res_model': 'account.move',
+                'domain': [('id', 'in', self.move_ids.ids)],
+                'view_mode': 'list,form',
+            }
         return {
             'type': 'ir.actions.act_window',
             'res_model': 'account.move',
