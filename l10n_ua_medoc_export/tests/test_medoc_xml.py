@@ -8,7 +8,7 @@ from odoo.tests import BaseCase, tagged
 from ..tools.medoc_xml import MedocCard, build_zvit, fmt_number
 
 
-@tagged('post_install', '-at_install', 'l10n_ua_medoc')
+@tagged('post_install', '-at_install', 'l10n_ua_medoc_export')
 class TestMedocXml(BaseCase):
 
     def _build(self, card):
