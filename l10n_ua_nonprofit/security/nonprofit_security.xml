@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Multi-company: records of a company are visible in that company only. -->
+        <record id="npo_program_company_rule" model="ir.rule">
+            <field name="name">Target program: multi-company</field>
+            <field name="model_id" ref="model_l10n_ua_npo_program"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="npo_recognition_company_rule" model="ir.rule">
+            <field name="name">Target income recognition: multi-company</field>
+            <field name="model_id" ref="model_l10n_ua_npo_recognition"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="npo_recognition_line_company_rule" model="ir.rule">
+            <field name="name">Target income recognition line: multi-company</field>
+            <field name="model_id" ref="model_l10n_ua_npo_recognition_line"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="npo_income_report_company_rule" model="ir.rule">
+            <field name="name">Non-profit income report: multi-company</field>
+            <field name="model_id" ref="model_l10n_ua_npo_income_report"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="npo_income_report_line_company_rule" model="ir.rule">
+            <field name="name">Non-profit income report line: multi-company</field>
+            <field name="model_id" ref="model_l10n_ua_npo_income_report_line"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="npo_program_report_company_rule" model="ir.rule">
+            <field name="name">Target programs report: multi-company</field>
+            <field name="model_id" ref="model_l10n_ua_npo_program_report"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+    </data>
+</odoo>

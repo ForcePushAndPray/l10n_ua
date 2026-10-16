@@ -1,0 +1,252 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Звіт про використання доходів (прибутків) неприбуткової організації.
+         Макет — за формою, затвердженою наказом Мінфіну від 17.06.2016 № 553
+         у редакції наказу від 28.04.2017 № 469 (zakon.rada.gov.ua, z0932-16,
+         файл форми f458592n38.doc). Тексти бланка — українською, як у формі. -->
+    <record id="action_report_npo_income" model="ir.actions.report">
+        <field name="name">Report on the Use of Income (Non-profit)</field>
+        <field name="model">l10n_ua.npo.income.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_nonprofit.report_npo_income_document</field>
+        <field name="report_file">l10n_ua_nonprofit.report_npo_income_document</field>
+        <field name="print_report_name">'Звіт_НПО_%s' % (object.year)</field>
+        <field name="paperformat_id" ref="l10n_ua_doc_reports.paperformat_ua_report"/>
+        <field name="binding_model_id" ref="model_l10n_ua_npo_income_report"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="report_npo_styles">
+        <style>
+            .npo-form { font-family: "DejaVu Serif", "Times New Roman", serif; font-size: 10pt; color: #000; }
+            .npo-form table { width: 100%; border-collapse: collapse; }
+            .npo-form td, .npo-form th { border: 1px solid #000; padding: 2px 4px; vertical-align: top; }
+            .npo-form .nb td, .npo-form td.nb { border: none; }
+            .npo-form .num { text-align: right; white-space: nowrap; width: 22%; }
+            .npo-form .code { text-align: center; white-space: nowrap; width: 10%; }
+            .npo-form .fn { width: 4%; text-align: center; font-weight: bold; }
+            .npo-form .box { display: inline-block; min-width: 14px; height: 14px; border: 1px solid #000; text-align: center; line-height: 14px; margin: 0 4px; }
+            .npo-form .title { font-weight: bold; text-align: center; font-size: 12pt; }
+            .npo-form .lvl0 { font-weight: bold; }
+            .npo-form .lvl1 { padding-left: 14px; }
+            .npo-form .lvl2 { padding-left: 28px; }
+            .npo-form .small { font-size: 8pt; }
+            .npo-form .part { text-align: center; font-weight: bold; }
+        </style>
+    </template>
+
+    <template id="report_npo_income_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-call="l10n_ua_nonprofit.report_npo_styles"/>
+                    <t t-set="company" t-value="o.company_id"/>
+                    <div class="page npo-form">
+                        <table class="nb">
+                            <tr>
+                                <td class="nb" style="width: 50%;">
+                                    <div style="border: 1px solid #000; padding: 4px; height: 70px;" class="small">
+                                        Відмітка про одержання<br/>
+                                        (штамп контролюючого органу, до якого подається Звіт
+                                        про використання доходів (прибутків) неприбуткової організації)
+                                    </div>
+                                </td>
+                                <td class="nb small" style="padding-left: 40px;">
+                                    Затверджено<br/>
+                                    Наказ Міністерства фінансів України<br/>
+                                    17.06.2016 № 553<br/>
+                                    (у редакції наказу Міністерства<br/>
+                                    фінансів України 28.04.2017 № 469)
+                                </td>
+                            </tr>
+                        </table>
+
+                        <table style="margin-top: 6px;">
+                            <tr>
+                                <td class="fn">1</td>
+                                <td>
+                                    <div class="title">ЗВІТ<br/>про використання доходів (прибутків)<br/>неприбуткової організації</div>
+                                </td>
+                                <td style="width: 34%;">
+                                    <span class="box" t-out="'X' if o.report_kind == 'normal' else ''"/> Звітний<br/>
+                                    <span class="box" t-out="'X' if o.report_kind == 'new' else ''"/> Звітний новий<br/>
+                                    <span class="box" t-out="'X' if o.report_kind == 'clarifying' else ''"/> Уточнюючий
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fn">2</td>
+                                <td>Звітний (податковий) період <t t-out="o.year"/> року</td>
+                                <td>
+                                    Місяць<sup>1</sup>: <span class="box" t-out="o.month if o.period_type == 'month' else ''"/>
+                                    Рік: <span class="box" t-out="o.year if o.period_type == 'year' else ''"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fn">3</td>
+                                <td>Звітний (податковий) період, що уточнюється
+                                    <t t-out="o.clarified_year if o.report_kind == 'clarifying' and o.clarified_year else '20__'"/> року</td>
+                                <td>
+                                    Місяць<sup>1</sup>: <span class="box" t-out="o.clarified_month if o.report_kind == 'clarifying' and o.clarified_month else ''"/>
+                                    Рік: <span class="box" t-out="o.clarified_year if o.report_kind == 'clarifying' and o.clarified_year and not o.clarified_month else ''"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fn">4</td>
+                                <td colspan="2">Неприбуткова установа (організація):
+                                    <strong t-out="company.name"/>
+                                    <div class="small">(повне найменування згідно з реєстраційними документами)</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fn">5</td>
+                                <td colspan="2">Код за ЄДРПОУ: <strong t-out="o.company_edrpou"/></td>
+                            </tr>
+                            <tr>
+                                <td class="fn">6</td>
+                                <td colspan="2">
+                                    Податкова адреса:
+                                    <t t-out="', '.join(p for p in [company.street, company.street2, company.city, company.state_id.name] if p)"/><br/>
+                                    Поштовий індекс: <t t-out="company.zip or ''"/>
+                                    &#160;&#160;Телефон: <t t-out="company.phone or ''"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fn">7</td>
+                                <td colspan="2">Рішення про включення неприбуткової організації до Реєстру
+                                    неприбуткових установ та організацій:
+                                    дата <strong t-out="o.register_date.strftime('%d.%m.%Y') if o.register_date else '__________'"/>
+                                    № <strong t-out="o.register_number or '_____'"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fn">8</td>
+                                <td colspan="2">Ознака неприбутковості організації:
+                                    <span class="box" style="min-width: 50px;" t-out="o.nonprofit_code or ''"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="fn">9</td>
+                                <td colspan="2">
+                                    <t t-out="o.tax_office_id.name or ''"/>
+                                    <div class="small">(найменування контролюючого органу, до якого подається Звіт
+                                        про використання доходів (прибутків) неприбуткової організації)</div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <div style="text-align: right; margin-top: 6px;">(грн)</div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Показники</th>
+                                    <th class="code">Код рядка</th>
+                                    <th class="num">Сума</th>
+                                </tr>
+                                <tr class="small">
+                                    <th>1</th><th class="code">2</th><th class="num" style="text-align: center;">3</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td colspan="3" class="part">Частина І</td></tr>
+                                <tr t-foreach="o._get_print_rows()" t-as="row">
+                                    <td t-att-class="'lvl%s' % row[3]" t-out="row[0]"/>
+                                    <td class="code" t-out="row[1]"/>
+                                    <td class="num" t-out="o._format_amount(o[row[2]])"/>
+                                </tr>
+                                <tr><td colspan="3" class="part">Частина ІІ</td></tr>
+                                <tr t-foreach="o._get_print_rows_part2()" t-as="row">
+                                    <td t-att-class="'lvl%s' % row[3]">
+                                        <t t-if="row[1] == '7'"><div class="lvl0">Виправлення помилок<sup>3</sup></div></t>
+                                        <t t-out="row[0]"/>
+                                    </td>
+                                    <td class="code" t-out="row[1]"/>
+                                    <td class="num" t-out="o._format_amount(o[row[2]])"/>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table style="margin-top: 8px;">
+                            <tr>
+                                <td>Наявність додатків<sup>4</sup></td>
+                                <td class="code">ГД<sup>5</sup> <span class="box" t-out="'+' if o.has_annex_hd else ''"/></td>
+                                <td class="code">ВП <span class="box" t-out="'+' if o.has_annex_vp else ''"/></td>
+                                <td class="code">ФЗ<sup>6</sup> <span class="box" t-out="'+' if o.has_annex_fs else ''"/></td>
+                            </tr>
+                        </table>
+
+                        <t t-set="fs" t-value="o.fs_kind if o.has_annex_fs else False"/>
+                        <table style="margin-top: 4px;" class="small">
+                            <tr>
+                                <td rowspan="2" style="width: 22%;">Наявність поданих до Звіту додатків – форм фінансової звітності<sup>6</sup></td>
+                                <td>Баланс (Звіт про фінансовий стан)</td>
+                                <td>Звіт про фінансові результати (Звіт про сукупний дохід)</td>
+                                <td>Звіт про рух грошових коштів</td>
+                                <td>Звіт про власний капітал</td>
+                                <td>Примітки до річної фінансової звітності</td>
+                                <td>Фінансовий звіт суб’єкта малого підприємництва (Баланс; Звіт про фінансові результати)</td>
+                                <td>Спрощений фінансовий звіт суб’єкта малого підприємництва (Баланс; Звіт про фінансові результати)</td>
+                                <td>Звіт про результати фінансової діяльності<sup>7</sup></td>
+                            </tr>
+                            <tr>
+                                <td class="code" t-out="'+' if fs in ('full', 'budget') else ''"/>
+                                <td class="code" t-out="'+' if fs == 'full' else ''"/>
+                                <td class="code" t-out="'+' if fs == 'full' else ''"/>
+                                <td class="code" t-out="'+' if fs == 'full' else ''"/>
+                                <td class="code" t-out="'+' if fs == 'full' else ''"/>
+                                <td class="code" t-out="'+' if fs == 'small' else ''"/>
+                                <td class="code" t-out="'+' if fs == 'simplified' else ''"/>
+                                <td class="code" t-out="'+' if fs == 'budget' else ''"/>
+                            </tr>
+                        </table>
+
+                        <table style="margin-top: 4px;" class="small">
+                            <tr>
+                                <td style="width: 70%;">Доповнення до Звіту про використання доходів (прибутків) неприбуткової
+                                    організації (заповнюється і подається відповідно до пункту 46.4 статті 46 глави 2
+                                    розділу ІІ Податкового кодексу України)</td>
+                                <td>Наявність доповнення<sup>8</sup> <span class="box"/></td>
+                            </tr>
+                        </table>
+
+                        <p style="margin-top: 10px;">Інформація, наведена у Звіті про використання доходів (прибутків)
+                            неприбуткової організації та додатках до нього, є достовірною.</p>
+                        <p>Дата подання:
+                            <t t-out="o.submission_date.strftime('%d.%m.%Y') if o.submission_date else '___.___.______'"/></p>
+
+                        <table class="nb" style="margin-top: 6px;">
+                            <tr>
+                                <td class="nb" style="width: 45%;">Керівник (уповноважена особа)</td>
+                                <td class="nb" style="width: 25%;">___________________<div class="small">(підпис)</div></td>
+                                <td class="nb"><t t-out="o.director_name or '___________________'"/><div class="small">(ініціали та прізвище)</div></td>
+                            </tr>
+                            <tr>
+                                <td class="nb">Головний бухгалтер (особа, відповідальна за ведення бухгалтерського обліку)</td>
+                                <td class="nb">___________________<div class="small">(підпис)</div></td>
+                                <td class="nb"><t t-out="o.accountant_name or '___________________'"/><div class="small">(ініціали та прізвище)</div></td>
+                            </tr>
+                        </table>
+                        <div class="small" style="margin-top: 4px;">М.П. (за наявності)</div>
+
+                        <div class="small" style="margin-top: 10px; border-top: 1px solid #000; padding-top: 4px;">
+                            <sup>1</sup> Зазначається номер календарного місяця, в якому порушено вимоги пункту 133.4
+                            статті 133 розділу ІІІ Податкового кодексу України та нараховане податкове зобов’язання
+                            з податку на прибуток підприємств.<br/>
+                            <sup>2</sup> Зазначається базова (основна) ставка податку на прибуток у відсотках, яка
+                            встановлена пунктом 136.1 статті 136 розділу ІІІ Податкового кодексу України.<br/>
+                            <sup>3</sup> Заповнюється у разі самостійного виправлення помилки(ок) відповідно до
+                            статті 50 глави 2 розділу ІІ Податкового кодексу України.<br/>
+                            <sup>4</sup> У відповідних клітинках проставляється позначка «+».<br/>
+                            <sup>5</sup> Заповнюється у разі здійснення операцій з гуманітарною допомогою.<br/>
+                            <sup>6</sup> Подається відповідно до пункту 46.2 статті 46 Податкового кодексу України
+                            разом зі Звітом. Фінансова звітність є додатком до Звіту та його невід’ємною частиною.<br/>
+                            <sup>7</sup> Заповнюється бюджетними установами (організаціями).<br/>
+                            <sup>8</sup> Заповнюється у разі подання разом зі Звітом доповнення.
+                        </div>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

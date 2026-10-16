@@ -21,6 +21,7 @@
 | Ціни постачальників | [supplier_prices.md](supplier_prices.md) | 📄 з коду (на демо не встановлено) | [supplier_prices.md](../supplier_prices.md) |
 | HR та зарплата (1С:ЗУП) | [hr.md](hr.md) | ✅ звірено наживо | [hr.md](../hr.md) |
 | Бюджетні установи | [budget.md](budget.md) | 📄 з коду (на демо не встановлено) | [budget.md](../budget.md) |
+| Громадські організації та благодійні фонди | [nonprofit.md](nonprofit.md) | 📄 з коду (на демо не встановлено) | — |
 | Заклади освіти | [education.md](education.md) | ✅ звірено наживо (контингент, стипендії) | [education.md](../education.md) |
 | Заклади охорони здоров'я | [medicine.md](medicine.md) | 📄 з коду (демо без даних; eHealth — dry-run) | [medicine.md](../medicine.md) |
 

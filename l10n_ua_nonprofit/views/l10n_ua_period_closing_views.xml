@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_period_closing_view_form_nonprofit" model="ir.ui.view">
+        <field name="name">l10n_ua.period.closing.form.nonprofit</field>
+        <field name="model">l10n_ua.period.closing</field>
+        <field name="inherit_id" ref="l10n_ua_accounting.l10n_ua_period_closing_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Target Income (48)" name="npo_recognition"
+                      invisible="not l10n_ua_is_nonprofit">
+                    <field name="l10n_ua_is_nonprofit" invisible="1"/>
+                    <field name="npo_recognition_ids">
+                        <list>
+                            <field name="date"/>
+                            <field name="name"/>
+                            <field name="move_id"/>
+                            <field name="amount_total" sum="Total"/>
+                            <field name="state" widget="badge"/>
+                        </list>
+                    </field>
+                    <div class="text-muted">
+                        Closing the period recognises target financing (account 48) as
+                        income equal to the program expenses, before the income and
+                        expense accounts are closed.
+                    </div>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
