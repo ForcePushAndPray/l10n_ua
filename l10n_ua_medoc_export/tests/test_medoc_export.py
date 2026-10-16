@@ -10,7 +10,7 @@ from odoo.tests import tagged
 from odoo.addons.account.tests.common import AccountTestInvoicingCommon
 
 
-@tagged('post_install', '-at_install', 'l10n_ua_medoc')
+@tagged('post_install', '-at_install', 'l10n_ua_medoc_export')
 class TestMedocExport(AccountTestInvoicingCommon):
 
     @classmethod
