@@ -15,6 +15,8 @@ class TestMultiCompanyRules(TransactionCase):
         'l10n_ua_hr_reports.hr_report_headcount_company_rule',
         'l10n_ua_hr_reports.hr_report_d5_company_rule',
         'l10n_ua_hr_reports.hr_report_wage_fund_company_rule',
+        'l10n_ua_hr_reports.hr_report_labor_company_rule',
+        'l10n_ua_hr_reports.hr_report_labor_line_company_rule',
     ]
 
     def test_rules_exist_and_global(self):
