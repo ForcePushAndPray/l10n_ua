@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Облік цільового фінансування — у рідній секції «Бухгалтерія» поруч
+         із касою/банком l10n_ua_accounting; звіти — серед бухгалтерських
+         звітів UA. Окремого кореня немає (антипатерн H1/H2,
+         docs/menu_architecture.md). -->
+    <menuitem id="menu_npo"
+              name="Non-profit Organization"
+              parent="account.menu_finance_entries"
+              groups="l10n_ua_account_base.group_ua_accountant"
+              sequence="15"/>
+
+    <menuitem id="menu_npo_programs"
+              name="Target Programs"
+              parent="menu_npo"
+              action="l10n_ua_npo_program_action"
+              sequence="10"/>
+
+    <menuitem id="menu_npo_recognition"
+              name="Target Income Recognition"
+              parent="menu_npo"
+              action="l10n_ua_npo_recognition_action"
+              sequence="20"/>
+
+    <menuitem id="menu_npo_reports_program"
+              name="Target Programs Report"
+              parent="l10n_ua_accounting.menu_ua_reports"
+              action="l10n_ua_npo_program_report_action"
+              sequence="60"/>
+
+    <menuitem id="menu_npo_reports_income"
+              name="Report on the Use of Income (Non-profit)"
+              parent="l10n_ua_accounting.menu_ua_reports"
+              action="l10n_ua_npo_income_report_action"
+              sequence="65"/>
+
+</odoo>

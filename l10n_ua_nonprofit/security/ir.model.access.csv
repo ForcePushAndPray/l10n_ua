@@ -1,0 +1,14 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_npo_program_user,l10n_ua.npo.program.user,model_l10n_ua_npo_program,account.group_account_user,1,1,1,1
+access_npo_program_readonly,l10n_ua.npo.program.readonly,model_l10n_ua_npo_program,account.group_account_readonly,1,0,0,0
+access_npo_program_invoice,l10n_ua.npo.program.invoice,model_l10n_ua_npo_program,account.group_account_invoice,1,0,0,0
+access_npo_recognition_user,l10n_ua.npo.recognition.user,model_l10n_ua_npo_recognition,account.group_account_user,1,1,1,1
+access_npo_recognition_readonly,l10n_ua.npo.recognition.readonly,model_l10n_ua_npo_recognition,account.group_account_readonly,1,0,0,0
+access_npo_recognition_line_user,l10n_ua.npo.recognition.line.user,model_l10n_ua_npo_recognition_line,account.group_account_user,1,1,1,1
+access_npo_recognition_line_readonly,l10n_ua.npo.recognition.line.readonly,model_l10n_ua_npo_recognition_line,account.group_account_readonly,1,0,0,0
+access_npo_income_report_user,l10n_ua.npo.income.report.user,model_l10n_ua_npo_income_report,account.group_account_user,1,1,1,1
+access_npo_income_report_readonly,l10n_ua.npo.income.report.readonly,model_l10n_ua_npo_income_report,account.group_account_readonly,1,0,0,0
+access_npo_income_report_line_user,l10n_ua.npo.income.report.line.user,model_l10n_ua_npo_income_report_line,account.group_account_user,1,1,1,1
+access_npo_income_report_line_readonly,l10n_ua.npo.income.report.line.readonly,model_l10n_ua_npo_income_report_line,account.group_account_readonly,1,0,0,0
+access_npo_program_report_user,l10n_ua.npo.program.report.user,model_l10n_ua_npo_program_report,account.group_account_readonly,1,1,1,1
+access_npo_program_report_line_user,l10n_ua.npo.program.report.line.user,model_l10n_ua_npo_program_report_line,account.group_account_readonly,1,1,1,1

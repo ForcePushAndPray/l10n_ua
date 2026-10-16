@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Калькуляція собівартості виробничого замовлення (#373).
+         Форма українська, як і решта облікових документів. -->
+    <record id="action_report_cost_calculation" model="ir.actions.report">
+        <field name="name">Cost Calculation</field>
+        <field name="model">mrp.production</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_mrp_account.report_cost_calculation</field>
+        <field name="report_file">l10n_ua_mrp_account.report_cost_calculation</field>
+        <field name="print_report_name">'Калькуляція_%s' % (object.name or '').replace('/', '_')</field>
+        <field name="binding_model_id" ref="mrp.model_mrp_production"/>
+        <field name="binding_type">report</field>
+        <field name="paperformat_id" ref="l10n_ua_doc_reports.paperformat_ua_form"/>
+    </record>
+
+    <template id="report_cost_calculation">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-call="l10n_ua_doc_reports.report_ua_styles"/>
+                    <t t-set="calc" t-value="o._l10n_ua_cost_calculation()"/>
+                    <div class="page ua-report">
+                        <div style="font-size: 10pt;">
+                            <strong t-esc="o.company_id.name"/>
+                            <t t-if="o.company_id.company_registry">,
+                                код ЄДРПОУ <span t-esc="o.company_id.company_registry"/></t>
+                        </div>
+
+                        <div class="ua-report-title" style="margin: 15px 0 5px 0;">
+                            КАЛЬКУЛЯЦІЯ<br/>
+                            <span style="font-size: 12pt;">фактичної собівартості продукції</span>
+                        </div>
+                        <div class="text-center" style="margin-bottom: 15px; font-size: 11pt;">
+                            за виробничим замовленням № <span t-esc="o.name"/>
+                            <t t-if="o.date_finished">
+                                від <span t-esc="o.date_finished.strftime('%d.%m.%Y')"/>
+                            </t>
+                        </div>
+
+                        <table class="no-border-all" style="margin-bottom: 10px;">
+                            <tr>
+                                <td class="no-border" style="width: 25%;">Продукція:</td>
+                                <td class="no-border"><strong t-esc="o.product_id.display_name"/></td>
+                            </tr>
+                            <tr>
+                                <td class="no-border">Випущено:</td>
+                                <td class="no-border">
+                                    <span t-esc="calc['quantity']"/> <span t-esc="calc['uom']"/>
+                                </td>
+                            </tr>
+                            <tr t-if="o.bom_id">
+                                <td class="no-border">Специфікація:</td>
+                                <td class="no-border"><span t-esc="o.bom_id.display_name"/></td>
+                            </tr>
+                        </table>
+
+                        <p class="bold">1. Прямі матеріальні витрати</p>
+                        <table style="margin-bottom: 10px;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 5%;">№</th>
+                                    <th style="width: 55%;">Матеріал</th>
+                                    <th style="width: 20%;">Кількість</th>
+                                    <th style="width: 20%;">Сума, грн</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="calc['materials']" t-as="m">
+                                    <td class="text-center" t-esc="m_index + 1"/>
+                                    <td t-esc="m['product']"/>
+                                    <td class="text-right"><t t-esc="m['quantity']"/> <t t-esc="m['uom']"/></td>
+                                    <td class="text-right" t-esc="o._l10n_ua_fmt(m['value'])"/>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="3" class="text-right bold">Разом матеріали:</td>
+                                    <td class="text-right bold" t-esc="o._l10n_ua_fmt(calc['material_cost'])"/>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <p class="bold">2. Витрати робочих центрів (пряма оплата праці, машини)</p>
+                        <table style="margin-bottom: 10px;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 5%;">№</th>
+                                    <th style="width: 35%;">Операція</th>
+                                    <th style="width: 25%;">Робочий центр</th>
+                                    <th style="width: 10%;">Год.</th>
+                                    <th style="width: 10%;">Ставка</th>
+                                    <th style="width: 15%;">Сума, грн</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="calc['operations']" t-as="op">
+                                    <td class="text-center" t-esc="op_index + 1"/>
+                                    <td t-esc="op['name']"/>
+                                    <td t-esc="op['workcenter']"/>
+                                    <td class="text-right" t-esc="'%.2f' % op['hours']"/>
+                                    <td class="text-right" t-esc="o._l10n_ua_fmt(op['rate'])"/>
+                                    <td class="text-right" t-esc="o._l10n_ua_fmt(op['value'])"/>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="5" class="text-right bold">Разом робочі центри:</td>
+                                    <td class="text-right bold" t-esc="o._l10n_ua_fmt(calc['labour_cost'])"/>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <p class="bold">3. Розподілені загальновиробничі витрати (П(С)БО 16, п. 15)</p>
+                        <table style="margin-bottom: 10px;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 25%;">Документ</th>
+                                    <th style="width: 25%;">Період</th>
+                                    <th style="width: 20%;">База розподілу</th>
+                                    <th style="width: 15%;">Частка, %</th>
+                                    <th style="width: 15%;">Сума, грн</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="calc['overhead']" t-as="ov">
+                                    <td t-esc="ov['document']"/>
+                                    <td class="text-center">
+                                        <t t-esc="ov['date_from'].strftime('%d.%m.%Y')"/> –
+                                        <t t-esc="ov['date_to'].strftime('%d.%m.%Y')"/>
+                                    </td>
+                                    <td t-esc="ov['base']"/>
+                                    <td class="text-right" t-esc="'%.2f' % ov['share']"/>
+                                    <td class="text-right" t-esc="o._l10n_ua_fmt(ov['value'])"/>
+                                </tr>
+                                <tr t-if="not calc['overhead']">
+                                    <td colspan="5" class="text-center">
+                                        Загальновиробничі витрати ще не розподілено
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td colspan="4" class="text-right bold">Разом ЗВВ:</td>
+                                    <td class="text-right bold" t-esc="o._l10n_ua_fmt(calc['overhead_cost'])"/>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <p class="bold">4. Калькуляція</p>
+                        <table style="margin-bottom: 15px;">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60%;">Стаття витрат</th>
+                                    <th style="width: 20%;">Сума, грн</th>
+                                    <th style="width: 20%;">На одиницю, грн</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="qty" t-value="calc['quantity'] or 1.0"/>
+                                <tr>
+                                    <td>Прямі матеріальні витрати</td>
+                                    <td class="text-right" t-esc="o._l10n_ua_fmt(calc['material_cost'])"/>
+                                    <td class="text-right" t-esc="o._l10n_ua_fmt(calc['material_cost'] / qty)"/>
+                                </tr>
+                                <tr>
+                                    <td>Витрати робочих центрів</td>
+                                    <td class="text-right" t-esc="o._l10n_ua_fmt(calc['labour_cost'])"/>
+                                    <td class="text-right" t-esc="o._l10n_ua_fmt(calc['labour_cost'] / qty)"/>
+                                </tr>
+                                <tr t-if="calc['extra_cost']">
+                                    <td>Інші прямі витрати</td>
+                                    <td class="text-right" t-esc="o._l10n_ua_fmt(calc['extra_cost'])"/>
+                                    <td class="text-right" t-esc="o._l10n_ua_fmt(calc['extra_cost'] / qty)"/>
+                                </tr>
+                                <tr>
+                                    <td>Загальновиробничі витрати</td>
+                                    <td class="text-right" t-esc="o._l10n_ua_fmt(calc['overhead_cost'])"/>
+                                    <td class="text-right" t-esc="o._l10n_ua_fmt(calc['overhead_cost'] / qty)"/>
+                                </tr>
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <td class="text-right bold">Фактична собівартість:</td>
+                                    <td class="text-right bold" t-esc="o._l10n_ua_fmt(calc['total'])"/>
+                                    <td class="text-right bold" t-esc="o._l10n_ua_fmt(calc['unit_cost'])"/>
+                                </tr>
+                            </tfoot>
+                        </table>
+
+                        <table class="no-border-all" style="margin-top: 30px;">
+                            <tr>
+                                <td class="no-border" style="width: 50%;">Склав: ____________________</td>
+                                <td class="no-border" style="width: 50%;">Головний бухгалтер: ____________________</td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

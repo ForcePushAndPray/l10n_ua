@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_npo_program_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.npo.program.form</field>
+        <field name="model">l10n_ua.npo.program</field>
+        <field name="arch" type="xml">
+            <form string="Target Program">
+                <header>
+                    <button name="action_activate" type="object" string="Activate"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_close" type="object" string="Close"
+                            invisible="state != 'active'"/>
+                    <button name="action_draft" type="object" string="Reset to Draft"
+                            invisible="state != 'closed'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,active,closed"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_journal_items" type="object"
+                                class="oe_stat_button" icon="fa-list"
+                                invisible="not analytic_account_id">
+                            <span>Journal Items</span>
+                        </button>
+                    </div>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger"
+                            invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. Grant «Clean Water» 2026"/></h1>
+                    </div>
+                    <group>
+                        <group string="Funding">
+                            <field name="code"/>
+                            <field name="funding_type"/>
+                            <field name="partner_id"/>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="budget_amount"/>
+                        </group>
+                        <group string="Accounting">
+                            <field name="analytic_account_id"/>
+                            <field name="account_id"/>
+                            <field name="income_account_id"/>
+                            <field name="journal_id"/>
+                            <field name="income_row" required="1"/>
+                            <field name="expense_row"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <group string="Figures to Date" name="figures">
+                        <group>
+                            <field name="amount_received"/>
+                            <field name="amount_recognised"/>
+                            <field name="amount_balance"/>
+                        </group>
+                        <group>
+                            <field name="amount_spent"/>
+                            <field name="amount_unrecognised"/>
+                            <field name="budget_remaining"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Purpose and Conditions" name="note">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_npo_program_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.npo.program.list</field>
+        <field name="model">l10n_ua.npo.program</field>
+        <field name="arch" type="xml">
+            <list string="Target Programs" decoration-muted="state == 'closed'">
+                <field name="code" optional="show"/>
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="funding_type" optional="show"/>
+                <field name="date_start" optional="show"/>
+                <field name="date_end" optional="show"/>
+                <field name="budget_amount" sum="Total"/>
+                <field name="amount_received"/>
+                <field name="amount_spent"/>
+                <field name="amount_balance"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'active'"
+                       decoration-info="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_npo_program_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.npo.program.search</field>
+        <field name="model">l10n_ua.npo.program</field>
+        <field name="arch" type="xml">
+            <search string="Target Programs">
+                <field name="name" string="Program"/>
+                <field name="code"/>
+                <field name="partner_id"/>
+                <filter string="Active" name="filter_active" domain="[('state', '=', 'active')]"/>
+                <filter string="Closed" name="filter_closed" domain="[('state', '=', 'closed')]"/>
+                <separator/>
+                <filter string="Archived" name="filter_archived" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter string="Donor" name="groupby_partner" domain="[]" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Funding Type" name="groupby_funding_type" domain="[]" context="{'group_by': 'funding_type'}"/>
+                    <filter string="Status" name="groupby_state" domain="[]" context="{'group_by': 'state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_npo_program_action" model="ir.actions.act_window">
+        <field name="name">Target Programs</field>
+        <field name="res_model">l10n_ua.npo.program</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_filter_active': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create the first target program</p>
+            <p>A program is a funding source of the organization: a donor grant,
+               a charity collection, membership fees. Book receipts to account 48
+               and expenses with the analytic account of the program; the income
+               is recognised from 48 as the money is spent.</p>
+        </field>
+    </record>
+
+</odoo>

@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - HR Reports',
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Localization',
     'summary': 'Ukrainian HR regulatory reports',
     'description': """
@@ -13,7 +13,8 @@ Regulatory reports for Ukrainian localization:
 * 4DF (Monthly tax report)
 * D5 (ESV monthly report)
 * D1 (ESV appendix - employee data)
-* Statistical reports (1-PV, 3-PV)
+* Labour report 1-PV for the State Statistics Service (monthly and quarterly,
+  order No. 117 of 15.04.2024): printable form and XLSX export
 * Average headcount calculation
 * Wage fund reports
 
@@ -34,6 +35,8 @@ Requires l10n_ua_hr_salary module.
         'views/hr_report_d5_views.xml',
         'views/hr_report_headcount_views.xml',
         'views/hr_report_wage_fund_views.xml',
+        'views/hr_report_labor_views.xml',
+        'report/hr_report_labor_report.xml',
         'wizard/hr_report_wizard_views.xml',
         'views/menu_views.xml',
     ],

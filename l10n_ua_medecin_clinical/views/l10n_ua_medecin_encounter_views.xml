@@ -78,9 +78,224 @@
         </field>
     </record>
 
+    <record id="view_encounter_search" model="ir.ui.view">
+        <field name="name">l10n_ua.medecin.encounter.search</field>
+        <field name="model">l10n_ua.medecin.encounter</field>
+        <field name="arch" type="xml">
+            <search string="Пошук прийомів">
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="diagnosis_ids" string="Діагноз (МКХ-10)"
+                       filter_domain="[('diagnosis_ids.icd10_id', 'ilike', self)]"/>
+                <filter string="Мої прийоми" name="filter_my"
+                        domain="[('doctor_id.user_id', '=', uid)]"/>
+                <separator/>
+                <filter string="Заплановані" name="filter_planned" domain="[('state', '=', 'planned')]"/>
+                <filter string="У процесі" name="filter_in_progress" domain="[('state', '=', 'in_progress')]"/>
+                <filter string="Завершені" name="filter_finished" domain="[('state', '=', 'finished')]"/>
+                <filter string="Скасовані" name="filter_cancelled" domain="[('state', '=', 'cancelled')]"/>
+                <separator/>
+                <filter string="Дата прийому" name="filter_date_start" date="date_start"/>
+                <group>
+                    <filter string="Лікар" name="groupby_doctor" domain="[]"
+                            context="{'group_by': 'doctor_id'}"/>
+                    <filter string="Пацієнт" name="groupby_patient" domain="[]"
+                            context="{'group_by': 'patient_id'}"/>
+                    <filter string="Тип прийому" name="groupby_type" domain="[]"
+                            context="{'group_by': 'encounter_type'}"/>
+                    <filter string="Стан" name="groupby_state" domain="[]"
+                            context="{'group_by': 'state'}"/>
+                    <filter string="Місяць" name="groupby_month" domain="[]"
+                            context="{'group_by': 'date_start:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_encounter_calendar" model="ir.ui.view">
+        <field name="name">l10n_ua.medecin.encounter.calendar</field>
+        <field name="model">l10n_ua.medecin.encounter</field>
+        <field name="arch" type="xml">
+            <calendar string="Розклад прийомів"
+                      date_start="date_start"
+                      date_stop="date_end"
+                      color="doctor_id"
+                      mode="week"
+                      quick_create="0"
+                      event_open_popup="0">
+                <field name="patient_id"/>
+                <field name="doctor_id" filters="1" avatar_field="avatar_128"/>
+                <field name="encounter_type"/>
+                <field name="state"/>
+            </calendar>
+        </field>
+    </record>
+
+    <record id="view_encounter_kanban" model="ir.ui.view">
+        <field name="name">l10n_ua.medecin.encounter.kanban</field>
+        <field name="model">l10n_ua.medecin.encounter</field>
+        <field name="arch" type="xml">
+            <kanban default_group_by="state" default_order="date_start" sample="1"
+                    group_create="0" group_delete="0" group_edit="0" records_draggable="0">
+                <field name="state"/>
+                <templates>
+                    <t t-name="card">
+                        <field name="patient_id" class="fw-bold fs-5"/>
+                        <field name="encounter_type"/>
+                        <footer>
+                            <field name="date_start" widget="datetime"/>
+                            <field name="doctor_id" widget="many2one_avatar_employee" class="ms-auto"/>
+                        </footer>
+                    </t>
+                </templates>
+            </kanban>
+        </field>
+    </record>
+
+    <record id="view_encounter_pivot" model="ir.ui.view">
+        <field name="name">l10n_ua.medecin.encounter.pivot</field>
+        <field name="model">l10n_ua.medecin.encounter</field>
+        <field name="arch" type="xml">
+            <pivot string="Аналіз прийомів" sample="1">
+                <field name="doctor_id" type="row"/>
+                <field name="encounter_type" type="row"/>
+                <field name="date_start" interval="month" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_encounter_graph" model="ir.ui.view">
+        <field name="name">l10n_ua.medecin.encounter.graph</field>
+        <field name="model">l10n_ua.medecin.encounter</field>
+        <field name="arch" type="xml">
+            <graph string="Аналіз прийомів" type="bar" stacked="1" sample="1">
+                <field name="date_start" interval="month"/>
+                <field name="encounter_type"/>
+            </graph>
+        </field>
+    </record>
+
+    <!-- Розклад: перший пункт застосунку «Медицина» -->
+    <record id="action_encounter_calendar" model="ir.actions.act_window">
+        <field name="name">Розклад</field>
+        <field name="res_model">l10n_ua.medecin.encounter</field>
+        <field name="view_mode">calendar,list,form</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'calendar', 'view_id': ref('view_encounter_calendar')}),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_encounter_list')}),
+            (0, 0, {'view_mode': 'form', 'view_id': ref('view_encounter_form')})]"/>
+        <field name="search_view_id" ref="view_encounter_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Запланованих прийомів немає</p>
+            <p>Створіть прийом — він з'явиться в розкладі лікаря.</p>
+        </field>
+    </record>
+
     <record id="action_encounter" model="ir.actions.act_window">
         <field name="name">Прийоми</field>
         <field name="res_model">l10n_ua.medecin.encounter</field>
-        <field name="view_mode">list,form</field>
+        <field name="view_mode">list,kanban,form,calendar</field>
+        <field name="search_view_id" ref="view_encounter_search"/>
+    </record>
+
+    <record id="action_report_encounter" model="ir.actions.act_window">
+        <field name="name">Аналіз прийомів</field>
+        <field name="res_model">l10n_ua.medecin.encounter</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_encounter_pivot')}),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('view_encounter_graph')})]"/>
+        <field name="search_view_id" ref="view_encounter_search"/>
+    </record>
+
+    <!-- Діагнози -->
+    <record id="view_diagnosis_list" model="ir.ui.view">
+        <field name="name">l10n_ua.medecin.diagnosis.list</field>
+        <field name="model">l10n_ua.medecin.diagnosis</field>
+        <field name="arch" type="xml">
+            <list string="Діагнози" create="0" default_order="date_start desc">
+                <field name="date_start"/>
+                <field name="icd10_code"/>
+                <field name="icd10_id"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <field name="is_primary"/>
+                <field name="is_chronic"/>
+                <field name="note" optional="hide"/>
+                <field name="encounter_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="view_diagnosis_search" model="ir.ui.view">
+        <field name="name">l10n_ua.medecin.diagnosis.search</field>
+        <field name="model">l10n_ua.medecin.diagnosis</field>
+        <field name="arch" type="xml">
+            <search string="Пошук діагнозів">
+                <field name="icd10_id"/>
+                <field name="icd10_code"/>
+                <field name="patient_id"/>
+                <field name="doctor_id"/>
+                <filter string="Основні" name="filter_primary" domain="[('is_primary', '=', True)]"/>
+                <filter string="Хронічні" name="filter_chronic" domain="[('is_chronic', '=', True)]"/>
+                <separator/>
+                <filter string="Дата прийому" name="filter_date_start" date="date_start"/>
+                <group>
+                    <filter string="Код МКХ-10" name="groupby_icd10" domain="[]"
+                            context="{'group_by': 'icd10_id'}"/>
+                    <filter string="Пацієнт" name="groupby_patient" domain="[]"
+                            context="{'group_by': 'patient_id'}"/>
+                    <filter string="Лікар" name="groupby_doctor" domain="[]"
+                            context="{'group_by': 'doctor_id'}"/>
+                    <filter string="Місяць" name="groupby_month" domain="[]"
+                            context="{'group_by': 'date_start:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_diagnosis_pivot" model="ir.ui.view">
+        <field name="name">l10n_ua.medecin.diagnosis.pivot</field>
+        <field name="model">l10n_ua.medecin.diagnosis</field>
+        <field name="arch" type="xml">
+            <pivot string="Захворюваність" sample="1">
+                <field name="icd10_id" type="row"/>
+                <field name="date_start" interval="month" type="col"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="view_diagnosis_graph" model="ir.ui.view">
+        <field name="name">l10n_ua.medecin.diagnosis.graph</field>
+        <field name="model">l10n_ua.medecin.diagnosis</field>
+        <field name="arch" type="xml">
+            <graph string="Захворюваність" type="bar" sample="1">
+                <field name="icd10_id"/>
+            </graph>
+        </field>
+    </record>
+
+    <record id="action_diagnosis" model="ir.actions.act_window">
+        <field name="name">Діагнози</field>
+        <field name="res_model">l10n_ua.medecin.diagnosis</field>
+        <field name="view_mode">list</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('view_diagnosis_list')})]"/>
+        <field name="search_view_id" ref="view_diagnosis_search"/>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_empty_folder">Діагнозів ще немає</p>
+            <p>Діагнози за МКХ-10 вносяться на вкладці «Діагнози» прийому.</p>
+        </field>
+    </record>
+
+    <record id="action_report_morbidity" model="ir.actions.act_window">
+        <field name="name">Захворюваність</field>
+        <field name="res_model">l10n_ua.medecin.diagnosis</field>
+        <field name="view_mode">pivot,graph</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('view_diagnosis_pivot')}),
+            (0, 0, {'view_mode': 'graph', 'view_id': ref('view_diagnosis_graph')})]"/>
+        <field name="search_view_id" ref="view_diagnosis_search"/>
     </record>
 </odoo>

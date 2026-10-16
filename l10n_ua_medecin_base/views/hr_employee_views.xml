@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_employee_form_medecin" model="ir.ui.view">
+        <field name="name">hr.employee.form.l10n_ua_medecin</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='job_title']" position="after">
+                <field name="l10n_ua_medecin_specialty_id"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="view_employee_search_medecin" model="ir.ui.view">
+        <field name="name">hr.employee.search.l10n_ua_medecin</field>
+        <field name="model">hr.employee</field>
+        <field name="inherit_id" ref="hr.view_employee_filter"/>
+        <field name="arch" type="xml">
+            <xpath expr="//search" position="inside">
+                <field name="l10n_ua_medecin_specialty_id"/>
+                <filter string="Медична спеціалізація" name="groupby_medecin_specialty" domain="[]"
+                        context="{'group_by': 'l10n_ua_medecin_specialty_id'}"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_medecin_doctor" model="ir.actions.act_window">
+        <field name="name">Лікарі</field>
+        <field name="res_model">hr.employee</field>
+        <field name="view_mode">list,kanban,form</field>
+        <field name="domain">[('l10n_ua_medecin_specialty_id', '!=', False)]</field>
+        <field name="context">{'search_default_groupby_medecin_specialty': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Лікарів ще немає</p>
+            <p>Вкажіть «Медичну спеціалізацію» у картці працівника — і він з'явиться в цьому списку.</p>
+        </field>
+    </record>
+</odoo>

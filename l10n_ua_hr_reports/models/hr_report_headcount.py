@@ -129,7 +129,19 @@ class HrReportHeadcount(models.Model):
         """
         headcount = 0
         fte = 0.0
+        for _version, work_rate in self._versions_with_rate_on_date(check_date):
+            if work_rate >= 1.0:
+                headcount += 1
+            fte += work_rate
+        return headcount, fte
 
+    def _versions_with_rate_on_date(self, check_date):
+        """The versions employed on `check_date`, one per employee, each with
+        the rate it is counted at: ``[(version, work_rate), ...]``.
+
+        Shared by the average headcount and the 1-ПВ labour report, which
+        narrows the same set down to the staff employees.
+        """
         versions = self.env['hr.version'].with_context(active_test=False).search([
             ('employee_id.company_id', '=', self.company_id.id),
             ('contract_date_start', '<=', check_date),
@@ -224,6 +236,7 @@ class HrReportHeadcount(models.Model):
         # and sums the very `work_rate` this is standing in for.
         occupants = Counter(staffing_keys[version.id] for version in counted)
 
+        result = []
         for version in counted:
             work_rate = version.work_rate or 0.0
             if not work_rate:
@@ -245,11 +258,9 @@ class HrReportHeadcount(models.Model):
                 work_rate = min(staffing.units / held, 1.0) \
                     if staffing and staffing.units and held else 1.0
 
-            if work_rate >= 1.0:
-                headcount += 1
-            fte += work_rate
+            result.append((version, work_rate))
 
-        return headcount, fte
+        return result
 
     def action_draft(self):
         self.write({'state': 'draft'})
