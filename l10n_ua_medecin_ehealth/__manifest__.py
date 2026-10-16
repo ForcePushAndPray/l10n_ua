@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Medecin eHealth API',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Human Resources/Healthcare',
     'summary': 'Інтеграція з ЦК eHealth (МОЗ): декларації, eRx, eReferral',
     'description': """
