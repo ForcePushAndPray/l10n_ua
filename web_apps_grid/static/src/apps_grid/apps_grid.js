@@ -21,7 +21,7 @@ export class AppsGrid extends Component {
         this.menuService = useService("menu");
         this.root = useRef("root");
         this.searchInput = useRef("search");
-        this.state = useState({ query: "", dragId: null });
+        this.state = useState({ query: "", dragId: null, loadingId: null });
         this.prefsData = useState(this.props.prefs.data);
         useExternalListener(window, "keydown", this.onWindowKeydown, { capture: true });
         onMounted(() => this.searchInput.el?.focus());
@@ -79,10 +79,19 @@ export class AppsGrid extends Component {
 
     // ---- actions
 
+    // The grid stays up until the new action is mounted (doAction resolves
+    // then), so the previous app never flashes in between.
     async open(menu, app = menu) {
+        if (this.state.loadingId) {
+            return;
+        }
         this.props.prefs.touch(app.appID || app.id);
-        this.props.close();
-        await this.menuService.selectMenu(menu);
+        this.state.loadingId = menu.id;
+        try {
+            await this.menuService.selectMenu(menu);
+        } finally {
+            this.props.close();
+        }
     }
 
     onTileClick(ev, menu, app) {
