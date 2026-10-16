@@ -166,6 +166,11 @@ msgid "1170 Витрати майбутніх періодів"
 msgstr ""
 
 #. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_other_current_assets
+msgid "1190 Інші оборотні активи"
+msgstr ""
+
+#. module: l10n_ua_consolidation
 #: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_registered_capital
 msgid "1400 Зареєстрований капітал"
 msgstr ""
