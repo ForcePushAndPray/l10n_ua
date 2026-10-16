@@ -13,7 +13,14 @@
                        groups="account.group_account_manager">
                     <group>
                         <field name="l10n_ua_overhead_base"/>
-                        <field name="l10n_ua_overhead_normal_base"/>
+                        <field name="l10n_ua_overhead_normal_labour"
+                               invisible="l10n_ua_overhead_base not in (False, 'labour')"/>
+                        <field name="l10n_ua_overhead_normal_machine_hours"
+                               invisible="l10n_ua_overhead_base != 'machine_hours'"/>
+                        <field name="l10n_ua_overhead_normal_material"
+                               invisible="l10n_ua_overhead_base != 'material'"/>
+                        <field name="l10n_ua_overhead_normal_quantity"
+                               invisible="l10n_ua_overhead_base != 'quantity'"/>
                         <field name="l10n_ua_overhead_variable_account_ids" widget="many2many_tags"/>
                         <field name="l10n_ua_overhead_fixed_account_ids" widget="many2many_tags"/>
                         <field name="l10n_ua_overhead_auto_allocate"/>

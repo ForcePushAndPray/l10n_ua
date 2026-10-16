@@ -448,22 +448,102 @@ msgid "Normal Capacity"
 msgstr "Нормальна потужність"
 
 #. module: l10n_ua_mrp_account
-#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_normal_base
-msgid "Normal Capacity per Month"
-msgstr "Нормальна потужність за місяць"
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_normal_labour
+msgid "Normal Capacity: Direct Labour Cost (UAH)"
+msgstr "Нормальна потужність: витрати робочих центрів (грн) за місяць"
 
 #. module: l10n_ua_mrp_account
-#: model:ir.model.fields,help:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_normal_base
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_normal_machine_hours
+msgid "Normal Capacity: Machine Hours"
+msgstr "Нормальна потужність: машино-години за місяць"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_normal_material
+msgid "Normal Capacity: Direct Material Cost (UAH)"
+msgstr "Нормальна потужність: прямі матеріальні витрати (грн) за місяць"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_normal_quantity
+msgid "Normal Capacity: Quantity Produced"
+msgstr "Нормальна потужність: обсяг виробництва за місяць"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_normal_labour
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_normal_machine_hours
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_normal_material
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_res_company__l10n_ua_overhead_normal_quantity
 msgid ""
-"Normal capacity for one month, in units of the allocation base (UAH, hours "
-"or units). Fixed overhead is allocated to production in the ratio actual "
-"base / normal capacity, at most in full; the rest goes to the cost of sales."
-" Zero means that fixed overhead is always allocated in full."
+"Normal capacity for one month, in units of this allocation base. Fixed "
+"overhead is allocated to production in the ratio actual base / normal "
+"capacity, at most in full; the rest goes to the cost of sales. Zero means "
+"that fixed overhead is always allocated in full."
 msgstr ""
-"Нормальна потужність за місяць в одиницях бази розподілу (грн, години або "
-"штуки). Постійні ЗВВ розподіляються на виробництво у співвідношенні фактична"
-" база / нормальна потужність, не більше ніж повністю; решта списується на "
-"собівартість реалізації. Нуль — постійні ЗВВ завжди розподіляються повністю."
+"Нормальна потужність за місяць в одиницях цієї бази розподілу. Постійні ЗВВ "
+"розподіляються на виробництво у співвідношенні фактична база / нормальна "
+"потужність, не більше ніж повністю; решта списується на собівартість "
+"реалізації. Нуль — постійні ЗВВ завжди розподіляються повністю."
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__base_fallback
+msgid "Base Replaced by Quantity"
+msgstr "Базу замінено на обсяг виробництва"
+
+#. module: l10n_ua_mrp_account
+#: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__base_fallback
+msgid ""
+"The selected base was zero for the manufacturing orders of the period, so "
+"the overhead was allocated by quantity produced."
+msgstr ""
+"Вибрана база для виробничих замовлень періоду дорівнювала нулю, тому ЗВВ "
+"розподілено пропорційно обсягу виробництва."
+
+#. module: l10n_ua_mrp_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
+msgid ""
+"The selected allocation base is zero for the manufacturing orders of the "
+"period, so the overhead was allocated by quantity produced (see the "
+"chatter)."
+msgstr ""
+"Вибрана база розподілу для виробничих замовлень періоду дорівнює нулю, тому "
+"ЗВВ розподілено пропорційно обсягу виробництва (див. історію)."
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid ""
+"The allocation base \"%(base)s\" is zero for all manufacturing orders "
+"finished from %(date_from)s to %(date_to)s, so the overhead cannot be "
+"allocated to them. Choose another base."
+msgstr ""
+"База розподілу «%(base)s» дорівнює нулю для всіх виробничих замовлень, "
+"завершених з %(date_from)s по %(date_to)s, тож ЗВВ неможливо на них "
+"розподілити. Виберіть іншу базу."
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/overhead_allocation.py:0
+msgid ""
+"The allocation base \"%(base)s\" is zero for all %(count)s manufacturing "
+"orders of the period (e.g. no work centers), so the overhead is allocated by"
+" quantity produced instead (NP(S)BO 16, item 15: variable overhead is "
+"allocated to every cost object)."
+msgstr ""
+"База розподілу «%(base)s» дорівнює нулю для всіх %(count)s виробничих "
+"замовлень періоду (наприклад, немає робочих центрів), тому ЗВВ розподілено "
+"пропорційно обсягу виробництва (п. 15 П(С)БО 16: змінні ЗВВ розподіляються "
+"на кожен об'єкт витрат)."
+
+#. module: l10n_ua_mrp_account
+#. odoo-python
+#: code:addons/l10n_ua_mrp_account/models/period_closing.py:0
+msgid ""
+"Overhead allocation %s: the selected allocation base is zero for the "
+"manufacturing orders of the period, the overhead was allocated by quantity "
+"produced. Check the allocation."
+msgstr ""
+"Розподіл ЗВВ %s: вибрана база розподілу для виробничих замовлень періоду "
+"дорівнює нулю, ЗВВ розподілено пропорційно обсягу виробництва. Перевірте "
+"розподіл."
 
 #. module: l10n_ua_mrp_account
 #: model:ir.model.fields,field_description:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__note
@@ -613,18 +693,18 @@ msgstr "ЗВВ: %s"
 #. module: l10n_ua_mrp_account
 #: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__amount_sold
 msgid ""
-"Part of the overhead of products already issued from stock when posted; "
-"their issue value is not re-valued, so this share is charged straight to the"
-" cost of sales."
+"Part of the overhead of products already issued from stock by the end of the"
+" period; their issue value is not re-valued, so this share is charged "
+"straight to the cost of sales."
 msgstr ""
-"Частка ЗВВ продукції, що на дату проведення вже вибула зі складу; вартість "
+"Частка ЗВВ продукції, що на кінець періоду вже вибула зі складу; вартість "
 "вибуття не переоцінюється, тому ця частка списується одразу на собівартість "
 "реалізації."
 
 #. module: l10n_ua_mrp_account
 #: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation_line__amount_stock
-msgid "Part of the overhead of products still in stock when posted."
-msgstr "Частка ЗВВ продукції, що на дату проведення ще на складі."
+msgid "Part of the overhead of products still in stock at the end of the period."
+msgstr "Частка ЗВВ продукції, що на кінець періоду ще на складі."
 
 #. module: l10n_ua_mrp_account
 #: model_terms:ir.ui.view,arch_db:l10n_ua_mrp_account.l10n_ua_overhead_allocation_view_form
@@ -939,11 +1019,13 @@ msgstr ""
 #. module: l10n_ua_mrp_account
 #: model:ir.model.fields,help:l10n_ua_mrp_account.field_l10n_ua_overhead_allocation__normal_base
 msgid ""
-"Value of the allocation base at normal capacity for the period. Zero: fixed "
-"overhead is allocated in full."
+"Value of the allocation base at normal capacity for the period, in units of "
+"the base; taken from the company for the selected base. Zero: fixed overhead"
+" is allocated in full."
 msgstr ""
-"Значення бази розподілу за нормальної потужності за період. Нуль — постійні "
-"ЗВВ розподіляються повністю."
+"Значення бази розподілу за нормальної потужності за період в одиницях бази; "
+"береться з налаштувань компанії для вибраної бази. Нуль — постійні ЗВВ "
+"розподіляються повністю."
 
 #. module: l10n_ua_mrp_account
 #: model:ir.model.fields.selection,name:l10n_ua_mrp_account.selection__l10n_ua_overhead_allocation_source__kind__variable

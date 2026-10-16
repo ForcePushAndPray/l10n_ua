@@ -78,10 +78,17 @@ class L10nUaOverheadAllocation(models.Model):
     normal_base = fields.Float(
         string='Normal Capacity',
         digits='Product Price',
-        default=lambda self: self.env.company.l10n_ua_overhead_normal_base,
         tracking=True,
-        help='Value of the allocation base at normal capacity for the period. '
-             'Zero: fixed overhead is allocated in full.',
+        help='Value of the allocation base at normal capacity for the period, '
+             'in units of the base; taken from the company for the selected '
+             'base. Zero: fixed overhead is allocated in full.',
+    )
+    base_fallback = fields.Boolean(
+        string='Base Replaced by Quantity',
+        readonly=True,
+        copy=False,
+        help='The selected base was zero for the manufacturing orders of the '
+             'period, so the overhead was allocated by quantity produced.',
     )
     journal_id = fields.Many2one(
         'account.journal',
@@ -168,9 +175,37 @@ class L10nUaOverheadAllocation(models.Model):
             if vals.get('name', '/') == '/':
                 vals['name'] = self.env['ir.sequence'].next_by_code(
                     'l10n_ua.overhead.allocation') or '/'
+            if 'normal_base' not in vals:
+                company = self.env['res.company'].browse(
+                    vals.get('company_id')) or self.env.company
+                base = vals.get('base') or self.default_get(['base']).get('base')
+                vals['normal_base'] = company._l10n_ua_overhead_normal_base(base)
         records = super().create(vals_list)
         records._fill_default_accounts()
         return records
+
+    def write(self, vals):
+        changed = self.browse()
+        if 'base' in vals and not self.env.context.get('l10n_ua_overhead_fallback'):
+            changed = self.filtered(lambda r: r.base != vals['base'])
+        for rec in changed:
+            rec_vals = dict(vals, base_fallback=False)
+            if 'normal_base' not in vals:
+                # The normal capacity is in units of the base (UAH, hours,
+                # units): never keep the figure of another base.
+                rec_vals['normal_base'] = rec.company_id._l10n_ua_overhead_normal_base(
+                    vals['base'])
+            super(L10nUaOverheadAllocation, rec).write(rec_vals)
+        rest = self - changed
+        if rest or not self:
+            return super(L10nUaOverheadAllocation, rest).write(vals)
+        return True
+
+    @api.onchange('base', 'company_id')
+    def _onchange_base_normal(self):
+        for rec in self:
+            company = rec.company_id or self.env.company
+            rec.normal_base = company._l10n_ua_overhead_normal_base(rec.base)
 
     @api.ondelete(at_uninstall=False)
     def _unlink_if_not_posted(self):
@@ -292,18 +327,58 @@ class L10nUaOverheadAllocation(models.Model):
                             'kind': kind,
                             'amount': currency.round(balance),
                         }))
+            productions = rec._get_productions()
+            base_values = rec._get_base_values(productions)
             lines = [Command.clear()]
-            for production in rec._get_productions():
+            for production in productions:
                 lines.append(Command.create({
                     'production_id': production.id,
                     'quantity': production.qty_produced,
-                    'base_value': production._l10n_ua_overhead_base_value(rec.base),
+                    'base_value': base_values[production],
                     'material_cost': currency.round(production._l10n_ua_material_cost()),
                     'labour_cost': currency.round(production._l10n_ua_labour_cost()),
                 }))
             rec.write({'source_line_ids': sources, 'line_ids': lines})
             rec._distribute()
         return True
+
+    def _get_base_values(self, productions):
+        """Base value of each order; fall back to the quantity produced when
+        the selected base is zero for all of them.
+
+        Variable overhead must reach every cost object (NP(S)BO 16, item 15):
+        with orders in the period but, say, no work centers (labour base) the
+        selected base would send the whole overhead to the cost of sales.
+        The allocation is switched to the quantity base and a note is left in
+        the chatter; if even the quantity is zero the user has to decide.
+        """
+        self.ensure_one()
+        values = {p: p._l10n_ua_overhead_base_value(self.base) for p in productions}
+        if not productions or not float_is_zero(sum(values.values()), precision_digits=6):
+            return values
+        base_names = dict(self._fields['base']._description_selection(self.env))
+        if self.base != 'quantity':
+            values = {p: p._l10n_ua_overhead_base_value('quantity') for p in productions}
+        if float_is_zero(sum(values.values()), precision_digits=6):
+            raise UserError(_(
+                'The allocation base "%(base)s" is zero for all manufacturing '
+                'orders finished from %(date_from)s to %(date_to)s, so the '
+                'overhead cannot be allocated to them. Choose another base.',
+                base=base_names.get(self.base), date_from=self.date_from,
+                date_to=self.date_to))
+        old_base = self.base
+        self.with_context(l10n_ua_overhead_fallback=True).write({
+            'base': 'quantity',
+            'normal_base': self.company_id._l10n_ua_overhead_normal_base('quantity'),
+            'base_fallback': True,
+        })
+        self.message_post(body=_(
+            'The allocation base "%(base)s" is zero for all %(count)s manufacturing '
+            'orders of the period (e.g. no work centers), so the overhead is '
+            'allocated by quantity produced instead (NP(S)BO 16, item 15: '
+            'variable overhead is allocated to every cost object).',
+            base=base_names.get(old_base), count=len(productions)))
+        return values
 
     def _distribute(self):
         """Spread the allocated amount over the orders in proportion to their
@@ -532,12 +607,13 @@ class L10nUaOverheadAllocationLine(models.Model):
     amount = fields.Monetary(string='Overhead')
     amount_stock = fields.Monetary(
         string='To Stock (26)',
-        help='Part of the overhead of products still in stock when posted.')
+        help='Part of the overhead of products still in stock at the end of '
+             'the period.')
     amount_sold = fields.Monetary(
         string='To Cost of Sales',
-        help='Part of the overhead of products already issued from stock when '
-             'posted; their issue value is not re-valued, so this share is '
-             'charged straight to the cost of sales.')
+        help='Part of the overhead of products already issued from stock by '
+             'the end of the period; their issue value is not re-valued, so '
+             'this share is charged straight to the cost of sales.')
     valuation_adjusted = fields.Boolean(
         string='Stock Value Adjusted',
         help='The overhead is added to the value of the finished product move '
@@ -547,9 +623,26 @@ class L10nUaOverheadAllocationLine(models.Model):
     def _adjustable(self):
         return self.filtered(lambda l: l.product_id.cost_method in ('fifo', 'average'))
 
+    def _remaining_qty_at(self, moves, at_date):
+        """Quantity of the finished moves still in stock at `at_date` (FIFO
+        stack of the product as of that date), so that issues after the
+        period end do not move overhead of the period to the cost of sales."""
+        self.ensure_one()
+        product = moves.product_id[:1].with_company(self.company_id)
+        if not product:
+            return 0.0
+        stack, first_qty = product._run_fifo_get_stack(at_date=at_date)
+        # a receipt dated after the period end cannot have been issued by then
+        remaining = sum(m._get_valued_qty() for m in moves if m.date > at_date)
+        for index, move in enumerate(stack):
+            if move in moves:
+                remaining += first_qty if index == 0 else move._get_valued_qty()
+        return remaining
+
     def _compute_stock_split(self):
         """Split each line between stock (26) and cost of sales by the share
-        of the finished quantity still in stock (FIFO stack)."""
+        of the finished quantity still in stock at the end of the period
+        (FIFO stack as of `date_to`)."""
         for line in self:
             currency = line.currency_id
             adjustable = line in line._adjustable()
@@ -557,7 +650,8 @@ class L10nUaOverheadAllocationLine(models.Model):
             if adjustable:
                 moves = line.production_id._l10n_ua_finished_moves()
                 valued = sum(m._get_valued_qty() for m in moves)
-                remaining = sum(moves.mapped('remaining_qty'))
+                at_date = datetime.combine(line.allocation_id.date_to, time.max)
+                remaining = line._remaining_qty_at(moves, at_date)
                 if valued > 0:
                     ratio = max(0.0, min(1.0, remaining / valued))
             stock = currency.round(line.amount * ratio)

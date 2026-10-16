@@ -65,6 +65,7 @@ class L10nUaPeriodClosing(models.Model):
             allocation.action_post()
             allocation.closing_id = self
             posted |= allocation
+            self._note_overhead_fallback(allocation)
         currency = self.company_id.currency_id
         if currency.is_zero(self._overhead_balance()):
             return posted
@@ -89,12 +90,21 @@ class L10nUaPeriodClosing(models.Model):
             'date_from': date_from,
             'date_to': self.period_id.date_end,
             'base': self.company_id.l10n_ua_overhead_base or 'labour',
-            'normal_base': self.company_id.l10n_ua_overhead_normal_base,
             'journal_id': (self.company_id.l10n_ua_overhead_journal_id or self.journal_id).id,
         })
         allocation.action_post()
         allocation.closing_id = self
+        self._note_overhead_fallback(allocation)
         return posted | allocation
+
+    def _note_overhead_fallback(self, allocation):
+        """Do not let the closing post an allocation whose base was replaced
+        without telling the user (NP(S)BO 16, item 15)."""
+        if allocation.base_fallback:
+            self.message_post(body=_(
+                'Overhead allocation %s: the selected allocation base is zero for '
+                'the manufacturing orders of the period, the overhead was allocated '
+                'by quantity produced. Check the allocation.', allocation.name))
 
     def _post_deferral_entries(self):
         # Step 0 of the closing: deferrals (39/69), then overhead (91).

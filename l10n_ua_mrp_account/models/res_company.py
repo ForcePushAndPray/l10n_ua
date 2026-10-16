@@ -8,6 +8,13 @@ OVERHEAD_BASES = [
     ('quantity', 'Quantity Produced'),
 ]
 
+NORMAL_CAPACITY_HELP = (
+    'Normal capacity for one month, in units of this allocation base. Fixed '
+    'overhead is allocated to production in the ratio actual base / normal '
+    'capacity, at most in full; the rest goes to the cost of sales. Zero '
+    'means that fixed overhead is always allocated in full.'
+)
+
 
 class ResCompany(models.Model):
     _inherit = 'res.company'
@@ -21,14 +28,28 @@ class ResCompany(models.Model):
              'work center hours, cost of consumed components or quantity '
              'produced.',
     )
-    l10n_ua_overhead_normal_base = fields.Float(
-        string='Normal Capacity per Month',
+    # Normal capacity per month, one value per allocation base: the bases are
+    # measured in different units (UAH, hours, units), so a single figure
+    # would silently become wrong when the base is changed.
+    l10n_ua_overhead_normal_labour = fields.Float(
+        string='Normal Capacity: Direct Labour Cost (UAH)',
         digits='Product Price',
-        help='Normal capacity for one month, in units of the allocation base '
-             '(UAH, hours or units). Fixed overhead is allocated to production '
-             'in the ratio actual base / normal capacity, at most in full; the '
-             'rest goes to the cost of sales. Zero means that fixed overhead '
-             'is always allocated in full.',
+        help=NORMAL_CAPACITY_HELP,
+    )
+    l10n_ua_overhead_normal_machine_hours = fields.Float(
+        string='Normal Capacity: Machine Hours',
+        digits='Product Price',
+        help=NORMAL_CAPACITY_HELP,
+    )
+    l10n_ua_overhead_normal_material = fields.Float(
+        string='Normal Capacity: Direct Material Cost (UAH)',
+        digits='Product Price',
+        help=NORMAL_CAPACITY_HELP,
+    )
+    l10n_ua_overhead_normal_quantity = fields.Float(
+        string='Normal Capacity: Quantity Produced',
+        digits='Product Price',
+        help=NORMAL_CAPACITY_HELP,
     )
     l10n_ua_overhead_variable_account_ids = fields.Many2many(
         'account.account',
@@ -95,6 +116,12 @@ class ResCompany(models.Model):
             if account:
                 return account
         return Account
+
+    def _l10n_ua_overhead_normal_base(self, base):
+        """Normal monthly capacity of the company for the given base."""
+        self.ensure_one()
+        field = 'l10n_ua_overhead_normal_%s' % (base or 'labour')
+        return self[field] if field in self._fields else 0.0
 
     def _l10n_ua_overhead_accounts(self):
         """(variable, fixed) overhead accounts of the company.

@@ -7,6 +7,7 @@
 """
 
 from datetime import date, datetime
+from unittest.mock import patch
 
 from odoo.exceptions import UserError
 from odoo.tests import Form, tagged
@@ -35,7 +36,7 @@ class TestOverheadAllocation(AccountingTestCase):
         cls.company.write({
             'fiscalyear_lock_date': False,
             'l10n_ua_overhead_base': 'quantity',
-            'l10n_ua_overhead_normal_base': 0.0,
+            'l10n_ua_overhead_normal_quantity': 0.0,
             'l10n_ua_overhead_variable_account_ids': [(6, 0, cls.acc_911.ids)],
             'l10n_ua_overhead_fixed_account_ids': [(6, 0, cls.acc_912.ids)],
             'l10n_ua_overhead_wip_account_id': cls.acc_23.id,
@@ -306,6 +307,8 @@ class TestOverheadAllocation(AccountingTestCase):
         out.picked = True
         out._action_done()
         self._overhead(self.acc_911, 1000.0)
+        self.env.invalidate_all()
+        self.assertAlmostEqual(self.product_a.total_value, 60.0)
 
         allocation = self._allocation()
         allocation.action_post()
@@ -317,6 +320,120 @@ class TestOverheadAllocation(AccountingTestCase):
         self.assertAlmostEqual(self._balance(self.acc_26), 600.0)
         self.assertAlmostEqual(self._balance(self.acc_901), 400.0)
         self.assertAlmostEqual(self._balance(self.acc_23), 0.0)
+        # the stock still on hand gains exactly the stock share (600), not
+        # the whole overhead added to the finished move (1000): AVCO spreads
+        # the move value over the issued 4 units too
+        self.env.invalidate_all()
+        self.assertAlmostEqual(self._finished_move(production).value, 1100.0)
+        self.assertAlmostEqual(self.product_a.total_value, 60.0 + 600.0)
+        self.assertAlmostEqual(self.product_a.standard_price, 110.0)
+
+    def _backdate(self, moves, when):
+        moves.write({'date': when})
+        moves.move_line_ids.write({'date': when})
+
+    def test_sold_after_period_end_stays_in_stock(self):
+        """The stock / cost of sales split is taken as of the period end,
+        not as of the posting date."""
+        production = self._produce(self.bom_a, 10, finished=datetime(2025, 3, 15, 10, 0))
+        self._backdate(self._finished_move(production), datetime(2025, 3, 15, 10, 0))
+        customer = self.env.ref('stock.stock_location_customers')
+        out = self.env['stock.move'].create({
+            'product_id': self.product_a.id,
+            'product_uom_qty': 4.0,
+            'product_uom': self.product_a.uom_id.id,
+            'location_id': self.warehouse.lot_stock_id.id,
+            'location_dest_id': customer.id,
+        })
+        out._action_confirm()
+        out._action_assign()
+        out.quantity = 4.0
+        out.picked = True
+        out._action_done()
+        # sold in April, after the allocated period
+        self._backdate(out, datetime(2025, 4, 5, 10, 0))
+        self._overhead(self.acc_911, 1000.0, on_date=date(2025, 3, 10))
+
+        allocation = self._allocation(date_from=date(2025, 3, 1), date_to=date(2025, 3, 31))
+        allocation.action_post()
+
+        line = allocation.line_ids
+        self.assertEqual(line.production_id, production)
+        self.assertAlmostEqual(line.amount_stock, 1000.0)
+        self.assertAlmostEqual(line.amount_sold, 0.0)
+        self.assertAlmostEqual(self._balance(self.acc_26, date(2025, 3, 31)), 1000.0)
+        self.assertAlmostEqual(self._balance(self.acc_901, date(2025, 3, 31)), 0.0)
+
+    # ------------------------------------------------------------------
+    # Allocation base: zero base, normal capacity per base
+    # ------------------------------------------------------------------
+
+    def test_zero_base_falls_back_to_quantity(self):
+        """Labour base without work centers: the overhead still reaches the
+        orders (by quantity), it is not sent to the cost of sales."""
+        self.company.write({
+            'l10n_ua_overhead_normal_labour': 5000.0,
+            'l10n_ua_overhead_normal_quantity': 0.0,
+        })
+        mo_a = self._produce(self.bom_a, 10)
+        mo_b = self._produce(self.bom_b, 30)
+        self._overhead(self.acc_911, 800.0)
+        self._overhead(self.acc_912, 400.0)
+
+        allocation = self._allocation(base='labour')
+        self.assertAlmostEqual(allocation.normal_base, 5000.0)
+        allocation.action_post()
+
+        self.assertEqual(allocation.base, 'quantity')
+        self.assertTrue(allocation.base_fallback)
+        # the labour capacity (UAH) is not applied to a quantity base
+        self.assertAlmostEqual(allocation.normal_base, 0.0)
+        self.assertAlmostEqual(allocation.actual_base, 40.0)
+        self.assertAlmostEqual(allocation.allocated_amount, 1200.0)
+        self.assertAlmostEqual(allocation.unallocated_amount, 0.0)
+        lines = {line.production_id: line for line in allocation.line_ids}
+        self.assertAlmostEqual(lines[mo_a].amount, 300.0)
+        self.assertAlmostEqual(lines[mo_b].amount, 900.0)
+        self.assertAlmostEqual(self._balance(self.acc_901), 0.0)
+        self.assertTrue(any(
+            'quantity produced' in (m.body or '') or 'обсягу виробництва' in (m.body or '')
+            for m in allocation.message_ids))
+
+        # choosing a base again clears the flag
+        allocation.action_cancel()
+        allocation.action_draft()
+        allocation.base = 'material'
+        self.assertFalse(allocation.base_fallback)
+
+    def test_zero_base_without_quantity_refused(self):
+        self._produce(self.bom_a, 10)
+        self._overhead(self.acc_911, 500.0)
+        allocation = self._allocation(base='labour')
+        Production = type(self.env['mrp.production'])
+        with patch.object(Production, '_l10n_ua_overhead_base_value', return_value=0.0):
+            with self.assertRaises(UserError):
+                allocation.action_post()
+        self.assertEqual(allocation.state, 'draft')
+        self.assertAlmostEqual(self._balance(self.acc_911), 500.0)
+
+    def test_normal_base_follows_base(self):
+        self.company.write({
+            'l10n_ua_overhead_normal_labour': 5000.0,
+            'l10n_ua_overhead_normal_machine_hours': 160.0,
+            'l10n_ua_overhead_normal_quantity': 100.0,
+        })
+        allocation = self._allocation()
+        self.assertEqual(allocation.base, 'quantity')
+        self.assertAlmostEqual(allocation.normal_base, 100.0)
+        allocation.base = 'machine_hours'
+        self.assertAlmostEqual(allocation.normal_base, 160.0)
+        allocation.write({'base': 'labour', 'normal_base': 4500.0})
+        self.assertAlmostEqual(allocation.normal_base, 4500.0)
+        # same base written again: the figure entered by the user is kept
+        allocation.base = 'labour'
+        self.assertAlmostEqual(allocation.normal_base, 4500.0)
+        self.assertAlmostEqual(
+            self._allocation(base='machine_hours', normal_base=150.0).normal_base, 150.0)
 
     def test_nothing_produced_goes_to_cost_of_sales(self):
         self._overhead(self.acc_911, 300.0)
@@ -385,7 +502,7 @@ class TestOverheadAllocation(AccountingTestCase):
     def test_period_closing_allocates_automatically(self):
         production = self._produce(self.bom_a, 40)
         self._overhead(self.acc_912, 2000.0)
-        self.company.l10n_ua_overhead_normal_base = 100.0
+        self.company.l10n_ua_overhead_normal_quantity = 100.0
         closing = self._closing(self._period())
 
         closing.action_close()
@@ -450,6 +567,22 @@ class TestOverheadAllocation(AccountingTestCase):
         with self.assertRaises(UserError):
             closing.action_close()
         self.assertEqual(closing.state, 'draft')
+
+    def test_period_closing_notes_zero_base(self):
+        """Auto-allocation on closing with a zero base is not silent."""
+        self.company.l10n_ua_overhead_base = 'labour'
+        production = self._produce(self.bom_a, 10)
+        self._overhead(self.acc_911, 500.0)
+        self._overhead(self.acc_901, 50.0)
+        closing = self._closing(self._period())
+        closing.action_close()
+        allocation = closing.overhead_allocation_ids
+        self.assertEqual(allocation.state, 'posted')
+        self.assertEqual(allocation.base, 'quantity')
+        self.assertTrue(allocation.base_fallback)
+        self.assertAlmostEqual(allocation.allocated_amount, 500.0)
+        self.assertAlmostEqual(self._finished_move(production).value, 100.0 + 500.0)
+        self.assertTrue(any(allocation.name in (m.body or '') for m in closing.message_ids))
 
     def test_period_closing_without_overhead_is_unchanged(self):
         self._overhead(self.acc_901, 100.0)

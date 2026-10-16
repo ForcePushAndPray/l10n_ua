@@ -20,6 +20,9 @@
                             invisible="state != 'cancelled'"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
                 </header>
+                <div class="alert alert-warning mb-0" role="alert" invisible="not base_fallback">
+                    The selected allocation base is zero for the manufacturing orders of the period, so the overhead was allocated by quantity produced (see the chatter).
+                </div>
                 <sheet>
                     <div name="button_box" class="oe_button_box">
                         <button name="action_open_moves" type="object"
@@ -40,6 +43,7 @@
                             <field name="date_to" readonly="state != 'draft'"/>
                             <field name="base" readonly="state != 'draft'"/>
                             <field name="normal_base" readonly="state != 'draft'"/>
+                            <field name="base_fallback" invisible="1"/>
                             <field name="company_id" groups="base.group_multi_company"
                                    readonly="state != 'draft'"/>
                             <field name="currency_id" invisible="1"/>
