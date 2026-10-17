@@ -76,6 +76,31 @@ class TestSaleDocuments(AccountPaymentCommon, MailCase, SaleCommon):
         self.assertEqual(len(names), 1)
         self.assertFalse(names[0].startswith('Рахунок-фактура'), names)
 
+    def test_site_order_report_is_rahunok(self):
+        """Кнопка «Друк» після оплати (/shop/print) і PDF замовлення в кабінеті клієнта
+        викликають звіт замовлення Odoo — компанія з увімкненою опцією отримує Рахунок-фактуру."""
+        Report = self.env['ir.actions.report']
+        for xmlid in ('sale.action_report_saleorder', 'sale.action_report_pro_forma_invoice'):
+            html = Report._render_qweb_html(xmlid, self.sale_order.ids)[0].decode()
+            self.assertIn('Рахунок-фактура', html, xmlid)
+        self.assertEqual(
+            Report._l10n_ua_order_report_ref('sale.action_report_saleorder', self.sale_order.ids),
+            self.env.ref('l10n_ua_doc_reports.action_report_rahunok_sale'))
+
+    def test_site_order_report_standard_when_disabled(self):
+        """Вимкнено в компанії — звіт замовлення Odoo як є."""
+        self.env.company.l10n_ua_sale_rahunok_in_mail = False
+        html = self.env['ir.actions.report']._render_qweb_html(
+            'sale.action_report_saleorder', self.sale_order.ids)[0].decode()
+        self.assertNotIn('Рахунок-фактура', html)
+
+    def test_other_reports_not_swapped(self):
+        """Інші звіти не підміняються."""
+        Report = self.env['ir.actions.report']
+        invoice = self._invoice(self.service_product)
+        self.assertEqual(Report._l10n_ua_order_report_ref('account.account_invoices', invoice.ids),
+                         'account.account_invoices')
+
     def test_core_templates_untouched(self):
         """Шаблони листів Odoo не змінюються: видалення модуля повертає стандартну поведінку
         без жодного uninstall_hook."""
