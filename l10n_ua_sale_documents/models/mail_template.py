@@ -2,12 +2,7 @@ import base64
 
 from odoo import models
 
-# Order reports of Odoo replaced by the Рахунок-фактура in sale.order e-mails
-CORE_ORDER_REPORTS = (
-    'sale.action_report_saleorder',
-    'sale.action_report_pro_forma_invoice',
-)
-RAHUNOK_SALE_REPORT = 'l10n_ua_doc_reports.action_report_rahunok_sale'
+from .ir_actions_report import CORE_ORDER_REPORTS, RAHUNOK_SALE_REPORT
 
 
 class MailTemplate(models.Model):

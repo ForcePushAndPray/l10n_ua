@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Sale Documents in E-mails',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Accounting/Localization',
     'summary': 'Рахунок-фактура в листах замовлень, акт / видаткова накладна в листах рахунків, '
                'автоматичний рахунок після онлайн-оплати',
