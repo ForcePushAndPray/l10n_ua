@@ -179,6 +179,33 @@ class TestGeneratedTimesheet(SalaryTestCase):
         self.assertEqual(self._day(line, 31).hours, 0.0)
         self._assert_parity(line)
 
+    def test_a_time_off_in_hours_leaves_the_day_worked(self):
+        # Neither the generator nor the payslip takes the day of a time off
+        # counted in hours or half days off the worked days.
+        for unit in ('hour', 'half_day'):
+            with self.subTest(unit=unit):
+                leave_type = self.env['hr.leave.type'].create({
+                    'name': 'Time off in %s (generated timesheet test)' % unit,
+                    'request_unit': unit, 'requires_allocation': False,
+                    'company_id': self.company.id,
+                })
+                leave = self.env['hr.leave'].create({
+                    'name': 'Two hours off',
+                    'employee_id': self.employee.id,
+                    'holiday_status_id': leave_type.id,
+                    'request_date_from': date(2025, 7, 22),
+                    'request_date_to': date(2025, 7, 22),
+                })
+                leave._action_validate()
+                line = self._generate()
+                self.assertEqual(self._day(line, 22).code_id.code, 'Я')
+                self.assertEqual(self._day(line, 22).hours, 8.0)
+                self._assert_parity(line)
+                self.env['hr.payslip'].search([
+                    ('employee_id', '=', self.employee.id)]).unlink()
+                line.timesheet_id.unlink()
+                leave.action_refuse()
+
     def test_a_certificate_in_draft_is_worked_and_a_confirmed_one_is_not(self):
         sick = self.env['hr.sick.leave'].create({
             'employee_id': self.employee.id,

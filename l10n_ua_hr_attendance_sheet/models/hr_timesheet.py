@@ -301,9 +301,12 @@ class HrTimesheetLine(models.Model):
         # By the dates of the request, as the payslip reads them: the moments
         # of the time off are in UTC and would put its first or last day on
         # the day before, or miss a time off starting on the last day.
+        # Only the time off counted in days takes the whole day, as the
+        # payslip reads it: an hour or a half day off leaves the day worked.
         leaves = self.env['hr.leave'].search([
             ('employee_id', '=', employee.id),
             ('state', '=', 'validate'),
+            ('holiday_status_id.request_unit', '=', 'day'),
             ('request_date_from', '<=', date_to),
             ('request_date_to', '>=', date_from),
         ])
