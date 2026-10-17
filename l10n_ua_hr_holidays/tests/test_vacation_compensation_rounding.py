@@ -11,6 +11,7 @@ import re
 from datetime import date
 from unittest.mock import patch
 
+from odoo.exceptions import ValidationError
 from odoo.tests import TransactionCase, tagged
 
 AVG_DAILY = 1000.0
@@ -86,3 +87,40 @@ class TestVacationCompensationRounding(TransactionCase):
         self.assertAlmostEqual(balance.remaining_days, 27.3)
         self.assertEqual(self._compensation(balance, is_termination=False),
                          4 * AVG_DAILY)
+
+    def test_several_balances_round_the_total_once(self):
+        """Дробові залишки кількох видів відпустки: 5,3 + 6,3 = 11,6 → 12 днів
+        і в наказі, і в оплаті, а не 6 + 7 = 13 при округленні кожного."""
+        other_type = self.env['hr.leave.type'].create({
+            'name': 'Additional (#321 rounding test)',
+            'is_transferable': False,
+        })
+        self._balance(5.3)
+        self.env['hr.vacation.balance'].create({
+            'employee_id': self.employee.id,
+            'leave_type_id': other_type.id,
+            'year': 2026,
+            'entitled_days': 6.3,
+        })
+        balances = self.env['hr.vacation.balance']._dismissal_balances(
+            self.employee, date(2026, 5, 20))
+        self.assertEqual(len(balances), 2)
+        self.assertEqual(self._order_days(), 12)
+        self.assertEqual(balances._compensable_days(), 12)
+        self.assertEqual(self._compensation(balances), 12 * AVG_DAILY)
+
+    def test_balances_of_different_employees_are_refused(self):
+        """Середній заробіток — свій у кожного працівника, тож одна сума на
+        кількох працівників не рахується."""
+        other = self.env['hr.employee'].create({
+            'name': 'Інший Працівник #321',
+            'company_id': self.env.company.id,
+        })
+        balances = self._balance(3) | self.env['hr.vacation.balance'].create({
+            'employee_id': other.id,
+            'leave_type_id': self.leave_type.id,
+            'year': 2026,
+            'entitled_days': 3,
+        })
+        with self.assertRaises(ValidationError):
+            self._compensation(balances)

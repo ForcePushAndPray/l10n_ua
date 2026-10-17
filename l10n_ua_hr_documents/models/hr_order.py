@@ -109,10 +109,8 @@ class HrOrder(models.Model):
                     and order.employee_id):
                 ref_date = (order.date_dismissal or order.date
                             or fields.Date.context_today(order))
-                balances = self.env['hr.vacation.balance'].search([
-                    ('employee_id', '=', order.employee_id.id),
-                    ('year', '=', ref_date.year),
-                ])
+                balances = self.env['hr.vacation.balance']._dismissal_balances(
+                    order.employee_id, ref_date)
                 days = sum(balances.mapped('remaining_days'))
             order.unused_vacation_days = max(0.0, days)
 
