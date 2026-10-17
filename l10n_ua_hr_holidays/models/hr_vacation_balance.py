@@ -3,6 +3,8 @@ from odoo import models, fields, api, _
 from odoo.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
 
+from odoo.addons.l10n_ua_hr_documents.tools import compensable_vacation_days
+
 class HrVacationBalance(models.Model):
     _name = 'hr.vacation.balance'
     _description = 'Vacation Balance'
@@ -681,15 +683,9 @@ class HrVacationBalance(models.Model):
         if termination_date is None:
             termination_date = fields.Date.today()
 
-        compensable_days = self.remaining_days
-        
-        if not is_termination:
-            min_annual_days = self.leave_type_id.annual_days or 24
-            if self.used_days < min_annual_days:
-                return 0.0
-            compensable_days = max(0, self.remaining_days - min_annual_days)
-            if compensable_days <= 0:
-                return 0.0
+        compensable_days = self._compensable_days(is_termination)
+        if compensable_days <= 0:
+            return 0.0
 
         # Get average daily salary using hr.leave calculation
         leave = self.env['hr.leave'].new({
@@ -704,6 +700,23 @@ class HrVacationBalance(models.Model):
         compensation = compensable_days * avg_salary
         return round(compensation, 2)
 
+    def _compensable_days(self, is_termination=True):
+        """Whole calendar days to compensate, rounded by the same rule the
+        dismissal order prints (compensable_vacation_days, #321).
+
+        On termination every unused day counts (art. 24 of the Vacation Law);
+        without it only the days above the annual minimum, and only once the
+        minimum itself has been used.
+        """
+        self.ensure_one()
+        days = self.remaining_days
+        if not is_termination:
+            min_annual_days = self.leave_type_id.annual_days or 24
+            if self.used_days < min_annual_days:
+                return 0
+            days = self.remaining_days - min_annual_days
+        return compensable_vacation_days(days)
+
     def action_calculate_compensation(self):
         """Action to calculate and display compensation amount."""
         self.ensure_one()
@@ -714,7 +727,7 @@ class HrVacationBalance(models.Model):
             'tag': 'display_notification',
             'params': {
                 'title': _('Vacation Compensation'),
-                'message': _('Compensation for %(days)s unused days: %(amount).2f UAH', days=self.remaining_days, amount=compensation),
+                'message': _('Compensation for %(days)s unused days: %(amount).2f UAH', days=self._compensable_days(), amount=compensation),
                 'type': 'success',
                 'sticky': False,
             }
