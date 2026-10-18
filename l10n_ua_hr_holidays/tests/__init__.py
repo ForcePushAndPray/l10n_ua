@@ -11,4 +11,5 @@ from . import test_sick_leave_documents
 from . import test_leave_wage_currency
 from . import test_fallback_wage
 from . import test_average_benefits
+from . import test_vacation_compensation_rounding
 from . import test_holiday_recount
