@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_npo_program" model="ir.actions.report">
+        <field name="name">Target Programs Report</field>
+        <field name="model">l10n_ua.npo.program.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_nonprofit.report_npo_program_document</field>
+        <field name="report_file">l10n_ua_nonprofit.report_npo_program_document</field>
+        <field name="print_report_name">'Programs_%s_%s' % (object.date_from, object.date_to)</field>
+        <field name="paperformat_id" ref="l10n_ua_doc_reports.paperformat_ua_report"/>
+    </record>
+
+    <template id="report_npo_program_document">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.external_layout">
+                    <t t-call="l10n_ua_nonprofit.report_npo_styles"/>
+                    <t t-set="fmt" t-value="o.env['l10n_ua.npo.income.report']"/>
+                    <div class="page npo-form">
+                        <div class="title">Target financing by programs</div>
+                        <p style="text-align: center;">
+                            <span t-field="o.date_from"/> – <span t-field="o.date_to"/>
+                            <t t-if="o.partner_id">, <span t-field="o.partner_id"/></t>
+                        </p>
+                        <table class="small">
+                            <thead>
+                                <tr>
+                                    <th>Program</th>
+                                    <th>Donor</th>
+                                    <th class="num">Budget</th>
+                                    <th class="num">Opening Balance (48)</th>
+                                    <th class="num">Received</th>
+                                    <th class="num">Recognised as Income</th>
+                                    <th class="num">Returned / Other</th>
+                                    <th class="num">Closing Balance (48)</th>
+                                    <th class="num">Spent in Period</th>
+                                    <th class="num">Expenses Not Yet Covered</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o.line_ids" t-as="line">
+                                    <td t-out="line.program_id.display_name"/>
+                                    <td t-out="line.partner_id.name or ''"/>
+                                    <td class="num" t-out="fmt._format_amount(line.budget_amount)"/>
+                                    <td class="num" t-out="fmt._format_amount(line.opening_balance)"/>
+                                    <td class="num" t-out="fmt._format_amount(line.received)"/>
+                                    <td class="num" t-out="fmt._format_amount(line.recognised)"/>
+                                    <td class="num" t-out="fmt._format_amount(line.other_debit)"/>
+                                    <td class="num" t-out="fmt._format_amount(line.closing_balance)"/>
+                                    <td class="num" t-out="fmt._format_amount(line.spent)"/>
+                                    <td class="num" t-out="fmt._format_amount(line.uncovered)"/>
+                                </tr>
+                                <tr class="lvl0">
+                                    <td colspan="2">Total</td>
+                                    <td class="num" t-out="fmt._format_amount(sum(o.line_ids.mapped('budget_amount')))"/>
+                                    <td class="num" t-out="fmt._format_amount(sum(o.line_ids.mapped('opening_balance')))"/>
+                                    <td class="num" t-out="fmt._format_amount(sum(o.line_ids.mapped('received')))"/>
+                                    <td class="num" t-out="fmt._format_amount(sum(o.line_ids.mapped('recognised')))"/>
+                                    <td class="num" t-out="fmt._format_amount(sum(o.line_ids.mapped('other_debit')))"/>
+                                    <td class="num" t-out="fmt._format_amount(sum(o.line_ids.mapped('closing_balance')))"/>
+                                    <td class="num" t-out="fmt._format_amount(sum(o.line_ids.mapped('spent')))"/>
+                                    <td class="num" t-out="fmt._format_amount(sum(o.line_ids.mapped('uncovered')))"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p class="small" style="margin-top: 8px;">
+                            Closing balance = opening balance + received − recognised as income − returned / other.
+                            Income is recognised in the periods in which the expenses of the program are incurred
+                            (P(S)BO 15 "Income", para. 17).
+                        </p>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

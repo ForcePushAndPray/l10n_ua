@@ -1,10 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
+    <!-- Кореневе меню застосунку. Розділи «Прийоми», «Пацієнти», «НСЗУ»
+         оголошені в модулях, яким належать їхні моделі; «Звітність» і
+         «Налаштування» — тут, бо до них додають пункти кілька модулів. -->
     <menuitem id="menu_medecin_root"
-              name="Медицина (UA)"
+              name="Медицина"
               sequence="56"
               web_icon="l10n_ua_medecin_base,static/description/icon.png"
               groups="group_ua_medecin_user"/>
+
+    <menuitem id="menu_medecin_reporting"
+              name="Звітність"
+              parent="menu_medecin_root"
+              sequence="90"/>
 
     <menuitem id="menu_medecin_config"
               name="Налаштування"
@@ -12,9 +20,15 @@
               sequence="100"
               groups="group_ua_medecin_manager"/>
 
+    <menuitem id="menu_medecin_doctor"
+              name="Лікарі"
+              parent="menu_medecin_config"
+              action="action_medecin_doctor"
+              sequence="20"/>
+
     <menuitem id="menu_medecin_specialty"
               name="Спеціалізації"
               parent="menu_medecin_config"
               action="action_specialty"
-              sequence="10"/>
+              sequence="30"/>
 </odoo>

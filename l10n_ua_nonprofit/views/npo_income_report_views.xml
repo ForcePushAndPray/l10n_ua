@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_npo_income_report_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.npo.income.report.form</field>
+        <field name="model">l10n_ua.npo.income.report</field>
+        <field name="arch" type="xml">
+            <form string="Report on the Use of Income">
+                <header>
+                    <button name="action_compute" type="object" string="Compute"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_print" type="object" string="Print"/>
+                    <button name="action_done" type="object" string="Mark as Done"
+                            invisible="state != 'draft'"/>
+                    <button name="action_draft" type="object" string="Reset to Draft"
+                            invisible="state != 'done'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name"/></h1>
+                    </div>
+                    <group>
+                        <group string="Period">
+                            <field name="year" options="{'format': false}" readonly="state != 'draft'"/>
+                            <field name="period_type" readonly="state != 'draft'"/>
+                            <field name="month" invisible="period_type != 'month'"
+                                   required="period_type == 'month'" readonly="state != 'draft'"/>
+                            <field name="date_from"/>
+                            <field name="date_to"/>
+                            <field name="report_kind" readonly="state != 'draft'"/>
+                            <field name="clarified_year" options="{'format': false}"
+                                   invisible="report_kind != 'clarifying'"/>
+                            <field name="clarified_month"
+                                   invisible="report_kind != 'clarifying' or period_type != 'month'"/>
+                        </group>
+                        <group string="Organization">
+                            <field name="company_id" groups="base.group_multi_company"
+                                   readonly="state != 'draft'"/>
+                            <field name="company_edrpou"/>
+                            <field name="nonprofit_code"/>
+                            <field name="register_date"/>
+                            <field name="register_number"/>
+                            <field name="tax_office_id"/>
+                            <field name="submission_date"/>
+                            <field name="director_name"/>
+                            <field name="accountant_name"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Part I" name="part1">
+                            <group>
+                                <group string="Income">
+                                    <field name="r1" class="fw-bold"/>
+                                    <field name="r1_1"/>
+                                    <field name="r1_2"/>
+                                    <field name="r1_3"/>
+                                    <field name="r1_4"/>
+                                    <field name="r1_5"/>
+                                    <field name="r1_6" class="fw-bold"/>
+                                    <field name="r1_6_own"/>
+                                    <field name="r1_6_1"/>
+                                    <field name="r1_6_2"/>
+                                    <field name="r1_6_3"/>
+                                    <field name="r1_7"/>
+                                    <field name="r1_8"/>
+                                    <field name="r1_9"/>
+                                    <field name="r1_10"/>
+                                    <field name="r1_11"/>
+                                </group>
+                                <group string="Expenses">
+                                    <field name="r2" class="fw-bold"/>
+                                    <field name="r2_1"/>
+                                    <field name="r2_2"/>
+                                    <field name="r2_3"/>
+                                    <field name="r2_4" class="fw-bold"/>
+                                    <field name="r2_4_own"/>
+                                    <field name="r2_4_1"/>
+                                    <field name="r2_4_2"/>
+                                    <field name="r2_4_3"/>
+                                    <field name="r2_5"/>
+                                    <field name="r2_6"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Part II" name="part2">
+                            <p class="text-muted">
+                                Filled in only by organizations that breached the
+                                requirements of para. 133.4 of the Tax Code.
+                            </p>
+                            <group>
+                                <group>
+                                    <field name="r3" class="fw-bold"/>
+                                    <field name="r3_1"/>
+                                    <field name="r3_2"/>
+                                    <field name="r4"/>
+                                    <field name="r5" class="fw-bold"/>
+                                    <field name="profit_tax_rate"/>
+                                    <field name="r6" class="fw-bold"/>
+                                </group>
+                                <group string="Correction of Errors">
+                                    <field name="r7"/>
+                                    <field name="r8"/>
+                                    <field name="r9"/>
+                                    <field name="r10"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Annexes" name="annexes">
+                            <group>
+                                <group>
+                                    <field name="has_annex_hd"/>
+                                    <field name="has_annex_vp"/>
+                                    <field name="has_annex_fs"/>
+                                    <field name="fs_kind" invisible="not has_annex_fs"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Breakdown" name="breakdown">
+                            <field name="line_ids" readonly="1">
+                                <list>
+                                    <field name="row"/>
+                                    <field name="program_id"/>
+                                    <field name="account_id"/>
+                                    <field name="amount"/>
+                                    <field name="currency_id" column_invisible="1"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_npo_income_report_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.npo.income.report.list</field>
+        <field name="model">l10n_ua.npo.income.report</field>
+        <field name="arch" type="xml">
+            <list string="Reports on the Use of Income">
+                <field name="name"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="report_kind"/>
+                <field name="r1"/>
+                <field name="r2"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="state" widget="badge" decoration-success="state == 'done'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_npo_income_report_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.npo.income.report.search</field>
+        <field name="model">l10n_ua.npo.income.report</field>
+        <field name="arch" type="xml">
+            <search string="Reports on the Use of Income">
+                <field name="name"/>
+                <field name="year"/>
+                <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Done" name="filter_done" domain="[('state', '=', 'done')]"/>
+                <group>
+                    <filter string="Year" name="groupby_year" domain="[]" context="{'group_by': 'year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_npo_income_report_action" model="ir.actions.act_window">
+        <field name="name">Report on the Use of Income (Non-profit)</field>
+        <field name="res_model">l10n_ua.npo.income.report</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create the annual report</p>
+            <p>Report on the use of income (profits) of a non-profit organization,
+               form approved by order of the Ministry of Finance No. 553 of 17.06.2016.
+               Filed within 60 days after the end of the year together with the
+               financial statements.</p>
+        </field>
+    </record>
+
+</odoo>

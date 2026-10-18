@@ -1,0 +1,1473 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ua_consolidation
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260103\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 13:30+0000\n"
+"PO-Revision-Date: 2026-10-15 13:30+0000\n"
+"Last-Translator: \n"
+"Language-Team: Ukrainian\n"
+"Language: uk_UA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#. module: l10n_ua_consolidation
+#. odoo-python
+#: code:addons/l10n_ua_consolidation/models/consolidation_report.py:0
+msgid ""
+"%(company)s, %(date)s: accounts not mapped to form 1-к rows: %(accounts)s."
+msgstr ""
+"%(company)s, %(date)s: рахунки, не віднесені до рядків форми 1-к: "
+"%(accounts)s."
+
+#. module: l10n_ua_consolidation
+#. odoo-python
+#: code:addons/l10n_ua_consolidation/models/consolidation_report.py:0
+msgid ""
+"%(company)s: no investment of the parent company found on accounts "
+"%(accounts)s with this partner — set the investment amount manually on the "
+"group."
+msgstr ""
+"%(company)s: не знайдено інвестиції материнської компанії на рахунках "
+"%(accounts)s з цим контрагентом — вкажіть суму інвестиції вручну в "
+"налаштуваннях групи."
+
+#. module: l10n_ua_consolidation
+#. odoo-python
+#: code:addons/l10n_ua_consolidation/models/consolidation_report.py:0
+msgid ""
+"%(date)s: intra-group receivables (%(assets).2f) and payables "
+"(%(liabilities).2f) do not match (difference %(diff).2f). Reconcile them or "
+"add a manual adjustment (goods/cash in transit)."
+msgstr ""
+"%(date)s: внутрішньогрупова дебіторська (%(assets).2f) і кредиторська "
+"(%(liabilities).2f) заборгованість не збігаються (різниця %(diff).2f). "
+"Звірте їх або додайте ручне коригування (товари/кошти в дорозі)."
+
+#. module: l10n_ua_consolidation
+#. odoo-python
+#: code:addons/l10n_ua_consolidation/models/consolidation_report.py:0
+msgid ""
+"%(start)s – %(end)s: intra-group expenses exceed intra-group income by "
+"%(amount).2f (the seller did not book the income against a group partner?). "
+"Check and add a manual adjustment."
+msgstr ""
+"%(start)s – %(end)s: внутрішньогрупові витрати перевищують "
+"внутрішньогрупові доходи на %(amount).2f (продавець не відобразив дохід з "
+"контрагентом групи?). Перевірте та додайте ручне коригування."
+
+#. module: l10n_ua_consolidation
+#. odoo-python
+#: code:addons/l10n_ua_consolidation/models/consolidation_report.py:0
+msgid ""
+"%(start)s – %(end)s: intra-group income %(amount).2f has no intra-group "
+"expense counterpart (e.g. dividends from subsidiaries). It is eliminated and"
+" reduces the consolidated result — check it and add a manual adjustment if "
+"needed."
+msgstr ""
+"%(start)s – %(end)s: внутрішньогруповий дохід %(amount).2f не має "
+"відповідних внутрішньогрупових витрат (напр., дивіденди від дочірніх). Його"
+" виключено, і він зменшує консолідований результат — перевірте та за "
+"потреби додайте ручне коригування."
+
+#. module: l10n_ua_consolidation
+#: model:ir.actions.report,print_report_name:l10n_ua_consolidation.action_report_consolidated_balance
+msgid "'Баланс_1-к_%s' % object.date_to"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.actions.report,print_report_name:l10n_ua_consolidation.action_report_consolidated_pnl
+msgid "'Фін_результати_2-к_%s' % object.date_to"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_report__with_comparison
+msgid ""
+"1-к: balance at the start of the period (day before Period Start); 2-к: the "
+"same period of the previous year."
+msgstr ""
+"1-к: баланс на початок періоду (день перед початком періоду); 2-к: "
+"аналогічний період попереднього року."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_intangible_assets
+msgid "1000 Нематеріальні активи"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_unfinished_capex
+msgid "1005 Незавершені капітальні інвестиції"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_fixed_assets
+msgid "1010 Основні засоби"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_investment_property
+msgid "1015 Інвестиційна нерухомість"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_lt_financial_investments
+msgid "1030 Довгострокові фінансові інвестиції"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_long_term_receivables
+msgid "1040 Довгострокова дебіторська заборгованість"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_deferred_tax_assets
+msgid "1045 Відстрочені податкові активи"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_goodwill
+msgid "1055 Гудвіл при консолідації"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_inventories
+msgid "1100 Запаси"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_receivables_goods
+msgid "1125 Дебіторська заборгованість за товари"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_receivables_budget
+msgid "1135 Дебіторська заборгованість за розрахунками з бюджетом"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_other_current_receivables
+msgid "1155 Інша поточна дебіторська заборгованість"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_cash
+msgid "1165 Гроші та їх еквіваленти"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_prepaid_expenses
+msgid "1170 Витрати майбутніх періодів"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_other_current_assets
+msgid "1190 Інші оборотні активи"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_registered_capital
+msgid "1400 Зареєстрований капітал"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_additional_capital
+msgid "1410 Додатковий капітал"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_reserve_capital
+msgid "1415 Резервний капітал"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_retained_earnings
+msgid "1420 Нерозподілений прибуток (непокритий збиток)"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_unpaid_capital
+msgid "1425 Неоплачений капітал"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_withdrawn_capital
+msgid "1430 Вилучений капітал"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_nci
+msgid "1490 Неконтрольована частка"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_long_term_loans
+msgid "1510 Довгострокові кредити банків"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_long_term_liabilities
+msgid "1515 Інші довгострокові зобов'язання"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_short_term_loans
+msgid "1600 Короткострокові кредити банків"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_payables_goods
+msgid "1615 Кредиторська заборгованість за товари"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_payables_budget
+msgid "1620 Поточні зобов'язання за розрахунками з бюджетом"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_payables_insurance
+msgid "1625 Поточні зобов'язання зі страхування"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_payables_wages
+msgid "1630 Поточні зобов'язання з оплати праці"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__b_other_current_liabilities
+msgid "1690 Інші поточні зобов'язання"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__p_net_revenue
+msgid "2000 Чистий дохід від реалізації продукції (товарів, робіт, послуг)"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__p_cost_of_sales
+msgid "2050 Собівартість реалізованої продукції (товарів, робіт, послуг)"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__p_other_operating_income
+msgid "2120 Інші операційні доходи"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__p_administrative_expenses
+msgid "2130 Адміністративні витрати"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__p_selling_expenses
+msgid "2150 Витрати на збут"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__p_other_operating_expenses
+msgid "2180 Інші операційні витрати"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__p_financial_income
+msgid "2220 Фінансові доходи"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__p_other_income
+msgid "2240 Інші доходи"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__p_financial_expenses
+msgid "2250 Фінансові витрати"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__p_other_expenses
+msgid "2270 Інші витрати"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__row_key__p_income_tax_expense
+msgid "2300 Витрати (дохід) з податку на прибуток"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_signatures
+msgid ""
+"<span>Головний бухгалтер</span>\n"
+"                    <span class=\"signature-line\"/>"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_signatures
+msgid ""
+"<span>Керівник</span>\n"
+"                    <span class=\"signature-line\"/>"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.constraint,message:l10n_ua_consolidation.constraint_l10n_ua_consolidation_member_company_uniq
+msgid "A company can be added to a group only once."
+msgstr "Компанію можна додати до групи лише один раз."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_group__investment_account_prefixes
+msgid ""
+"Account code prefixes of the parent company holding investments in "
+"subsidiaries (рах. 14)."
+msgstr ""
+"Префікси рахунків материнської компанії, на яких обліковуються інвестиції в"
+" дочірні (рах. 14)."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_member__acquisition_date
+msgid "Acquisition Date"
+msgstr "Дата придбання"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__message_needaction
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__message_needaction
+msgid "Action Needed"
+msgstr "Потрібна дія"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__active
+msgid "Active"
+msgstr "Активно"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__activity_ids
+msgid "Activities"
+msgstr "Дії"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Оформлення виключення дії"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__activity_state
+msgid "Activity State"
+msgstr "Стан дії"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Іконка типу дії"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__company_ids
+msgid "All Companies"
+msgstr "Усі компанії"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_adjustment__amount
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__amount
+msgid "Amount"
+msgstr "Сума"
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_form
+msgid ""
+"Amounts change the row as printed (+ increases, − decreases).\n"
+"                                Examples: unrealised profit in inventory — 1-к: 1100 −X and 1420 −X,\n"
+"                                2-к: 2050 +X. Recalculate the report after editing."
+msgstr ""
+"Суми змінюють рядок у друкованій формі (+ збільшує, − зменшує).\n"
+"                                Приклад: нереалізований прибуток у запасах "
+"— 1-к: 1100 −X і 1420 −X,\n"
+"                                2-к: 2050 +X. Після змін перерахуйте звіт."
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_group_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_group_search
+msgid "Archived"
+msgstr "Архівовано"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__message_attachment_count
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__message_attachment_count
+msgid "Attachment Count"
+msgstr "Кількість вкладень"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_line__line_type__attribution
+msgid "Attribution"
+msgstr "Розподіл"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__balance_difference
+msgid "Balance Difference"
+msgstr "Розбіжність балансу"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_report__date_to
+msgid "Balance date of form 1-к and end of the period of form 2-к."
+msgstr "Дата балансу форми 1-к і кінець періоду форми 2-к."
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.actions.act_window,help:l10n_ua_consolidation.action_consolidation_report
+msgid "Build consolidated statements"
+msgstr "Сформуйте консолідовану звітність"
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_form
+msgid "Calculate"
+msgstr "Розрахувати"
+
+#. module: l10n_ua_consolidation
+#. odoo-python
+#: code:addons/l10n_ua_consolidation/models/consolidation_report.py:0
+msgid "Calculate the report before confirming."
+msgstr "Розрахуйте звіт перед затвердженням."
+
+#. module: l10n_ua_consolidation
+#. odoo-python
+#: code:addons/l10n_ua_consolidation/models/consolidation_report.py:0
+msgid "Cannot recalculate a confirmed report. Set it back to draft first."
+msgstr "Не можна перерахувати затверджений звіт. Спочатку поверніть його в чернетку."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_adjustment__amount
+msgid ""
+"Change of the row as printed: positive increases the row, negative decreases"
+" it. For form 1-к keep assets and equity/liabilities balanced (e.g. "
+"unrealised profit in inventory: 1100 −X and 1420 −X; form 2-к: 2050 +X)."
+msgstr ""
+"Зміна рядка у друкованій формі: додатна сума збільшує рядок, від’ємна — "
+"зменшує. У формі 1-к зберігайте рівність активу і пасиву (напр., "
+"нереалізований прибуток у запасах: 1100 −X і 1420 −X; форма 2-к: 2050 +X)."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__column_label
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_cell_search
+msgid "Column"
+msgstr "Колонка"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__column_sequence
+msgid "Column Sequence"
+msgstr "Порядок колонки"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__column_type
+msgid "Column Type"
+msgstr "Тип колонки"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_group__elimination_account_prefixes
+msgid ""
+"Comma-separated account code prefixes (receivables, payables, loans) on "
+"which intra-group balances are eliminated. Income and expense accounts of "
+"Form 2 are always checked."
+msgstr ""
+"Префікси рахунків через кому (дебіторська, кредиторська заборгованість, "
+"позики), на яких виключається внутрішньогрупове сальдо. Рахунки доходів і "
+"витрат Форми 2 перевіряються завжди."
+
+#. module: l10n_ua_consolidation
+#. odoo-python
+#: code:addons/l10n_ua_consolidation/models/consolidation_group.py:0
+msgid ""
+"Companies %(companies)s keep their books in another currency than the parent"
+" company (%(currency)s). Translation of foreign subsidiaries (НП(С)БО 21) is"
+" not supported: prepare their statements in %(currency)s and enter them as "
+"manual adjustments, or remove them from the group."
+msgstr ""
+"Компанії %(companies)s ведуть облік у валюті, відмінній від валюти "
+"материнської компанії (%(currency)s). Перерахунок звітності закордонних "
+"дочірніх (НП(С)БО 21) не підтримується: підготуйте їхню звітність у "
+"%(currency)s і внесіть ручними коригуваннями або вилучіть їх із групи."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_adjustment__company_id
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__company_id
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_cell__column_type__company
+msgid "Company"
+msgstr "Компанія"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__previous_amount
+msgid "Comparison"
+msgstr "Порівняльний період"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__with_comparison
+msgid "Comparison Column"
+msgstr "Колонка порівняння"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__period__previous
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_cell__period__previous
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_cell_search
+msgid "Comparison Period"
+msgstr "Порівняльний період"
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_form
+msgid "Confirm"
+msgstr "Затвердити"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_report__state__confirmed
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_search
+msgid "Confirmed"
+msgstr "Затверджено"
+
+#. module: l10n_ua_consolidation
+#. odoo-python
+#: code:addons/l10n_ua_consolidation/models/consolidation_report.py:0
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__current_amount
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_cell__column_type__consolidated
+msgid "Consolidated"
+msgstr "Консолідовано"
+
+#. module: l10n_ua_consolidation
+#: model:ir.actions.report,name:l10n_ua_consolidation.action_report_consolidated_balance
+msgid "Consolidated Balance (Form No.1-k)"
+msgstr "Консолідований баланс (форма № 1-к)"
+
+#. module: l10n_ua_consolidation
+#: model:ir.actions.report,name:l10n_ua_consolidation.action_report_consolidated_pnl
+msgid "Consolidated Financial Results (Form No.2-k)"
+msgstr "Консолідований звіт про фінансові результати (форма № 2-к)"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model,name:l10n_ua_consolidation.model_l10n_ua_consolidation_report
+msgid "Consolidated Financial Statements"
+msgstr "Консолідована фінансова звітність"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model,name:l10n_ua_consolidation.model_l10n_ua_consolidation_line
+msgid "Consolidated Statement Row"
+msgstr "Рядок консолідованої звітності"
+
+#. module: l10n_ua_consolidation
+#. odoo-python
+#: code:addons/l10n_ua_consolidation/models/consolidation_group.py:0
+#: model:ir.actions.act_window,name:l10n_ua_consolidation.action_consolidation_report
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_search
+msgid "Consolidated Statements"
+msgstr "Консолідована звітність"
+
+#. module: l10n_ua_consolidation
+#: model:ir.ui.menu,name:l10n_ua_consolidation.menu_consolidation_reports
+msgid "Consolidated Statements (1-к, 2-к)"
+msgstr "Консолідована звітність (1-к, 2-к)"
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.actions.act_window,help:l10n_ua_consolidation.action_consolidation_report
+msgid ""
+"Consolidated balance (form 1-к) and statement of financial results (form 2-к)\n"
+"               of a group of companies under НП(С)БО 2."
+msgstr ""
+"Консолідований баланс (форма 1-к) і звіт про фінансові результати (форма "
+"2-к)\n"
+"               групи компаній за НП(С)БО 2."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model,name:l10n_ua_consolidation.model_l10n_ua_consolidation_group
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_group_form
+msgid "Consolidation Group"
+msgstr "Група консолідації"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model,name:l10n_ua_consolidation.model_l10n_ua_consolidation_member
+msgid "Consolidation Group Subsidiary"
+msgstr "Дочірнє підприємство групи"
+
+#. module: l10n_ua_consolidation
+#: model:ir.actions.act_window,name:l10n_ua_consolidation.action_consolidation_group
+#: model:ir.ui.menu,name:l10n_ua_consolidation.menu_consolidation_groups
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_group_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_group_search
+msgid "Consolidation Groups"
+msgstr "Групи консолідації"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model,name:l10n_ua_consolidation.model_l10n_ua_consolidation_adjustment
+msgid "Consolidation Manual Adjustment"
+msgstr "Ручне коригування консолідації"
+
+#. module: l10n_ua_consolidation
+#. odoo-python
+#: code:addons/l10n_ua_consolidation/models/consolidation_report.py:0
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_cell_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_cell_pivot
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_cell_search
+msgid "Consolidation Worksheet"
+msgstr "Робоча таблиця консолідації"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model,name:l10n_ua_consolidation.model_l10n_ua_consolidation_cell
+msgid "Consolidation Worksheet Cell"
+msgstr "Клітинка робочої таблиці консолідації"
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.actions.act_window,help:l10n_ua_consolidation.action_consolidation_group
+msgid "Create a group of companies"
+msgstr "Створіть групу компаній"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_adjustment__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_member__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__create_uid
+msgid "Created by"
+msgstr "Створено"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_adjustment__create_date
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__create_date
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__create_date
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__create_date
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_member__create_date
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__create_date
+msgid "Created on"
+msgstr "Створено"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_adjustment__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_member__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__currency_id
+msgid "Currency"
+msgstr "Валюта"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_member__acquisition_date
+msgid ""
+"Date control was obtained (НП(С)БО 19 п. 4). The equity of the subsidiary at"
+" this date is eliminated against the investment; results up to this date are"
+" not included in the consolidated statement of financial results."
+msgstr ""
+"Дата придбання — переходу контролю (НП(С)БО 19 п. 4). Власний капітал "
+"дочірнього на цю дату виключається проти інвестиції; результати до цієї "
+"дати до консолідованого звіту про фінансові результати не включаються."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_line__line_type__detail
+msgid "Detail"
+msgstr "Деталізація"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_adjustment__display_name
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__display_name
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__display_name
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__display_name
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_member__display_name
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__display_name
+msgid "Display Name"
+msgstr "Назва для відображення"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_report__state__draft
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_search
+msgid "Draft"
+msgstr "Чернетка"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_cell__column_type__elimination
+msgid "Elimination"
+msgstr "Виключення"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__elimination_kind
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_cell_search
+msgid "Elimination Kind"
+msgstr "Вид виключення"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__elimination_amount
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_cell_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_group_form
+msgid "Eliminations"
+msgstr "Виключення"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__expense
+msgid "Expense"
+msgstr "Витрата"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_line__expense
+msgid "Expense row of form 2-к, printed in brackets."
+msgstr "Рядок витрат форми 2-к, друкується в дужках."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_adjustment__name
+msgid "Explanation"
+msgstr "Пояснення"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__message_follower_ids
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__message_follower_ids
+msgid "Followers"
+msgstr "Підписники"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__message_partner_ids
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Підписники (Контрагенти)"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_report__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Іконка Font awesome, напр. fa-tasks"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_adjustment__form
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__form
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__form
+msgid "Form"
+msgstr "Форма"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__balance_line_ids
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__form__balance
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_line__form__balance
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_cell_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_form
+msgid "Form 1-к"
+msgstr "Форма 1-к"
+
+#. module: l10n_ua_consolidation
+#. odoo-python
+#: code:addons/l10n_ua_consolidation/models/consolidation_report.py:0
+msgid ""
+"Form 1-к does not balance: assets − equity and liabilities = %.2f. See the "
+"warnings above (unmapped accounts, unmatched intra-group balances, one-sided"
+" manual adjustments)."
+msgstr ""
+"Форма 1-к не збалансована: актив − пасив = %.2f. Див. попередження вище "
+"(рахунки поза рядками, незбіг внутрішньогрупового сальдо, однобічні ручні "
+"коригування)."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__pnl_line_ids
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__form__pnl
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_line__form__pnl
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_cell_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_form
+msgid "Form 2-к"
+msgstr "Форма 2-к"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_member__investment_source__journal
+msgid "From parent journal items"
+msgstr "З проводок материнської компанії"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_member__method__full
+msgid "Full consolidation"
+msgstr "Повна консолідація"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_member__group_id
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__group_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_search
+msgid "Group"
+msgstr "Група"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__name
+msgid "Group Name"
+msgstr "Назва групи"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_adjustment__company_id
+msgid "Group company the adjustment relates to (for information)."
+msgstr "Компанія групи, якої стосується коригування (довідково)."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__has_message
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__has_message
+msgid "Has Message"
+msgstr "Є повідомлення"
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_pnl
+msgid "I. ФІНАНСОВІ РЕЗУЛЬТАТИ"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_adjustment__id
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__id
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__id
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__id
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_member__id
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__activity_exception_icon
+msgid "Icon"
+msgstr "Іконка"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_report__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Іконка для позначення виключення дії."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_group__message_needaction
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_report__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Якщо позначено, нові повідомлення потребують вашої уваги."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_group__message_has_error
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_group__message_has_sms_error
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_report__message_has_error
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_report__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Якщо позначено, деякі повідомлення мають помилку доставки."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__elimination_account_prefixes
+msgid "Intra-group Balance Accounts"
+msgstr "Рахунки внутрішньогрупового сальдо"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__intragroup_partner_ids
+msgid "Intra-group Partners"
+msgstr "Контрагенти групи"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_cell__elimination_kind__intragroup
+msgid "Intra-group balances and transactions"
+msgstr "Внутрішньогрупове сальдо та операції"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_cell__elimination_kind__cost_of_sales
+msgid "Intra-group sales against cost of sales"
+msgstr "Внутрішньогрупова реалізація проти собівартості"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_member__investment_amount_manual
+msgid "Investment (manual)"
+msgstr "Інвестиція (вручну)"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__investment_account_prefixes
+msgid "Investment Accounts"
+msgstr "Рахунки інвестицій"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_member__investment_source
+msgid "Investment Amount"
+msgstr "Сума інвестиції"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_cell__elimination_kind__investment
+msgid "Investment vs. subsidiary equity"
+msgstr "Інвестиція проти капіталу дочірнього"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__message_is_follower
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__message_is_follower
+msgid "Is Follower"
+msgstr "Підписник"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_member__investment_source
+msgid ""
+"Journal items: balance of the parent on the investment accounts (рах. 14) "
+"with the subsidiary as partner on the report date."
+msgstr ""
+"З проводок: сальдо материнської компанії на рахунках інвестицій (рах. 14) з"
+" дочірнім як контрагентом на дату звіту."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_adjustment__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_member__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__write_uid
+msgid "Last Updated by"
+msgstr "Останнє оновлення"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_adjustment__write_date
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__write_date
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__write_date
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__write_date
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_member__write_date
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__write_date
+msgid "Last Updated on"
+msgstr "Останнє оновлення"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__line_id
+msgid "Line"
+msgstr "Рядок"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__name
+msgid "Line Name"
+msgstr "Стаття"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__line_type
+msgid "Line Type"
+msgstr "Тип рядка"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__line_ids
+msgid "Lines"
+msgstr "Рядки"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__adjustment_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_form
+msgid "Manual Adjustments"
+msgstr "Ручні коригування"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_cell__elimination_kind__manual
+msgid "Manual adjustments"
+msgstr "Ручні коригування"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_member__investment_source__manual
+msgid "Manual amount"
+msgstr "Сума вручну"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__message_has_error
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__message_has_error
+msgid "Message Delivery error"
+msgstr "Помилка доставки повідомлення"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__message_ids
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__message_ids
+msgid "Messages"
+msgstr "Повідомлення"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_member__method
+msgid "Method"
+msgstr "Метод"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Дедлайн моєї дії"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__name
+msgid "Name"
+msgstr "Назва"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__net_profit
+msgid "Net Profit"
+msgstr "Чистий прибуток"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__nci_profit
+msgid "Net Profit of Non-controlling Interest"
+msgstr "Чистий прибуток неконтрольованої частки"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Дедлайн наступної дії"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__activity_summary
+msgid "Next Activity Summary"
+msgstr "Підсумок наступної дії"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__activity_type_id
+msgid "Next Activity Type"
+msgstr "Тип наступної дії"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__nci_equity
+msgid "Non-controlling Interest"
+msgstr "Неконтрольована частка"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_member__nci_pct
+msgid "Non-controlling Interest %"
+msgstr "Неконтрольована частка, %"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_cell__elimination_kind__nci
+msgid "Non-controlling interest"
+msgstr "Неконтрольована частка"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__note
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__note
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_group_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_form
+msgid "Notes"
+msgstr "Примітки"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__message_needaction_counter
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Кількість дій"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__message_has_error_counter
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__message_has_error_counter
+msgid "Number of errors"
+msgstr "Кількість помилок"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_group__message_needaction_counter
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_report__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Кількість повідомлень, що потребують дії"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_group__message_has_error_counter
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_report__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Кількість повідомлень з помилкою доставки"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_member__ownership_pct
+msgid "Ownership %"
+msgstr "Частка володіння, %"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.constraint,message:l10n_ua_consolidation.constraint_l10n_ua_consolidation_member_ownership_range
+msgid "Ownership must be greater than 0 and at most 100 %."
+msgstr "Частка володіння має бути більшою за 0 і не більшою за 100 %."
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_form
+msgid "Parameters"
+msgstr "Параметри"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__parent_company_id
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__parent_company_id
+msgid "Parent Company"
+msgstr "Материнська компанія"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_group__company_ids
+msgid ""
+"Parent company and all subsidiaries. Only users allowed in all of them can "
+"see and build the consolidated statements."
+msgstr ""
+"Материнська компанія і всі дочірні. Бачити й формувати консолідовану "
+"звітність можуть лише користувачі з доступом до всіх них."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_group__parent_company_id
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_report__parent_company_id
+msgid "Parent company that prepares the consolidated statements of the group."
+msgstr "Материнське підприємство, що складає консолідовану звітність групи."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_member__ownership_pct
+msgid ""
+"Parent company's share in the subsidiary's capital (votes). Non-controlling "
+"interest = 100 − this percentage."
+msgstr ""
+"Частка материнського підприємства в капіталі (голосах) дочірнього. "
+"Неконтрольована частка = 100 − цей відсоток."
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.actions.act_window,help:l10n_ua_consolidation.action_consolidation_group
+msgid ""
+"Parent company, subsidiaries with ownership share and acquisition date —\n"
+"               the basis for consolidated forms 1-к and 2-к (НП(С)БО 2)."
+msgstr ""
+"Материнська компанія, дочірні з часткою володіння та датою придбання —\n"
+"               основа для консолідованих форм 1-к і 2-к (НП(С)БО 2)."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_group__intragroup_partner_ids
+msgid ""
+"Partners that represent group companies. Journal items with these partners "
+"(or their contacts) are intra-group. Defaults to the partners of the member "
+"companies; add other partner records of the same companies if they exist."
+msgstr ""
+"Контрагенти, що представляють компанії групи. Проводки з ними (або їхніми "
+"контактами) — внутрішньогрупові. За замовчуванням — контрагенти компаній "
+"групи; додайте інші картки тих самих компаній, якщо вони є."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_adjustment__period
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__period
+msgid "Period"
+msgstr "Період"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__date_to
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_search
+msgid "Period End"
+msgstr "Кінець періоду"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__date_from
+msgid "Period Start"
+msgstr "Початок періоду"
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_form
+msgid "Print 1-к"
+msgstr "Друк 1-к"
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_form
+msgid "Print 2-к"
+msgstr "Друк 2-к"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_adjustment__report_id
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__report_id
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__report_id
+msgid "Report"
+msgstr "Звіт"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_adjustment__period__current
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_cell__period__current
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_cell_search
+msgid "Reporting Period"
+msgstr "Звітний період"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__activity_user_id
+msgid "Responsible User"
+msgstr "Відповідальний"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_adjustment__row_key
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__row_label
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_cell_search
+msgid "Row"
+msgstr "Рядок"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__code
+msgid "Row Code"
+msgstr "Код рядка"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__row_key
+msgid "Row Key"
+msgstr "Ключ рядка"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__message_has_sms_error
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Помилка доставки SMS"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__section
+msgid "Section"
+msgstr "Розділ"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_line__line_type__section
+msgid "Section Header"
+msgstr "Заголовок розділу"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_cell__row_sequence
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__sequence
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_member__sequence
+msgid "Sequence"
+msgstr "Послідовність"
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_form
+msgid "Set to Draft"
+msgstr "У чернетку"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__state
+msgid "State"
+msgstr "Стан"
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_group_form
+msgid "Statements"
+msgstr "Звітність"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_report__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Статус на основі дій\n"
+"Прострочено: термін уже минув\n"
+"Сьогодні: дата дії сьогодні\n"
+"Заплановано: майбутні дії."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__member_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_group_form
+msgid "Subsidiaries"
+msgstr "Дочірні підприємства"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_member__company_id
+msgid "Subsidiary"
+msgstr "Дочірнє підприємство"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_line__line_type__subtotal
+msgid "Subtotal"
+msgstr "Проміжний підсумок"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_line__companies_amount
+msgid "Sum of Companies"
+msgstr "Сума компаній"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.constraint,message:l10n_ua_consolidation.constraint_l10n_ua_consolidation_group_name_uniq
+msgid "The group name must be unique per parent company."
+msgstr "Назва групи має бути унікальною в межах материнської компанії."
+
+#. module: l10n_ua_consolidation
+#. odoo-python
+#: code:addons/l10n_ua_consolidation/models/consolidation_group.py:0
+msgid "The parent company %s cannot be its own subsidiary."
+msgstr "Материнська компанія %s не може бути власним дочірнім підприємством."
+
+#. module: l10n_ua_consolidation
+#. odoo-python
+#: code:addons/l10n_ua_consolidation/models/consolidation_report.py:0
+msgid "The period start must not be after its end."
+msgstr "Початок періоду не може бути пізніше його кінця."
+
+#. module: l10n_ua_consolidation
+#. odoo-python
+#: code:addons/l10n_ua_consolidation/models/consolidation_report.py:0
+msgid "The row \"%s\" does not belong to the selected form."
+msgstr "Рядок «%s» не належить до вибраної форми."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields.selection,name:l10n_ua_consolidation.selection__l10n_ua_consolidation_line__line_type__total
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_cell_list
+msgid "Total"
+msgstr "Разом"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__total_assets
+msgid "Total Assets"
+msgstr "Усього активів"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__total_liabilities
+msgid "Total Equity and Liabilities"
+msgstr "Усього капіталу та зобов’язань"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_report__balance_difference
+msgid "Total assets − total equity and liabilities of form 1-к. Must be zero."
+msgstr "Актив − пасив форми 1-к. Має дорівнювати нулю."
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_form
+msgid "Totals"
+msgstr "Підсумки"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_report__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Тип виключення дії в записі."
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__warning_text
+msgid "Warnings"
+msgstr "Попередження"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_group__website_message_ids
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__website_message_ids
+msgid "Website Messages"
+msgstr "Повідомлення з сайту"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_group__website_message_ids
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_report__website_message_ids
+msgid "Website communication history"
+msgstr "Історія спілкування на сайті"
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,field_description:l10n_ua_consolidation.field_l10n_ua_consolidation_report__cell_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_report_form
+msgid "Worksheet"
+msgstr "Робоча таблиця"
+
+#. module: l10n_ua_consolidation
+#. odoo-python
+#: code:addons/l10n_ua_consolidation/models/consolidation_group.py:0
+msgid ""
+"You need access to all companies of the group \"%(group)s\" to build "
+"consolidated statements. Missing: %(companies)s."
+msgstr ""
+"Для формування консолідованої звітності потрібен доступ до всіх компаній "
+"групи «%(group)s». Бракує: %(companies)s."
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.view_consolidation_group_form
+msgid "e.g. Holding group"
+msgstr "напр., Холдингова група"
+
+#. module: l10n_ua_consolidation
+#. odoo-python
+#: code:addons/l10n_ua_consolidation/models/consolidation_group.py:0
+msgid "group_id"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#. odoo-python
+#: code:addons/l10n_ua_consolidation/models/consolidation_report.py:0
+msgid "report_id"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_header
+msgid "Група"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_header
+msgid "Дата (рік, місяць, число)"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_header
+msgid "Додаток 1 до Національного положення (стандарту)"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_pnl
+msgid "За аналогічний період попереднього року"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_pnl
+msgid "За звітний період"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_header
+msgid "КОДИ"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_balance
+msgid ""
+"КОНСОЛІДОВАНИЙ БАЛАНС<br/>\n"
+"                            (Звіт про фінансовий стан)"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_pnl
+msgid ""
+"КОНСОЛІДОВАНИЙ ЗВІТ ПРО ФІНАНСОВІ РЕЗУЛЬТАТИ<br/>\n"
+"                            (Звіт про сукупний дохід)"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_balance
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_pnl
+msgid "Код рядка"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model:ir.model.fields,help:l10n_ua_consolidation.field_l10n_ua_consolidation_member__method
+msgid "НП(С)БО 2 provides only for full consolidation of subsidiaries."
+msgstr "НП(С)БО 2 передбачає лише повну консолідацію дочірніх підприємств."
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_balance
+msgid "На кінець звітного періоду"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_balance
+msgid "На початок звітного періоду"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_header
+msgid ""
+"Одиниця виміру: грн без десяткового знака.\n"
+"            Складено за національними положеннями (стандартами) бухгалтерського обліку."
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_header
+msgid "Підприємство (материнське)"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_balance
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_pnl
+msgid "Стаття"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_balance
+msgid "Форма № 1-к"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_pnl
+msgid "Форма № 2-к"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_header
+msgid "бухгалтерського обліку 1 «Загальні вимоги до фінансової звітності»"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_pnl
+msgid "за"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_header
+msgid "за ЄДРПОУ"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_header
+msgid "за ДКУД"
+msgstr ""
+
+#. module: l10n_ua_consolidation
+#: model_terms:ir.ui.view,arch_db:l10n_ua_consolidation.report_consolidated_balance
+msgid "на"
+msgstr ""

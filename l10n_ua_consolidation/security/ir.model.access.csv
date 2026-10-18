@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_consolidation_group_manager,l10n_ua.consolidation.group.manager,model_l10n_ua_consolidation_group,account.group_account_manager,1,1,1,1
+access_consolidation_member_manager,l10n_ua.consolidation.member.manager,model_l10n_ua_consolidation_member,account.group_account_manager,1,1,1,1
+access_consolidation_report_manager,l10n_ua.consolidation.report.manager,model_l10n_ua_consolidation_report,account.group_account_manager,1,1,1,1
+access_consolidation_line_manager,l10n_ua.consolidation.line.manager,model_l10n_ua_consolidation_line,account.group_account_manager,1,1,1,1
+access_consolidation_cell_manager,l10n_ua.consolidation.cell.manager,model_l10n_ua_consolidation_cell,account.group_account_manager,1,1,1,1
+access_consolidation_adjustment_manager,l10n_ua.consolidation.adjustment.manager,model_l10n_ua_consolidation_adjustment,account.group_account_manager,1,1,1,1

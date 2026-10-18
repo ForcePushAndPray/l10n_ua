@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+
+        <!-- Multi-company: documents and their lines stay within the user's
+             allowed companies (same pattern as l10n_ua_accounting, #178). -->
+        <record id="l10n_ua_overhead_allocation_company_rule" model="ir.rule">
+            <field name="name">Overhead allocation: multi-company</field>
+            <field name="model_id" ref="model_l10n_ua_overhead_allocation"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="l10n_ua_overhead_allocation_source_company_rule" model="ir.rule">
+            <field name="name">Overhead allocation balance: multi-company</field>
+            <field name="model_id" ref="model_l10n_ua_overhead_allocation_source"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+        <record id="l10n_ua_overhead_allocation_line_company_rule" model="ir.rule">
+            <field name="name">Overhead allocation line: multi-company</field>
+            <field name="model_id" ref="model_l10n_ua_overhead_allocation_line"/>
+            <field name="global" eval="True"/>
+            <field name="domain_force">[('company_id', 'in', company_ids)]</field>
+        </record>
+
+    </data>
+</odoo>

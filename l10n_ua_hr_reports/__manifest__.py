@@ -15,7 +15,8 @@ Regulatory reports for Ukrainian localization:
 * D1 (ESV appendix - employee data)
 * Hire notice to the tax authority (J3001005/F3001005, CMU Resolution
   No. 413) from hiring orders, with deadline control
-* Statistical reports (1-PV, 3-PV)
+* Labour report 1-PV for the State Statistics Service (monthly and quarterly,
+  order No. 117 of 15.04.2024): printable form and XLSX export
 * Average headcount calculation
 * Wage fund reports
 
@@ -39,6 +40,8 @@ Requires l10n_ua_hr_salary module.
         'views/hr_report_wage_fund_views.xml',
         'views/hr_hire_notice_views.xml',
         'data/ir_cron.xml',
+        'views/hr_report_labor_views.xml',
+        'report/hr_report_labor_report.xml',
         'wizard/hr_report_wizard_views.xml',
         'views/menu_views.xml',
     ],

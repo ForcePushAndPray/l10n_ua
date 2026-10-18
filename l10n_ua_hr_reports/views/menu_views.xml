@@ -31,6 +31,12 @@
               action="action_hr_report_wage_fund"
               sequence="40"/>
 
+    <menuitem id="menu_hr_report_labor"
+              name="Labour Report 1-PV"
+              parent="hr.hr_menu_hr_reports"
+              action="action_hr_report_labor"
+              sequence="50"/>
+
     <menuitem id="menu_hr_report_wizard"
               name="Generate Report"
               parent="hr.hr_menu_hr_reports"

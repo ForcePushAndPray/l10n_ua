@@ -1,0 +1,2288 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ua_nonprofit
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-15 13:45+0000\n"
+"PO-Revision-Date: 2026-10-15 13:45+0000\n"
+"Last-Translator: \n"
+"Language-Team: Ukrainian\n"
+"Language: uk_UA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
+"n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.actions.report,print_report_name:l10n_ua_nonprofit.action_report_npo_program
+msgid "'Programs_%s_%s' % (object.date_from, object.date_to)"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.actions.report,print_report_name:l10n_ua_nonprofit.action_report_npo_income
+msgid "'Звіт_НПО_%s' % (object.year)"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "(грн)"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid ""
+"(найменування контролюючого органу, до якого подається Звіт\n"
+"                                        про використання доходів (прибутків) неприбуткової організації)"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "(повне найменування згідно з реєстраційними документами)"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "(підпис)"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "(ініціали та прізвище)"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__res_company__l10n_ua_nonprofit_code__0031
+msgid "0031 - Budget institutions"
+msgstr "0031 - Бюджетні установи"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__res_company__l10n_ua_nonprofit_code__0032
+msgid "0032 - Public associations"
+msgstr "0032 - Громадські об'єднання"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__res_company__l10n_ua_nonprofit_code__0033
+msgid "0033 - Political parties"
+msgstr "0033 - Політичні партії"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__res_company__l10n_ua_nonprofit_code__0034
+msgid "0034 - Creative unions"
+msgstr "0034 - Творчі спілки"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__res_company__l10n_ua_nonprofit_code__0035
+msgid "0035 - Religious organizations"
+msgstr "0035 - Релігійні організації"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__res_company__l10n_ua_nonprofit_code__0036
+msgid "0036 - Charitable organizations"
+msgstr "0036 - Благодійні організації"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__res_company__l10n_ua_nonprofit_code__0037
+msgid "0037 - Pension funds"
+msgstr "0037 - Пенсійні фонди"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__res_company__l10n_ua_nonprofit_code__0038
+msgid "0038 - Unions"
+msgstr "0038 - Спілки"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__res_company__l10n_ua_nonprofit_code__0039
+msgid "0039 - Associations and other unions of legal entities"
+msgstr "0039 - Асоціації та інші об'єднання юридичних осіб"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__res_company__l10n_ua_nonprofit_code__0040
+msgid "0040 - Housing construction cooperatives"
+msgstr "0040 - Житлово-будівельні кооперативи"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__res_company__l10n_ua_nonprofit_code__0041
+msgid "0041 - Country house (dacha) cooperatives"
+msgstr "0041 - Дачні (дачно-будівельні) кооперативи"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__res_company__l10n_ua_nonprofit_code__0042
+msgid "0042 - Gardening and garage cooperatives (societies)"
+msgstr "0042 - Садівничі та гаражні (гаражно-будівельні) кооперативи (товариства)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__res_company__l10n_ua_nonprofit_code__0043
+msgid "0043 - Associations of co-owners of apartment buildings"
+msgstr "0043 - Об'єднання співвласників багатоквартирного будинку, асоціації власників жилих будинків"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__res_company__l10n_ua_nonprofit_code__0044
+msgid "0044 - Trade unions, their associations and organizations"
+msgstr "0044 - Професійні спілки, їх об'єднання та організації профспілок"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__res_company__l10n_ua_nonprofit_code__0045
+msgid "0045 - Employers organizations and their associations"
+msgstr "0045 - Організації роботодавців та їх об'єднання"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__res_company__l10n_ua_nonprofit_code__0046
+msgid "0046 - Agricultural service cooperatives"
+msgstr "0046 - Сільськогосподарські обслуговуючі кооперативи"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__res_company__l10n_ua_nonprofit_code__0047
+msgid "0047 - Cooperative associations of agricultural service cooperatives"
+msgstr "0047 - Кооперативні об'єднання сільськогосподарських обслуговуючих кооперативів"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__res_company__l10n_ua_nonprofit_code__0048
+msgid ""
+"0048 - Other legal entities meeting the requirements of para. 133.4 of the "
+"Tax Code"
+msgstr "0048 - Інші юридичні особи, діяльність яких відповідає вимогам п. 133.4 ПКУ"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r1
+msgid "1 Income (1.1-1.11)"
+msgstr "1 Доходи (1.1-1.11)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r1_1
+msgid "1.1"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__1_1
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__income_row__1_1
+msgid "1.1 Budget financing (general fund)"
+msgstr "1.1 Фінансування бюджетної установи (загальний фонд)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r1_10
+msgid "1.10"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__1_10
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__income_row__1_10
+msgid "1.10 Assets received on termination of a legal entity"
+msgstr "1.10 Активи, отримані в разі припинення юридичної особи"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r1_11
+msgid "1.11"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__1_11
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__income_row__1_11
+msgid "1.11 Other income"
+msgstr "1.11 Інші доходи"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r1_2
+msgid "1.2"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__1_2
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__income_row__1_2
+msgid "1.2 Special account balances carried over"
+msgstr "1.2 Залишки коштів на спеціальних рахунках з попереднього року"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r1_3
+msgid "1.3"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__1_3
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__income_row__1_3
+msgid "1.3 Special fund income of a budget institution"
+msgstr "1.3 Доходи спеціального фонду бюджетної установи"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r1_4
+msgid "1.4"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__1_4
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__income_row__1_4
+msgid "1.4 Grants, subsidies, budget financing, technical assistance"
+msgstr "1.4 Дотації (субсидії), бюджетне фінансування, технічна допомога"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r1_5
+msgid "1.5"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__1_5
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__income_row__1_5
+msgid "1.5 Assets received for the statutory purposes"
+msgstr "1.5 Активи, отримані для реалізації статутної мети"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r1_6
+msgid "1.6"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r1_6_own
+msgid "1.6 (not in 1.6.1-1.6.3)"
+msgstr "1.6 (поза рядками 1.6.1-1.6.3)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__1_6
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__income_row__1_6
+msgid "1.6 Gratuitous financial aid, voluntary donations"
+msgstr "1.6 Безповоротна фінансова допомога, добровільні пожертвування"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r1_6_1
+msgid "1.6.1"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__1_6_1
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__income_row__1_6_1
+msgid "1.6.1 Charitable aid"
+msgstr "1.6.1 Благодійна допомога"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r1_6_2
+msgid "1.6.2 HD"
+msgstr "1.6.2 ГД"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__1_6_2
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__income_row__1_6_2
+msgid "1.6.2 Humanitarian aid (HD)"
+msgstr "1.6.2 Гуманітарна допомога (ГД)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r1_6_3
+msgid "1.6.3"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__1_6_3
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__income_row__1_6_3
+msgid "1.6.3 Funds and goods for the Defence Forces"
+msgstr "1.6.3 Кошти й товари для сил оборони"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r1_7
+msgid "1.7"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__1_7
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__income_row__1_7
+msgid "1.7 Contributions of founders and members"
+msgstr "1.7 Внески засновників і членів"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r1_8
+msgid "1.8"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__1_8
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__income_row__1_8
+msgid "1.8 Non-state pension contributions"
+msgstr "1.8 Внески на недержавне пенсійне забезпечення"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r1_9
+msgid "1.9"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__1_9
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__income_row__1_9
+msgid "1.9 Passive income"
+msgstr "1.9 Пасивні доходи"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report__clarified_month__10
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report__month__10
+msgid "10"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r10
+msgid "10 Fine 3%"
+msgstr "10 Штраф 3%"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report__clarified_month__11
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report__month__11
+msgid "11"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report__clarified_month__12
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report__month__12
+msgid "12"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r2
+msgid "2 Expenses (2.1-2.6)"
+msgstr "2 Видатки (2.1-2.6)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r2_1
+msgid "2.1"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__2_1
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__expense_row__2_1
+msgid "2.1 Budget institution expenses (general fund)"
+msgstr "2.1 Видатки бюджетної установи (загальний фонд)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r2_2
+msgid "2.2"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__2_2
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__expense_row__2_2
+msgid "2.2 Budget institution expenses (special fund)"
+msgstr "2.2 Видатки бюджетної установи (спеціальний фонд)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r2_3
+msgid "2.3"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__2_3
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__expense_row__2_3
+msgid "2.3 Maintenance and statutory activities"
+msgstr "2.3 Утримання організації та статутна діяльність"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r2_4
+msgid "2.4"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r2_4_own
+msgid "2.4 (not in 2.4.1-2.4.3)"
+msgstr "2.4 (поза рядками 2.4.1-2.4.3)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__2_4
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__expense_row__2_4
+msgid "2.4 Gratuitous financial aid, donations given"
+msgstr "2.4 Надана безповоротна фінансова допомога, пожертвування"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r2_4_1
+msgid "2.4.1"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__2_4_1
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__expense_row__2_4_1
+msgid "2.4.1 Charitable aid given"
+msgstr "2.4.1 Надана благодійна допомога"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r2_4_2
+msgid "2.4.2 HD"
+msgstr "2.4.2 ГД"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__2_4_2
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__expense_row__2_4_2
+msgid "2.4.2 Humanitarian aid given (HD)"
+msgstr "2.4.2 Надана гуманітарна допомога (ГД)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r2_4_3
+msgid "2.4.3"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__2_4_3
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__expense_row__2_4_3
+msgid "2.4.3 Funds and goods given to the Defence Forces"
+msgstr "2.4.3 Кошти й товари, передані силам оборони"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r2_5
+msgid "2.5"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__2_5
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__expense_row__2_5
+msgid "2.5 Assets transferred on liquidation"
+msgstr "2.5 Активи, передані в разі ліквідації"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r2_6
+msgid "2.6"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report_line__row__2_6
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__expense_row__2_6
+msgid "2.6 Other expenses"
+msgstr "2.6 Інші видатки (витрати)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r3
+msgid "3 Non-target use of assets"
+msgstr "3 Нецільове використання активів"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r3_1
+msgid "3.1 HD"
+msgstr "3.1 ГД"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r3_2
+msgid "3.2"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r4
+msgid "4 Income distributed"
+msgstr "4 Розподілені доходи"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r5
+msgid "5 Tax object (3 + 4)"
+msgstr "5 Об'єкт оподаткування (3 + 4)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r6
+msgid "6 Profit tax liability"
+msgstr "6 Податкове зобов'язання з податку на прибуток"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r7
+msgid "7 Correction of the liability (+/-)"
+msgstr "7 Виправлення зобов'язання (+/-)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r8
+msgid "8 Fine 5%"
+msgstr "8 Штраф 5%"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r9
+msgid "9 Penalty"
+msgstr "9 Пеня"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid ""
+"<br/>\n"
+"                                    Поштовий індекс:"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_recognition_view_form
+msgid "<span>Journal Entry</span>"
+msgstr "<span>Проводка</span>"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_form
+msgid "<span>Journal Items</span>"
+msgstr "<span>Проводки</span>"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid ""
+"<sup>1</sup> Зазначається номер календарного місяця, в якому порушено вимоги пункту 133.4\n"
+"                            статті 133 розділу ІІІ Податкового кодексу України та нараховане податкове зобов’язання\n"
+"                            з податку на прибуток підприємств.<br/>\n"
+"                            <sup>2</sup> Зазначається базова (основна) ставка податку на прибуток у відсотках, яка\n"
+"                            встановлена пунктом 136.1 статті 136 розділу ІІІ Податкового кодексу України.<br/>\n"
+"                            <sup>3</sup> Заповнюється у разі самостійного виправлення помилки(ок) відповідно до\n"
+"                            статті 50 глави 2 розділу ІІ Податкового кодексу України.<br/>\n"
+"                            <sup>4</sup> У відповідних клітинках проставляється позначка «+».<br/>\n"
+"                            <sup>5</sup> Заповнюється у разі здійснення операцій з гуманітарною допомогою.<br/>\n"
+"                            <sup>6</sup> Подається відповідно до пункту 46.2 статті 46 Податкового кодексу України\n"
+"                            разом зі Звітом. Фінансова звітність є додатком до Звіту та його невід’ємною частиною.<br/>\n"
+"                            <sup>7</sup> Заповнюється бюджетними установами (організаціями).<br/>\n"
+"                            <sup>8</sup> Заповнюється у разі подання разом зі Звітом доповнення."
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.actions.act_window,help:l10n_ua_nonprofit.l10n_ua_npo_program_action
+msgid ""
+"A program is a funding source of the organization: a donor grant,\n"
+"               a charity collection, membership fees. Book receipts to account 48\n"
+"               and expenses with the analytic account of the program; the income\n"
+"               is recognised from 48 as the money is spent."
+msgstr ""
+"Програма — це джерело фінансування організації: грант донора,\n"
+"               благодійний збір, членські внески. Надходження проводьте на рахунок 48,\n"
+"               а витрати — з аналітичним рахунком програми; дохід визнається\n"
+"               з 48 у міру витрачання коштів."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report_line__account_id
+msgid "Account"
+msgstr "Рахунок"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_res_company__l10n_ua_npo_target_account_id
+msgid "Account 48 \"Target financing and target receipts\" used by new programs."
+msgstr "Рахунок 48 «Цільове фінансування і цільові надходження» для нових програм."
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_form
+msgid "Accounting"
+msgstr "Облік"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__message_needaction
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__message_needaction
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__message_needaction
+msgid "Action Needed"
+msgstr "Потрібна дія"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_form
+msgid "Activate"
+msgstr "Активувати"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__active
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__state__active
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_search
+msgid "Active"
+msgstr "Активна"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__activity_ids
+msgid "Activities"
+msgstr "Дії"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Оформлення виключення дії"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__activity_state
+msgid "Activity State"
+msgstr "Стан дії"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Іконка типу дії"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r2_4_own
+msgid "Aid and donations given that are not shown in rows 2.4.1-2.4.3."
+msgstr "Надана допомога й пожертвування, не відображені в рядках 2.4.1-2.4.3."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report_line__amount
+msgid "Amount"
+msgstr "Сума"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__analytic_account_id
+msgid "Analytic Account"
+msgstr "Аналітичний рахунок"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__has_annex_hd
+msgid "Annex HD"
+msgstr "Додаток ГД"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__has_annex_vp
+msgid "Annex VP"
+msgstr "Додаток ВП"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_form
+msgid "Annexes"
+msgstr "Додатки"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_search
+msgid "Archived"
+msgstr "Архівовано"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__funding_type__statutory
+msgid "Assets for Statutory Purposes"
+msgstr "Активи на статутні цілі"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__message_attachment_count
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__message_attachment_count
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__message_attachment_count
+msgid "Attachment Count"
+msgstr "Кількість вкладень"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__amount_balance
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition_line__balance_available
+msgid "Balance on 48"
+msgstr "Залишок на 48"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__profit_tax_rate
+msgid "Base profit tax rate, para. 136.1 of the Tax Code."
+msgstr "Базова ставка податку на прибуток, п. 136.1 ПКУ."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__line_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_form
+msgid "Breakdown"
+msgstr "Розшифровка"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__budget_amount
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__budget_amount
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_program_document
+msgid "Budget"
+msgstr "Бюджет"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__budget_remaining
+msgid "Budget Remaining"
+msgstr "Залишок бюджету"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__budget_used
+msgid "Budget Used (%)"
+msgstr "Використано бюджету (%)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report__fs_kind__budget
+msgid "Budget institution (Balance, Report on financial results)"
+msgstr "Бюджетна установа (Баланс, Звіт про результати фінансової діяльності)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__has_annex_vp
+msgid ""
+"Calculation of tax liabilities for the period in which errors were found."
+msgstr "Розрахунок податкових зобов'язань за період, за який виявлено помилки."
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_recognition_view_form
+msgid "Cancel"
+msgstr "Скасувати"
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_recognition.py:0
+msgid "Cancel the recognition before deleting it."
+msgstr "Скасуйте визнання перед видаленням."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_recognition__state__cancelled
+msgid "Cancelled"
+msgstr "Скасовано"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__funding_type__charity
+msgid "Charitable Aid"
+msgstr "Благодійна допомога"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__accountant_name
+msgid "Chief Accountant"
+msgstr "Головний бухгалтер"
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_income_report.py:0
+msgid "Choose the month of the monthly report."
+msgstr "Оберіть місяць місячного звіту."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__clarified_month
+msgid "Clarified Month"
+msgstr "Місяць, що уточнюється"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__clarified_year
+msgid "Clarified Year"
+msgstr "Рік, що уточнюється"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report__report_kind__clarifying
+msgid "Clarifying"
+msgstr "Уточнюючий"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_form
+msgid "Close"
+msgstr "Закрити"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__state__closed
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_search
+msgid "Closed"
+msgstr "Закрита"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__closing_balance
+msgid "Closing Balance"
+msgstr "Залишок на кінець"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_program_document
+msgid "Closing Balance (48)"
+msgstr "Залишок на кінець (48)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_res_company__l10n_ua_npo_recognise_on_closing
+msgid ""
+"Closing a month posts the recognition of target financing as income (Dr 48 -"
+" Cr 718) before the income and expense accounts are closed."
+msgstr "Закриття місяця проводить визнання цільового фінансування доходом (Дт 48 – Кт 718) перед закриттям рахунків доходів і витрат."
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_program_document
+msgid ""
+"Closing balance = opening balance + received − recognised as income − returned / other.\n"
+"                            Income is recognised in the periods in which the expenses of the program are incurred\n"
+"                            (P(S)BO 15 \"Income\", para. 17)."
+msgstr ""
+"Залишок на кінець = залишок на початок + отримано − визнано доходом − повернено / інше.\n"
+"                            Дохід визнається в тих періодах, у яких понесено витрати програми\n"
+"                            (П(С)БО 15 «Дохід», п. 17)."
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_period_closing_view_form_nonprofit
+msgid ""
+"Closing the period recognises target financing (account 48) as\n"
+"                        income equal to the program expenses, before the income and\n"
+"                        expense accounts are closed."
+msgstr ""
+"Закриття періоду визнає цільове фінансування (рахунок 48)\n"
+"                        доходом у сумі витрат програм — перед закриттям рахунків\n"
+"                        доходів і витрат."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__code
+msgid "Code"
+msgstr "Код"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_res_company__l10n_ua_npo_expense_prefixes
+msgid ""
+"Comma-separated code prefixes of the expense accounts whose amounts, tagged "
+"with a program analytic account, count as program spending. If expenses are "
+"booked on class 8 and then moved to class 9, keep only one of the classes "
+"here, otherwise they are counted twice."
+msgstr "Префікси кодів рахунків витрат через кому: суми на них з аналітикою програми вважаються витратами програми. Якщо витрати обліковуються на класі 8 і потім переносяться на клас 9, залиште тут лише один клас, інакше вони порахуються двічі."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model,name:l10n_ua_nonprofit.model_res_company
+msgid "Companies"
+msgstr "Компанії"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__company_id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report_line__company_id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__company_id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report__company_id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__company_id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition_line__company_id
+msgid "Company"
+msgstr "Компанія"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_report_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_recognition_view_form
+msgid "Compute"
+msgstr "Обчислити"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_form
+msgid "Correction of Errors"
+msgstr "Виправлення помилок"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.actions.act_window,help:l10n_ua_nonprofit.l10n_ua_npo_income_report_action
+msgid "Create the annual report"
+msgstr "Створіть річний звіт"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.actions.act_window,help:l10n_ua_nonprofit.l10n_ua_npo_program_action
+msgid "Create the first target program"
+msgstr "Створіть першу цільову програму"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report_line__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition_line__create_uid
+msgid "Created by"
+msgstr "Створив"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__create_date
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report_line__create_date
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__create_date
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report__create_date
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__create_date
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__create_date
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition_line__create_date
+msgid "Created on"
+msgstr "Створено"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program__income_account_id
+msgid "Credited when the target financing is recognised as income."
+msgstr "Кредитується під час визнання цільового фінансування доходом."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report_line__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition_line__currency_id
+msgid "Currency"
+msgstr "Валюта"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__date
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_recognition_view_search
+msgid "Date"
+msgstr "Дата"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__register_date
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_res_company__l10n_ua_nonprofit_register_date
+msgid ""
+"Date of the decision to include the organization in the Register of non-"
+"profit institutions and organizations."
+msgstr "Дата рішення про включення організації до Реєстру неприбуткових установ та організацій."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__other_debit
+msgid ""
+"Debits of 48 other than the recognition: refunds to the donor, direct write-"
+"offs."
+msgstr "Дебет 48, крім визнання доходу: повернення донору, пряме списання."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_res_company__l10n_ua_npo_income_account_id
+msgid "Default Recognised Income Account"
+msgstr "Рахунок визнаного доходу за замовчуванням"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_res_company__l10n_ua_npo_target_account_id
+msgid "Default Target Financing Account"
+msgstr "Рахунок цільового фінансування за замовчуванням"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__display_name
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report_line__display_name
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__display_name
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report__display_name
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__display_name
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__display_name
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition_line__display_name
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_period_closing__display_name
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_res_company__display_name
+msgid "Display Name"
+msgstr "Відображуване ім'я"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report__state__done
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_search
+msgid "Done"
+msgstr "Готово"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__partner_id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report__partner_id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__partner_id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition_line__partner_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_program_document
+msgid "Donor"
+msgstr "Донор"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program__partner_id
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__partner_id
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_recognition_line__partner_id
+msgid ""
+"Donor / grantor / funding source. Empty for collections from many donors and"
+" membership fees."
+msgstr "Донор / грантодавець / джерело фінансування. Порожньо для зборів від багатьох жертводавців і членських внесків."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report__state__draft
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__state__draft
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_recognition__state__draft
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_recognition_view_search
+msgid "Draft"
+msgstr "Чернетка"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__company_edrpou
+msgid "EDRPOU"
+msgstr "ЄДРПОУ"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__date_end
+msgid "End Date"
+msgstr "Дата завершення"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__expense_row
+msgid "Expense Row of the Report"
+msgstr "Рядок видатків у звіті"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_form
+msgid "Expenses"
+msgstr "Видатки"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__amount_unrecognised
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__uncovered
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_program_document
+msgid "Expenses Not Yet Covered"
+msgstr "Витрати, ще не покриті доходом"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__date
+msgid ""
+"Expenses and receipts up to this date are taken into account; the entry is "
+"dated on it."
+msgstr "Враховуються витрати й надходження до цієї дати; проводка датується нею."
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_form
+msgid "Figures to Date"
+msgstr "Показники на сьогодні"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_form
+msgid ""
+"Filled in only by organizations that breached the\n"
+"                                requirements of para. 133.4 of the Tax Code."
+msgstr ""
+"Заповнюють лише організації, які не дотримались\n"
+"                                вимог п. 133.4 ПКУ."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__fs_kind
+msgid "Financial Statements"
+msgstr "Фінансова звітність"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__has_annex_fs
+msgid "Financial Statements Attached"
+msgstr "Додано фінансову звітність"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report__fs_kind__small
+msgid "Financial statement of a small enterprise"
+msgstr "Фінансовий звіт суб'єкта малого підприємництва"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__fs_kind
+msgid ""
+"Financial statements are an integral annex of the report (para. 46.2 of the "
+"Tax Code)."
+msgstr "Фінансова звітність — невід'ємний додаток до звіту (п. 46.2 ПКУ)."
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.view_company_form_l10n_ua_nonprofit
+msgid ""
+"Find or create accounts 48x and 718 and the journal of target financing."
+msgstr "Знайти або створити рахунки 48x і 718 та журнал цільового фінансування."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__message_follower_ids
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__message_follower_ids
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__message_follower_ids
+msgid "Followers"
+msgstr "Підписники"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__message_partner_ids
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__message_partner_ids
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Підписники (Партнери)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Іконка Font awesome, напр. fa-tasks"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__date_from
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report__date_from
+msgid "From"
+msgstr "З"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report__fs_kind__full
+msgid "Full (Balance, P&L, Cash Flow, Equity, Notes)"
+msgstr "Повна (Баланс, ЗФР, рух коштів, власний капітал, примітки)"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_form
+msgid "Funding"
+msgstr "Фінансування"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__funding_type
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_search
+msgid "Funding Type"
+msgstr "Тип фінансування"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__funding_type__grant
+msgid "Grant / Technical Assistance / Budget Financing"
+msgstr "Грант / технічна допомога / бюджетне фінансування"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r1_6_own
+msgid "Gratuitous aid and donations not shown in rows 1.6.1-1.6.3."
+msgstr "Безповоротна допомога й пожертвування, не відображені в рядках 1.6.1-1.6.3."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__has_message
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__has_message
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__has_message
+msgid "Has Message"
+msgstr "Є повідомлення"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__director_name
+msgid "Head"
+msgstr "Керівник"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__funding_type__humanitarian
+msgid "Humanitarian Aid"
+msgstr "Гуманітарна допомога"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report_line__id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report__id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition_line__id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_period_closing__id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_res_company__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__activity_exception_icon
+msgid "Icon"
+msgstr "Іконка"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Іконка для позначення виключення дії."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__message_needaction
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program__message_needaction
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Якщо позначено, нові повідомлення потребують вашої уваги."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__message_has_error
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__message_has_sms_error
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program__message_has_error
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program__message_has_sms_error
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__message_has_error
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Якщо позначено, деякі повідомлення мають помилку доставки."
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_form
+msgid "Income"
+msgstr "Доходи"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__r4
+msgid ""
+"Income (profit) or its part distributed among founders, members, employees "
+"(except salary and SSC), management and related persons."
+msgstr "Доходи (прибутки) або їх частина, розподілені серед засновників, членів, працівників (крім оплати праці та ЄСВ), членів органів управління та пов'язаних з ними осіб."
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_recognition_view_form
+msgid ""
+"Income = program expenses to date − income recognised before,\n"
+"                        but not more than the balance of 48 (P(S)BO 15 \"Income\", para. 17)."
+msgstr ""
+"Дохід = витрати програми до дати − дохід, визнаний раніше,\n"
+"                        але не більше залишку на 48 (П(С)БО 15 «Дохід», п. 17)."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__income_row
+msgid "Income Row of the Report"
+msgstr "Рядок доходу у звіті"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_res_company__l10n_ua_npo_income_account_id
+msgid ""
+"Income account credited when target financing is recognised as income "
+"(usually 718 or 719)."
+msgstr "Рахунок доходу, що кредитується під час визнання цільового фінансування доходом (зазвичай 718 або 719)."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition_line__amount
+msgid "Income to Recognise"
+msgstr "Дохід до визнання"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__has_annex_hd
+msgid "Information on operations with humanitarian aid."
+msgstr "Інформація щодо операцій з гуманітарною допомогою."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__message_is_follower
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__message_is_follower
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__message_is_follower
+msgid "Is Follower"
+msgstr "Підписник"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__journal_id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__journal_id
+msgid "Journal"
+msgstr "Журнал"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__move_id
+msgid "Journal Entry"
+msgstr "Проводка"
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_program.py:0
+msgid "Journal Items: %s"
+msgstr "Рядки журналу: %s"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_res_company__l10n_ua_npo_journal_id
+msgid ""
+"Journal of the income recognition entries. Empty: the journal of the period "
+"closing."
+msgstr "Журнал проводок визнання доходу. Порожньо — журнал закриття періоду."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program__journal_id
+msgid ""
+"Journal of the recognition entries of this program. Empty: the company "
+"target financing journal."
+msgstr "Журнал проводок визнання за цією програмою. Порожньо — журнал цільового фінансування компанії."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report_line__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition_line__write_uid
+msgid "Last Updated by"
+msgstr "Останнє оновлення"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__write_date
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report_line__write_date
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__write_date
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report__write_date
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__write_date
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__write_date
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition_line__write_date
+msgid "Last Updated on"
+msgstr "Останнє оновлення"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program_report__program_ids
+msgid "Leave empty for all programs of the company."
+msgstr "Залиште порожнім для всіх програм компанії."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__program_ids
+msgid "Leave empty to process all active programs of the company."
+msgstr "Залиште порожнім, щоб обробити всі активні програми компанії."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report__line_ids
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__line_ids
+msgid "Lines"
+msgstr "Рядки"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_form
+msgid "Mark as Done"
+msgstr "Позначити готовим"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__funding_type__membership
+msgid "Membership Fees"
+msgstr "Членські внески"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__message_has_error
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__message_has_error
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__message_has_error
+msgid "Message Delivery error"
+msgstr "Помилка доставки повідомлення"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__message_ids
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__message_ids
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__message_ids
+msgid "Messages"
+msgstr "Повідомлення"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__month
+msgid "Month"
+msgstr "Місяць"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report__period_type__month
+msgid "Month (breach of para. 133.4)"
+msgstr "Місяць (порушення п. 133.4)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Дедлайн моєї дії"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__name
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__name
+msgid "Name"
+msgstr "Назва"
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_recognition.py:0
+msgid "New"
+msgstr "Нове"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report__report_kind__new
+msgid "New Reporting"
+msgstr "Звітний новий"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Дедлайн наступної дії"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__activity_summary
+msgid "Next Activity Summary"
+msgstr "Підсумок наступної дії"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__activity_type_id
+msgid "Next Activity Type"
+msgstr "Тип наступної дії"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__nonprofit_code
+msgid "Non-profit Attribute"
+msgstr "Ознака неприбутковості"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_res_company__l10n_ua_nonprofit_code
+msgid "Non-profit Attribute Code"
+msgstr "Код ознаки неприбутковості"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model,name:l10n_ua_nonprofit.model_l10n_ua_npo_income_report_line
+msgid "Non-profit Income Report Breakdown"
+msgstr "Розшифровка звіту про використання доходів НПО"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_period_closing__l10n_ua_is_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_res_company__l10n_ua_is_nonprofit
+#: model:ir.ui.menu,name:l10n_ua_nonprofit.menu_npo
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.view_company_form_l10n_ua_nonprofit
+msgid "Non-profit Organization"
+msgstr "Неприбуткова організація"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model,name:l10n_ua_nonprofit.model_l10n_ua_npo_program
+msgid "Non-profit Target Program"
+msgstr "Цільова програма неприбуткової організації"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__nonprofit_code
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_res_company__l10n_ua_nonprofit_code
+msgid ""
+"Non-profit attribute assigned by the tax authority when the organization was"
+" included in the Register (CMU resolution of 13.07.2016 No. 440, para. 4)."
+msgstr "Ознака неприбутковості, присвоєна контролюючим органом під час включення організації до Реєстру (постанова КМУ від 13.07.2016 № 440, п. 4)."
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_income_report.py:0
+msgid "Non-profit income report %(month)s.%(year)s"
+msgstr "Звіт про використання доходів НПО %(month)s.%(year)s"
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_income_report.py:0
+msgid "Non-profit income report %s"
+msgstr "Звіт про використання доходів НПО %s"
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_recognition.py:0
+msgid ""
+"Nothing to recognise on %s: the programs have no expenses not yet covered by"
+" income, or no balance on 48."
+msgstr "Немає що визнавати на %s: у програм немає витрат, не покритих доходом, або немає залишку на 48."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__message_needaction_counter
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__message_needaction_counter
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Кількість дій"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__message_has_error_counter
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__message_has_error_counter
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__message_has_error_counter
+msgid "Number of errors"
+msgstr "Кількість помилок"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__message_needaction_counter
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program__message_needaction_counter
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Кількість повідомлень, що потребують дії"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__message_has_error_counter
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program__message_has_error_counter
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Кількість повідомлень з помилкою доставки"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__register_number
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_res_company__l10n_ua_nonprofit_register_number
+msgid "Number of the decision to include the organization in the Register."
+msgstr "Номер рішення про включення організації до Реєстру."
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_recognition.py:0
+msgid "Only a cancelled recognition can be reset to draft."
+msgstr "У чернетку можна повернути лише скасоване визнання."
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_recognition.py:0
+msgid "Only a draft recognition can be posted."
+msgstr "Провести можна лише чернетку визнання."
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_recognition.py:0
+msgid "Only a draft recognition can be recomputed."
+msgstr "Перерахувати можна лише чернетку визнання."
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_income_report.py:0
+msgid "Only a draft report can be recomputed."
+msgstr "Перерахувати можна лише чернетку звіту."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__opening_balance
+msgid "Opening Balance"
+msgstr "Залишок на початок"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_program_document
+msgid "Opening Balance (48)"
+msgstr "Залишок на початок (48)"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_form
+msgid "Organization"
+msgstr "Організація"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__funding_type__other
+msgid "Other"
+msgstr "Інше"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_form
+msgid "Part I"
+msgstr "Частина І"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_form
+msgid "Part II"
+msgstr "Частина ІІ"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__period_type
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_form
+msgid "Period"
+msgstr "Період"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model,name:l10n_ua_nonprofit.model_l10n_ua_period_closing
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__closing_id
+msgid "Period Closing"
+msgstr "Закриття періоду"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__closing_id
+msgid ""
+"Period closing that posted this recognition; reversing the closing reverses "
+"it too."
+msgstr "Закриття періоду, яке провело це визнання; сторно закриття сторнує й визнання."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program__budget_amount
+msgid "Planned amount of the program (grant agreement, estimate)."
+msgstr "Планова сума програми (грантова угода, кошторис)."
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_recognition_view_form
+msgid "Post"
+msgstr "Провести"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_recognition__state__posted
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_recognition_view_search
+msgid "Posted"
+msgstr "Проведено"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_report_view_form
+msgid "Print"
+msgstr "Друк"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__profit_tax_rate
+msgid "Profit Tax Rate (%)"
+msgstr "Ставка податку на прибуток (%)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report_line__program_id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__name
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__program_id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition_line__program_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_recognition_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_program_document
+msgid "Program"
+msgstr "Програма"
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_program.py:0
+msgid ""
+"Program %s has journal items and cannot be deleted. Archive or close it "
+"instead."
+msgstr "Програма %s має проводки і не може бути видалена. Заархівуйте або закрийте її."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_res_company__l10n_ua_npo_expense_prefixes
+msgid "Program Expense Accounts"
+msgstr "Рахунки витрат програм"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition_line__expense_total
+msgid "Program Expenses to Date"
+msgstr "Витрати програми до дати"
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/res_company.py:0
+msgid ""
+"Program expense accounts must be code prefixes of expense accounts (classes "
+"8 and 9), got \"%s\"."
+msgstr "Рахунки витрат програм мають бути префіксами кодів рахунків витрат (класи 8 і 9), отримано «%s»."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program__amount_unrecognised
+msgid ""
+"Program expenses not yet matched by recognised income (the balance of 48 was"
+" not sufficient)."
+msgstr "Витрати програми, ще не покриті визнаним доходом (залишку на 48 не вистачило)."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__uncovered
+msgid "Program expenses to date not matched by recognised income."
+msgstr "Витрати програми до дати, не покриті визнаним доходом."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report__program_ids
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__program_ids
+msgid "Programs"
+msgstr "Програми"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__note
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_form
+msgid "Purpose and Conditions"
+msgstr "Мета та умови"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__amount_received
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__received
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_program_document
+msgid "Received"
+msgstr "Отримано"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_res_company__l10n_ua_npo_recognise_on_closing
+msgid "Recognise Target Income on Period Closing"
+msgstr "Визнавати цільовий дохід під час закриття періоду"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.actions.act_window,help:l10n_ua_nonprofit.l10n_ua_npo_recognition_action
+msgid "Recognise target financing as income"
+msgstr "Визнайте цільове фінансування доходом"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition_line__recognised_before
+msgid "Recognised Before"
+msgstr "Визнано раніше"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__amount_total
+msgid "Recognised Income"
+msgstr "Визнаний дохід"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__income_account_id
+msgid "Recognised Income Account"
+msgstr "Рахунок визнаного доходу"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__amount_recognised
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__recognised
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_program_document
+msgid "Recognised as Income"
+msgstr "Визнано доходом"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition_line__recognition_id
+msgid "Recognition"
+msgstr "Визнання"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__register_date
+msgid "Register Decision Date"
+msgstr "Дата рішення про включення до Реєстру"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__register_number
+msgid "Register Decision No."
+msgstr "№ рішення про включення до Реєстру"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_res_company__l10n_ua_nonprofit_register_number
+msgid "Register Decision Number"
+msgstr "Номер рішення про включення до Реєстру"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_res_company__l10n_ua_nonprofit_register_date
+msgid "Register Inclusion Date"
+msgstr "Дата включення до Реєстру"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.view_company_form_l10n_ua_nonprofit
+msgid "Register of Non-profit Organizations"
+msgstr "Реєстр неприбуткових установ та організацій"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report_line__report_id
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__report_id
+msgid "Report"
+msgstr "Звіт"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__report_kind
+msgid "Report Type"
+msgstr "Тип звіту"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_form
+msgid "Report on the Use of Income"
+msgstr "Звіт про використання доходів"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.actions.act_window,name:l10n_ua_nonprofit.l10n_ua_npo_income_report_action
+#: model:ir.actions.report,name:l10n_ua_nonprofit.action_report_npo_income
+#: model:ir.ui.menu,name:l10n_ua_nonprofit.menu_npo_reports_income
+msgid "Report on the Use of Income (Non-profit)"
+msgstr "Звіт про використання доходів (НПО)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model,name:l10n_ua_nonprofit.model_l10n_ua_npo_income_report
+msgid "Report on the Use of Income of a Non-profit Organization"
+msgstr "Звіт про використання доходів неприбуткової організації"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.actions.act_window,help:l10n_ua_nonprofit.l10n_ua_npo_income_report_action
+msgid ""
+"Report on the use of income (profits) of a non-profit organization,\n"
+"               form approved by order of the Ministry of Finance No. 553 of 17.06.2016.\n"
+"               Filed within 60 days after the end of the year together with the\n"
+"               financial statements."
+msgstr ""
+"Звіт про використання доходів (прибутків) неприбуткової організації,\n"
+"               форма затверджена наказом Мінфіну від 17.06.2016 № 553.\n"
+"               Подається протягом 60 днів після закінчення року разом із\n"
+"               фінансовою звітністю."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report__report_kind__normal
+msgid "Reporting"
+msgstr "Звітний"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_search
+msgid "Reports on the Use of Income"
+msgstr "Звіти про використання доходів"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_recognition_view_form
+msgid "Reset to Draft"
+msgstr "У чернетку"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__activity_user_id
+msgid "Responsible User"
+msgstr "Відповідальний"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__other_debit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_program_document
+msgid "Returned / Other"
+msgstr "Повернено / інше"
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_recognition.py:0
+msgid "Reversal of: %s"
+msgstr "Сторно: %s"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report_line__row
+msgid "Row"
+msgstr "Рядок"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program__income_row
+msgid ""
+"Row of Part I of the Report on the use of income where the income recognised"
+" on this program is shown."
+msgstr "Рядок Частини І Звіту про використання доходів, у якому відображається дохід, визнаний за цією програмою."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program__expense_row
+msgid ""
+"Row of Part I of the Report where the spending of this program is shown: 2.3"
+" for the maintenance and statutory activities, 2.4.x when the program gives "
+"aid to beneficiaries."
+msgstr "Рядок Частини І Звіту, у якому відображаються витрати програми: 2.3 — утримання й статутна діяльність, 2.4.x — якщо програма надає допомогу благонабувачам."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__message_has_sms_error
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__message_has_sms_error
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Помилка доставки SMS"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report_line__sequence
+msgid "Sequence"
+msgstr "Послідовність"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.view_company_form_l10n_ua_nonprofit
+msgid "Set Up Accounts and Journal"
+msgstr "Налаштувати рахунки та журнал"
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_recognition.py:0
+msgid "Set the target financing journal of the company."
+msgstr "Вкажіть журнал цільового фінансування компанії."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report__fs_kind__simplified
+msgid "Simplified financial statement of a small enterprise"
+msgstr "Спрощений фінансовий звіт суб'єкта малого підприємництва"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__amount_spent
+msgid "Spent"
+msgstr "Витрачено"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__spent
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_program_document
+msgid "Spent in Period"
+msgstr "Витрачено за період"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report_line__spent_to_date
+msgid "Spent to Date"
+msgstr "Витрачено до дати"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__date_start
+msgid "Start Date"
+msgstr "Дата початку"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__state
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__state
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__state
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_recognition_view_search
+msgid "Status"
+msgstr "Статус"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Статус на основі дій\n"
+"Прострочено: термін уже минув\n"
+"Сьогодні: дата дії — сьогодні\n"
+"Заплановано: майбутні дії."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__submission_date
+msgid "Submission Date"
+msgstr "Дата подання"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program__analytic_account_id
+msgid ""
+"Tag receipts on 48 and program expenses with this analytic account. Created "
+"with the program."
+msgstr "Позначайте цим аналітичним рахунком надходження на 48 і витрати програми. Створюється разом із програмою."
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.view_company_form_l10n_ua_nonprofit
+msgid "Target Financing"
+msgstr "Цільове фінансування"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__account_id
+msgid "Target Financing Account"
+msgstr "Рахунок цільового фінансування"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model,name:l10n_ua_nonprofit.model_l10n_ua_npo_recognition
+msgid "Target Financing Income Recognition"
+msgstr "Визнання доходу цільового фінансування"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model,name:l10n_ua_nonprofit.model_l10n_ua_npo_recognition_line
+msgid "Target Financing Income Recognition Line"
+msgstr "Рядок визнання доходу цільового фінансування"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_res_company__l10n_ua_npo_journal_id
+msgid "Target Financing Journal"
+msgstr "Журнал цільового фінансування"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_period_closing_view_form_nonprofit
+msgid "Target Income (48)"
+msgstr "Цільовий дохід (48)"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.actions.act_window,name:l10n_ua_nonprofit.l10n_ua_npo_recognition_action
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_period_closing__npo_recognition_ids
+#: model:ir.ui.menu,name:l10n_ua_nonprofit.menu_npo_recognition
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_recognition_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_recognition_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_recognition_view_search
+msgid "Target Income Recognition"
+msgstr "Визнання цільового доходу"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_form
+msgid "Target Program"
+msgstr "Цільова програма"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.actions.act_window,name:l10n_ua_nonprofit.l10n_ua_npo_program_action
+#: model:ir.ui.menu,name:l10n_ua_nonprofit.menu_npo_programs
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_search
+msgid "Target Programs"
+msgstr "Цільові програми"
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/wizard/npo_program_report.py:0
+#: model:ir.actions.act_window,name:l10n_ua_nonprofit.l10n_ua_npo_program_report_action
+#: model:ir.actions.report,name:l10n_ua_nonprofit.action_report_npo_program
+#: model:ir.model,name:l10n_ua_nonprofit.model_l10n_ua_npo_program_report
+#: model:ir.ui.menu,name:l10n_ua_nonprofit.menu_npo_reports_program
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_report_view_form
+msgid "Target Programs Report"
+msgstr "Звіт за цільовими програмами"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model,name:l10n_ua_nonprofit.model_l10n_ua_npo_program_report_line
+msgid "Target Programs Report Line"
+msgstr "Рядок звіту за цільовими програмами"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_program_document
+msgid "Target financing by programs"
+msgstr "Цільове фінансування за програмами"
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_recognition.py:0
+msgid "Target financing recognised as income: %s"
+msgstr "Цільове фінансування визнано доходом: %s"
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_recognition.py:0
+msgid "Target income recognition %s"
+msgstr "Визнання цільового доходу %s"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__tax_office_id
+msgid "Tax Office"
+msgstr "Податкова інспекція"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__tax_office_id
+msgid "Tax office (ДПІ) where the company is registered"
+msgstr "Податкова інспекція (ДПІ), де зареєстровано компанію"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_period_closing__l10n_ua_is_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_res_company__l10n_ua_is_nonprofit
+msgid ""
+"The company is included in the Register of non-profit institutions and "
+"organizations (para. 133.4 of the Tax Code of Ukraine) and files the Report "
+"on the use of income instead of the profit tax return."
+msgstr "Компанію включено до Реєстру неприбуткових установ та організацій (п. 133.4 ПКУ); замість декларації з податку на прибуток вона подає Звіт про використання доходів."
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.actions.act_window,help:l10n_ua_nonprofit.l10n_ua_npo_recognition_action
+msgid ""
+"The period closing does it automatically for a non-profit company.\n"
+"               Create a recognition here to do it on any date."
+msgstr ""
+"Для неприбуткової компанії це автоматично робить закриття періоду.\n"
+"               Створіть визнання тут, щоб виконати його на будь-яку дату."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.constraint,message:l10n_ua_nonprofit.constraint_l10n_ua_npo_program_code_company_uniq
+msgid "The program code must be unique per company."
+msgstr "Код програми має бути унікальним у межах компанії."
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_program.py:0
+msgid "The program ends before it starts."
+msgstr "Програма закінчується раніше, ніж починається."
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_recognition_view_form
+msgid "The recognition entry will be reversed. Continue?"
+msgstr "Проводку визнання буде сторновано. Продовжити?"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__period_type
+msgid ""
+"The report is filed for the year. A monthly report is filed only when the "
+"requirements of para. 133.4 of the Tax Code were breached; it covers the "
+"period from the start of the year to the end of that month."
+msgstr "Звіт подається за рік. Місячний звіт подається лише в разі порушення вимог п. 133.4 ПКУ; він охоплює період з початку року до кінця місяця порушення."
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/wizard/npo_program_report.py:0
+msgid "The start date is after the end date."
+msgstr "Дата початку пізніша за дату завершення."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__date_to
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program_report__date_to
+msgid "To"
+msgstr "По"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_report_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_recognition_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_recognition_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_period_closing_view_form_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_program_document
+msgid "Total"
+msgstr "Разом"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Тип виключення дії в записі."
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_program__funding_type__donation
+msgid "Voluntary Donations / Gratuitous Aid"
+msgstr "Добровільні пожертви / безповоротна допомога"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__website_message_ids
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_program__website_message_ids
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__website_message_ids
+msgid "Website Messages"
+msgstr "Повідомлення з сайту"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__website_message_ids
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_program__website_message_ids
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__website_message_ids
+msgid "Website communication history"
+msgstr "Історія спілкування з сайту"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_income_report__year
+#: model:ir.model.fields.selection,name:l10n_ua_nonprofit.selection__l10n_ua_npo_income_report__period_type__year
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_income_report_view_search
+msgid "Year"
+msgstr "Рік"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "___________________"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.l10n_ua_npo_program_view_form
+msgid "e.g. Grant «Clean Water» 2026"
+msgstr "напр. Грант «Чиста вода» 2026"
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid ""
+"Інформація, наведена у Звіті про використання доходів (прибутків)\n"
+"                            неприбуткової організації та додатках до нього, є достовірною."
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Баланс (Звіт про фінансовий стан)"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "ВП"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Виправлення помилок<sup>3</sup>"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid ""
+"Відмітка про одержання<br/>\n"
+"                                        (штамп контролюючого органу, до якого подається Звіт\n"
+"                                        про використання доходів (прибутків) неприбуткової організації)"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "ГД<sup>5</sup>"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid ""
+"Головний бухгалтер (особа, відповідальна за ведення бухгалтерського обліку)"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Дата подання:"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid ""
+"Доповнення до Звіту про використання доходів (прибутків) неприбуткової\n"
+"                                    організації (заповнюється і подається відповідно до пункту 46.4 статті 46 глави 2\n"
+"                                    розділу ІІ Податкового кодексу України)"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid ""
+"ЗВІТ<br/>про використання доходів (прибутків)<br/>неприбуткової організації"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid ""
+"Затверджено<br/>\n"
+"                                    Наказ Міністерства фінансів України<br/>\n"
+"                                    17.06.2016 № 553<br/>\n"
+"                                    (у редакції наказу Міністерства<br/>\n"
+"                                    фінансів України 28.04.2017 № 469)"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Звіт про власний капітал"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Звіт про результати фінансової діяльності<sup>7</sup>"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Звіт про рух грошових коштів"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Звіт про фінансові результати (Звіт про сукупний дохід)"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Звітний (податковий) період"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Звітний (податковий) період, що уточнюється"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Звітний новий<br/>"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Звітний<br/>"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Керівник (уповноважена особа)"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Код за ЄДРПОУ:"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Код рядка"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "М.П. (за наявності)"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Місяць<sup>1</sup>:"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Наявність додатків<sup>4</sup>"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Наявність доповнення<sup>8</sup> <span class=\"box\"/>"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid ""
+"Наявність поданих до Звіту додатків – форм фінансової звітності<sup>6</sup>"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Неприбуткова установа (організація):"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Ознака неприбутковості організації:"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Податкова адреса:"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Показники"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Примітки до річної фінансової звітності"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Рік:"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid ""
+"Рішення про включення неприбуткової організації до Реєстру\n"
+"                                    неприбуткових установ та організацій:\n"
+"                                    дата"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid ""
+"Спрощений фінансовий звіт суб’єкта малого підприємництва (Баланс; Звіт про "
+"фінансові результати)"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Сума"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Телефон:"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Уточнюючий"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "ФЗ<sup>6</sup>"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid ""
+"Фінансовий звіт суб’єкта малого підприємництва (Баланс; Звіт про фінансові "
+"результати)"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model:account.analytic.plan,name:l10n_ua_nonprofit.analytic_plan_npo_programs
+msgid "Цільові програми"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Частина І"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "Частина ІІ"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_nonprofit.report_npo_income_document
+msgid "року"
+msgstr ""
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_recognition.py:0
+#: model:ir.model.fields,field_description:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__move_ids
+msgid "Journal Entries"
+msgstr "Проводки"
+
+#. module: l10n_ua_nonprofit
+#: model:ir.model.fields,help:l10n_ua_nonprofit.field_l10n_ua_npo_recognition__move_ids
+msgid ""
+"One entry per journal: programs with their own journal are posted there."
+msgstr "Одна проводка на журнал: програми з власним журналом проводяться в ньому."
+
+#. module: l10n_ua_nonprofit
+#. odoo-python
+#: code:addons/l10n_ua_nonprofit/models/npo_recognition.py:0
+msgid ""
+"Program %(program)s already has a posted recognition dated %(date)s, later "
+"than %(this)s. Cancel the later recognition before recognising income for an "
+"earlier date."
+msgstr ""
+"Програма %(program)s уже має проведене визнання від %(date)s — пізніше за "
+"%(this)s. Скасуйте пізніше визнання, перш ніж визнавати дохід на ранішу дату."

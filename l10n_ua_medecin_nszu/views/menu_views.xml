@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <menuitem id="menu_contract"
-              name="Договори НСЗУ"
+    <menuitem id="menu_nszu_section"
+              name="НСЗУ"
               parent="l10n_ua_medecin_base.menu_medecin_root"
-              action="action_contract"
               sequence="30"/>
 
+    <menuitem id="menu_contract"
+              name="Договори"
+              parent="menu_nszu_section"
+              action="action_contract"
+              sequence="10"/>
+
     <menuitem id="menu_package"
-              name="Пакети НСЗУ"
-              parent="l10n_ua_medecin_base.menu_medecin_config"
+              name="Пакети послуг"
+              parent="menu_nszu_section"
               action="action_package"
-              sequence="20"/>
+              sequence="20"
+              groups="l10n_ua_medecin_base.group_ua_medecin_manager"/>
 </odoo>
