@@ -8,3 +8,4 @@ from . import test_income_book_autofill
 from . import test_taxpayer_name
 from . import test_declaration_lock
 from . import test_esv_annex
+from . import test_dps_submit
