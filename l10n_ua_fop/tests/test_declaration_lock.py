@@ -34,13 +34,15 @@ class TestDeclarationLock(TransactionCase):
             decl.unlink()
         with self.assertRaises(UserError):
             decl.action_calculate()
-        decl.notes = '<p>Примітка</p>'  # примітки — можна
+        with self.assertRaises(UserError):
+            decl.notes = '<p>Примітка</p>'
         self.assertEqual(decl.total_income, 1000.0)
 
     def test_submitted_can_go_back_to_draft(self):
         decl = self._declaration('submitted')
-        with self.assertRaises(UserError):
-            decl.total_income = 2000.0
+        for vals in ({'total_income': 2000.0}, {'notes': '<p>Примітка</p>'}):
+            with self.assertRaises(UserError):
+                decl.write(vals)
         decl.action_draft()
         self.assertEqual(decl.state, 'draft')
         decl.total_income = 2000.0

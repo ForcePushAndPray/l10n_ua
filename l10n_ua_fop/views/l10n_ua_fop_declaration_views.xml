@@ -38,6 +38,10 @@
                          invisible="not income_limit_exceeded">
                         <strong>Увага!</strong> Дохід перевищує ліміт для обраної групи ЄП.
                     </div>
+                    <div class="alert alert-info" role="alert" invisible="state != 'submitted'">
+                        Декларацію подано до ДПС, її не можна змінювати. Щоб дізнатися, чи її
+                        зареєстровано, натисніть «Перевірити в ДПС».
+                    </div>
                     <div class="alert alert-info" role="alert" invisible="state != 'accepted'">
                         Декларацію прийнято ДПС, її суми й реквізити не змінюються. Помилку
                         виправляють уточнюючою декларацією — подайте її в Електронному кабінеті.
@@ -94,7 +98,8 @@
                             </group>
                         </page>
                         <page string="Примітки" name="notes">
-                            <field name="notes" placeholder="Додаткові примітки..."/>
+                            <field name="notes" placeholder="Додаткові примітки..."
+                                   readonly="state in ('submitted', 'accepted')"/>
                         </page>
                     </notebook>
                 </sheet>
