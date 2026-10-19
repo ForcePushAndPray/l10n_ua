@@ -67,9 +67,9 @@
     </record>
 
     <menuitem id="menu_ua_tax_cabinet_requests"
-              name="Info Requests"
-              parent="menu_ua_tax_cabinet"
+              name="Requests to DPS"
+              parent="l10n_ua_tax.menu_ua_tax_reporting"
               action="l10n_ua_tax_request_action"
-              sequence="10"/>
+              sequence="80"/>
 
 </odoo>

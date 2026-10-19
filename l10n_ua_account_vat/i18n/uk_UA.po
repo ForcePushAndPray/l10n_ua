@@ -685,8 +685,8 @@ msgstr "Декларація з ПДВ"
 
 #. module: l10n_ua_account_vat
 #: model:ir.actions.act_window,name:l10n_ua_account_vat.l10n_ua_vat_declaration_action
-#: model:ir.ui.menu,name:l10n_ua_account_vat.menu_l10n_ua_vat_declarations
 #: model_terms:ir.ui.view,arch_db:l10n_ua_account_vat.l10n_ua_vat_declaration_view_list
+#: model:ir.ui.menu,name:l10n_ua_account_vat.menu_l10n_ua_vat_declarations
 msgid "VAT Declarations"
 msgstr "Декларації з ПДВ"
 
@@ -719,7 +719,6 @@ msgstr "Рядок реєстру ПДВ"
 
 #. module: l10n_ua_account_vat
 #: model:ir.actions.act_window,name:l10n_ua_account_vat.l10n_ua_vat_register_action
-#: model:ir.ui.menu,name:l10n_ua_account_vat.menu_l10n_ua_vat_registers
 #: model_terms:ir.ui.view,arch_db:l10n_ua_account_vat.l10n_ua_vat_register_view_list
 msgid "VAT Registers"
 msgstr "Реєстри ПДВ"
@@ -735,3 +734,28 @@ msgstr "Повідомлення на сайті"
 #: model:ir.model.fields,help:l10n_ua_account_vat.field_l10n_ua_vat_declaration__website_message_ids
 msgid "Website communication history"
 msgstr "Історія комунікацій на сайті"
+
+#. module: l10n_ua_account_vat
+#: model:ir.ui.menu,name:l10n_ua_account_vat.menu_l10n_ua_tax_invoices_all
+msgid "All Tax Invoices"
+msgstr "Усі податкові накладні"
+
+#. module: l10n_ua_account_vat
+#: model:ir.ui.menu,name:l10n_ua_account_vat.menu_l10n_ua_vat_registers
+msgid "Tax Invoice Registers"
+msgstr "Реєстри ПДВ"
+
+#. module: l10n_ua_account_vat
+#: model:ir.ui.menu,name:l10n_ua_account_vat.menu_l10n_ua_vat_registers_issued
+msgid "Issued Register"
+msgstr "Реєстр виданих"
+
+#. module: l10n_ua_account_vat
+#: model:ir.ui.menu,name:l10n_ua_account_vat.menu_l10n_ua_vat_registers_received
+msgid "Received Register"
+msgstr "Реєстр отриманих"
+
+#. module: l10n_ua_account_vat
+#: model:ir.ui.menu,name:l10n_ua_account_vat.menu_l10n_ua_vat_deadlines
+msgid "Registration Deadlines"
+msgstr "Строки реєстрації"
