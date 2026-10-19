@@ -33,8 +33,9 @@
                         <field name="sync_type"/>
                     </group>
                     <group>
-                        <field name="year"/>
                         <field name="month" invisible="sync_type != 'reported'"/>
+                        <field name="year_from" invisible="sync_type != 'reported' or month != 'all'"/>
+                        <field name="year"/>
                     </group>
                 </group>
 

@@ -1,5 +1,6 @@
 import base64
 import logging
+import time
 import xml.etree.ElementTree as ET
 from datetime import date
 
@@ -7,6 +8,10 @@ from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
 
 _logger = logging.getLogger(__name__)
+
+# Секунд на синхронізацію діапазону: із запасом до типового limit_time_real (120 с).
+SYNC_TIME_BUDGET = 75
+_clock = time.monotonic
 
 
 class L10nUaTaxCabinetSyncWizard(models.TransientModel):
@@ -63,9 +68,15 @@ class L10nUaTaxCabinetSyncWizard(models.TransientModel):
             ('10', 'October'),
             ('11', 'November'),
             ('12', 'December'),
+            ('all', 'All Months'),
         ],
         string='Month',
         default=lambda self: str(fields.Date.today().month),
+    )
+    year_from = fields.Integer(
+        string='From Year',
+        default=lambda self: fields.Date.today().year,
+        help='With "All Months": the first year to import; the import runs up to Year.',
     )
 
     # Common
@@ -251,6 +262,8 @@ class L10nUaTaxCabinetSyncWizard(models.TransientModel):
             count = Document._sync_incoming_documents(config, auth_signature=auth_signature)
         elif self.sync_type == 'sent':
             count = Document._sync_sent_documents(config, auth_signature=auth_signature)
+        elif self.month == 'all':
+            return self._sync_reported_range(config, auth_signature)
         else:
             month = int(self.month or fields.Date.today().month)
             count = Document._sync_reported_documents(
@@ -259,6 +272,47 @@ class L10nUaTaxCabinetSyncWizard(models.TransientModel):
         # Службова позначка; писати саму конфігурацію має право лише менеджер.
         config.sudo().last_sync_date = fields.Datetime.now()
         return {'receipt': _('Імпортовано документів: %d') % count}
+
+    def _sync_reported_range(self, config, auth_signature):
+        """Усі місяці років year_from..year одним підписом.
+
+        Підпис коду платника діє на весь сеанс, тож за один діалог КЕП обходимо
+        кожен місяць. Запит обмежений limit_time_real воркера, тому зупиняємось
+        за бюджетом часу й кажемо, з якого року продовжити: вже імпортоване
+        зберігається, а повторний прогін пропускає наявні документи.
+        """
+        today = fields.Date.today()
+        year_from = min(self.year_from or self.year, self.year)
+        periods = [(y, m) for y in range(year_from, self.year + 1) for m in range(1, 13)
+                   if (y, m) <= (today.year, today.month)]
+        Document = self.env['l10n_ua.tax.document']
+        deadline = _clock() + SYNC_TIME_BUDGET
+        count, failed, done = 0, [], 0
+        for year, month in periods:
+            if _clock() > deadline:
+                break
+            try:
+                with self.env.cr.savepoint():
+                    count += Document._sync_reported_documents(
+                        config, year, month, auth_signature=auth_signature)
+            except UserError as e:
+                # Перший же збій — найімовірніше підпис або доступ: далі немає сенсу.
+                if not done:
+                    raise
+                _logger.warning("Tax Cabinet sync %02d.%d failed: %s", month, year, e)
+                failed.append('%02d.%d' % (month, year))
+            done += 1
+
+        config.sudo().last_sync_date = fields.Datetime.now()
+        lines = [_('Імпортовано документів: %d') % count]
+        if done < len(periods):
+            next_year, next_month = periods[done]
+            lines.append(_('Не встигли за один запит: зупинились на %(month)02d.%(year)d. '
+                           'Запустіть ще раз з «З року» = %(year)d — вже імпортоване '
+                           'буде пропущено.', month=next_month, year=next_year))
+        if failed:
+            lines.append(_('Не вдалося отримати періоди: %s') % ', '.join(failed))
+        return {'receipt': '\n'.join(lines)}
 
 
 class L10nUaTaxCabinetSyncWizardFile(models.TransientModel):
