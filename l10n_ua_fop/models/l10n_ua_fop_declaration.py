@@ -1,4 +1,8 @@
 import base64
+import logging
+from datetime import datetime
+
+from lxml import etree
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError, ValidationError
@@ -27,6 +31,12 @@ FIXED_TAX_GROUPS = ('1', '2')
 FOP_MILITARY_FROM_YEAR = 2025
 FOP_MILITARY_RATE = 1.0
 FOP_MILITARY_MIN_WAGE_SHARE = 10.0
+
+# Зворотний бік: XML поданої декларації (з кабінету) → звітний період.
+F0103309_PERIOD_TYPES = {'2': 'q1', '3': 'h1', '4': '9m', '5': 'year'}
+F0103309_BODY_MARKERS = {'H1KV': 'q1', 'HHY': 'h1', 'H3KV': '9m', 'HY': 'year'}
+
+_logger = logging.getLogger(__name__)
 
 PERIOD_MONTHS = {
     'q1': 3,
@@ -194,6 +204,15 @@ class L10nUaFopDeclaration(models.Model):
     )
     xml_filename = fields.Char(
         string='Ім\'я файлу',
+    )
+    tax_document_id = fields.Many2one(
+        'l10n_ua.tax.document',
+        string='Поданий документ',
+        copy=False,
+        index='btree_not_null',
+        ondelete='set null',
+        help='Запис журналу «Усі подані документи», з якого імпортовано декларацію '
+             '(XML і PDF з Електронного кабінету, реєстраційний номер).',
     )
 
     _unique_declaration = models.Constraint(
@@ -448,6 +467,11 @@ class L10nUaFopDeclaration(models.Model):
 
         period_type, period_month, quarter_marker = PERIOD_F0103309.get(
             self.period, ('5', '12', 'H4KV'))
+        # Декларація наростаюча: R013/R024 — нараховане в попередньому періоді року,
+        # до сплати — лише різниця. Без цього півріччя вимагало б увесь податок знову.
+        previous = self._previous_declaration()
+        tax_prev = previous.single_tax if previous else 0.0
+        military_prev = previous.military_levy if previous else 0.0
 
         company = self.company_id
         tax_office = company.l10n_ua_tax_office_id
@@ -474,12 +498,11 @@ class L10nUaFopDeclaration(models.Model):
             'activities': activities,
             'income_total': self.total_income,
             'tax_amount': self.single_tax,
-            'tax_paid_prev': 0.0,
-            'tax_to_pay': self.single_tax,
-            # Декларація не веде авансів, тож увесь військовий збір — до сплати.
+            'tax_paid_prev': tax_prev,
+            'tax_to_pay': max(self.single_tax - tax_prev, 0.0),
             'military_amount': self.military_levy,
-            'military_paid_prev': 0.0,
-            'military_to_pay': self.military_levy,
+            'military_paid_prev': military_prev,
+            'military_to_pay': max(self.military_levy - military_prev, 0.0),
         }
 
         xml = self.env['l10n_ua.tax.document.wizard']._render_F0103309_xml(vals)
@@ -488,3 +511,134 @@ class L10nUaFopDeclaration(models.Model):
         )
         self.xml_file = base64.b64encode(xml.encode('windows-1251'))
         return True
+
+    def _previous_declaration(self):
+        """Подана декларація того ж року й групи за попередній (коротший) період."""
+        self.ensure_one()
+        months = PERIOD_MONTHS.get(self.period, 0)
+        earlier = [p for p, m in PERIOD_MONTHS.items() if m < months]
+        if not earlier:
+            return self.browse()
+        candidates = self.search([
+            ('company_id', '=', self.company_id.id),
+            ('fop_group_id', '=', self.fop_group_id.id),
+            ('year', '=', self.year),
+            ('period', 'in', earlier),
+            ('state', 'in', ('submitted', 'accepted')),
+            ('id', '!=', self.id),
+        ])
+        return candidates.sorted(lambda d: PERIOD_MONTHS[d.period])[-1:]
+
+    # --- імпорт поданої декларації (XML з Електронного кабінету) ---
+
+    @api.model
+    def _parse_f0103309(self, xml_bytes):
+        """Головне з XML F0103309: період, вид, суми розділу 3 групи (G3)."""
+        root = etree.fromstring(xml_bytes)
+        head = root.find('DECLARHEAD')
+        body = root.find('DECLARBODY')
+        if head is None or body is None:
+            return None
+
+        def text(node, tag):
+            el = node.find(tag)
+            return (el.text or '').strip() if el is not None and el.text else ''
+
+        def amount(tag):
+            value = text(body, tag)
+            return float(value) if value else 0.0
+
+        period = F0103309_PERIOD_TYPES.get(text(head, 'PERIOD_TYPE'))
+        if not period:
+            period = next((p for tag, p in F0103309_BODY_MARKERS.items()
+                           if text(body, tag) == '1'), None)
+        filled = text(head, 'D_FILL') or text(body, 'HFILL')
+        try:
+            filled = datetime.strptime(filled, '%d%m%Y').date() if filled else None
+        except ValueError:
+            filled = None
+        return {
+            'year': int(text(head, 'PERIOD_YEAR') or text(body, 'HZY') or 0),
+            'period': period,
+            # HZ — звітна, HZN — нова звітна, HZU — уточнююча.
+            'correction': text(body, 'HZU') == '1',
+            'income': amount('R006G3'),
+            'taxable_income': amount('R008G3'),
+            'single_tax': amount('R011G3'),
+            'military_levy': amount('R023G3'),
+            'filled': filled,
+        }
+
+    @api.model
+    def _group_for_rate(self, taxable_income, single_tax):
+        """3 група: 5 % без ПДВ, 3 % — платник ПДВ; ставку видно з сум декларації."""
+        Group = self.env['l10n_ua.fop.group']
+        groups = Group.search([('code', 'in', ('3', '3_vat'))])
+        if taxable_income and single_tax and groups:
+            rate = single_tax / taxable_income * 100
+            return min(groups, key=lambda g: abs(g.tax_rate - rate))
+        return groups.filtered(lambda g: g.code == '3')[:1] or groups[:1]
+
+    @api.model
+    def _import_from_tax_document(self, doc):
+        """Подана в кабінеті декларація ЄП → запис «Декларації ЄП» (стан «Прийнято»).
+
+        Наявну декларацію за той самий період і групу не дублюємо: лише
+        прив'язуємо до поданого документа й фіксуємо стан «Прийнято».
+        """
+        data = self._parse_f0103309(base64.b64decode(doc.file_xml))
+        if not data or not data['year'] or not data['period']:
+            _logger.warning("F0103309 %s: не вдалося визначити період", doc.display_name)
+            return self.browse()
+        if data['correction']:
+            # Уточнююча змінює вже подану; суми звітної не перезаписуємо.
+            return self.browse()
+        group = self._group_for_rate(data['taxable_income'], data['single_tax'])
+        if not group:
+            return self.browse()
+        company = doc.company_id or self.env.company
+        reg = doc.document_number and _(' № %s') % doc.document_number or ''
+        declaration = self.search([
+            ('year', '=', data['year']),
+            ('period', '=', data['period']),
+            ('fop_group_id', '=', group.id),
+            ('company_id', '=', company.id),
+        ], limit=1)
+        accepted = {
+            'state': 'accepted',
+            'submission_date': data['filled'] or doc.document_date,
+            'tax_document_id': doc.id,
+        }
+        if declaration:
+            vals = dict(accepted)
+            if declaration.state in ('draft', 'calculated'):
+                # Подане — первинне: суми беремо з декларації, прийнятої ДПС.
+                vals['total_income'] = data['income']
+            if not declaration.xml_file:
+                vals.update(xml_file=doc.file_xml, xml_filename=doc.file_xml_name)
+            declaration.write(vals)
+            declaration.message_post(body=_(
+                'Пов\'язано з декларацією, поданою в Електронному кабінеті%s.') % reg)
+        else:
+            declaration = self.create({
+                'year': data['year'],
+                'period': data['period'],
+                'fop_group_id': group.id,
+                'company_id': company.id,
+                'total_income': data['income'],
+                'xml_file': doc.file_xml,
+                'xml_filename': doc.file_xml_name,
+                **accepted,
+            })
+            declaration.message_post(body=_(
+                'Імпортовано з Електронного кабінету: декларацію подано й '
+                'зареєстровано в ДПС%s.') % reg)
+        # Розрахунок Odoo має збігтися з поданим; розбіжність — привід перевірити.
+        if abs(declaration.single_tax - data['single_tax']) > 0.01 or \
+                abs(declaration.military_levy - data['military_levy']) > 0.01:
+            declaration.message_post(body=_(
+                'Увага: у поданій декларації єдиний податок %(tax).2f і військовий '
+                'збір %(mil).2f, а за розрахунком Odoo — %(otax).2f і %(omil).2f.',
+                tax=data['single_tax'], mil=data['military_levy'],
+                otax=declaration.single_tax, omil=declaration.military_levy))
+        return declaration
