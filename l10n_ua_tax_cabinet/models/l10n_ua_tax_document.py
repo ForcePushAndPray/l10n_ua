@@ -10,6 +10,9 @@ from .l10n_ua_tax_request import IMPORTED_REQUESTS, IMPORTED_RESPONSES
 
 _logger = logging.getLogger(__name__)
 
+# Сторінок кореспонденції за одну синхронізацію (по 20 документів).
+MAX_CORRESPONDENCE_PAGES = 10
+
 # Код форми в XML ДПС: схема в заголовку (F1419104.XSD) або поля DECLARHEAD.
 SCHEMA_CODE_RE = re.compile(rb'noNamespaceSchemaLocation="([A-Z]\d{7})\.XSD"', re.I)
 HEAD_FIELD_RE = re.compile(rb'<(C_DOC|C_DOC_SUB|C_DOC_VER)>\s*([^<\s]+)\s*</')
@@ -248,16 +251,26 @@ class L10nUaTaxDocumentCabinet(models.Model):
     @api.model
     def _sync_incoming_documents(self, config, *, auth_signature):
         """Sync incoming correspondence from cabinet."""
-        docs_data = config._api_get_incoming_documents(auth_signature=auth_signature)
-        return self._process_api_documents(
-            config, docs_data, 'incoming', auth_signature=auth_signature)
+        return self._sync_paged(
+            config, config._api_get_incoming_documents, 'incoming', auth_signature)
 
     @api.model
     def _sync_sent_documents(self, config, *, auth_signature):
         """Sync sent correspondence from cabinet."""
-        docs_data = config._api_get_sent_documents(auth_signature=auth_signature)
-        return self._process_api_documents(
-            config, docs_data, 'sent', auth_signature=auth_signature)
+        return self._sync_paged(config, config._api_get_sent_documents, 'sent', auth_signature)
+
+    @api.model
+    def _sync_paged(self, config, fetch, doc_type, auth_signature):
+        """Кореспонденція віддається сторінками (з 0): найновіша — на першій."""
+        count = 0
+        for page in range(MAX_CORRESPONDENCE_PAGES):
+            docs_data = fetch(page, auth_signature=auth_signature)
+            count += self._process_api_documents(
+                config, docs_data, doc_type, auth_signature=auth_signature)
+            if not isinstance(docs_data, dict) or docs_data.get('last', True) \
+                    or not docs_data.get('content'):
+                break
+        return count
 
     @api.model
     def _process_api_documents(self, config, docs_data, doc_type, year=None, *, auth_signature):
