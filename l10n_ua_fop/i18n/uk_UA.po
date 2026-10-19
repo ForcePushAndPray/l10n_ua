@@ -344,8 +344,8 @@ msgstr "Якщо позначено, деякі повідомлення маю�
 
 #. module: l10n_ua_fop
 #: model:ir.ui.menu,name:l10n_ua_fop.menu_l10n_ua_fop_income_books
-msgid "Income Books"
-msgstr "Книги обліку доходів"
+msgid "FOP Income Books"
+msgstr "Книга обліку доходів ФОП"
 
 #. module: l10n_ua_fop
 #: model:ir.model.fields,field_description:l10n_ua_fop.field_l10n_ua_fop_declaration__message_is_follower
@@ -449,8 +449,8 @@ msgstr "Помилка доставки SMS"
 
 #. module: l10n_ua_fop
 #: model:ir.ui.menu,name:l10n_ua_fop.menu_l10n_ua_fop_declarations
-msgid "Simplified Tax Declarations"
-msgstr "Декларації єдиного податку"
+msgid "FOP Simplified Tax Declarations (Group 3)"
+msgstr "Декларації ЄП ФОП (3 група)"
 
 #. module: l10n_ua_fop
 #: model:ir.actions.act_window,name:l10n_ua_fop.l10n_ua_fop_group_action
@@ -1136,7 +1136,3 @@ msgstr ""
 msgid "Ukraine - FOP (Single Tax)"
 msgstr "Україна - ФОП (Єдиний податок)"
 
-#. module: l10n_ua_fop
-#: model:ir.ui.menu,name:l10n_ua_fop.menu_l10n_ua_fop
-msgid "FOP (Simplified Tax)"
-msgstr "Єдиний податок (ФОП)"
