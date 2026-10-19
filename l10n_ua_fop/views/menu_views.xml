@@ -11,7 +11,7 @@
     <menuitem id="menu_l10n_ua_fop"
               name="FOP (Simplified Tax)"
               parent="l10n_ua_tax.menu_ua_tax_root"
-              sequence="40"/>
+              sequence="30"/>
 
     <menuitem id="menu_l10n_ua_fop_income_books"
               name="Income Books"
@@ -21,13 +21,13 @@
 
     <menuitem id="menu_l10n_ua_fop_declarations"
               name="Simplified Tax Declarations"
-              parent="menu_l10n_ua_fop"
+              parent="l10n_ua_tax.menu_ua_tax_reporting"
               action="l10n_ua_fop_declaration_action"
               sequence="20"/>
 
     <menuitem id="menu_l10n_ua_fop_groups"
-              name="Tax Groups"
-              parent="menu_l10n_ua_fop"
+              name="Simplified Tax Groups"
+              parent="l10n_ua_tax.menu_ua_tax_config"
               action="l10n_ua_fop_group_action"
               sequence="30"/>
 

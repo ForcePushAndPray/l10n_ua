@@ -619,11 +619,6 @@ msgid "Year"
 msgstr "Рік"
 
 #. module: l10n_ua_tax
-#: model:ir.ui.menu,name:l10n_ua_tax.menu_ua_tax_documents
-msgid "Tax Documents"
-msgstr "Податкові документи"
-
-#. module: l10n_ua_tax
 #: model:ir.ui.menu,name:l10n_ua_tax.menu_ua_tax_config
 msgid "Configuration"
 msgstr "Налаштування"
@@ -673,3 +668,13 @@ msgstr ""
 "Відомості з Державного реєстру фізичних осіб – платників податків про "
 "джерела та суми нарахованого доходу, нарахованого (перерахованого) податку та "
 "військового збору (відповідь на запит)"
+
+#. module: l10n_ua_tax
+#: model:ir.ui.menu,name:l10n_ua_tax.menu_ua_tax_reporting
+msgid "DPS Reporting"
+msgstr "Звітність до ДПС"
+
+#. module: l10n_ua_tax
+#: model:ir.ui.menu,name:l10n_ua_tax.menu_ua_tax_documents
+msgid "All Filed Documents"
+msgstr "Усі подані документи"

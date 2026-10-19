@@ -37,4 +37,19 @@
               action="action_hr_report_wizard"
               sequence="100"/>
 
+
+    <!-- Звіти, що подаються в ДПС, — також у «Податки → Звітність до ДПС».
+         Пункти в «Кадрах» лишаються: розрахунковий відділ не обов'язково має
+         доступ до податкового розділу. -->
+    <menuitem id="menu_hr_report_1df_reporting"
+              name="1DF Tax Calculation"
+              parent="l10n_ua_tax.menu_ua_tax_reporting"
+              action="action_hr_report_1df"
+              sequence="35"/>
+
+    <menuitem id="menu_hr_report_d5_reporting"
+              name="ESV Report (D5)"
+              parent="l10n_ua_tax.menu_ua_tax_reporting"
+              action="action_hr_report_d5"
+              sequence="40"/>
 </odoo>

@@ -1791,3 +1791,13 @@ msgstr ""
 msgid "xlsxwriter is not installed. Run: pip install xlsxwriter"
 msgstr ""
 "Бібліотеку xlsxwriter не встановлено. Виконайте: pip install xlsxwriter"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.ui.menu,name:l10n_ua_hr_reports.menu_hr_report_1df_reporting
+msgid "1DF Tax Calculation"
+msgstr "Податковий розрахунок 1ДФ"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.ui.menu,name:l10n_ua_hr_reports.menu_hr_report_d5_reporting
+msgid "ESV Report (D5)"
+msgstr "Звіт з ЄСВ (Д5)"

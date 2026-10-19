@@ -211,11 +211,6 @@ msgid "Display Name"
 msgstr "Назва для відображення"
 
 #. module: l10n_ua_fop
-#: model:ir.ui.menu,name:l10n_ua_fop.menu_l10n_ua_fop
-msgid "FOP (Simplified Tax)"
-msgstr "ФОП (Єдиний податок)"
-
-#. module: l10n_ua_fop
 #: model:l10n_ua.fop.group,description:l10n_ua_fop.fop_group_1
 msgid ""
 "Fixed rate based on minimum wage. Retail trade at markets, household "
@@ -459,6 +454,7 @@ msgstr "Декларації єдиного податку"
 
 #. module: l10n_ua_fop
 #: model:ir.actions.act_window,name:l10n_ua_fop.l10n_ua_fop_group_action
+#: model:ir.ui.menu,name:l10n_ua_fop.menu_l10n_ua_fop_groups
 msgid "Simplified Tax Groups"
 msgstr "Групи єдиного податку"
 
@@ -475,11 +471,6 @@ msgstr ""
 "Протерміновано: термін виконання вже минув\n"
 "Сьогодні: дата дії сьогодні\n"
 "Заплановано: майбутні дії."
-
-#. module: l10n_ua_fop
-#: model:ir.ui.menu,name:l10n_ua_fop.menu_l10n_ua_fop_groups
-msgid "Tax Groups"
-msgstr "Групи оподаткування"
 
 #. module: l10n_ua_fop
 #: model:ir.model.fields,help:l10n_ua_fop.field_l10n_ua_fop_declaration__activity_exception_decoration
@@ -1144,3 +1135,8 @@ msgstr ""
 #: model:ir.module.module,shortdesc:base.module_l10n_ua_fop
 msgid "Ukraine - FOP (Single Tax)"
 msgstr "Україна - ФОП (Єдиний податок)"
+
+#. module: l10n_ua_fop
+#: model:ir.ui.menu,name:l10n_ua_fop.menu_l10n_ua_fop
+msgid "FOP (Simplified Tax)"
+msgstr "Єдиний податок (ФОП)"
