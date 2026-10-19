@@ -44,6 +44,7 @@ LOCKED_STATES = ('submitted', 'accepted')
 LOCKED_FIELDS = frozenset({
     'year', 'period', 'fop_group_id', 'company_id', 'total_income',
     'monthly_tax_amount', 'esv_rate', 'esv_annex', 'xml_file', 'xml_filename', 'submission_date',
+    'notes',
 })
 # Контекст для службових змін стану й даних поданої декларації (подання, прийняття,
 # імпорт з кабінету) — користувацькі правки його не мають.
