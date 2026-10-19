@@ -7,6 +7,8 @@
         <field name="arch" type="xml">
             <form string="Книга обліку доходів">
                 <header>
+                    <button name="action_fill_from_bank" string="Заповнити з банку" type="object"
+                            invisible="state != 'draft'"/>
                     <button name="action_confirm" string="Підтвердити" type="object"
                             class="btn-primary" invisible="state != 'draft'"/>
                     <button name="action_draft" string="В чернетку" type="object"
@@ -31,7 +33,8 @@
                             <field name="fop_group_id"/>
                         </group>
                         <group>
-                            <field name="total_income" widget="monetary"/>
+                            <field name="total_income" widget="monetary"
+                                   help="Сума записів, позначених «Дохід»."/>
                             <field name="line_count"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
@@ -39,13 +42,22 @@
                     <notebook>
                         <page string="Записи доходів" name="lines">
                             <field name="line_ids" readonly="state == 'confirmed'">
-                                <list editable="bottom">
+                                <list editable="bottom" decoration-muted="not is_income">
                                     <field name="date"/>
                                     <field name="document_number"/>
                                     <field name="description"/>
-                                    <field name="partner_id"/>
-                                    <field name="income_type"/>
-                                    <field name="amount" sum="Разом"/>
+                                    <field name="partner_id" optional="show"/>
+                                    <field name="income_type" optional="hide"/>
+                                    <field name="original_amount" optional="show"
+                                           invisible="not original_currency_id"/>
+                                    <field name="original_currency_id" optional="show"
+                                           options="{'no_create': True}"/>
+                                    <field name="nbu_rate" optional="show"
+                                           invisible="not nbu_rate"/>
+                                    <field name="amount"/>
+                                    <field name="is_income" widget="boolean_toggle"/>
+                                    <field name="not_income_reason" optional="show"/>
+                                    <field name="bank_statement_line_id" column_invisible="1"/>
                                 </list>
                             </field>
                         </page>
