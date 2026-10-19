@@ -262,7 +262,7 @@ class HrReportD5(models.Model):
             'c_sti_orig': office,
             'hzy': self.year,
             'hzm': month,
-            'hname': company.name or '',
+            'hname': company._l10n_ua_dps_name(),
             'htin': edrpou,
             'hfill': date.today().strftime('%d%m%Y'),
             'hkbos': director_rnokpp,
