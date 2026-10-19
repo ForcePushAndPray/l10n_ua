@@ -200,10 +200,16 @@ class TestCheckDps(DeclarationImportCase):
         return {'id': 171671400000001, 'cdoc': 'J1499202', 'codRegdocRef': ref,
                 'periodYear': 2026, 'name': 'Квитанцiя № 2[J1499202]'}
 
-    def _kvt2_xml(self, result='Прийнято пакет.'):
-        return (f'<?xml version="1.0" encoding="windows-1251"?><DECLAR><DECLARBODY>'
-                f'<HFNAME>{KVT_FNAME}</HFNAME><HRESULT>{result}</HRESULT>'
-                f'<HREGNUM>9333062572</HREGNUM></DECLARBODY></DECLAR>').encode('windows-1251')
+    def _kvt2_xml(self, result='Прийнято пакет.', fname=None):
+        fname = fname or KVT_FNAME
+        return (
+            '<?xml version="1.0" encoding="windows-1251"?>\n<DECLAR><DECLARHEAD>'
+            '<TIN>1234567890</TIN><C_DOC>J14</C_DOC><C_DOC_SUB>992</C_DOC_SUB>'
+            '<C_DOC_VER>2</C_DOC_VER><PERIOD_MONTH>9</PERIOD_MONTH><PERIOD_TYPE>4</PERIOD_TYPE>'
+            '<PERIOD_YEAR>2026</PERIOD_YEAR></DECLARHEAD><DECLARBODY>'
+            f'<HDOCKOD>F0103309</HDOCKOD><HFILENAME>{fname}.XML</HFILENAME>'
+            f'<HRESULT>{result}</HRESULT><HNUMREG>9333062572</HNUMREG>'
+            '</DECLARBODY></DECLAR>').encode('windows-1251')
 
     def test_kvt2_in_incoming_accepts(self):
         """Реєстру ще немає, а квитанція № 2 вже у вхідних — декларацію прийнято."""
@@ -211,19 +217,37 @@ class TestCheckDps(DeclarationImportCase):
                                          kvt=self._kvt2_xml())
         self.assertEqual(self.decl.state, 'accepted')
         self.assertIn('9333062572', receipt)
-        names = self.env['ir.attachment'].search([
-            ('res_model', '=', self.decl._name), ('res_id', '=', self.decl.id)]).mapped('name')
-        self.assertIn('Квитанція_2_171671400000001.xml', names)
-        self.assertIn('Квитанція_2_171671400000001.pdf', names)
+        kvt2 = self.decl.kvt2_document_id
+        self.assertEqual(kvt2.external_id, '171671400000001')
+        self.assertTrue(kvt2.file_xml)
+        # Повторна перевірка/синхронізація не дублює ні документа, ні повідомлення.
+        kvt2._l10n_ua_after_import()
+        self.assertEqual(self.env['l10n_ua.tax.document'].search_count(
+            [('external_id', '=', '171671400000001')]), 1)
+        self.assertEqual(len(self.decl.message_ids.filtered(
+            lambda m: 'Квитанція № 2' in (m.body or ''))), 1)
+
+    def test_kvt2_from_incoming_sync_links_declaration(self):
+        """Звичайна синхронізація вхідних теж прив'язує квитанцію й приймає декларацію."""
+        doc = self.env['l10n_ua.tax.document'].create({
+            'name': 'Квитанція № 2 [J1499202]',
+            'document_type_id': self.env.ref('l10n_ua_tax.tax_document_type_other').id,
+            'company_id': self.company.id, 'source': 'cabinet', 'external_id': '42',
+            'file_xml': base64.b64encode(self._kvt2_xml())})
+        doc._l10n_ua_after_import()
+        self.assertEqual(self.decl.kvt2_document_id, doc)
+        self.assertEqual(self.decl.state, 'accepted')
 
     def test_kvt2_matched_by_submission_id(self):
         self.decl.dps_submission_id = '171671355306358'
-        kvt = self._kvt2_xml().replace(KVT_FNAME.encode(), b'OTHER')
+        kvt = self._kvt2_xml(fname='OTHER')
         self._check([], incoming=[self._kvt2_item()], kvt=kvt)
-        self.assertEqual(self.decl.state, 'accepted')
+        # Квитанцію знайдено за id подання, але прив'язка — лише за ім'ям файлу.
+        self.assertEqual(self.env['l10n_ua.tax.document'].search_count(
+            [('external_id', '=', '171671400000001')]), 1)
 
     def test_kvt2_of_other_document_is_ignored(self):
-        kvt = self._kvt2_xml().replace(KVT_FNAME.encode(), b'OTHER')
+        kvt = self._kvt2_xml(fname='OTHER')
         receipt, _get_list = self._check([], incoming=[self._kvt2_item(ref='1')], kvt=kvt)
         self.assertEqual(self.decl.state, 'submitted')
         self.assertIn('ще немає', receipt)

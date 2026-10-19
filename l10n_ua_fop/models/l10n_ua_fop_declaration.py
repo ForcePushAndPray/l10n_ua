@@ -52,10 +52,10 @@ LOCKED_FIELDS = frozenset({
 # імпорт з кабінету) — користувацькі правки його не мають.
 UNLOCK_CTX = 'l10n_ua_fop_declaration_unlock'
 
+F0103309_CODE = 'F0103309'
 # Квитанція № 2 у вхідних кабінету: «Квитанцiя № 2[J1499202]» (i буває латинська).
 KVT2_RE = re.compile(r'квитанц[iі]я\s*№\s*2', re.IGNORECASE)
 KVT2_REJECTED_RE = re.compile(r'не\s+прийнят|вiдмов|відмов', re.IGNORECASE)
-KVT2_REGNUM_RE = re.compile(r'<(?:\w*REG\w*|NUM\w*)>\s*(\d{6,})\s*<', re.IGNORECASE)
 
 
 def _decode_kvt(data_b64):
@@ -250,6 +250,15 @@ class L10nUaFopDeclaration(models.Model):
         readonly=True,
         help='Ідентифікатор, який кабінет ДПС повернув при поданні; на нього '
              'посилаються квитанції.',
+    )
+    kvt2_document_id = fields.Many2one(
+        'l10n_ua.tax.document',
+        string='Квитанція № 2',
+        copy=False,
+        readonly=True,
+        ondelete='set null',
+        help='Квитанція ДПС про реєстрацію (або неприйняття) поданої декларації — '
+             'з вхідної кореспонденції Електронного кабінету.',
     )
     tax_document_id = fields.Many2one(
         'l10n_ua.tax.document',
@@ -548,38 +557,99 @@ class L10nUaFopDeclaration(models.Model):
             if not (self.dps_submission_id and ref == self.dps_submission_id) \
                     and fname not in text.upper():
                 continue
-            return self._apply_kvt2(config, item, xml, text, auth_signature)
+            return self._receive_kvt2(config, item, xml, auth_signature)
         return None
 
-    def _apply_kvt2(self, config, item, xml, text, auth_signature):
-        """Зберегти квитанцію № 2 і за її результатом позначити декларацію."""
+    def _receive_kvt2(self, config, item, xml, auth_signature):
+        """Квитанцію № 2 — у журнал податкових документів і до декларації."""
         self.ensure_one()
-        kvt_id = item.get('id')
-        pdf = config._api_download_document_pdf(
-            item.get('periodYear') or self.year, kvt_id, 'incoming',
-            auth_signature=auth_signature)
-        attachments = self.env['ir.attachment']
-        for data, ext in ((xml, 'xml'), (pdf, 'pdf')):
-            if data:
-                attachments |= self.env['ir.attachment'].create({
-                    'name': 'Квитанція_2_%s.%s' % (kvt_id, ext), 'datas': data,
-                    'res_model': self._name, 'res_id': self.id,
-                })
-        number = KVT2_REGNUM_RE.search(text)
-        number = number.group(1) if number else ''
-        if KVT2_REJECTED_RE.search(text):
-            self.message_post(body=_('Квитанція № 2: ДПС не прийняла декларацію. '
-                                     'Причина — у вкладеній квитанції.'),
-                              attachment_ids=attachments.ids)
-            return _('ДПС не прийняла декларацію — див. квитанцію № 2 у вкладеннях. '
+        TaxDocument = self.env['l10n_ua.tax.document']
+        domain = [('external_id', '=', str(item.get('id'))), ('source', '=', 'cabinet')]
+        doc = TaxDocument.search(domain, limit=1)
+        if not doc:
+            # Імпорт сам викликає _l10n_ua_after_import → _link_kvt2_document.
+            TaxDocument._process_api_documents(
+                config, [item], 'incoming', item.get('periodYear') or self.year,
+                auth_signature=auth_signature)
+            doc = TaxDocument.search(domain, limit=1)
+        if doc and not doc.file_xml and xml:
+            doc.write({'file_xml': xml, 'file_xml_name': '%s.xml' % doc.external_id})
+        if doc and doc.file_xml:
+            self._link_kvt2_document(doc)
+        if self.state == 'accepted':
+            number = self._kvt2_info().get('number')
+            return _('ДПС прийняла декларацію%s (квитанція № 2). Статус — «Прийнято». '
+                     'Поданий документ прив\'яжеться, щойно з\'явиться в «Перегляді '
+                     'звітності».') % (_(', реєстраційний № %s') % number if number else '')
+        if self.kvt2_document_id:
+            return _('ДПС не прийняла декларацію — див. квитанцію № 2. '
                      'Виправте декларацію (кнопка «В чернетку») і подайте ще раз.')
-        self.with_context(**{UNLOCK_CTX: True}).write({'state': 'accepted'})
-        reg = _(', реєстраційний № %s') % number if number else ''
-        self.message_post(body=_('Квитанція № 2: декларацію прийнято ДПС%s.') % reg,
-                          attachment_ids=attachments.ids)
-        return _('ДПС прийняла декларацію%s (квитанція № 2). Статус — «Прийнято». '
-                 'Документ ДПС прив\'яжеться, щойно з\'явиться в «Перегляді звітності».'
-                 ) % reg
+        return None
+
+    def _kvt2_info(self):
+        doc = self.kvt2_document_id
+        return self._parse_kvt2(base64.b64decode(doc.file_xml)) or {} if doc.file_xml else {}
+
+    @api.model
+    def _parse_kvt2(self, xml_bytes):
+        """Квитанція № 2 (J1499202): на який документ, результат, реєстраційний номер."""
+        try:
+            root = etree.fromstring(xml_bytes)
+        except etree.XMLSyntaxError:
+            return None
+        head = root.find('DECLARHEAD')
+        body = root.find('DECLARBODY')
+        if head is None or body is None:
+            return None
+
+        def text(node, tag):
+            el = node.find(tag)
+            return (el.text or '').strip() if el is not None and el.text else ''
+
+        if (text(head, 'C_DOC') + text(head, 'C_DOC_SUB')) != 'J14992':
+            return None
+        result = text(body, 'HRESULT')
+        return {
+            'doc_code': text(body, 'HDOCKOD'),
+            'fname': os.path.splitext(text(body, 'HFILENAME'))[0].upper(),
+            'year': int(text(head, 'PERIOD_YEAR') or text(body, 'HZY') or 0),
+            'period': F0103309_PERIOD_TYPES.get(text(head, 'PERIOD_TYPE')),
+            'result': result,
+            'rejected': bool(KVT2_REJECTED_RE.search(result + ' ' + text(body, 'TEXT'))),
+            'number': text(body, 'HNUMREG'),
+        }
+
+    @api.model
+    def _link_kvt2_document(self, doc):
+        """Квитанція № 2 з журналу → її декларація ЄП (за періодом і ім'ям файлу).
+
+        Подану декларацію квитанція переводить у «Прийнято» (або повідомляє про
+        неприйняття). Повторний виклик нічого не дублює.
+        """
+        info = self._parse_kvt2(base64.b64decode(doc.file_xml))
+        if not info or info['doc_code'] != F0103309_CODE or not info['period']:
+            return self.browse()
+        declaration = self.search([
+            ('year', '=', info['year']),
+            ('period', '=', info['period']),
+            ('company_id', '=', doc.company_id.id),
+        ]).filtered(lambda d: os.path.splitext(d._dps_filename())[0].upper() == info['fname'])[:1]
+        if not declaration:
+            return declaration
+        is_new = declaration.kvt2_document_id != doc
+        vals = {'kvt2_document_id': doc.id}
+        accept = declaration.state == 'submitted' and not info['rejected']
+        if accept:
+            vals['state'] = 'accepted'
+        declaration.with_context(**{UNLOCK_CTX: True}).write(vals)
+        if accept:
+            reg = _(', реєстраційний № %s') % info['number'] if info['number'] else ''
+            declaration.message_post(body=_(
+                'Квитанція № 2: декларацію прийнято ДПС%s.') % reg)
+        elif info['rejected'] and is_new and declaration.state == 'submitted':
+            declaration.message_post(body=_(
+                'Квитанція № 2: ДПС не прийняла декларацію — %s') % info['result'])
+        return declaration
 
     def _dps_store_receipts(self, result):
         # id подання — на нього посилаються квитанції ДПС (codRegdocRef).
