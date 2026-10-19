@@ -449,6 +449,67 @@ class L10nUaFopDeclaration(models.Model):
         self.filtered(lambda d: d.state == 'submitted').with_context(
             **{UNLOCK_CTX: True}).write({'state': 'accepted'})
 
+    def action_check_dps(self):
+        """Перевірити в кабінеті ДПС, чи зареєстровано подану декларацію.
+
+        Підпис коду платника — у браузері (діалог КЕП, режим ``check``); далі
+        ``kep_submit_signed`` синхронізує подані звіти за звітний період і
+        прив'язує знайдений документ до декларації.
+        """
+        self.ensure_one()
+        if self.state != 'submitted':
+            raise UserError(_('Перевірити в ДПС можна лише подану декларацію.'))
+        self._dps_config()
+        return self.action_kep_sign(mode='check')
+
+    def _check_dps_registration(self, auth_signature):
+        """Забрати з кабінету подані звіти за звітний період і знайти цю декларацію."""
+        self.ensure_one()
+        config = self._dps_config()
+        TaxDocument = self.env['l10n_ua.tax.document']
+        # Кабінет групує подані звіти за звітним періодом: 9 міс. 2026 — місяць 09.2026.
+        TaxDocument._sync_reported_documents(
+            config, self.year, PERIOD_MONTHS[self.period], auth_signature=auth_signature)
+        if self.state == 'submitted':
+            # Документ могли забрати синхронізацією раніше, ніж декларацію подали з Odoo:
+            # повторна синхронізація його пропускає, тож прив'язуємо тут.
+            linked = self.search([('tax_document_id', '!=', False)]).tax_document_id
+            for doc in TaxDocument.search([
+                ('document_type_id.code', '=', 'F0103309'),
+                ('company_id', '=', self.company_id.id),
+                ('file_xml', '!=', False),
+                ('id', 'not in', linked.ids),
+            ]):
+                data = self._parse_f0103309(base64.b64decode(doc.file_xml))
+                if data and (data['year'], data['period']) == (self.year, self.period) \
+                        and not data['correction']:
+                    self._import_from_tax_document(doc)
+                    break
+        if self.state == 'accepted' and self.tax_document_id:
+            number = self.tax_document_id.document_number
+            return _('ДПС зареєструвала декларацію%s. Статус — «Прийнято».') % (
+                _(', реєстраційний № %s') % number if number else '')
+        return _('У кабінеті ДПС декларації за цей період ще немає: квитанції № 2 '
+                 '(реєстрації) поки не надійшло. Перевірте пізніше.')
+
+    def kep_prepare_signing(self):
+        if self.env.context.get('kep_mode') != 'check':
+            return super().kep_prepare_signing()
+        self.ensure_one()
+        config = self._dps_config()
+        return {
+            'auth_subject': config.taxpayer_code or '',
+            'submit_label': _('Перевірити в ДПС'),
+            'description': _('Пошук «%s» серед поданих документів у Електронному кабінеті '
+                             'та прив\'язка до неї документа ДПС.') % self.name,
+            'documents': [],
+        }
+
+    def kep_submit_signed(self, signed, auth_signature=None):
+        if self.env.context.get('kep_mode') != 'check':
+            return super().kep_submit_signed(signed, auth_signature)
+        return {'receipt': self._check_dps_registration(auth_signature)}
+
     def action_draft(self):
         """Повернути в чернетку; прийнята ДПС декларація не повертається."""
         if self.filtered(lambda d: d.state == 'accepted'):
