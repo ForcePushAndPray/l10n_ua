@@ -1,0 +1,39 @@
+<section style="font-family: 'Segoe UI', Roboto, sans-serif; color: #2c3e50;">
+    <div style="background: linear-gradient(135deg, #1a5276 0%, #2980b9 100%); color: #fff; padding: 48px 32px; text-align: center; border-radius: 8px;">
+        <h1 style="margin: 0; font-size: 34px;">Періодичні рахунки за договором</h1>
+        <p style="font-size: 18px; opacity: .9; margin-top: 12px;">
+            Супровід · оренда · підписка — рахунки щомісяця, щокварталу чи щороку
+        </p>
+        <p style="opacity: .8; margin-top: 8px;">Українська локалізація Odoo 19 · 1c-to-odoo.many2one.online</p>
+    </div>
+
+    <div style="padding: 32px 0;">
+        <h2 style="color: #1a5276;">Що робить модуль</h2>
+        <p style="font-size: 16px; line-height: 1.6;">
+            Абонентський договір виставляє рахунки сам: налаштуйте періодичність і
+            рядки на договорі — щодня Odoo створює рахунки за всі періоди, що настали,
+            і прив'язує їх до договору. Без OCA <code>contract</code> і без Enterprise.
+        </p>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 16px; padding-bottom: 24px;">
+        <div style="flex: 1 1 280px; background: #f4f8fb; border-left: 4px solid #2980b9; padding: 20px; border-radius: 6px;">
+            <h3 style="margin-top: 0; color: #1a5276;">🗓 Період</h3>
+            <p>Кожні N місяців, кварталів або років. Рахунок наперед — за поточний
+               період, або після — за минулий. Пропущені періоди доганяються,
+               після завершення договору рахунки припиняються.</p>
+        </div>
+        <div style="flex: 1 1 280px; background: #f4f8fb; border-left: 4px solid #2980b9; padding: 20px; border-radius: 6px;">
+            <h3 style="margin-top: 0; color: #1a5276;">🧾 Рядки</h3>
+            <p>Послуга чи товар, кількість, ціна, податки. В описі —
+               <code>#PERIOD#</code> («жовтень 2026», «IV квартал 2026»),
+               <code>#START#</code> / <code>#END#</code>.</p>
+        </div>
+        <div style="flex: 1 1 280px; background: #f4f8fb; border-left: 4px solid #2980b9; padding: 20px; border-radius: 6px;">
+            <h3 style="margin-top: 0; color: #1a5276;">💳 Взаєморозрахунки</h3>
+            <p>Рахунки клієнту чи постачальника — з договором, тож вони в акті
+               звірки й розрахунках за договором (<b>l10n_ua_agreement_account</b>).
+               Чернетка або одразу проведений рахунок.</p>
+        </div>
+    </div>
+</section>

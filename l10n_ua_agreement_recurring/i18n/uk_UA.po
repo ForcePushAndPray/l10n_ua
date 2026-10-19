@@ -1,0 +1,297 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ua_agreement_recurring
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260103\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-19 18:37+0000\n"
+"PO-Revision-Date: 2026-10-19 18:37+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: uk_UA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,help:l10n_ua_agreement_recurring.field_l10n_ua_agreement_recurring_line__name
+msgid ""
+"#PERIOD# — the period («жовтень 2026», «IV квартал 2026»), #START# / #END# —"
+" its first and last day. Empty — the product name «for <period>»."
+msgstr "#PERIOD# — період («жовтень 2026», «IV квартал 2026»), #START# / #END# — його перший і останній день. Порожньо — назва товару «за <період>»."
+
+#. module: l10n_ua_agreement_recurring
+#. odoo-python
+#: code:addons/l10n_ua_agreement_recurring/models/agreement.py:0
+msgid "%(agreement)s, %(period)s"
+msgstr "%(agreement)s, %(period)s"
+
+#. module: l10n_ua_agreement_recurring
+#. odoo-python
+#: code:addons/l10n_ua_agreement_recurring/models/agreement.py:0
+msgid "%(product)s for %(period)s"
+msgstr "%(product)s за %(period)s"
+
+#. module: l10n_ua_agreement_recurring
+#. odoo-python
+#: code:addons/l10n_ua_agreement_recurring/models/agreement.py:0
+msgid "Add at least one recurring line to agreement %s."
+msgstr "Додайте хоча б один рядок періодичного рахунку до договору %s."
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model,name:l10n_ua_agreement_recurring.model_l10n_ua_agreement
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement_recurring_line__agreement_id
+msgid "Agreement"
+msgstr "Договір"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model,name:l10n_ua_agreement_recurring.model_l10n_ua_agreement_recurring_line
+msgid "Agreement Recurring Line"
+msgstr "Рядок періодичного рахунку договору"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.actions.server,name:l10n_ua_agreement_recurring.ir_cron_agreement_recurring_invoices_ir_actions_server
+msgid "Agreements: recurring invoices"
+msgstr "Договори: періодичні рахунки"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement_recurring_line__company_id
+msgid "Company"
+msgstr "Компанія"
+
+#. module: l10n_ua_agreement_recurring
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agreement_recurring.l10n_ua_agreement_view_form_recurring
+msgid "Create Invoice Now"
+msgstr "Створити рахунок зараз"
+
+#. module: l10n_ua_agreement_recurring
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agreement_recurring.l10n_ua_agreement_view_form_recurring
+msgid "Create the invoice for the next period now?"
+msgstr "Створити рахунок за наступний період зараз?"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement_recurring_line__create_uid
+msgid "Created by"
+msgstr "Створено"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement_recurring_line__create_date
+msgid "Created on"
+msgstr "Створено"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement_recurring_line__currency_id
+msgid "Currency"
+msgstr "Валюта"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,help:l10n_ua_agreement_recurring.field_l10n_ua_agreement__recurring_next_date
+msgid ""
+"Date of the next invoice. In advance: the period starts on it; in arrears: "
+"the period ends the day before."
+msgstr "Дата наступного рахунку. Наперед — з неї починається період; після — період закінчується напередодні."
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement_recurring_line__name
+msgid "Description"
+msgstr "Опис"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement_recurring_line__display_name
+msgid "Display Name"
+msgstr "Назва"
+
+#. module: l10n_ua_agreement_recurring
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agreement_recurring.l10n_ua_agreement_view_form_recurring
+msgid "Empty: product name «for жовтень 2026»"
+msgstr "Порожньо: назва товару «за жовтень 2026»"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement__recurring_interval
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agreement_recurring.l10n_ua_agreement_view_form_recurring
+msgid "Every"
+msgstr "Кожні"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement__id
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement_recurring_line__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields.selection,name:l10n_ua_agreement_recurring.selection__l10n_ua_agreement__recurring_invoicing__pre
+msgid "In advance (current period)"
+msgstr "Наперед (за поточний період)"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields.selection,name:l10n_ua_agreement_recurring.selection__l10n_ua_agreement__recurring_invoicing__post
+msgid "In arrears (previous period)"
+msgstr "Після (за минулий період)"
+
+#. module: l10n_ua_agreement_recurring
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agreement_recurring.l10n_ua_agreement_view_form_recurring
+msgid ""
+"In the description, #PERIOD# becomes the period («жовтень 2026», «IV квартал 2026»,\n"
+"                        «2026 рік»), #START# and #END# — its first and last day. Invoices are created\n"
+"                        every day for signed agreements whose next invoice date has come."
+msgstr ""
+"В описі #PERIOD# замінюється на період («жовтень 2026», «IV квартал 2026»,\n"
+"                        «2026 рік»), #START# і #END# — на його перший і останній день. Рахунки створюються\n"
+"                        щодня для підписаних договорів, у яких настала дата наступного рахунку."
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement__invoice_count
+msgid "Invoice Count"
+msgstr "Кількість рахунків"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement__recurring_invoicing
+msgid "Invoice for"
+msgstr "Рахунок за"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,help:l10n_ua_agreement_recurring.field_l10n_ua_agreement__recurring_enabled
+msgid "Invoice this agreement automatically every period."
+msgstr "Автоматично виставляти рахунки за цим договором щоперіоду."
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement__invoice_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agreement_recurring.l10n_ua_agreement_view_form_recurring
+msgid "Invoices"
+msgstr "Рахунки"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement__recurring_journal_id
+msgid "Journal"
+msgstr "Журнал"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement_recurring_line__write_uid
+msgid "Last Updated by"
+msgstr "Востаннє оновлено"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement_recurring_line__write_date
+msgid "Last Updated on"
+msgstr "Востаннє оновлено"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,help:l10n_ua_agreement_recurring.field_l10n_ua_agreement__recurring_journal_id
+msgid "Leave empty for the default sales / purchase journal."
+msgstr "Порожньо — журнал продажів / закупівель за замовчуванням."
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields.selection,name:l10n_ua_agreement_recurring.selection__l10n_ua_agreement__recurring_rule__monthly
+msgid "Month(s)"
+msgstr "міс."
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement__recurring_next_date
+msgid "Next Invoice"
+msgstr "Наступний рахунок"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,help:l10n_ua_agreement_recurring.field_l10n_ua_agreement__recurring_auto_post
+msgid "Otherwise the invoices are left as drafts."
+msgstr "Інакше рахунки лишаються чернетками."
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement__recurring_amount
+msgid "Per Period"
+msgstr "За період"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement__recurring_rule
+msgid "Period"
+msgstr "Період"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement__recurring_auto_post
+msgid "Post Automatically"
+msgstr "Проводити автоматично"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement_recurring_line__product_id
+msgid "Product"
+msgstr "Товар / послуга"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement_recurring_line__quantity
+msgid "Quantity"
+msgstr "Кількість"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields.selection,name:l10n_ua_agreement_recurring.selection__l10n_ua_agreement__recurring_rule__quarterly
+msgid "Quarter(s)"
+msgstr "кв."
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement__recurring_enabled
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agreement_recurring.l10n_ua_agreement_view_form_recurring
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agreement_recurring.l10n_ua_agreement_view_search_recurring
+msgid "Recurring Invoices"
+msgstr "Періодичні рахунки"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement__recurring_line_ids
+msgid "Recurring Lines"
+msgstr "Рядки періодичного рахунку"
+
+#. module: l10n_ua_agreement_recurring
+#. odoo-python
+#: code:addons/l10n_ua_agreement_recurring/models/agreement.py:0
+msgid "Recurring invoice created: %s"
+msgstr "Створено періодичний рахунок: %s"
+
+#. module: l10n_ua_agreement_recurring
+#. odoo-python
+#: code:addons/l10n_ua_agreement_recurring/models/agreement.py:0
+msgid "Recurring invoice not created: %s"
+msgstr "Періодичний рахунок не створено: %s"
+
+#. module: l10n_ua_agreement_recurring
+#. odoo-python
+#: code:addons/l10n_ua_agreement_recurring/models/agreement.py:0
+msgid "Recurring invoicing stopped: the agreement ended on %s."
+msgstr "Періодичні рахунки зупинено: договір завершився %s."
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement_recurring_line__sequence
+msgid "Sequence"
+msgstr "Послідовність"
+
+#. module: l10n_ua_agreement_recurring
+#. odoo-python
+#: code:addons/l10n_ua_agreement_recurring/models/agreement.py:0
+msgid "Set the next invoice date of agreement %s."
+msgstr "Вкажіть дату наступного рахунку договору %s."
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement_recurring_line__price_subtotal
+msgid "Subtotal"
+msgstr "Сума"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement_recurring_line__tax_ids
+msgid "Taxes"
+msgstr "Податки"
+
+#. module: l10n_ua_agreement_recurring
+#. odoo-python
+#: code:addons/l10n_ua_agreement_recurring/models/agreement.py:0
+msgid "The next period of agreement %s starts after the agreement ends."
+msgstr "Наступний період договору %s починається після завершення договору."
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields,field_description:l10n_ua_agreement_recurring.field_l10n_ua_agreement_recurring_line__price_unit
+msgid "Unit Price"
+msgstr "Ціна"
+
+#. module: l10n_ua_agreement_recurring
+#: model:ir.model.fields.selection,name:l10n_ua_agreement_recurring.selection__l10n_ua_agreement__recurring_rule__yearly
+msgid "Year(s)"
+msgstr "р."

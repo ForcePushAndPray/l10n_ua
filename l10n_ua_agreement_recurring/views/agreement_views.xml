@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_agreement_view_form_recurring" model="ir.ui.view">
+        <field name="name">l10n_ua.agreement.form.recurring</field>
+        <field name="model">l10n_ua.agreement</field>
+        <field name="inherit_id" ref="l10n_ua_agreement.l10n_ua_agreement_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_invoices" type="object"
+                        class="oe_stat_button" icon="fa-pencil-square-o"
+                        invisible="invoice_count == 0">
+                    <field name="invoice_count" widget="statinfo" string="Invoices"/>
+                </button>
+            </xpath>
+            <xpath expr="//notebook/page[@name='subject']" position="after">
+                <page name="recurring" string="Recurring Invoices">
+                    <group>
+                        <group>
+                            <field name="recurring_enabled"/>
+                            <label for="recurring_interval" string="Every"
+                                   invisible="not recurring_enabled"/>
+                            <div class="o_row" invisible="not recurring_enabled">
+                                <field name="recurring_interval" class="oe_inline"
+                                       required="recurring_enabled"/>
+                                <field name="recurring_rule" class="oe_inline"/>
+                            </div>
+                            <field name="recurring_invoicing" invisible="not recurring_enabled"
+                                   widget="radio"/>
+                        </group>
+                        <group invisible="not recurring_enabled">
+                            <field name="recurring_next_date" required="recurring_enabled"/>
+                            <field name="recurring_journal_id" options="{'no_create': True}"/>
+                            <field name="recurring_auto_post"/>
+                            <field name="recurring_amount" widget="monetary"/>
+                        </group>
+                    </group>
+                    <field name="recurring_line_ids" invisible="not recurring_enabled">
+                        <list editable="bottom">
+                            <field name="sequence" widget="handle"/>
+                            <field name="product_id"/>
+                            <field name="name" placeholder="Empty: product name «for жовтень 2026»"/>
+                            <field name="quantity"/>
+                            <field name="price_unit"/>
+                            <field name="tax_ids" widget="many2many_tags" optional="show"/>
+                            <field name="price_subtotal"/>
+                            <field name="currency_id" column_invisible="1"/>
+                            <field name="company_id" column_invisible="1"/>
+                        </list>
+                    </field>
+                    <div class="text-muted small" invisible="not recurring_enabled">
+                        In the description, #PERIOD# becomes the period («жовтень 2026», «IV квартал 2026»,
+                        «2026 рік»), #START# and #END# — its first and last day. Invoices are created
+                        every day for signed agreements whose next invoice date has come.
+                    </div>
+                    <button name="action_recurring_create_invoice" type="object"
+                            string="Create Invoice Now" class="btn-secondary mt-3"
+                            invisible="not recurring_enabled or state != 'signed'"
+                            confirm="Create the invoice for the next period now?"/>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agreement_view_search_recurring" model="ir.ui.view">
+        <field name="name">l10n_ua.agreement.search.recurring</field>
+        <field name="model">l10n_ua.agreement</field>
+        <field name="inherit_id" ref="l10n_ua_agreement.l10n_ua_agreement_view_search"/>
+        <field name="arch" type="xml">
+            <xpath expr="//filter[@name='amendments']" position="after">
+                <separator/>
+                <filter string="Recurring Invoices" name="filter_recurring"
+                        domain="[('recurring_enabled', '=', True)]"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>
