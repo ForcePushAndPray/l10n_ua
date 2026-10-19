@@ -38,6 +38,17 @@ F0103309_BODY_MARKERS = {'H1KV': 'q1', 'HHY': 'h1', 'H3KV': '9m', 'HY': 'year'}
 
 _logger = logging.getLogger(__name__)
 
+# Подана до ДПС декларація — документ, що вже в податковій: її суми й реквізити
+# змінюються лише уточнюючою декларацією, не правкою запису.
+LOCKED_STATES = ('submitted', 'accepted')
+LOCKED_FIELDS = frozenset({
+    'year', 'period', 'fop_group_id', 'company_id', 'total_income',
+    'monthly_tax_amount', 'esv_rate', 'xml_file', 'xml_filename', 'submission_date',
+})
+# Контекст для службових змін стану й даних поданої декларації (подання, прийняття,
+# імпорт з кабінету) — користувацькі правки його не мають.
+UNLOCK_CTX = 'l10n_ua_fop_declaration_unlock'
+
 PERIOD_MONTHS = {
     'q1': 3,
     'h1': 6,
@@ -420,20 +431,47 @@ class L10nUaFopDeclaration(models.Model):
         return _('Подати декларацію ЄП до ДПС')
 
     def _dps_on_submitted(self, receipt):
-        self.write({
+        self.with_context(**{UNLOCK_CTX: True}).write({
             'state': 'submitted',
             'submission_date': fields.Date.context_today(self),
         })
         self.message_post(body=_('Подано до ДПС. Квитанція: %s') % (receipt or '—'))
 
     def action_accept(self):
-        self.write({'state': 'accepted'})
+        self.filtered(lambda d: d.state == 'submitted').with_context(
+            **{UNLOCK_CTX: True}).write({'state': 'accepted'})
 
     def action_draft(self):
-        self.write({
+        """Повернути в чернетку; прийнята ДПС декларація не повертається."""
+        if self.filtered(lambda d: d.state == 'accepted'):
+            raise UserError(_(
+                'Декларацію прийнято ДПС — змінити її можна лише уточнюючою декларацією '
+                '(подайте її в Електронному кабінеті, після синхронізації вона з\'явиться '
+                'в журналі поданих документів).'))
+        for rec in self.filtered(lambda d: d.state == 'submitted'):
+            rec.message_post(body=_('Подану декларацію повернуто в чернетку (наприклад, '
+                                    'ДПС її не прийняла).'))
+        self.with_context(**{UNLOCK_CTX: True}).write({
             'state': 'draft',
             'submission_date': False,
         })
+
+    def write(self, vals):
+        if not self.env.context.get(UNLOCK_CTX):
+            locked = self.filtered(lambda d: d.state in LOCKED_STATES)
+            changed = sorted(LOCKED_FIELDS.intersection(vals))
+            if locked and (changed or 'state' in vals):
+                fields_desc = ', '.join(self._fields[f].string for f in changed) or _('статус')
+                raise UserError(_(
+                    'Декларацію «%(name)s» подано до ДПС — %(fields)s не змінюються. '
+                    'Помилку у прийнятій декларації виправляють уточнюючою декларацією.',
+                    name=locked[0].name, fields=fields_desc))
+        return super().write(vals)
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_filed(self):
+        if self.filtered(lambda d: d.state in LOCKED_STATES):
+            raise UserError(_('Подану до ДПС декларацію видалити не можна.'))
 
     def action_view_income_books(self):
         """Відкрити пов'язані книги обліку доходів."""
@@ -617,7 +655,7 @@ class L10nUaFopDeclaration(models.Model):
                 vals['total_income'] = data['income']
             if not declaration.xml_file:
                 vals.update(xml_file=doc.file_xml, xml_filename=doc.file_xml_name)
-            declaration.write(vals)
+            declaration.with_context(**{UNLOCK_CTX: True}).write(vals)
             declaration.message_post(body=_(
                 'Пов\'язано з декларацією, поданою в Електронному кабінеті%s.') % reg)
         else:

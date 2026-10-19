@@ -10,13 +10,13 @@
                     <button name="action_calculate" string="Розрахувати" type="object"
                             class="btn-primary" invisible="state != 'draft'"/>
                     <button name="action_generate_xml" string="Сформувати XML" type="object"
-                            invisible="state not in ('calculated', 'submitted')"/>
+                            invisible="state != 'calculated'"/>
                     <button name="action_submit" string="Підписати і подати" type="object"
                             class="btn-primary" invisible="state != 'calculated'"/>
                     <button name="action_accept" string="Прийнято" type="object"
                             class="btn-success" invisible="state != 'submitted'"/>
                     <button name="action_draft" string="В чернетку" type="object"
-                            invisible="state == 'draft'"/>
+                            invisible="state in ('draft', 'accepted')"/>
                     <field name="state" widget="statusbar"
                            statusbar_visible="draft,calculated,submitted,accepted"/>
                 </header>
@@ -35,26 +35,30 @@
                          invisible="not income_limit_exceeded">
                         <strong>Увага!</strong> Дохід перевищує ліміт для обраної групи ЄП.
                     </div>
+                    <div class="alert alert-info" role="alert" invisible="state != 'accepted'">
+                        Декларацію прийнято ДПС, її суми й реквізити не змінюються. Помилку
+                        виправляють уточнюючою декларацією — подайте її в Електронному кабінеті.
+                    </div>
                     <group>
                         <group string="Основне">
-                            <field name="year"/>
-                            <field name="period"/>
-                            <field name="fop_group_id"/>
+                            <field name="year" readonly="state in ('submitted', 'accepted')"/>
+                            <field name="period" readonly="state in ('submitted', 'accepted')"/>
+                            <field name="fop_group_id" readonly="state in ('submitted', 'accepted')"/>
                             <field name="income_limit" invisible="not fop_group_id"/>
                         </group>
                         <group string="Подання">
-                            <field name="submission_date"/>
+                            <field name="submission_date" readonly="state in ('submitted', 'accepted')"/>
                             <field name="tax_document_id" invisible="not tax_document_id"/>
-                            <field name="xml_file" filename="xml_filename"/>
+                            <field name="xml_file" filename="xml_filename" readonly="state in ('submitted', 'accepted')"/>
                             <field name="xml_filename" invisible="1"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" readonly="state in ('submitted', 'accepted')" groups="base.group_multi_company"/>
                         </group>
                     </group>
                     <notebook>
                         <page string="Дохід" name="income">
                             <group>
                                 <group>
-                                    <field name="total_income" widget="monetary"/>
+                                    <field name="total_income" widget="monetary" readonly="state in ('submitted', 'accepted')"/>
                                 </group>
                             </group>
                         </page>
@@ -62,13 +66,13 @@
                             <group>
                                 <group string="Єдиний податок">
                                     <field name="tax_rate"/>
-                                    <field name="monthly_tax_amount"
+                                    <field name="monthly_tax_amount" readonly="state in ('submitted', 'accepted')"
                                            invisible="fop_group_id and fop_group_id.code not in ('1', '2')"/>
                                     <field name="single_tax" widget="monetary"/>
                                 </group>
                                 <group string="ЄСВ">
                                     <field name="min_wage"/>
-                                    <field name="esv_rate"/>
+                                    <field name="esv_rate" readonly="state in ('submitted', 'accepted')"/>
                                     <field name="esv_months"/>
                                     <field name="esv_base" widget="monetary"/>
                                     <field name="esv_amount" widget="monetary"/>
