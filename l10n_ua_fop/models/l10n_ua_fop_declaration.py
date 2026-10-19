@@ -43,7 +43,7 @@ _logger = logging.getLogger(__name__)
 LOCKED_STATES = ('submitted', 'accepted')
 LOCKED_FIELDS = frozenset({
     'year', 'period', 'fop_group_id', 'company_id', 'total_income',
-    'monthly_tax_amount', 'esv_rate', 'xml_file', 'xml_filename', 'submission_date',
+    'monthly_tax_amount', 'esv_rate', 'esv_annex', 'xml_file', 'xml_filename', 'submission_date',
 })
 # Контекст для службових змін стану й даних поданої декларації (подання, прийняття,
 # імпорт з кабінету) — користувацькі правки його не мають.
@@ -153,6 +153,13 @@ class L10nUaFopDeclaration(models.Model):
         help='Мінімальна заробітна плата на кінець звітного періоду (довідник '
              '«Мінімальна заробітна плата»). ЄСВ рахується від мінімальної '
              'зарплати кожного місяця періоду.',
+    )
+    esv_annex = fields.Boolean(
+        string='Додаток 1 (ЄСВ)',
+        tracking=True,
+        help='ЄСВ ФОП звітує додатком 1 до декларації — щомісяця, щокварталу чи раз на '
+             'рік, як обрано. Без додатка ЄСВ у декларації не рахується й не входить у '
+             '«Всього до сплати». Для декларацій з кабінету — за ознакою HD1 поданого XML.',
     )
     esv_rate = fields.Float(
         string='Ставка ЄСВ (%)',
@@ -301,7 +308,7 @@ class L10nUaFopDeclaration(models.Model):
 
     @api.depends(
         'total_income', 'tax_rate', 'monthly_tax_amount',
-        'year', 'esv_rate', 'period', 'fop_group_id',
+        'year', 'esv_rate', 'esv_annex', 'period', 'fop_group_id',
     )
     def _compute_taxes(self):
         for rec in self:
@@ -320,7 +327,8 @@ class L10nUaFopDeclaration(models.Model):
 
             # ESV: мінімальний внесок щомісяця — від мінзарплати цього місяця
             # (у 2024 вона змінилась з квітня, тож «одна сума × місяці» хибна).
-            rec.esv_base = sum(month_wages)
+            # Лише якщо до декларації додається додаток 1 (ЄСВ).
+            rec.esv_base = sum(month_wages) if rec.esv_annex else 0.0
             rec.esv_amount = (
                 rec.esv_base * (rec.esv_rate / 100) if rec.esv_base else 0
             )
@@ -497,6 +505,11 @@ class L10nUaFopDeclaration(models.Model):
         """
         self.ensure_one()
         self._check_f0103309_group()
+        if self.esv_annex:
+            raise UserError(_(
+                'Додаток 1 (ЄСВ) Odoo ще не формує. Подайте декларацію з додатком в '
+                'Електронному кабінеті — після синхронізації вона з\'явиться тут, — або '
+                'зніміть галочку «Додаток 1 (ЄСВ)», якщо ЄСВ цього разу не подається.'))
         if self.state == 'draft':
             raise UserError(
                 'Спершу розрахуйте декларацію (кнопка «Розрахувати»), '
@@ -606,6 +619,8 @@ class L10nUaFopDeclaration(models.Model):
             'single_tax': amount('R011G3'),
             'military_levy': amount('R023G3'),
             'filled': filled,
+            # Додаток 1 (ЄСВ): ознака HD1 у тілі або пов'язаний документ у заголовку.
+            'esv_annex': text(body, 'HD1') == '1' or bool(head.findall('LINKED_DOCS/DOC')),
         }
 
     @api.model
@@ -647,6 +662,7 @@ class L10nUaFopDeclaration(models.Model):
             'state': 'accepted',
             'submission_date': data['filled'] or doc.document_date,
             'tax_document_id': doc.id,
+            'esv_annex': data['esv_annex'],
         }
         if declaration:
             vals = dict(accepted)

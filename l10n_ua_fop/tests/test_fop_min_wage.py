@@ -67,6 +67,7 @@ class TestFopMinWageLimits(TransactionCase):
         group = self.groups['3']
         self._books(2026, group, {'1': 100_000, '2': 120_000})
         decl = self._declaration(2026, 'h1', group)
+        decl.esv_annex = True
         decl.action_calculate()
         self.assertEqual(decl.min_wage, 8647)
         self.assertEqual(decl.esv_base, 51_882)          # 6 × 8647
@@ -76,6 +77,7 @@ class TestFopMinWageLimits(TransactionCase):
         group = self.groups['3']
         self._books(2024, group, {'1': 1000, '2': 1000, '3': 1000, '4': 1000})
         decl = self._declaration(2024, 'year', group)
+        decl.esv_annex = True
         decl.action_calculate()
         self.assertEqual(decl.esv_base, 3 * 7100 + 9 * 8000)
         self.assertEqual(decl.min_wage, 8000)
@@ -106,6 +108,7 @@ class TestFopMinWageLimits(TransactionCase):
         group = self.groups['3']
         self._books(2099, group, {'1': 50_000})
         decl = self._declaration(2099, 'q1', group)
+        decl.esv_annex = True
         self.assertEqual(decl.min_wage, 0.0)
 
         self.env['l10n_ua.min.wage'].create({'date_from': date(2099, 1, 1), 'amount': 20_000})

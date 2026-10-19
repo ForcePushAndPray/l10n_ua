@@ -71,11 +71,13 @@
                                     <field name="single_tax" widget="monetary"/>
                                 </group>
                                 <group string="ЄСВ">
-                                    <field name="min_wage"/>
-                                    <field name="esv_rate" readonly="state in ('submitted', 'accepted')"/>
-                                    <field name="esv_months"/>
-                                    <field name="esv_base" widget="monetary"/>
-                                    <field name="esv_amount" widget="monetary"/>
+                                    <field name="esv_annex" readonly="state in ('submitted', 'accepted')"/>
+                                    <field name="min_wage" invisible="not esv_annex"/>
+                                    <field name="esv_rate" invisible="not esv_annex"
+                                           readonly="state in ('submitted', 'accepted')"/>
+                                    <field name="esv_months" invisible="not esv_annex"/>
+                                    <field name="esv_base" widget="monetary" invisible="not esv_annex"/>
+                                    <field name="esv_amount" widget="monetary" invisible="not esv_annex"/>
                                 </group>
                                 <group string="Військовий збір">
                                     <field name="military_levy" widget="monetary"/>
@@ -111,6 +113,7 @@
                 <field name="fop_group_id"/>
                 <field name="total_income" sum="Разом дохід"/>
                 <field name="single_tax" sum="Разом ЄП"/>
+                <field name="esv_annex" optional="hide"/>
                 <field name="esv_amount" sum="Разом ЄСВ"/>
                 <field name="total_payable" sum="Разом до сплати"/>
                 <field name="income_limit_exceeded" column_invisible="1"/>

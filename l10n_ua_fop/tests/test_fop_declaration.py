@@ -88,6 +88,7 @@ class TestFopDeclaration(TransactionCase):
         """ЄСВ = мінзарплата з довідника (2025 — 8000) × місяці × 22%."""
         self._create_income_books()
         decl = self._create_declaration('year', 2025)
+        decl.esv_annex = True
         decl.action_calculate()
         self.assertEqual(decl.min_wage, 8000)
         # ESV for year: 8000 × 12 × 22% = 21,120
