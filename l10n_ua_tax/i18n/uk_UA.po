@@ -688,3 +688,8 @@ msgstr "Податкових документів ще немає"
 #: model_terms:ir.actions.act_window,help:l10n_ua_tax.l10n_ua_tax_document_action
 msgid "Documents appear here after synchronisation with the Tax Cabinet."
 msgstr "Документи з'являються тут після синхронізації з Електронним кабінетом."
+
+#. module: l10n_ua_tax
+#: model:ir.ui.menu,name:l10n_ua_tax.menu_ua_tax_accounting
+msgid "Tax Accounting"
+msgstr "Облік"
