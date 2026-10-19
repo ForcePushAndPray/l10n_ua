@@ -239,7 +239,8 @@ class TestCheckDps(DeclarationImportCase):
         self.assertEqual(self.decl.state, 'accepted')
 
     def test_kvt2_matched_by_submission_id(self):
-        self.decl.dps_submission_id = '171671355306358'
+        self.decl.with_context(l10n_ua_fop_declaration_unlock=True).dps_submission_id = \
+            '171671355306358'
         kvt = self._kvt2_xml(fname='OTHER')
         self._check([], incoming=[self._kvt2_item()], kvt=kvt)
         # Квитанцію знайдено за id подання, але прив'язка — лише за ім'ям файлу.
