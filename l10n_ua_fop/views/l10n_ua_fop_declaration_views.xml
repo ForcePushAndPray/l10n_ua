@@ -56,6 +56,7 @@
                         <group string="Подання">
                             <field name="submission_date" readonly="state in ('submitted', 'accepted')"/>
                             <field name="tax_document_id" invisible="not tax_document_id"/>
+                            <field name="dps_submission_id" invisible="not dps_submission_id"/>
                             <field name="xml_file" filename="xml_filename" readonly="state in ('submitted', 'accepted')"/>
                             <field name="xml_filename" invisible="1"/>
                             <field name="company_id" readonly="state in ('submitted', 'accepted')" groups="base.group_multi_company"/>

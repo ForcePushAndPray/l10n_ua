@@ -227,11 +227,11 @@ class L10nUaTaxCabinetConfig(models.Model):
 
         return response.json()
 
-    def _api_get_incoming_documents(self, page=1, *, auth_signature):
+    def _api_get_incoming_documents(self, page=0, *, auth_signature):
         """
         Get incoming correspondence.
 
-        GET /ws/public_api/post/incoming?page=N
+        GET /ws/public_api/post/incoming?page=N — сторінки з 0 (Spring pageable).
         """
         self.ensure_one()
         api_url = self._get_api_url()
@@ -247,11 +247,11 @@ class L10nUaTaxCabinetConfig(models.Model):
 
         return response.json()
 
-    def _api_get_sent_documents(self, page=1, *, auth_signature):
+    def _api_get_sent_documents(self, page=0, *, auth_signature):
         """
         Get outgoing correspondence.
 
-        GET /ws/public_api/post/sent?page=N
+        GET /ws/public_api/post/sent?page=N — сторінки з 0 (Spring pageable).
         """
         self.ensure_one()
         api_url = self._get_api_url()

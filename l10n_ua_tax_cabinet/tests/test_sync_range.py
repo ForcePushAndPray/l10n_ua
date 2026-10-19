@@ -109,3 +109,21 @@ class TestSyncRange(TransactionCase):
                           side_effect=flaky):
             result = wizard.kep_submit_signed([], auth_signature='SIG')
         self.assertIn('05.2024', result['receipt'])
+
+    def test_correspondence_pages_start_at_zero(self):
+        """Вхідні віддаються сторінками з 0; ідемо до ``last``."""
+        pages = []
+
+        def incoming(config, page=0, *, auth_signature):
+            pages.append(page)
+            return {'content': [{'id': 9000 + page, 'cdoc': 'J1499202', 'periodYear': 2026,
+                                 'name': 'Квитанцiя № 2', 'dateIn': '2026-10-19 22:49:21'}],
+                    'last': page == 1}
+
+        Config = type(self.config)
+        with patch.object(Config, '_api_get_incoming_documents', autospec=True,
+                          side_effect=incoming):
+            count = self.env['l10n_ua.tax.document']._sync_incoming_documents(
+                self.config, auth_signature='SIG')
+        self.assertEqual(pages, [0, 1])
+        self.assertEqual(count, 2)

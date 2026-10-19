@@ -154,6 +154,8 @@ class TestDeclarationImport(DeclarationImportCase):
         self.assertIn('<R025G3>7000.00</R025G3>', xml)
 
 
+# Ім'я файлу поданої декларації — ДПС повторює його в квитанції № 2.
+KVT_FNAME = '17162940910418F0103309100000000140920261716'
 NINE_MONTHS = dict(period_type='4', marker='H3KV', income=2100000.0, tax=105000.0,
                    military=21000.0, tax_prev=70000.0, military_prev=14000.0, filled='19102026')
 
@@ -172,17 +174,70 @@ class TestCheckDps(DeclarationImportCase):
                            'auto_download_pdf': False, 'active': True})
         self.decl = self.Declaration.create({
             'year': 2026, 'period': '9m', 'fop_group_id': self.group_3.id,
-            'company_id': self.company.id, 'total_income': 2100000.0})
+            'company_id': self.company.id, 'total_income': 2100000.0,
+            'xml_filename': KVT_FNAME + '.xml'})
         self.decl.with_context(l10n_ua_fop_declaration_unlock=True).write({'state': 'submitted'})
 
-    def _check(self, listed):
+    def _check(self, listed, incoming=(), kvt=b''):
         Config = type(self.config)
+
+        def download_xml(config, year, doc_id, doc_type='reg_doc', *, auth_signature):
+            body = f0103309(**NINE_MONTHS) if doc_type == 'reg_doc' else kvt
+            return base64.b64encode(body)
+
         with patch.object(Config, '_api_get_document_list', autospec=True,
                           return_value=listed) as get_list, \
+                patch.object(Config, '_api_get_incoming_documents', autospec=True,
+                             return_value={'content': list(incoming), 'last': True}), \
                 patch.object(Config, '_api_download_document_xml', autospec=True,
-                             return_value=base64.b64encode(f0103309(**NINE_MONTHS))):
+                             side_effect=download_xml), \
+                patch.object(Config, '_api_download_document_pdf', autospec=True,
+                             return_value=base64.b64encode(b'%PDF')):
             result = self.decl.with_context(kep_mode='check').kep_submit_signed({}, 'SIG')
         return result['receipt'], get_list
+
+    def _kvt2_item(self, ref='171671355306358'):
+        return {'id': 171671400000001, 'cdoc': 'J1499202', 'codRegdocRef': ref,
+                'periodYear': 2026, 'name': 'Квитанцiя № 2[J1499202]'}
+
+    def _kvt2_xml(self, result='Прийнято пакет.'):
+        return (f'<?xml version="1.0" encoding="windows-1251"?><DECLAR><DECLARBODY>'
+                f'<HFNAME>{KVT_FNAME}</HFNAME><HRESULT>{result}</HRESULT>'
+                f'<HREGNUM>9333062572</HREGNUM></DECLARBODY></DECLAR>').encode('windows-1251')
+
+    def test_kvt2_in_incoming_accepts(self):
+        """Реєстру ще немає, а квитанція № 2 вже у вхідних — декларацію прийнято."""
+        receipt, _get_list = self._check([], incoming=[self._kvt2_item(ref='1')],
+                                         kvt=self._kvt2_xml())
+        self.assertEqual(self.decl.state, 'accepted')
+        self.assertIn('9333062572', receipt)
+        names = self.env['ir.attachment'].search([
+            ('res_model', '=', self.decl._name), ('res_id', '=', self.decl.id)]).mapped('name')
+        self.assertIn('Квитанція_2_171671400000001.xml', names)
+        self.assertIn('Квитанція_2_171671400000001.pdf', names)
+
+    def test_kvt2_matched_by_submission_id(self):
+        self.decl.dps_submission_id = '171671355306358'
+        kvt = self._kvt2_xml().replace(KVT_FNAME.encode(), b'OTHER')
+        self._check([], incoming=[self._kvt2_item()], kvt=kvt)
+        self.assertEqual(self.decl.state, 'accepted')
+
+    def test_kvt2_of_other_document_is_ignored(self):
+        kvt = self._kvt2_xml().replace(KVT_FNAME.encode(), b'OTHER')
+        receipt, _get_list = self._check([], incoming=[self._kvt2_item(ref='1')], kvt=kvt)
+        self.assertEqual(self.decl.state, 'submitted')
+        self.assertIn('ще немає', receipt)
+
+    def test_kvt2_rejected_keeps_submitted(self):
+        receipt, _get_list = self._check([], incoming=[self._kvt2_item(ref='1')],
+                                         kvt=self._kvt2_xml('Документ не прийнято'))
+        self.assertEqual(self.decl.state, 'submitted')
+        self.assertIn('не прийняла', receipt)
+
+    def test_submission_id_is_stored(self):
+        self.decl.with_context(l10n_ua_fop_declaration_unlock=True).write({'state': 'calculated'})
+        self.decl._dps_store_receipts({'status': 'OK', 'id': 171671355306358})
+        self.assertEqual(self.decl.dps_submission_id, '171671355306358')
 
     def test_check_mode_signs_only_authorisation(self):
         spec = self.decl.with_context(kep_mode='check').kep_prepare_signing()
