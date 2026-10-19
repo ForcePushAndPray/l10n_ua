@@ -20,8 +20,10 @@ class TestIncomeBookAutofill(TransactionCase):
         super().setUpClass()
         cls.company = cls.env.company
         fop_form = cls.env['l10n_ua.legal.form'].search([('is_fop', '=', True)], limit=1)
-        cls.company.write({'l10n_ua_legal_form_id': fop_form.id, 'l10n_ua_fop_group': '3',
-                           'l10n_ua_is_vat_payer': False})
+        vals = {'l10n_ua_legal_form_id': fop_form.id, 'l10n_ua_fop_group': '3'}
+        if 'l10n_ua_is_vat_payer' in cls.company._fields:
+            vals['l10n_ua_is_vat_payer'] = False
+        cls.company.write(vals)
         Group = cls.env['l10n_ua.fop.group']
         cls.group_3 = Group.search([('code', '=', '3')]) or Group.create(
             {'code': '3', 'name': '3 група', 'tax_rate': 5.0, 'limit_min_wages': 1167})

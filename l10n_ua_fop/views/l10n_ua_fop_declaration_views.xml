@@ -13,8 +13,11 @@
                             invisible="state != 'calculated'"/>
                     <button name="action_submit" string="Підписати і подати" type="object"
                             class="btn-primary" invisible="state != 'calculated'"/>
+                    <button name="action_check_dps" string="Перевірити в ДПС" type="object"
+                            class="btn-primary" invisible="state != 'submitted'"
+                            help="Знайти декларацію серед поданих у Електронному кабінеті й прив'язати документ ДПС"/>
                     <button name="action_accept" string="Прийнято" type="object"
-                            class="btn-success" invisible="state != 'submitted'"/>
+                            invisible="state != 'submitted'"/>
                     <button name="action_draft" string="В чернетку" type="object"
                             invisible="state in ('draft', 'accepted')"/>
                     <field name="state" widget="statusbar"

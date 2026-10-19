@@ -8,6 +8,7 @@ import base64
 from datetime import date
 from unittest.mock import patch
 
+from odoo.exceptions import UserError
 from odoo.tests import TransactionCase, tagged
 
 
@@ -46,8 +47,7 @@ H1 = dict(period_type='3', marker='HHY', income=1400000.0, tax=70000.0, military
           tax_prev=35000.0, military_prev=7000.0, filled='15072026')
 
 
-@tagged('post_install', '-at_install')
-class TestDeclarationImport(TransactionCase):
+class DeclarationImportCase(TransactionCase):
 
     @classmethod
     def setUpClass(cls):
@@ -74,6 +74,10 @@ class TestDeclarationImport(TransactionCase):
 
     def _declarations(self):
         return self.Declaration.search([('company_id', '=', self.company.id), ('year', '=', 2026)])
+
+
+@tagged('post_install', '-at_install')
+class TestDeclarationImport(DeclarationImportCase):
 
     def test_filed_declarations_become_accepted_records(self):
         q1_doc = self._doc(f0103309(**Q1))
@@ -148,3 +152,70 @@ class TestDeclarationImport(TransactionCase):
         self.assertIn('<R0141G3>35000.00</R0141G3>', xml)
         self.assertIn('<R024G3>7000.00</R024G3>', xml)
         self.assertIn('<R025G3>7000.00</R025G3>', xml)
+
+
+NINE_MONTHS = dict(period_type='4', marker='H3KV', income=2100000.0, tax=105000.0,
+                   military=21000.0, tax_prev=70000.0, military_prev=14000.0, filled='19102026')
+
+
+@tagged('post_install', '-at_install')
+class TestCheckDps(DeclarationImportCase):
+    """Кнопка «Перевірити в ДПС» на поданій декларації."""
+
+    def setUp(self):
+        super().setUp()
+        Config = self.env['l10n_ua.tax.cabinet.config']
+        self.config = Config.with_context(active_test=False).search(
+            [('company_id', '=', self.company.id)], limit=1) or Config.create(
+            {'name': 'Кабінет', 'company_id': self.company.id, 'taxpayer_code': '1234567890'})
+        self.config.write({'taxpayer_code': '1234567890', 'auto_download_xml': True,
+                           'auto_download_pdf': False, 'active': True})
+        self.decl = self.Declaration.create({
+            'year': 2026, 'period': '9m', 'fop_group_id': self.group_3.id,
+            'company_id': self.company.id, 'total_income': 2100000.0})
+        self.decl.with_context(l10n_ua_fop_declaration_unlock=True).write({'state': 'submitted'})
+
+    def _check(self, listed):
+        Config = type(self.config)
+        with patch.object(Config, '_api_get_document_list', autospec=True,
+                          return_value=listed) as get_list, \
+                patch.object(Config, '_api_download_document_xml', autospec=True,
+                             return_value=base64.b64encode(f0103309(**NINE_MONTHS))):
+            result = self.decl.with_context(kep_mode='check').kep_submit_signed({}, 'SIG')
+        return result['receipt'], get_list
+
+    def test_check_mode_signs_only_authorisation(self):
+        spec = self.decl.with_context(kep_mode='check').kep_prepare_signing()
+        self.assertEqual(spec['documents'], [])
+        self.assertEqual(spec['auth_subject'], '1234567890')
+        self.assertEqual(self.decl.action_check_dps()['params']['mode'], 'check')
+
+    def test_registered_declaration_becomes_accepted(self):
+        item = {'codRegdoc': '171671355306358', 'doc': 'F0103309', 'nreg': '9437123456',
+                'docName': 'Податкова декларація платника єдиного податку',
+                'periodYear': 2026, 'periodMonth': 9}
+        receipt, get_list = self._check([item])
+        # Звітний період 9 міс. — у кабінеті це місяць 09.
+        self.assertEqual(get_list.call_args.args[1:], (2026, 9))
+        self.assertEqual(self.decl.state, 'accepted')
+        self.assertEqual(self.decl.tax_document_id.external_id, '171671355306358')
+        self.assertIn('9437123456', receipt)
+        self.assertEqual(len(self._declarations().filtered(lambda d: d.period == '9m')), 1)
+
+    def test_not_registered_yet_stays_submitted(self):
+        receipt, _get_list = self._check([])
+        self.assertEqual(self.decl.state, 'submitted')
+        self.assertFalse(self.decl.tax_document_id)
+        self.assertIn('ще немає', receipt)
+
+    def test_document_synced_earlier_is_linked(self):
+        doc = self._doc(f0103309(**NINE_MONTHS), number='9437123456')
+        receipt, _get_list = self._check([])
+        self.assertEqual(self.decl.state, 'accepted')
+        self.assertEqual(self.decl.tax_document_id, doc)
+        self.assertIn('9437123456', receipt)
+
+    def test_only_submitted_can_be_checked(self):
+        self.decl.with_context(l10n_ua_fop_declaration_unlock=True).write({'state': 'calculated'})
+        with self.assertRaises(UserError):
+            self.decl.action_check_dps()

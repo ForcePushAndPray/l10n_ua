@@ -213,7 +213,9 @@ class L10nUaFopIncomeBook(models.Model):
     @api.model
     def _company_fop_group(self, company):
         code = company.l10n_ua_fop_group
-        if code == '3' and company.l10n_ua_is_vat_payer:
+        # Ознака платника ПДВ — з l10n_ua_account_vat, який не є залежністю модуля.
+        if code == '3' and 'l10n_ua_is_vat_payer' in company._fields \
+                and company.l10n_ua_is_vat_payer:
             code = '3_vat'
         return self.env['l10n_ua.fop.group'].sudo().search([('code', '=', code)], limit=1)
 
