@@ -1,4 +1,9 @@
-from odoo import api, fields, models
+from odoo import _, api, fields, models
+from odoo.exceptions import UserError
+
+# Підтверджена книга — первинний регістр, з якого рахується декларація: її реквізити
+# й записи змінюються лише після повернення в чернетку.
+BOOK_LOCKED_FIELDS = frozenset({'year', 'quarter', 'fop_group_id', 'company_id', 'line_ids'})
 
 
 class L10nUaFopIncomeBook(models.Model):
@@ -88,6 +93,22 @@ class L10nUaFopIncomeBook(models.Model):
             rec.total_income = sum(rec.line_ids.mapped('amount'))
             rec.line_count = len(rec.line_ids)
 
+    def write(self, vals):
+        if BOOK_LOCKED_FIELDS.intersection(vals):
+            self._check_not_confirmed()
+        return super().write(vals)
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_confirmed(self):
+        self._check_not_confirmed()
+
+    def _check_not_confirmed(self):
+        confirmed = self.filtered(lambda b: b.state == 'confirmed')
+        if confirmed:
+            raise UserError(_(
+                'Книгу «%s» підтверджено — її не можна змінювати. Щоб виправити, '
+                'поверніть її в чернетку.') % confirmed[0].name)
+
     def action_confirm(self):
         self.write({'state': 'confirmed'})
 
@@ -148,3 +169,20 @@ class L10nUaFopIncomeBookLine(models.Model):
         'account.bank.statement.line',
         string='Рядок банківської виписки',
     )
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        book_ids = {vals.get('book_id') for vals in vals_list if vals.get('book_id')}
+        self.env['l10n_ua.fop.income.book'].browse(book_ids)._check_not_confirmed()
+        return super().create(vals_list)
+
+    def write(self, vals):
+        self.book_id._check_not_confirmed()
+        if vals.get('book_id'):
+            self.env['l10n_ua.fop.income.book'].browse(vals['book_id'])._check_not_confirmed()
+        return super().write(vals)
+
+    @api.ondelete(at_uninstall=False)
+    def _unlink_except_confirmed_book(self):
+        self.book_id._check_not_confirmed()
+

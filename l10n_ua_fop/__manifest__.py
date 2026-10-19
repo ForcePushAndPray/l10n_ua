@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - FOP (Single Tax)',
-    'version': '19.0.3.6.2',
+    'version': '19.0.3.6.3',
     'category': 'Accounting/Localization',
     'summary': 'Єдиний податок для ФОП: книга доходів, декларація, ЄСВ',
     'description': """

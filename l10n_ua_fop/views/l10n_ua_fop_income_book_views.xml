@@ -28,15 +28,16 @@
                     </div>
                     <group>
                         <group>
-                            <field name="year"/>
-                            <field name="quarter"/>
-                            <field name="fop_group_id"/>
+                            <field name="year" readonly="state == 'confirmed'"/>
+                            <field name="quarter" readonly="state == 'confirmed'"/>
+                            <field name="fop_group_id" readonly="state == 'confirmed'"/>
                         </group>
                         <group>
                             <field name="total_income" widget="monetary"
                                    help="Сума записів, позначених «Дохід»."/>
                             <field name="line_count"/>
-                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="company_id" groups="base.group_multi_company"
+                                   readonly="state == 'confirmed'"/>
                         </group>
                     </group>
                     <notebook>
