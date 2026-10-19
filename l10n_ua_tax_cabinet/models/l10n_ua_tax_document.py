@@ -6,6 +6,8 @@ import re
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
+from .l10n_ua_tax_request import IMPORTED_REQUESTS, IMPORTED_RESPONSES
+
 _logger = logging.getLogger(__name__)
 
 # Код форми в XML ДПС: схема в заголовку (F1419104.XSD) або поля DECLARHEAD.
@@ -328,6 +330,15 @@ class L10nUaTaxDocumentCabinet(models.Model):
         заповнює власний облік (декларацію ЄП, ПДВ тощо). Перевизначайте з
         ``super()``; збій одного модуля не має зривати імпорт.
         """
+        # Власні форми цього модуля: інформаційні запити до ДПС і відповіді на них.
+        Request = self.env['l10n_ua.tax.request']
+        codes = set(IMPORTED_REQUESTS) | set(IMPORTED_RESPONSES)
+        for doc in self.filtered(lambda d: d.file_xml and d.document_type_id.code in codes):
+            try:
+                with self.env.cr.savepoint():
+                    Request._import_from_tax_document(doc, doc.document_type_id.code)
+            except Exception:  # noqa: BLE001 — збій розбору не має зривати імпорт документа
+                _logger.exception("Не вдалося імпортувати запит до ДПС з %s", doc.display_name)
         return True
 
     def _retype_from_xml(self):
