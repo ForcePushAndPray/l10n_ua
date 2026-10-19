@@ -44,6 +44,7 @@
                         </group>
                         <group string="Подання">
                             <field name="submission_date"/>
+                            <field name="tax_document_id" invisible="not tax_document_id"/>
                             <field name="xml_file" filename="xml_filename"/>
                             <field name="xml_filename" invisible="1"/>
                             <field name="company_id" groups="base.group_multi_company"/>

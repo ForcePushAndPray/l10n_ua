@@ -316,9 +316,19 @@ class L10nUaTaxDocumentCabinet(models.Model):
                 except Exception as e:
                     _logger.warning("Could not download PDF for %s: %s", external_id, str(e))
 
+            doc._l10n_ua_after_import()
             _logger.info("Synced tax document: %s", doc.name)
 
         return created_count
+
+    def _l10n_ua_after_import(self):
+        """Документ щойно потрапив у журнал (з кабінету чи завантажений вручну).
+
+        Точка розширення для модулів форм: кожен розбирає XML своєї форми й
+        заповнює власний облік (декларацію ЄП, ПДВ тощо). Перевизначайте з
+        ``super()``; збій одного модуля не має зривати імпорт.
+        """
+        return True
 
     def _retype_from_xml(self):
         """Тип «Інше» → справжній, за кодом форми в XML (F1419104.XSD тощо).

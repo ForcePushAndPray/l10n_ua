@@ -124,6 +124,8 @@ class L10nUaTaxCabinetSyncWizard(models.TransientModel):
         for file_line in self.file_ids:
             doc_vals = self._prepare_document_vals(file_line)
             doc = self.env['l10n_ua.tax.document'].create(doc_vals)
+            doc._retype_from_xml()
+            doc._l10n_ua_after_import()
             created_docs |= doc
             _logger.info("Created tax document: %s", doc.name)
 
