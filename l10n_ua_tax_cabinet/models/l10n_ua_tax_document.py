@@ -1,10 +1,28 @@
 """Extension of tax document model with Tax Cabinet integration."""
+import base64
 import logging
+import re
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
+
+# Код форми в XML ДПС: схема в заголовку (F1419104.XSD) або поля DECLARHEAD.
+SCHEMA_CODE_RE = re.compile(rb'noNamespaceSchemaLocation="([A-Z]\d{7})\.XSD"', re.I)
+HEAD_FIELD_RE = re.compile(rb'<(C_DOC|C_DOC_SUB|C_DOC_VER)>\s*([^<\s]+)\s*</')
+
+
+def doc_code_from_xml(xml_bytes):
+    """Код форми (напр. ``F1419104``) з XML-файлу ДПС або None."""
+    head = (xml_bytes or b'')[:4096]
+    match = SCHEMA_CODE_RE.search(head)
+    if match:
+        return match.group(1).decode('ascii').upper()
+    fields_ = {name.decode(): value.decode('ascii', 'ignore') for name, value in HEAD_FIELD_RE.findall(head)}
+    if {'C_DOC', 'C_DOC_SUB', 'C_DOC_VER'} <= fields_.keys():
+        return (fields_['C_DOC'] + fields_['C_DOC_SUB'] + fields_['C_DOC_VER'].zfill(2)).upper()
+    return None
 
 
 class L10nUaTaxDocumentCabinet(models.Model):
@@ -282,6 +300,7 @@ class L10nUaTaxDocumentCabinet(models.Model):
                             'file_xml': xml_content,
                             'file_xml_name': f"{external_id}.xml",
                         })
+                        doc._retype_from_xml()
                 except Exception as e:
                     _logger.warning("Could not download XML for %s: %s", external_id, str(e))
 
@@ -301,6 +320,19 @@ class L10nUaTaxDocumentCabinet(models.Model):
 
         return created_count
 
+    def _retype_from_xml(self):
+        """Тип «Інше» → справжній, за кодом форми в XML (F1419104.XSD тощо).
+
+        Список кабінету не завжди дає код, що є в довіднику; сам XML — дає.
+        """
+        other = self.env.ref('l10n_ua_tax.tax_document_type_other', raise_if_not_found=False)
+        Type = self.env['l10n_ua.tax.document.type']
+        for doc in self.filtered(lambda d: d.file_xml and (not d.document_type_id or d.document_type_id == other)):
+            code = doc_code_from_xml(base64.b64decode(doc.file_xml))
+            doc_type = code and Type.search([('code', '=', code)], limit=1)
+            if doc_type:
+                doc.document_type_id = doc_type
+
     @api.model
     def _prepare_api_document_vals(self, config, doc_item, doc_type, year):
         """Prepare document values from API response."""
@@ -311,6 +343,9 @@ class L10nUaTaxDocumentCabinet(models.Model):
         ], limit=1)
 
         if not doc_type_record:
+            # Тип уточнить XML документа (_retype_from_xml), якщо його завантажено.
+            _logger.info("Tax Cabinet: unknown document code %r (%s)", doc_code,
+                         doc_item.get('docName') or doc_item.get('name'))
             doc_type_record = self.env.ref(
                 'l10n_ua_tax.tax_document_type_other',
                 raise_if_not_found=False

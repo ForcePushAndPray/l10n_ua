@@ -642,3 +642,34 @@ msgstr "Коди бюджету"
 #: model:ir.ui.menu,name:l10n_ua_tax.menu_ua_tax_offices
 msgid "Tax Offices (ДПІ)"
 msgstr "Податкові інспекції (ДПІ)"
+
+#. module: l10n_ua_tax
+#: model:l10n_ua.tax.document.type,name:l10n_ua_tax.tax_document_type_drfo_income_request
+msgid "Request for DRFO Income Information"
+msgstr "Запит відомостей з ДРФО про доходи"
+
+#. module: l10n_ua_tax
+#: model:l10n_ua.tax.document.type,description:l10n_ua_tax.tax_document_type_drfo_income_request
+msgid ""
+"Request for information from the State Register of Individual Taxpayers "
+"(DRFO) on sources and amounts of income, withheld tax and military levy"
+msgstr ""
+"Запит щодо отримання відомостей з Державного реєстру фізичних осіб – "
+"платників податків про джерела та суми нарахованого доходу, утриманого та "
+"сплаченого податку та військового збору"
+
+#. module: l10n_ua_tax
+#: model:l10n_ua.tax.document.type,name:l10n_ua_tax.tax_document_type_drfo_income_response
+msgid "DRFO Income Information"
+msgstr "Відомості з ДРФО про доходи"
+
+#. module: l10n_ua_tax
+#: model:l10n_ua.tax.document.type,description:l10n_ua_tax.tax_document_type_drfo_income_response
+msgid ""
+"Information from the State Register of Individual Taxpayers (DRFO) on "
+"sources and amounts of income, accrued tax and military levy (response to "
+"the request)"
+msgstr ""
+"Відомості з Державного реєстру фізичних осіб – платників податків про "
+"джерела та суми нарахованого доходу, нарахованого (перерахованого) податку та "
+"військового збору (відповідь на запит)"
