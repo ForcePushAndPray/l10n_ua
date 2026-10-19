@@ -24,8 +24,12 @@ class TestDeclarationLock(TransactionCase):
 
     def test_accepted_is_locked(self):
         decl = self._declaration('accepted')
+        doc = self.env['l10n_ua.tax.document'].create({
+            'name': 'Інший документ', 'company_id': self.env.company.id,
+            'document_type_id': self.env.ref('l10n_ua_tax.tax_document_type_other').id})
         for vals in ({'total_income': 2000.0}, {'period': 'h1'}, {'state': 'draft'},
-                     {'xml_file': base64.b64encode(b'<x/>')}):
+                     {'xml_file': base64.b64encode(b'<x/>')}, {'tax_document_id': doc.id},
+                     {'kvt2_document_id': doc.id}, {'dps_submission_id': '1'}):
             with self.assertRaises(UserError):
                 decl.write(vals)
         with self.assertRaises(UserError):

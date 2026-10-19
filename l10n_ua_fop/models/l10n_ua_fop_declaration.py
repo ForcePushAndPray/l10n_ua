@@ -46,7 +46,7 @@ LOCKED_STATES = ('submitted', 'accepted')
 LOCKED_FIELDS = frozenset({
     'year', 'period', 'fop_group_id', 'company_id', 'total_income',
     'monthly_tax_amount', 'esv_rate', 'esv_annex', 'xml_file', 'xml_filename', 'submission_date',
-    'notes',
+    'notes', 'tax_document_id', 'kvt2_document_id', 'dps_submission_id',
 })
 # Контекст для службових змін стану й даних поданої декларації (подання, прийняття,
 # імпорт з кабінету) — користувацькі правки його не мають.
@@ -264,6 +264,7 @@ class L10nUaFopDeclaration(models.Model):
         'l10n_ua.tax.document',
         string='Поданий документ',
         copy=False,
+        readonly=True,
         index='btree_not_null',
         ondelete='set null',
         help='Запис журналу «Усі подані документи», з якого імпортовано декларацію '
