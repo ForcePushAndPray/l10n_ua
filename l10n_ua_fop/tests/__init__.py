@@ -6,3 +6,4 @@ from . import test_multicompany
 from . import test_declaration_import
 from . import test_income_book_autofill
 from . import test_taxpayer_name
+from . import test_declaration_lock
