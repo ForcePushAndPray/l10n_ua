@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Tax',
-    'version': '19.0.1.2.1',
+    'version': '19.0.1.2.2',
     'category': 'Accounting/Localization',
     'summary': 'Ukrainian tax documents and reporting',
     'description': """

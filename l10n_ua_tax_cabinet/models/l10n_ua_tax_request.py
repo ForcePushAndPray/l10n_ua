@@ -137,7 +137,7 @@ class L10nUaTaxRequest(models.Model):
             'period_year': d.year,
             'c_sti_orig': office,
             'd_fill': d.strftime('%d%m%Y'),
-            'hname': company.name or '',
+            'hname': company._l10n_ua_dps_name(),
         }
 
     @api.model
