@@ -489,7 +489,8 @@ class L10nUaFopDeclaration(models.Model):
             'taxpayer_phone': company.phone or '',
             'declaration_type': '0',  # Звітна
             'tax_office_code': tax_office.code if tax_office else '',
-            'tax_office_name': tax_office.name if tax_office else '',
+            # Назва ДПІ — українською, хоч би якою мовою працює користувач.
+            'tax_office_name': tax_office.with_context(lang='uk_UA').name if tax_office else '',
             'quarter_marker': quarter_marker,
             'period_type': period_type,
             'period_month': period_month,

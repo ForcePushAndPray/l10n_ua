@@ -396,7 +396,8 @@ class L10nUaTaxDocumentWizardF0103309(models.TransientModel):
             'taxpayer_phone': self.taxpayer_phone or '',
             'declaration_type': self.declaration_type,
             'tax_office_code': self.tax_office_id.code if self.tax_office_id else '',
-            'tax_office_name': self.tax_office_id.name if self.tax_office_id else '',
+            'tax_office_name': (self.tax_office_id.with_context(lang='uk_UA').name
+                                if self.tax_office_id else ''),
             'quarter_marker': self._get_quarter_marker(),
             'period_type': period_type,
             'period_month': period_month,
