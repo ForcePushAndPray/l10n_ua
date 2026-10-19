@@ -84,6 +84,14 @@ class TestSyncRange(TransactionCase):
         self.assertIn('08.2022', result['receipt'])
         self.assertIn('«З року» = 2022', result['receipt'])
 
+    def test_signing_window_says_what_is_synced(self):
+        prepared = self._wizard(year_from=2019, year=2026).kep_prepare_signing()
+        self.assertEqual(prepared['auth_subject'], '1234567890')
+        self.assertFalse(prepared['documents'])
+        self.assertIn('2019–2026', prepared['description'])
+        one = self._wizard(month='3', year=2025).kep_prepare_signing()
+        self.assertIn('03.2025', one['description'])
+
     def test_first_period_error_is_raised(self):
         wizard = self._wizard(year_from=2024, year=2024)
         with patch.object(type(self.config), '_api_get_document_list', autospec=True,
