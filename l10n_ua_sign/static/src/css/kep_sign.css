@@ -5,3 +5,8 @@
 .o_kep_sign .o_kep_sign_card h3 {
     font-weight: 500;
 }
+
+/* Квитанції бувають багаторядкові (синхронізація за кілька років). */
+.o_kep_sign .o_kep_receipt {
+    white-space: pre-line;
+}

@@ -26,6 +26,13 @@ class TestSignMixin(TransactionCase):
         self.assertIn('res_id', action['params'])
         self.assertNotIn('mode', action['params'])
 
+    def test_action_opens_over_the_form(self):
+        # Вікно поверх форми (не перехід на сторінку), кнопки — у самому вікні.
+        action = self._rec().action_kep_sign()
+        self.assertEqual(action['target'], 'new')
+        self.assertTrue(action['name'])
+        self.assertIs(action['context']['footer'], False)
+
     def test_action_passes_mode(self):
         action = self._rec().action_kep_sign(mode='submit')
         self.assertEqual(action['params']['mode'], 'submit')

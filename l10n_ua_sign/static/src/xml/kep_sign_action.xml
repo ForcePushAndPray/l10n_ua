@@ -2,9 +2,9 @@
 <templates xml:space="preserve">
 
     <t t-name="l10n_ua_sign.KepSignAction">
-        <div class="o_kep_sign container-fluid p-4">
+        <div t-attf-class="o_kep_sign {{ inDialog ? 'p-3' : 'container-fluid p-4' }}">
             <div class="o_kep_sign_card mx-auto">
-                <h3 class="mb-3">Підпис КЕП</h3>
+                <h3 t-if="!inDialog" class="mb-3">Підпис КЕП</h3>
 
                 <t t-if="state.phase === 'loading'">
                     <div class="text-muted">
@@ -16,15 +16,15 @@
                     <div class="alert alert-danger" role="alert">
                         <t t-esc="state.error"/>
                     </div>
-                    <button class="btn btn-secondary" t-on-click="onClose">Назад</button>
+                    <button class="btn btn-secondary" t-on-click="onCancel">Закрити</button>
                 </t>
 
                 <t t-elif="state.phase === 'done'">
                     <div class="alert alert-success" role="alert">
                         <div><strong>Готово.</strong></div>
-                        <div class="mt-1"><small t-esc="state.receipt"/></div>
+                        <div class="mt-1 o_kep_receipt" t-esc="state.receipt"/>
                     </div>
-                    <button class="btn btn-primary" t-on-click="onClose">Закрити</button>
+                    <button class="btn btn-primary o_kep_close" t-on-click="onClose">Закрити</button>
                 </t>
 
                 <t t-else="">
@@ -38,117 +38,113 @@
                         </div>
                     </t>
 
-                    <p class="text-muted">
+                    <!-- Що саме підписується і навіщо -->
+                    <div class="o_kep_what mb-3">
+                        <p t-if="state.prepared.description" class="mb-2"
+                           t-esc="state.prepared.description"/>
                         <t t-if="authOnly">
-                            Буде підписано лише код платника — для авторизації в
-                            електронному кабінеті.
+                            <p class="mb-0">
+                                Буде підписано лише код платника
+                                <code t-esc="authSubject"/> — так кабінет ДПС
+                                переконується, що запит робите ви (як вхід за КЕП).
+                                Жоден документ не підписується.
+                            </p>
                         </t>
                         <t t-else="">
-                            Документів до підпису: <strong t-esc="docCount"/>.
+                            <p class="mb-1">Будуть підписані:</p>
+                            <ul class="mb-1 o_kep_documents">
+                                <li t-foreach="documents" t-as="doc" t-key="doc.name"
+                                    t-esc="doc.filename or doc.name"/>
+                            </ul>
+                            <p t-if="authSubject" class="mb-0 text-muted small">
+                                А також код платника <code t-esc="authSubject"/> — для
+                                входу до кабінету.
+                            </p>
                         </t>
-                        Ключ і пароль обробляються лише у вашому браузері й не
-                        передаються на сервер.
-                    </p>
-
-                    <t t-if="state.error">
-                        <div class="alert alert-danger" role="alert" t-esc="state.error"/>
-                    </t>
-
-                    <!-- Крок 1: зчитати ключ -->
-                    <div class="o_kep_step mb-3">
-                        <h5>1. Зчитати ключ</h5>
-                        <div class="mb-2">
-                            <label class="form-label">Оберіть АЦСК</label>
-                            <select class="form-select" t-on-change="onCaChange"
-                                    t-att-disabled="state.busy">
-                                <option value="" t-att-selected="!state.caName">
-                                    Визначати автоматично
-                                </option>
-                                <t t-foreach="state.caList" t-as="ca" t-key="ca.name">
-                                    <option t-att-value="ca.name"
-                                            t-att-selected="ca.name === state.caName"
-                                            t-esc="ca.name"/>
-                                </t>
-                            </select>
-                            <small t-if="!state.caName" class="text-muted">
-                                Бібліотека по черзі перепитає всі ЦСК — це довго. Оберіть
-                                свій ЦСК, щоб зчитати ключ одразу.
-                            </small>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Файл-ключ (.dat / .jks / .pfx)</label>
-                            <input type="file" class="form-control"
-                                   accept=".dat,.jks,.pfx,.pk8,.zs2"
-                                   t-on-change="onKeyFileChange"/>
-                            <small t-if="state.keyFileName" class="text-muted"
-                                   t-esc="state.keyFileName"/>
-                        </div>
-                        <div class="mb-2">
-                            <label class="form-label">Пароль до ключа</label>
-                            <input type="password" class="form-control"
-                                   autocomplete="off"
-                                   t-att-value="state.password"
-                                   t-on-input="onPasswordInput"/>
-                        </div>
-                        <button class="btn btn-outline-primary" t-on-click="onReadKey"
-                                t-att-disabled="state.busy or !state.libAvailable">
-                            <t t-if="state.busy and !state.ownerRows">
-                                <i class="fa fa-spinner fa-spin me-2"/>Зчитування…
-                            </t>
-                            <t t-else="">Зчитати ключ</t>
-                        </button>
                     </div>
 
-                    <!-- Дані власника ключа (після кроку 1) -->
-                    <t t-if="state.ownerRows">
-                        <div class="alert alert-info" role="alert">
-                            <div class="fw-bold mb-1">Ключ зчитано — перевірте власника:</div>
-                            <table class="table table-sm mb-0">
+                    <!-- Ключ: уже зчитаний у цій вкладці або форма зчитування -->
+                    <t t-if="state.key">
+                        <div class="alert alert-info o_kep_key" role="alert">
+                            <div class="d-flex justify-content-between align-items-start mb-1">
+                                <strong>Ключ зчитано</strong>
+                                <button class="btn btn-link btn-sm p-0 o_kep_forget"
+                                        t-att-disabled="busy" t-on-click="onForgetKey">
+                                    Інший ключ
+                                </button>
+                            </div>
+                            <table class="table table-sm mb-1">
                                 <tbody>
-                                    <tr t-foreach="state.ownerRows" t-as="row" t-key="row.label">
-                                        <td class="text-muted" style="width: 40%">
-                                            <t t-esc="row.label"/>
-                                        </td>
-                                        <td><t t-esc="row.value"/></td>
+                                    <tr t-foreach="keyRows" t-as="row" t-key="row.label">
+                                        <td class="text-muted" style="width: 40%" t-esc="row.label"/>
+                                        <td t-esc="row.value"/>
                                     </tr>
                                 </tbody>
                             </table>
+                            <small class="text-muted">
+                                Браузер пам'ятає ключ до <t t-esc="keyExpiresAt"/> — у цій
+                                вкладці пароль більше не знадобиться. На сервер ключ не
+                                передається.
+                            </small>
                         </div>
-
-                        <!-- Крок 2: підписати -->
-                        <div class="o_kep_step mb-3">
-                            <h5>2. Підписати</h5>
-                            <button class="btn btn-primary" t-on-click="onSign"
-                                    t-att-disabled="state.busy">
-                                <t t-if="state.busy and !state.signed">
-                                    <i class="fa fa-spinner fa-spin me-2"/>Підписання…
-                                </t>
-                                <t t-else="">Підписати</t>
-                            </button>
-                            <span t-if="state.signed" class="badge text-bg-success ms-2">
-                                <i class="fa fa-check me-1"/>Підписано
-                            </span>
+                    </t>
+                    <t t-else="">
+                        <div class="o_kep_read mb-3">
+                            <div class="mb-2">
+                                <label class="form-label">ЦСК, що видав ключ</label>
+                                <select class="form-select" t-on-change="onCaChange"
+                                        t-att-disabled="busy">
+                                    <option value="" t-att-selected="!state.caName">
+                                        Визначати автоматично
+                                    </option>
+                                    <t t-foreach="state.caList" t-as="ca" t-key="ca.name">
+                                        <option t-att-value="ca.name"
+                                                t-att-selected="ca.name === state.caName"
+                                                t-esc="ca.name"/>
+                                    </t>
+                                </select>
+                                <small t-if="!state.caName" class="text-muted">
+                                    Бібліотека по черзі перепитає всі ЦСК — це довго. Оберіть
+                                    свій ЦСК, щоб зчитати ключ одразу.
+                                </small>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Файл-ключ (.dat / .jks / .pfx)</label>
+                                <input type="file" class="form-control"
+                                       accept=".dat,.jks,.pfx,.pk8,.zs2"
+                                       t-att-disabled="busy"
+                                       t-on-change="onKeyFileChange"/>
+                            </div>
+                            <div class="mb-2">
+                                <label class="form-label">Пароль до ключа</label>
+                                <input type="password" class="form-control"
+                                       autocomplete="off"
+                                       t-att-disabled="busy"
+                                       t-att-value="state.password"
+                                       t-on-input="onPasswordInput"/>
+                            </div>
+                            <small class="text-muted">
+                                Ключ і пароль обробляються лише у вашому браузері й не
+                                передаються на сервер.
+                            </small>
                         </div>
                     </t>
 
-                    <!-- Крок 3: відправити (після кроку 2) -->
-                    <t t-if="state.signed">
-                        <div class="o_kep_step mb-3">
-                            <h5>3. <t t-esc="submitLabel"/></h5>
-                            <button class="btn btn-success" t-on-click="onSend"
-                                    t-att-disabled="state.busy">
-                                <t t-if="state.busy">
-                                    <i class="fa fa-spinner fa-spin me-2"/>Відправлення…
-                                </t>
-                                <t t-else=""><t t-esc="submitLabel"/></t>
-                            </button>
-                        </div>
-                    </t>
+                    <div t-if="state.error" class="alert alert-danger" role="alert"
+                         t-esc="state.error"/>
 
-                    <hr/>
-                    <button class="btn btn-link text-muted p-0" t-on-click="onClose">
-                        Скасувати
-                    </button>
+                    <div class="d-flex gap-2 align-items-center mt-3">
+                        <button class="btn btn-primary o_kep_main" t-on-click="onMain"
+                                t-att-disabled="busy or !state.libAvailable">
+                            <t t-if="busy">
+                                <i class="fa fa-spinner fa-spin me-2"/><t t-esc="stageLabel"/>
+                            </t>
+                            <t t-else="" t-esc="mainLabel"/>
+                        </button>
+                        <button class="btn btn-secondary" t-on-click="onCancel">
+                            Скасувати
+                        </button>
+                    </div>
                 </t>
             </div>
         </div>

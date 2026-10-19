@@ -248,10 +248,25 @@ class L10nUaTaxCabinetSyncWizard(models.TransientModel):
         return {
             'auth_subject': self.config_id.taxpayer_code,
             'submit_label': _('Синхронізувати'),
+            'description': self._sync_description(),
             'documents': [],
             'close_action': self.env['ir.actions.act_window']._for_xml_id(
                 'l10n_ua_tax.l10n_ua_tax_document_action'),
         }
+
+    def _sync_description(self):
+        """Що саме заберемо з кабінету — для вікна підпису."""
+        if self.sync_type == 'incoming':
+            return _('Завантаження вхідної кореспонденції з Електронного кабінету.')
+        if self.sync_type == 'sent':
+            return _('Завантаження надісланої кореспонденції з Електронного кабінету.')
+        if self.month == 'all':
+            year_from = min(self.year_from or self.year, self.year)
+            period = str(self.year) if year_from == self.year else '%d–%d' % (year_from, self.year)
+            return _('Завантаження поданих звітів і декларацій з Електронного кабінету '
+                     'за всі місяці %s.') % period
+        return _('Завантаження поданих звітів і декларацій з Електронного кабінету '
+                 'за %(month)02d.%(year)d.', month=int(self.month or 0), year=self.year)
 
     def kep_submit_signed(self, signed, auth_signature=None):
         self.ensure_one()
