@@ -630,7 +630,7 @@ class L10nUaBankSyncConfig(models.Model):
 
     def _mono_corp_test_connection(self):
         accounts = self._mono_corp_accounts()
-        ibans = [acc.get('iban') for acc in accounts]
+        ibans = [_clean_iban(acc.get('iban')) for acc in accounts]
         own = self._mono_corp_iban()
         if own and own not in ibans:
             message = _(

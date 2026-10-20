@@ -4,6 +4,7 @@ from datetime import datetime, timedelta
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
+from odoo.tools import float_is_zero
 
 _logger = logging.getLogger(__name__)
 
@@ -339,10 +340,12 @@ class L10nUaBankSyncJob(models.Model):
         line_cmds = []
         total = 0.0
         skipped = 0
+        skipped_total = 0.0
         for trans in transactions:
             uid = self._trans_uid(trans)
             if uid and uid in seen:
                 skipped += 1
+                skipped_total += self._trans_amount(trans)
                 continue
             if uid:
                 seen.add(uid)
@@ -371,12 +374,23 @@ class L10nUaBankSyncJob(models.Model):
         # автосинхронізація), у цій виписці лише решта, і початковий залишок
         # періоду до неї не пасує: звірка завжди показувала б розрив.
         # Кінцевий залишок лишається справжнім, початковий виводимо з рухів.
-        verified = opening is not None and closing is not None and not skipped
-        if verified:
+        # Звіреною така виписка є, коли залишки джерела сходяться з усіма
+        # рухами періоду, разом із уже імпортованими: тоді нічого не пропущено.
+        has_balances = opening is not None and closing is not None
+        if has_balances and not skipped:
+            verified = True
             bstart, bend = opening, closing
         elif skipped and closing is not None:
+            verified = has_balances and float_is_zero(
+                opening + total + skipped_total - closing, precision_digits=2)
             bstart, bend = round(closing - total, 2), closing
+            if has_balances and not verified:
+                self._log('Balance continuity mismatch over the whole period: '
+                          'opening + Σ != closing (%.2f + %.2f != %.2f)'
+                          % (opening, total + skipped_total, closing),
+                          level='warning')
         else:
+            verified = False
             bstart = 0.0
             bend = round(bstart + total, 2)
         statement = Statement.create({

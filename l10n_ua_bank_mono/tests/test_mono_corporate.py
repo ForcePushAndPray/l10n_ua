@@ -306,6 +306,58 @@ class TestMonoCorporate(TransactionCase):
         self.assertEqual(line.l10n_ua_mono_external_ref,
                          'my-own-pretty-external-reference')
 
+    def _overlap_raw(self, balances):
+        early = int(datetime(2026, 8, 30, 15, tzinfo=KYIV).timestamp())
+        inside = int(datetime(2026, 9, 3, 10, tzinfo=KYIV).timestamp())
+        return {
+            'api_type': 'corp_statement',
+            'from_ts': int(datetime(2026, 9, 1, tzinfo=KYIV).timestamp()),
+            'to_ts': int(datetime(2026, 9, 7, 23, 59, 59, tzinfo=KYIV).timestamp()),
+            'date_from': '2026-09-01', 'date_to': '2026-09-07',
+            'balances': balances,
+            'response': [_item(1, early, amount=2500), _item(2, inside, amount=7550)]}
+
+    def _import(self, raw, date_from, date_to):
+        opening, closing = self.config._extract_balances(raw)
+        job = self.env['l10n_ua.bank.sync.job'].create({
+            'config_id': self.config.id, 'date_from': date_from, 'date_to': date_to})
+        return job._create_native_statement(
+            self.config._parse_transactions(raw), opening, closing)
+
+    def test_overlapping_sync_is_still_verified(self):
+        """The regular sync: the look-back brings back an operation the
+        previous sync imported. It is skipped, and the statement is verified
+        when the balances agree with every operation of the period."""
+        first = self._import({'api_type': 'corp_statement', 'response': [
+            _item(1, int(datetime(2026, 8, 30, 15, tzinfo=KYIV).timestamp()),
+                  amount=2500)]}, '2026-08-30', '2026-08-31')
+        self.assertEqual(len(first.line_ids), 1)
+
+        statement = self._import(self._overlap_raw(self._balances()),
+                                 '2026-09-01', '2026-09-07')
+        self.assertEqual(statement.line_ids.mapped('l10n_ua_import_uid'), ['op-2'])
+        self.assertTrue(statement.l10n_ua_balance_verified)
+        self.assertTrue(statement.l10n_ua_balance_ok)
+        self.assertEqual(statement.balance_start, 1000.0)
+        self.assertEqual(statement.balance_end_real, 1075.5)
+
+    def test_overlapping_sync_with_a_gap_is_not_verified(self):
+        self._import({'api_type': 'corp_statement', 'response': [
+            _item(1, int(datetime(2026, 8, 30, 15, tzinfo=KYIV).timestamp()),
+                  amount=2500)]}, '2026-08-30', '2026-08-31')
+        balances = self._balances()
+        balances[-1]['balance'] = 1200.0    # an operation the bank did not return
+        statement = self._import(self._overlap_raw(balances), '2026-09-01', '2026-09-07')
+        self.assertFalse(statement.l10n_ua_balance_verified)
+        self.assertEqual(statement.balance_end_real, 1200.0)
+
+    def test_connection_matches_an_iban_written_with_spaces(self):
+        spaced = ' '.join(OWN_IBAN[i:i + 4] for i in range(0, len(OWN_IBAN), 4))
+        with patch(f'{MODULE}.requests.get', return_value=_response(json_data=[
+                {'iban': spaced, 'currency': 980, 'balance': 42.0}])):
+            action = self.config.action_test_connection()
+        self.assertEqual(action['params']['type'], 'success')
+
     def test_reversal_is_marked_in_the_purpose(self):
         ts = int(datetime(2026, 9, 2, 12, tzinfo=KYIV).timestamp())
         raw = {'api_type': 'corp_statement', 'response': [
