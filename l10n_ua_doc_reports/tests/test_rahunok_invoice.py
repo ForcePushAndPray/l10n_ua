@@ -177,6 +177,19 @@ class TestRahunokInvoice(AccountTestInvoicingCommon):
         self.assertIn('1%s000,00' % NBSP, html)   # unit price without VAT
         self.assertIn('3%s600,00' % NBSP, html)   # amount with VAT
 
+    def test_price_unit_without_vat_keeps_price_precision(self):
+        """Точність «Product Price» 4 знаки: ціна без ПДВ не обрізається до копійок (#365)."""
+        self.env.ref('product.decimal_price').digits = 4
+        invoice = self._invoice(lines=[{
+            'name': 'Товар з ПДВ у ціні',
+            'quantity': 10,
+            'price_unit': 10.1234,
+            'tax_ids': [(6, 0, self.vat_20_included.ids)],
+        }])
+        line = invoice._get_ua_report_lines()
+        self.assertAlmostEqual(invoice._get_ua_line_price_unit_excl(line), 8.4362, places=4)
+        self.assertIn('8,4362', self._render(invoice))
+
     def test_number_formats(self):
         Move = self.env['account.move']
         self.assertEqual(Move._ua_format_number(146150), '146%s150,00' % NBSP)
