@@ -84,12 +84,12 @@ class TestAverageBenefits(TransactionCase):
         self.assertAlmostEqual(self._sick_average(), 1000.0, places=2)
 
     def test_sick_average_takes_the_contribution_base(self):
-        # Порядок № 1266, п. 3: the material aid is outside the contribution
-        # base and stays out; the compensation for unused vacation and the
-        # bonus are in it and count.
+        # Порядок № 1266, п. 3: the material aid and the severance pay are
+        # outside the contribution base and stay out; the compensation for
+        # unused vacation and the bonus are in it and count.
         self._payslip(date(2026, 3, 1), [
             ('SALARY', 20000, 1), ('BONUS', 4800, 1),
-            ('COMP_VAC', 6200, 1), ('MAT_AID', 5000, 1)])
+            ('COMP_VAC', 6200, 1), ('MAT_AID', 5000, 1), ('SEVERANCE', 9000, 1)])
         self.assertAlmostEqual(self._sick_average(),
                                round(31000 / 31, 2), places=2)
 
