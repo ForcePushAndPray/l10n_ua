@@ -1145,3 +1145,68 @@ class TestPayslipMonthNorm(SalaryTestCase):
         slip = self._norm()
         self.assertEqual(slip.scheduled_days, 20)
         self.assertAlmostEqual(slip.scheduled_hours, 159.0, places=2)
+
+
+@tagged('post_install', '-at_install')
+class TestPayslipClosedMonth(SalaryTestCase):
+    """A done payslip keeps what it was computed from (#414): a change made
+    afterwards in the employee's card or contract reaches only the payslips
+    to come."""
+
+    def _payslip(self):
+        payslip = self.env['hr.payslip'].create({
+            'employee_id': self.employee.id,
+            'date_from': date(2025, 6, 1),
+            'date_to': date(2025, 6, 30),
+            'company_id': self.company.id,
+        })
+        self.env['hr.payslip.accrual'].create({
+            'payslip_id': payslip.id, 'accrual_type_id': self.accrual_wage.id,
+            'quantity': 1, 'rate': 3000, 'amount': 3000,
+        })
+        payslip.action_compute_sheet()
+        return payslip
+
+    def _snapshot(self, payslip):
+        payslip.invalidate_recordset()
+        return {name: payslip[name] for name in (
+            'psp_type', 'psp_amount', 'pdfo_amount', 'net_salary',
+            'version_id', 'department_id', 'job_id')}
+
+    def test_done_payslip_keeps_psp_after_benefit_change(self):
+        payslip = self._payslip()
+        payslip.action_payslip_done()
+        before = self._snapshot(payslip)
+        self.assertEqual(before['psp_type'], 'standard')
+
+        self.employee.disability_group = '1'
+        self.version.psp_application = False
+        self.env.flush_all()
+        self.assertEqual(self._snapshot(payslip), before)
+
+        draft = self._payslip()
+        self.assertEqual(draft.psp_type, 'none')
+
+    def test_done_payslip_keeps_department(self):
+        payslip = self._payslip()
+        payslip.action_payslip_done()
+        before = self._snapshot(payslip)
+        other = self.env['hr.department'].create(
+            {'name': 'Інший відділ', 'company_id': self.company.id})
+        self.employee.department_id = other
+        self.env.flush_all()
+        self.assertEqual(self._snapshot(payslip), before)
+        self.assertEqual(self._payslip().department_id, other)
+
+    def test_draft_payslip_follows_the_card(self):
+        payslip = self._payslip()
+        self.employee.disability_group = '1'
+        self.assertEqual(payslip.psp_type, '200')
+
+    def test_reopened_payslip_follows_the_card_again(self):
+        payslip = self._payslip()
+        payslip.action_payslip_done()
+        self.employee.disability_group = '1'
+        payslip.action_payslip_draft()
+        payslip.action_compute_sheet()
+        self.assertEqual(payslip.psp_type, '200')

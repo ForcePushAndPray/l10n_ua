@@ -39,13 +39,13 @@ class HrPayslip(models.Model):
     department_id = fields.Many2one(
         'hr.department',
         string='Department',
-        related='employee_id.department_id',
+        compute='_compute_employee_position',
         store=True
     )
     job_id = fields.Many2one(
         'hr.job',
         string='Job Position',
-        related='employee_id.job_id',
+        compute='_compute_employee_position',
         store=True
     )
     company_id = fields.Many2one(
@@ -284,10 +284,29 @@ class HrPayslip(models.Model):
         'hr.payslip.retro', 'source_payslip_id', string='Retro (as source)',
         copy=False)
 
+    def _is_closed(self):
+        """A done payslip is a closed month: its postings and reports are
+        made. What it was computed from stays as it was, whatever is changed
+        in the employee's card or contract afterwards (#414); the change
+        reaches the payslips to come, and a closed month is corrected by a
+        retro recalculation, not in place."""
+        self.ensure_one()
+        return self.state == 'done'
+
+    @api.depends('employee_id', 'employee_id.department_id', 'employee_id.job_id')
+    def _compute_employee_position(self):
+        for payslip in self:
+            if payslip._is_closed():
+                continue
+            payslip.department_id = payslip.employee_id.department_id
+            payslip.job_id = payslip.employee_id.job_id
+
     @api.depends('employee_id')
     def _compute_employee_benefits(self):
         """Compute employee benefit flags for special tax regimes"""
         for payslip in self:
+            if payslip._is_closed():
+                continue
             is_disability = False
             is_diia_city = False
 
@@ -350,6 +369,8 @@ class HrPayslip(models.Model):
         from .hr_version import PSP_NON_SALARY_CONTRACT_TYPES
         psp_priority = {'none': 0, 'standard': 1, '150': 2, '200': 3}
         for payslip in self:
+            if payslip._is_closed():
+                continue
             employee = payslip.employee_id
             if not employee:
                 payslip.psp_type = 'none'
@@ -391,6 +412,8 @@ class HrPayslip(models.Model):
     @api.depends('employee_id', 'date_from')
     def _compute_version_id(self):
         for payslip in self:
+            if payslip._is_closed():
+                continue
             if payslip.employee_id:
                 # Get version at payslip date
                 date = payslip.date_from or fields.Date.today()
@@ -423,6 +446,8 @@ class HrPayslip(models.Model):
         Single parent gets double base PSP × dependents_count (covers «двойна ПСП»).
         """
         for payslip in self:
+            if payslip._is_closed():
+                continue
             params = self.env['hr.psp.parameters'].get_parameters(
                 payslip.date_to, payslip.company_id.id)
             if not params:
@@ -1134,6 +1159,8 @@ class HrPayslip(models.Model):
     @api.depends('version_id', 'version_id.salary_currency_id')
     def _compute_salary_currency(self):
         for slip in self:
+            if slip._is_closed():
+                continue
             version_cur = slip.version_id.salary_currency_id \
                 if slip.version_id else False
             slip.salary_currency_id = version_cur or slip.company_id.currency_id
@@ -1141,6 +1168,8 @@ class HrPayslip(models.Model):
     @api.depends('salary_currency_id', 'date_to', 'company_id')
     def _compute_salary_rate(self):
         for slip in self:
+            if slip._is_closed():
+                continue
             cur = slip.salary_currency_id
             comp_cur = slip.company_id.currency_id
             if cur and comp_cur and cur != comp_cur and slip.date_to:
@@ -2085,7 +2114,14 @@ class HrPayslip(models.Model):
             advances.write({'state': 'confirmed', 'payslip_id': False})  
 
     def action_payslip_draft(self):
+        reopened = self.filtered(lambda p: p.state == 'done')
         self.write({'state': 'draft'})
+        # Reopened, the payslip reads the card and the contract again (#414).
+        # The rate of the salary currency stays: it may be set by hand.
+        for fname in ('department_id', 'job_id', 'is_disability', 'is_diia_city',
+                      'version_id', 'psp_type', 'psp_eligible', 'psp_amount',
+                      'salary_currency_id'):
+            self.env.add_to_compute(self._fields[fname], reopened)
 
     def action_print_payslip(self):
         return self.env.ref('l10n_ua_hr_salary.action_report_payslip').report_action(self)
