@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 	<xs:annotation>
-		<xs:documentation>Запит про отримання витягу щодо стану розрахунків з бюджетами та фондами загальнообов'язкового державного соціального і пенсійного страхування за даними органів ДПС</xs:documentation>
+		<xs:documentation>Запит щодо отримання витягу з інформаційно-комунікаційної системи ДПС про стан розрахунків платника за податками, зборами, платежами та єдиним внеском на загальнообов’язкове державне соціальне страхування, контроль за справлянням яких покладено на ДПС. Наказ Міністерства фінансів України від 20 серпня 2025 № 416.</xs:documentation>
 	</xs:annotation>
 	<xs:include schemaLocation="common_types.xsd"/>
 	<xs:element name="DECLAR" type="DeclarContent"/>
@@ -16,7 +16,7 @@
 			<xs:element name="TIN" type="DGLong"/>
 			<xs:element name="C_DOC" type="xs:string" fixed="J13"/>
 			<xs:element name="C_DOC_SUB" type="xs:string" fixed="002"/>
-			<xs:element name="C_DOC_VER" type="xs:string" fixed="5"/>
+			<xs:element name="C_DOC_VER" type="xs:string" fixed="8"/>
 			<xs:element name="C_DOC_TYPE" type="xs:nonNegativeInteger"/>
 			<xs:element name="C_DOC_CNT" type="xs:nonNegativeInteger"/>
 			<xs:element name="C_REG" type="DGsti"/>
@@ -58,9 +58,21 @@
 	<xs:complexType name="DBody">
 		<xs:sequence>
 			<!--HEAD-->
-			<xs:element name="HFILL" type="DGDate"/>
+			<xs:element name="HSTI" type="DGHSTI"/>
+			<xs:element name="HMONTH1" type="DGMonth"/>
+			<xs:element name="HYEAR1" type="DGYear"/>
+			<xs:element name="HDATE1" type="DGDate"/>
 			<xs:element name="HNAME" type="DGHNAME"/>
 			<xs:element name="HTIN" type="DGHTINJ"/>
+			<!--BODY-->
+			<xs:choice minOccurs="0">
+				<xs:element name="M01" type="DGchk"/>
+				<xs:element name="M02" type="DGchk"/>
+				<xs:element name="M03" type="DGchk"/>
+				<xs:element name="M04" type="DGchk"/>
+				<xs:element name="M05" type="DGchk"/>
+			</xs:choice>
+			<!--FOOTER-->
 		</xs:sequence>
 	</xs:complexType>
 </xs:schema>
