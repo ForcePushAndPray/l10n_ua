@@ -42,11 +42,6 @@
                         and gig contracts. Category 4 (civil law contract) is accepted by the form
                         but is not subject to the deadline control.
                     </div>
-                    <div class="alert alert-info" role="alert" invisible="state not in ('draft', 'generated')">
-                        Electronic form J3001005 / F3001005. The XML structure has not been verified
-                        against the official tax authority XSD yet: check the file in the Electronic
-                        Cabinet before sending.
-                    </div>
                     <div class="oe_title">
                         <h1><field name="name"/></h1>
                     </div>

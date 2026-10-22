@@ -84,13 +84,17 @@ class TestHireNotice(TransactionCase):
         self.assertEqual(self._text(head, 'C_RAJ'), '50')
         self.assertEqual(self._text(head, 'C_STI_ORIG'), '2650')
         body = doc.find('DECLARBODY')
-        self.assertEqual(self._text(body, 'HPOCH'), '1')
-        self.assertIsNone(body.find('HSKAS'))
+        self.assertEqual(self._text(body, 'H01'), '1')
+        self.assertIsNone(body.find('H02'))
         self.assertEqual(self._text(body, 'HTIN'), '12345678')
         self.assertEqual(self._text(body, 'HNAME'), 'ТОВ Тест Найм')
         self.assertEqual(self._text(body, 'T1RXXXXG5'), '1')
         self.assertEqual(self._text(body, 'T1RXXXXG6S'), '3184710691')
-        self.assertEqual(self._text(body, 'T1RXXXXG8S'), 'Коваль Ірина Петрівна')
+        self.assertEqual(self._text(body, 'T1RXXXXG81S'), 'Коваль')
+        self.assertEqual(self._text(body, 'T1RXXXXG82S'), 'Ірина')
+        self.assertEqual(self._text(body, 'T1RXXXXG83S'), 'Петрівна')
+        self.assertEqual(self._text(body, 'H01'), '1')
+        self.assertEqual(self._text(body, 'HPAGES'), '1')
         self.assertEqual(self._text(body, 'T1RXXXXG9'), '1')
         self.assertEqual(self._text(body, 'T1RXXXXG10S'), order.name)
         self.assertEqual(self._text(body, 'T1RXXXXG11D'), '27022026')
@@ -127,8 +131,8 @@ class TestHireNotice(TransactionCase):
         action = notice.action_create_cancelling()
         cancel = self.Notice.browse(action['res_id'])
         body = self._xml(cancel).find('DECLARBODY')
-        self.assertEqual(self._text(body, 'HSKAS'), '1')
-        self.assertIsNone(body.find('HPOCH'))
+        self.assertEqual(self._text(body, 'H02'), '1')
+        self.assertIsNone(body.find('H01'))
         self.assertNotEqual(cancel.doc_cnt, notice.doc_cnt)
 
     def test_missing_company_data_raises(self):
@@ -222,14 +226,19 @@ class TestHireNotice(TransactionCase):
 
     # --- XSD -----------------------------------------------------------
 
-    def test_xml_validates_against_xsd_if_vendored(self):
-        """Офіційний XSD J3001005 ще не вендорено (tax.gov.ua — 403 для
-        автоматизації). Щойно ``tests/schemas/J3001005.xsd`` з'явиться —
-        тест почне валідувати згенерований XML."""
-        if not os.path.exists(SCHEMA_PATH):
-            self.skipTest('J3001005.xsd not vendored yet')
+    def test_xml_validates_against_xsd(self):
+        """XSD J3001005 — з пакета СКЗ ДПС 1.34.0.0 (tests/schemas)."""
+        schema = etree.XMLSchema(etree.parse(SCHEMA_PATH))
         notice = self.Notice.create_from_order(self._hire())
         notice.action_generate_xml()
-        schema = etree.XMLSchema(etree.parse(SCHEMA_PATH))
         doc = etree.fromstring(base64.b64decode(notice.xml_file))
         self.assertTrue(schema.validate(doc), str(schema.error_log))
+        # Скасовуюче й гіг-контракт (без номера наказу) — теж за схемою.
+        notice.action_mark_sent()
+        notice.action_mark_accepted()
+        cancel = notice.action_create_cancelling()
+        cancel = self.Notice.browse(cancel['res_id']) if isinstance(cancel, dict) else cancel
+        cancel.action_generate_xml()
+        doc = etree.fromstring(base64.b64decode(cancel.xml_file))
+        self.assertTrue(schema.validate(doc), str(schema.error_log))
+        self.assertEqual(self._text(doc, 'H02'), '1')

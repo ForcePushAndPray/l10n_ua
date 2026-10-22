@@ -1934,17 +1934,6 @@ msgstr "№ документа в періоді"
 msgid "Download XML"
 msgstr "Завантажити XML"
 
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
-msgid ""
-"Electronic form J3001005 / F3001005. The XML structure has not been "
-"verified\n"
-"                        against the official tax authority XSD yet: check "
-"the file in the Electronic\n"
-"                        Cabinet before sending."
-msgstr ""
-"Електронна форма J3001005 / F3001005. Структуру XML ще не звірено з "
-"офіційним XSD ДПС: перевірте файл в Електронному кабінеті перед поданням."
 
 #. module: l10n_ua_hr_reports
 #. odoo-python

@@ -16,15 +16,14 @@
   електронних форм ДПС (data.gov.ua, датасет f0b2d3a3-…, рядки 73/127) і
   новини ГУ ДПС (з 01.05.2025). C_DOC=J30, C_DOC_SUB=010, C_DOC_VER=5.
 
-Статус XML
-----------
-Конверт (DECLARHEAD) — як у решти форм ДПС у репозиторії (J0510210,
-J1300205, звірені з XSD). Назви елементів DECLARBODY **не звірені** з
-офіційним XSD J3001005 (пакет СКЗ на tax.gov.ua недоступний автоматизації —
-403). Їх зібрано в ``BODY_TAGS`` за конвенцією форм ДПС (H* — шапка,
-T1RXXXXG<графа> — таблиця, HKBOS/HBOS/HKBUH/HBUH/HFILL — підписанти);
-після отримання XSD — вендорити його в tests/schemas/J3001005.xsd: тест
-``test_xml_validates_against_xsd_if_vendored`` почне валідувати автоматично.
+XML
+---
+Структура — офіційний XSD J3001005 / F3001005 з пакета СКЗ ДПС 1.34.0.0
+(``tests/schemas``; F відрізняється лише типом HTIN — РНОКПП замість ЄДРПОУ).
+Тіло: HPAGES (№ аркуша), H01/H02 (початкове / скасовуюче), HTIN, HNAME, таблиця
+T1RXXXXG5…G12D стовпцями з ROWNUM (гр. 8 «ПІБ» — трьома стовпцями G81S/G82S/
+G83S, графи 4 і 13 окремо не передаються: номер рядка — ROWNUM, дата
+формування — HFILL), підписанти HKBOS/HBOS, HKBUH/HBUH.
 """
 
 import base64
@@ -38,30 +37,6 @@ from odoo.exceptions import UserError
 HIRE_NOTICE_C_DOC_SUB = '010'
 HIRE_NOTICE_C_DOC_VER = '5'
 HIRE_NOTICE_SOFTWARE = 'Odoo l10n_ua'
-
-# Назви елементів тіла J3001005 (НЕ звірені з XSD — див. docstring модуля).
-# Ключ = графа форми (додаток 1 до Постанови № 413 у ред. № 184).
-BODY_TAGS = {
-    'type_initial': 'HPOCH',      # гр. 1 «початкове»
-    'type_cancel': 'HSKAS',       # гр. 1 «скасовуюче»
-    'tin': 'HTIN',                # гр. 2 код ЄДРПОУ / РНОКПП страхувальника
-    'name': 'HNAME',              # гр. 3 найменування страхувальника
-    'row': 'T1RXXXXG4',           # гр. 4 порядковий номер
-    'category': 'T1RXXXXG5',      # гр. 5 категорія особи (1..5)
-    'person_tin': 'T1RXXXXG6S',   # гр. 6 РНОКПП / серія+номер паспорта
-    'unzr': 'T1RXXXXG7S',         # гр. 7 УНЗР
-    'person_name': 'T1RXXXXG8S',  # гр. 8 ПІБ
-    'citizenship': 'T1RXXXXG9',   # гр. 9 громадянство (0/1)
-    'order_number': 'T1RXXXXG10S',  # гр. 10 номер наказу
-    'order_date': 'T1RXXXXG11D',  # гр. 11 дата наказу / договору
-    'date_start': 'T1RXXXXG12D',  # гр. 12 дата початку роботи
-    'date_formed': 'T1RXXXXG13D',  # гр. 13 дата формування
-    'hkbos': 'HKBOS',             # гр. 14 РНОКПП керівника
-    'hbos': 'HBOS',               # гр. 14 ім'я керівника
-    'hkbuh': 'HKBUH',             # гр. 15 РНОКПП головного бухгалтера
-    'hbuh': 'HBUH',               # гр. 15 ім'я головного бухгалтера
-    'hfill': 'HFILL',
-}
 
 # Категорія особи (гр. 5, виноска ** до форми):
 # 1 — наймані працівники за основним місцем роботи; 2 — за сумісництвом;
@@ -87,6 +62,13 @@ REMINDER_LOOKAHEAD_DAYS = 3
 
 def _digits(value):
     return re.sub(r'\D', '', value or '')
+
+
+def _name_parts(full_name):
+    """ПІБ → (прізвище, ім'я, по батькові): гр. 8 у XML — трьома стовпцями."""
+    parts = (full_name or '').split()
+    return (parts[0] if parts else '', parts[1] if len(parts) > 1 else '',
+            ' '.join(parts[2:]))
 
 
 class HrHireNotice(models.Model):
@@ -358,8 +340,8 @@ class HrHireNotice(models.Model):
             missing.append(_('director (with RNOKPP) of the company'))
         if not self.person_tin:
             missing.append(_('employee RNOKPP or passport'))
-        if not self.person_name:
-            missing.append(_('employee full name'))
+        if not all(_name_parts(self.person_name)[:2]):
+            missing.append(_('employee full name (surname and first name)'))
         if not self.date_start:
             missing.append(_('work start date'))
         if self.person_category in ('1', '2') and not self.order_number:
@@ -389,12 +371,14 @@ class HrHireNotice(models.Model):
             'period_year': formed.year,
             'd_fill': formed.strftime('%d%m%Y'),
             'notice_type': self.notice_type,
-            'hname': company.name or '',
+            'hname': company._l10n_ua_dps_name(),
             'rows': [{
                 'category': self.person_category,
                 'person_tin': self.person_tin,
                 'unzr': self.unzr or '',
-                'person_name': self.person_name,
+                'last_name': _name_parts(self.person_name)[0],
+                'first_name': _name_parts(self.person_name)[1],
+                'middle_name': _name_parts(self.person_name)[2],
                 'citizenship': self.citizenship,
                 # Гр. 10 не заповнюється для гіг/ЦПД/домашнього працівника.
                 'order_number': (self.order_number
@@ -427,34 +411,30 @@ class HrHireNotice(models.Model):
         def esc(v):
             return escape(str(v or ''))
 
-        t = BODY_TAGS
         rows = vals.get('rows') or []
 
         def column(key, tag):
-            out = []
-            for i, row in enumerate(rows, 1):
-                val = i if key == 'row' else row.get(key)
-                if val in (None, ''):
-                    continue
-                out.append('        <%s ROWNUM="%d">%s</%s>' % (
-                    tag, i, esc(val), tag))
-            return out
+            return ['        <%s ROWNUM="%d">%s</%s>' % (tag, i, esc(row[key]), tag)
+                    for i, row in enumerate(rows, 1) if row.get(key) not in (None, '')]
 
-        body = []
-        if vals.get('notice_type') == 'cancel':
-            body.append('        <%s>1</%s>' % (t['type_cancel'], t['type_cancel']))
-        else:
-            body.append('        <%s>1</%s>' % (t['type_initial'], t['type_initial']))
-        body.append('        <%s>%s</%s>' % (t['tin'], esc(vals['tin']), t['tin']))
-        body.append('        <%s>%s</%s>' % (t['name'], esc(vals['hname']), t['name']))
-        for key in ('row', 'category', 'person_tin', 'unzr', 'person_name',
-                    'citizenship', 'order_number', 'order_date', 'date_start',
-                    'date_formed'):
-            body.extend(column(key, t[key]))
-        for key in ('hkbos', 'hbos', 'hkbuh', 'hbuh'):
-            if vals.get(key):
-                body.append('        <%s>%s</%s>' % (t[key], esc(vals[key]), t[key]))
-        body.append('        <%s>%s</%s>' % (t['hfill'], vals['d_fill'], t['hfill']))
+        # Порядок — за XSD J3001005 (DBody).
+        body = ['        <HPAGES>1</HPAGES>',
+                '        <H02>1</H02>' if vals.get('notice_type') == 'cancel'
+                else '        <H01>1</H01>',
+                '        <HTIN>%s</HTIN>' % esc(vals['tin']),
+                '        <HNAME>%s</HNAME>' % esc(vals['hname'])]
+        for key, tag in (('category', 'T1RXXXXG5'), ('person_tin', 'T1RXXXXG6S'),
+                         ('unzr', 'T1RXXXXG7S'), ('last_name', 'T1RXXXXG81S'),
+                         ('first_name', 'T1RXXXXG82S'), ('middle_name', 'T1RXXXXG83S'),
+                         ('citizenship', 'T1RXXXXG9'), ('order_number', 'T1RXXXXG10S'),
+                         ('order_date', 'T1RXXXXG11D'), ('date_start', 'T1RXXXXG12D')):
+            body.extend(column(key, tag))
+        body.append('        <HFILL>%s</HFILL>' % vals['d_fill'])
+        body.append('        <HKBOS>%s</HKBOS>' % esc(vals['hkbos']))
+        body.append('        <HBOS>%s</HBOS>' % esc(vals['hbos']))
+        if vals.get('hkbuh') and vals.get('hbuh'):
+            body.append('        <HKBUH>%s</HKBUH>' % esc(vals['hkbuh']))
+            body.append('        <HBUH>%s</HBUH>' % esc(vals['hbuh']))
 
         head = [
             '<?xml version="1.0" encoding="windows-1251"?>',
@@ -475,6 +455,7 @@ class HrHireNotice(models.Model):
             '        <PERIOD_YEAR>%s</PERIOD_YEAR>' % vals['period_year'],
             '        <C_STI_ORIG>%s</C_STI_ORIG>' % esc(vals['c_sti_orig']),
             '        <C_DOC_STAN>1</C_DOC_STAN>',
+            '        <LINKED_DOCS xsi:nil="true"/>',
             '        <D_FILL>%s</D_FILL>' % vals['d_fill'],
             '        <SOFTWARE>%s</SOFTWARE>' % HIRE_NOTICE_SOFTWARE,
             '    </DECLARHEAD>',
