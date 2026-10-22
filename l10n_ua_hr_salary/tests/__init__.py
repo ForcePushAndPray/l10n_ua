@@ -9,10 +9,12 @@ from . import test_execution_document_multi_company
 from . import test_salary_advance
 from . import test_advance_staffing_fallback
 from . import test_staffing_currency
+from . import test_pay_scheme_wage
 from . import test_multicompany
 from . import test_time_surcharges
 from . import test_indexation
 from . import test_in_kind
+from . import test_accrual_type_basis
 from . import test_retro
 from . import test_bank_export
 from . import test_deposit
@@ -21,3 +23,4 @@ from . import test_seniority_piece
 from . import test_salary_currency
 from . import test_advance_currency
 from . import test_absence_pay
+from . import test_generated_timesheet

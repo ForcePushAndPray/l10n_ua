@@ -7,6 +7,7 @@ Tests cover:
 """
 
 from datetime import date
+from odoo.exceptions import UserError
 from odoo.tests import TransactionCase, tagged
 
 
@@ -65,6 +66,28 @@ class TestFopIncomeBook(TransactionCase):
         book = self._create_income_book()
         book.action_confirm()
         self.assertEqual(book.state, 'confirmed')
+
+    def test_confirmed_book_is_readonly(self):
+        """Підтверджена книга: ні реквізити, ні записи не змінюються."""
+        book = self._create_income_book()
+        line = self.env['l10n_ua.fop.income.book.line'].create({
+            'book_id': book.id, 'date': date(2025, 1, 15), 'amount': 1000})
+        book.action_confirm()
+        Line = self.env['l10n_ua.fop.income.book.line']
+        for action in (
+            lambda: book.write({'quarter': '2'}),
+            lambda: line.write({'amount': 2000}),
+            lambda: Line.create({'book_id': book.id, 'date': date(2025, 2, 1), 'amount': 1}),
+            lambda: line.unlink(),
+            lambda: book.unlink(),
+        ):
+            with self.assertRaises(UserError):
+                action()
+        self.assertEqual(book.total_income, 1000)
+        # Після повернення в чернетку — знову можна.
+        book.action_draft()
+        line.amount = 2000
+        self.assertEqual(book.total_income, 2000)
 
     def test_income_book_draft_from_confirmed(self):
         """Should be able to reset to draft."""

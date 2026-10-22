@@ -1295,7 +1295,6 @@ msgstr "Дата синхронізації"
 
 #. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_password_wizard__action__sync
-#: model:ir.ui.menu,name:l10n_ua_tax_cabinet.menu_ua_tax_cabinet_sync
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
 msgid "Sync Documents"
 msgstr "Синхронізувати документи"
@@ -1336,13 +1335,9 @@ msgstr "Синхронізувати з API кабінету"
 #: code:addons/l10n_ua_tax_cabinet/models/l10n_ua_tax_cabinet_config.py:0
 #: model:ir.actions.act_window,name:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_sync_wizard_action
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_sync_wizard_view_form
+#: model:ir.ui.menu,name:l10n_ua_tax_cabinet.menu_ua_tax_cabinet_sync
 msgid "Sync with Tax Cabinet"
 msgstr "Синхронізувати з Податковим кабінетом"
-
-#. module: l10n_ua_tax_cabinet
-#: model:ir.ui.menu,name:l10n_ua_tax_cabinet.menu_ua_tax_cabinet
-msgid "Tax Cabinet"
-msgstr "Податковий кабінет"
 
 #. module: l10n_ua_tax_cabinet
 #: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_document__source__cabinet
@@ -1523,3 +1518,23 @@ msgstr "Рік"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_tax_cabinet.l10n_ua_tax_cabinet_config_view_form
 msgid "e.g. Tax Cabinet Connection"
 msgstr "напр. Підключення до Податкового кабінету"
+
+#. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields.selection,name:l10n_ua_tax_cabinet.selection__l10n_ua_tax_cabinet_sync_wizard__month__all
+msgid "All Months"
+msgstr "Усі місяці"
+
+#. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields,field_description:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_sync_wizard__year_from
+msgid "From Year"
+msgstr "З року"
+
+#. module: l10n_ua_tax_cabinet
+#: model:ir.model.fields,help:l10n_ua_tax_cabinet.field_l10n_ua_tax_cabinet_sync_wizard__year_from
+msgid "With \"All Months\": the first year to import; the import runs up to Year."
+msgstr "Для «Усі місяці»: перший рік імпорту; імпорт іде до поля «Рік» включно."
+
+#. module: l10n_ua_tax_cabinet
+#: model:ir.ui.menu,name:l10n_ua_tax_cabinet.menu_ua_tax_cabinet_requests
+msgid "Requests to DPS"
+msgstr "Запити до ДПС"

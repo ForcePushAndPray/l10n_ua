@@ -8,4 +8,12 @@
               sequence="60"
               groups="account.group_account_user"/>
 
+
+    <!-- Те саме у «Податки → Звітність до ДПС»; пункт у бухгалтерії лишається
+         для тих, хто не в групі податкового бухгалтера. -->
+    <menuitem id="menu_l10n_ua_tax_4df_reporting"
+              name="4DF Tax Calculation"
+              parent="l10n_ua_tax.menu_ua_tax_reporting"
+              action="l10n_ua_tax_4df_action"
+              sequence="30"/>
 </odoo>

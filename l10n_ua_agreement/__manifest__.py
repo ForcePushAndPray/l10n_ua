@@ -23,7 +23,7 @@ Ukraine Agreements (Договори)
 * Договір у замовленні на продаж, лічильник договорів у контрагента.
 
 Взаєморозрахунки в розрізі договорів — ``l10n_ua_agreement_account``;
-періодичні рахунки (OCA ``contract``) — ``l10n_ua_agreement_contract``.
+періодичні рахунки — ``l10n_ua_agreement_recurring``.
     """,
     'author': 'Svyatoslav Nadozirny',
     'website': 'https://1c-to-odoo.many2one.online',

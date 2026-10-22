@@ -5,7 +5,7 @@
     <menuitem id="menu_l10n_ua_vat"
               name="VAT"
               parent="l10n_ua_tax.menu_ua_tax_root"
-              sequence="30"/>
+              sequence="20"/>
 
     <!-- Tax Invoices submenu -->
     <menuitem id="menu_l10n_ua_tax_invoices"
@@ -49,12 +49,12 @@
               action="l10n_ua_vat_register_received_action"
               sequence="20"/>
 
-    <!-- VAT Declaration -->
+    <!-- Декларація — у «Звітності до ДПС», поруч з іншими формами -->
     <menuitem id="menu_l10n_ua_vat_declarations"
-              name="VAT Declaration"
-              parent="menu_l10n_ua_vat"
+              name="VAT Declarations"
+              parent="l10n_ua_tax.menu_ua_tax_reporting"
               action="l10n_ua_vat_declaration_action"
-              sequence="30"/>
+              sequence="10"/>
 
     <!-- ERPN Limit -->
     <menuitem id="menu_l10n_ua_vat_erpn_limit"

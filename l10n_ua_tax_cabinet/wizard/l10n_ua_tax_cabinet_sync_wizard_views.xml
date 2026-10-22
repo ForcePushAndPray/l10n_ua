@@ -33,15 +33,18 @@
                         <field name="sync_type"/>
                     </group>
                     <group>
-                        <field name="year"/>
                         <field name="month" invisible="sync_type != 'reported'"/>
+                        <field name="year_from" invisible="sync_type != 'reported' or month != 'all'"
+                               options="{'enable_formatting': false}"/>
+                        <field name="year" options="{'enable_formatting': false}"/>
                     </group>
                 </group>
 
                 <div class="alert alert-info" role="alert" invisible="mode != 'sync'">
                     <p><strong>Авторизація:</strong> КЕП-підпис коду платника.</p>
-                    <p>Після «Process» відкриється діалог підпису: оберіть файл-ключ і введіть пароль —
-                        підпис рахується у вашому браузері, ключ і пароль на сервер не передаються.</p>
+                    <p>Після «Process» відкриється вікно підпису: оберіть файл-ключ і введіть пароль —
+                        підпис рахується у вашому браузері, ключ і пароль на сервер не передаються.
+                        Якщо ключ у цій вкладці вже зчитано, пароль не знадобиться.</p>
                 </div>
 
                 <footer>

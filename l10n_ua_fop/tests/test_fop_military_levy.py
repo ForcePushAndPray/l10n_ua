@@ -8,7 +8,7 @@
 - сума за періодом для 1 і 2 груп — з довідника мінзарплати, помісячно;
 - 3 група — 1 % доходу, і саме це поле йде в XML F0103309;
 - військовий збір входить у «Всього до сплати»;
-- F0103309 — декларація 3 групи: для 1–2 груп XML і подання відмовляють.
+- 1–2 групи звітують лише за рік (F0103407): за квартал XML і подання відмовляють.
 """
 
 import base64
@@ -99,7 +99,7 @@ class TestFopMilitaryLevy(TransactionCase):
         self.assertIn('<R023G3>1234.56</R023G3>', xml)
         self.assertIn('<R025G3>1234.56</R025G3>', xml)
 
-    def test_f0103309_refused_for_groups_1_and_2(self):
+    def test_quarterly_refused_for_groups_1_and_2(self):
         for group in (self.group_1, self.group_2):
             with self.subTest(group=group.code):
                 self._books(2026, group, {'1': 50_000})

@@ -396,7 +396,7 @@ class L10nUaTax4DF(models.Model):
             'hzy': self.year,
             'hzm': month,
             'hnum': 1,
-            'hname': company.name or '',
+            'hname': company._l10n_ua_dps_name(),
             'htin': edrpou,
             'hkatottg': company.katottg,
             'hkbos': director_rnokpp,

@@ -4,6 +4,7 @@ from . import common
 from . import test_hr_employee
 from . import test_hr_employee_child
 from . import test_hr_staffing_table
+from . import test_pay_scheme
 from . import test_hr_employee_reports
 from . import test_employee_number
 from . import test_hr_kp2010
@@ -13,3 +14,5 @@ from . import test_military_citizenship
 from . import test_wage_currency
 from . import test_staffing_currency
 from . import test_tariff_grade
+from . import test_work_time_helpers
+from . import test_department_company

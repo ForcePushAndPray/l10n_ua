@@ -14,6 +14,7 @@ from lxml import etree
 from odoo.tests import TransactionCase, tagged
 
 SCHEMA_PATH = os.path.join(os.path.dirname(__file__), 'schemas', 'F0103309.xsd')
+SCHEMA_F0103407 = os.path.join(os.path.dirname(__file__), 'schemas', 'F0103407.xsd')
 
 
 @tagged('post_install', '-at_install')
@@ -69,3 +70,31 @@ class TestF0103309XsdValidation(TransactionCase):
                 'PERIOD_TYPE=%s дав XSD-невалідний XML: %s' % (
                     period_type, schema.error_log),
             )
+
+    def test_annual_group_1_2_declaration_validates(self):
+        """F0103407 — річна декларація 1–2 груп: розділ II або III, ВЗ помісячно."""
+        wizard = self.env['l10n_ua.tax.document.wizard']
+        schema = etree.XMLSchema(etree.parse(SCHEMA_F0103407))
+        for group, income_tag, tax_tag in (('1', 'R001G3', 'R02G4'), ('2', 'R003G3', 'R03G4')):
+            vals = dict(self._sample_vals(), group=group,
+                        quarterly_tax=[1297.05] * 4, military_months=range(1, 13),
+                        military_amount=10376.40)
+            xml = wizard._render_F0103407_xml(vals)
+            doc = etree.fromstring(xml.encode('windows-1251'))
+            self.assertTrue(schema.validate(doc), '%s: %s' % (group, schema.error_log))
+            body = doc.find('DECLARBODY')
+            self.assertEqual(body.findtext('HY'), '1')
+            self.assertEqual(body.findtext(income_tag), '100000.00')
+            self.assertEqual(body.findtext(tax_tag), '1297.05')
+            self.assertEqual(body.findtext('R08G12'), '1')
+            self.assertEqual(body.findtext('R022G3'), '10376.40')
+            self.assertEqual(doc.findtext('DECLARHEAD/C_DOC_SUB'), '034')
+
+    def test_without_email_and_phone(self):
+        """Порожні HEMAIL/HTEL XSD не приймає — без контактів їх не пишемо."""
+        wizard = self.env['l10n_ua.tax.document.wizard']
+        schema = etree.XMLSchema(etree.parse(SCHEMA_PATH))
+        vals = dict(self._sample_vals(), taxpayer_email='', taxpayer_phone='')
+        doc = etree.fromstring(wizard._render_F0103309_xml(vals).encode('windows-1251'))
+        self.assertTrue(schema.validate(doc), schema.error_log)
+        self.assertIsNone(doc.find('DECLARBODY/HEMAIL'))

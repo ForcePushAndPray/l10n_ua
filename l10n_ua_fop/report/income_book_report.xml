@@ -63,7 +63,7 @@
                                 <th style="width: 18%;">Сума, грн</th>
                             </tr>
                             <t t-set="income_types" t-value="{'cash': 'Готівка', 'bank': 'Безготівковий', 'card': 'Картка'}"/>
-                            <t t-foreach="o.line_ids" t-as="line">
+                            <t t-foreach="o.line_ids.filtered('is_income')" t-as="line">
                                 <tr>
                                     <td class="text-center"><t t-esc="line_index + 1"/></td>
                                     <td class="text-center">

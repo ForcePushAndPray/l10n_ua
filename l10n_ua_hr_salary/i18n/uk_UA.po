@@ -1010,8 +1010,23 @@ msgstr "Дохід у натуральній формі"
 
 #. module: l10n_ua_hr_salary
 #: model:ir.model.fields,help:l10n_ua_hr_salary.field_hr_accrual_type__is_basic_salary
-msgid "Include in average salary calculation"
-msgstr "Включити в розрахунок середньої зарплати"
+msgid ""
+"Include in the average salary for vacations and their compensation (Порядок "
+"№ 100, п. 3). Clear it for the payments of п. 4: one-off payments "
+"(compensation for unused vacation, material aid, severance pay), social "
+"payments, payments in kind. Vacation pay and sickness benefits are counted "
+"for a vacation by their category. The sick-leave average does not read this "
+"flag: it takes the pay in the contribution base (ESV Base), per Порядок № "
+"1266."
+msgstr ""
+"Враховувати в середній заробітній платі для оплати відпусток і компенсації за "
+"невикористані відпустки (Порядок № 100, п. 3). Зніміть позначку для виплат "
+"п. 4: одноразових (компенсація за невикористану відпустку, матеріальна "
+"допомога, вихідна допомога), соціальних виплат, виплат у натуральній формі. "
+"Відпускні та допомога по тимчасовій непрацездатності для відпустки "
+"враховуються за категорією. Середня для лікарняних цю позначку не читає: вона "
+"бере заробіток, на який нараховано ЄСВ (позначка «База ЄСВ»), за Порядком № "
+"1266."
 
 #. module: l10n_ua_hr_salary
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_psp_parameters__income_limit
@@ -1502,6 +1517,12 @@ msgstr "Сума ПСП"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_salary.hr_psp_parameters_view_form
 msgid "PSP Amounts (Computed)"
 msgstr "Суми ПСП (розраховані)"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_employee__psp_application
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_version__psp_application
+msgid "PSP Application"
+msgstr "Заява про застосування ПСП"
 
 #. module: l10n_ua_hr_salary
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_payslip__psp_eligible
@@ -3556,3 +3577,18 @@ msgstr ""
 "розрахункового листа: допомога по тимчасовій непрацездатності, нарахована в "
 "місяці підтвердження листка, може стосуватися днів попереднього місяця. "
 "Порожнє поле означає місяць розрахункового листа."
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,help:l10n_ua_hr_salary.field_hr_employee__psp_application
+#: model:ir.model.fields,help:l10n_ua_hr_salary.field_hr_version__psp_application
+msgid ""
+"The employee has filed the application for the tax social benefit (ПКУ п. "
+"169.2.2) for this employment. The benefit applies at one place of income "
+"only: by default the primary job has it and a secondary job does not. Civil-"
+"law, gig and author contracts never get the benefit."
+msgstr ""
+"Працівник подав заяву про застосування податкової соціальної пільги (ПКУ п. "
+"169.2.2) за цим місцем роботи. Пільга застосовується лише за одним місцем "
+"нарахування доходу: типово — за основним місцем роботи, а на сумісництві — "
+"ні. За цивільно-правовими, гіг- та авторськими договорами пільга не "
+"застосовується ніколи."

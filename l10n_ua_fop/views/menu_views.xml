@@ -8,26 +8,24 @@
         <field name="view_mode">list,form</field>
     </record>
 
-    <menuitem id="menu_l10n_ua_fop"
-              name="FOP (Simplified Tax)"
-              parent="l10n_ua_tax.menu_ua_tax_root"
-              sequence="40"/>
-
+    <!-- Книгу ведуть лише ФОП (юрособа на ЄП — бухоблік), а меню одне на всі
+         компанії бази, тож «ФОП» — у назві пункту, не окремим розділом. -->
     <menuitem id="menu_l10n_ua_fop_income_books"
-              name="Income Books"
-              parent="menu_l10n_ua_fop"
+              name="FOP Income Books"
+              parent="l10n_ua_tax.menu_ua_tax_accounting"
               action="l10n_ua_fop_income_book_action"
               sequence="10"/>
 
+    <!-- F0103309 — декларація ФОП 3 групи; юрособи на ЄП подають іншу форму. -->
     <menuitem id="menu_l10n_ua_fop_declarations"
-              name="Simplified Tax Declarations"
-              parent="menu_l10n_ua_fop"
+              name="FOP Simplified Tax Declarations (Group 3)"
+              parent="l10n_ua_tax.menu_ua_tax_reporting"
               action="l10n_ua_fop_declaration_action"
               sequence="20"/>
 
     <menuitem id="menu_l10n_ua_fop_groups"
-              name="Tax Groups"
-              parent="menu_l10n_ua_fop"
+              name="Simplified Tax Groups"
+              parent="l10n_ua_tax.menu_ua_tax_config"
               action="l10n_ua_fop_group_action"
               sequence="30"/>
 

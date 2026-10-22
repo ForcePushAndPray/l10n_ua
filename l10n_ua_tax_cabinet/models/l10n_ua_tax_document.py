@@ -1,10 +1,33 @@
 """Extension of tax document model with Tax Cabinet integration."""
+import base64
 import logging
+import re
 
 from odoo import api, fields, models, _
 from odoo.exceptions import UserError
 
+from .l10n_ua_tax_request import IMPORTED_REQUESTS, IMPORTED_RESPONSES
+
 _logger = logging.getLogger(__name__)
+
+# Сторінок кореспонденції за одну синхронізацію (по 20 документів).
+MAX_CORRESPONDENCE_PAGES = 10
+
+# Код форми в XML ДПС: схема в заголовку (F1419104.XSD) або поля DECLARHEAD.
+SCHEMA_CODE_RE = re.compile(rb'noNamespaceSchemaLocation="([A-Z]\d{7})\.XSD"', re.I)
+HEAD_FIELD_RE = re.compile(rb'<(C_DOC|C_DOC_SUB|C_DOC_VER)>\s*([^<\s]+)\s*</')
+
+
+def doc_code_from_xml(xml_bytes):
+    """Код форми (напр. ``F1419104``) з XML-файлу ДПС або None."""
+    head = (xml_bytes or b'')[:4096]
+    match = SCHEMA_CODE_RE.search(head)
+    if match:
+        return match.group(1).decode('ascii').upper()
+    fields_ = {name.decode(): value.decode('ascii', 'ignore') for name, value in HEAD_FIELD_RE.findall(head)}
+    if {'C_DOC', 'C_DOC_SUB', 'C_DOC_VER'} <= fields_.keys():
+        return (fields_['C_DOC'] + fields_['C_DOC_SUB'] + fields_['C_DOC_VER'].zfill(2)).upper()
+    return None
 
 
 class L10nUaTaxDocumentCabinet(models.Model):
@@ -228,16 +251,26 @@ class L10nUaTaxDocumentCabinet(models.Model):
     @api.model
     def _sync_incoming_documents(self, config, *, auth_signature):
         """Sync incoming correspondence from cabinet."""
-        docs_data = config._api_get_incoming_documents(auth_signature=auth_signature)
-        return self._process_api_documents(
-            config, docs_data, 'incoming', auth_signature=auth_signature)
+        return self._sync_paged(
+            config, config._api_get_incoming_documents, 'incoming', auth_signature)
 
     @api.model
     def _sync_sent_documents(self, config, *, auth_signature):
         """Sync sent correspondence from cabinet."""
-        docs_data = config._api_get_sent_documents(auth_signature=auth_signature)
-        return self._process_api_documents(
-            config, docs_data, 'sent', auth_signature=auth_signature)
+        return self._sync_paged(config, config._api_get_sent_documents, 'sent', auth_signature)
+
+    @api.model
+    def _sync_paged(self, config, fetch, doc_type, auth_signature):
+        """Кореспонденція віддається сторінками (з 0): найновіша — на першій."""
+        count = 0
+        for page in range(MAX_CORRESPONDENCE_PAGES):
+            docs_data = fetch(page, auth_signature=auth_signature)
+            count += self._process_api_documents(
+                config, docs_data, doc_type, auth_signature=auth_signature)
+            if not isinstance(docs_data, dict) or docs_data.get('last', True) \
+                    or not docs_data.get('content'):
+                break
+        return count
 
     @api.model
     def _process_api_documents(self, config, docs_data, doc_type, year=None, *, auth_signature):
@@ -282,6 +315,7 @@ class L10nUaTaxDocumentCabinet(models.Model):
                             'file_xml': xml_content,
                             'file_xml_name': f"{external_id}.xml",
                         })
+                        doc._retype_from_xml()
                 except Exception as e:
                     _logger.warning("Could not download XML for %s: %s", external_id, str(e))
 
@@ -297,9 +331,41 @@ class L10nUaTaxDocumentCabinet(models.Model):
                 except Exception as e:
                     _logger.warning("Could not download PDF for %s: %s", external_id, str(e))
 
+            doc._l10n_ua_after_import()
             _logger.info("Synced tax document: %s", doc.name)
 
         return created_count
+
+    def _l10n_ua_after_import(self):
+        """Документ щойно потрапив у журнал (з кабінету чи завантажений вручну).
+
+        Точка розширення для модулів форм: кожен розбирає XML своєї форми й
+        заповнює власний облік (декларацію ЄП, ПДВ тощо). Перевизначайте з
+        ``super()``; збій одного модуля не має зривати імпорт.
+        """
+        # Власні форми цього модуля: інформаційні запити до ДПС і відповіді на них.
+        Request = self.env['l10n_ua.tax.request']
+        codes = set(IMPORTED_REQUESTS) | set(IMPORTED_RESPONSES)
+        for doc in self.filtered(lambda d: d.file_xml and d.document_type_id.code in codes):
+            try:
+                with self.env.cr.savepoint():
+                    Request._import_from_tax_document(doc, doc.document_type_id.code)
+            except Exception:  # noqa: BLE001 — збій розбору не має зривати імпорт документа
+                _logger.exception("Не вдалося імпортувати запит до ДПС з %s", doc.display_name)
+        return True
+
+    def _retype_from_xml(self):
+        """Тип «Інше» → справжній, за кодом форми в XML (F1419104.XSD тощо).
+
+        Список кабінету не завжди дає код, що є в довіднику; сам XML — дає.
+        """
+        other = self.env.ref('l10n_ua_tax.tax_document_type_other', raise_if_not_found=False)
+        Type = self.env['l10n_ua.tax.document.type']
+        for doc in self.filtered(lambda d: d.file_xml and (not d.document_type_id or d.document_type_id == other)):
+            code = doc_code_from_xml(base64.b64decode(doc.file_xml))
+            doc_type = code and Type.search([('code', '=', code)], limit=1)
+            if doc_type:
+                doc.document_type_id = doc_type
 
     @api.model
     def _prepare_api_document_vals(self, config, doc_item, doc_type, year):
@@ -311,6 +377,9 @@ class L10nUaTaxDocumentCabinet(models.Model):
         ], limit=1)
 
         if not doc_type_record:
+            # Тип уточнить XML документа (_retype_from_xml), якщо його завантажено.
+            _logger.info("Tax Cabinet: unknown document code %r (%s)", doc_code,
+                         doc_item.get('docName') or doc_item.get('name'))
             doc_type_record = self.env.ref(
                 'l10n_ua_tax.tax_document_type_other',
                 raise_if_not_found=False

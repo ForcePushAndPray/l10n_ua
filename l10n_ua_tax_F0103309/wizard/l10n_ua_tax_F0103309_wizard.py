@@ -396,7 +396,8 @@ class L10nUaTaxDocumentWizardF0103309(models.TransientModel):
             'taxpayer_phone': self.taxpayer_phone or '',
             'declaration_type': self.declaration_type,
             'tax_office_code': self.tax_office_id.code if self.tax_office_id else '',
-            'tax_office_name': self.tax_office_id.name if self.tax_office_id else '',
+            'tax_office_name': (self.tax_office_id.with_context(lang='uk_UA').name
+                                if self.tax_office_id else ''),
             'quarter_marker': self._get_quarter_marker(),
             'period_type': period_type,
             'period_month': period_month,
@@ -475,9 +476,7 @@ class L10nUaTaxDocumentWizardF0103309(models.TransientModel):
         <HSTI>{self._escape_xml(tax_office_name)}</HSTI>
         <HNAME>{self._escape_xml(vals['taxpayer_name'])}</HNAME>
         <HLOC>{self._escape_xml(vals.get('taxpayer_address') or '')}</HLOC>
-        <HEMAIL>{self._escape_xml(vals.get('taxpayer_email') or '')}</HEMAIL>
-        <HTEL>{self._escape_xml(vals.get('taxpayer_phone') or '')}</HTEL>
-        <HTIN>{self._escape_xml(vals['taxpayer_tin'])}</HTIN>
+{self._contacts_xml(vals)}        <HTIN>{self._escape_xml(vals['taxpayer_tin'])}</HTIN>
         <HNACTL>{vals.get('employee_count') or 0}</HNACTL>
 {activities_xml}        <R006G3>{self._format_amount(vals['income_total'])}</R006G3>
         <R008G3>{self._format_amount(vals['income_total'])}</R008G3>
@@ -495,6 +494,92 @@ class L10nUaTaxDocumentWizardF0103309(models.TransientModel):
         <HBOS>{self._escape_xml(vals['taxpayer_name'])}</HBOS>
     </DECLARBODY>
 </DECLAR>'''
+        return xml
+
+    def _render_F0103407_xml(self, vals):
+        """Річна декларація ФОП 1–2 груп (F0103407, наказ № 578 у ред. № 57).
+
+        Та сама форма, що й F0103309, але податковий період — лише рік (HY), а
+        заповнюються розділи II (перша група) або III (друга): щоквартальні
+        авансові внески ЄП (R02/R03 G1–G4) і обсяг доходу (R001/R003), загальний
+        дохід (R008), військовий збір 1–2 груп — помісячні відмітки (R08G1–G12) і
+        сума (R022). Розділ V (рядки 9–14) — лише для доходу за ставкою 15 %,
+        якого Odoo не веде.
+
+        Додаткові ключі ``vals`` (до спільних із F0103309): group ('1'/'2'),
+        quarterly_tax (4 суми), military_months (номери місяців 1–12).
+        """
+        today = date.today()
+        group = vals['group']
+        if group not in ('1', '2'):
+            raise ValueError('F0103407 — декларація 1–2 груп, отримано групу %r' % group)
+        activities = vals.get('activities') or []
+        tax_office_code = vals.get('tax_office_code') or ''
+        esc = self._escape_xml
+        amount = self._format_amount
+
+        rows = [f'        <T1RXXXXG1S ROWNUM="{i}">{esc(code)}</T1RXXXXG1S>'
+                for i, (code, _name) in enumerate(activities, 1)]
+        rows += [f'        <T1RXXXXG2S ROWNUM="{i}">{esc(name)}</T1RXXXXG2S>'
+                 for i, (_code, name) in enumerate(activities, 1)]
+        # Розділ II (R02, R001) — перша група, розділ III (R03, R003) — друга.
+        prefix, income_row = ('R02', 'R001G3') if group == '1' else ('R03', 'R003G3')
+        rows += [f'        <{prefix}G{q}>{amount(value)}</{prefix}G{q}>'
+                 for q, value in enumerate(vals['quarterly_tax'], 1)]
+        rows.append(f'        <{income_row}>{amount(vals["income_total"])}</{income_row}>')
+        rows.append(f'        <R008G3>{amount(vals["income_total"])}</R008G3>')
+        rows += [f'        <R08G{m}>1</R08G{m}>' for m in sorted(vals.get('military_months') or [])]
+        if vals.get('military_amount'):
+            rows.append(f'        <R022G3>{amount(vals["military_amount"])}</R022G3>')
+        body_rows = '\n'.join(rows)
+
+        return f'''<?xml version="1.0" encoding="windows-1251"?>
+<DECLAR xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="F0103407.xsd">
+    <DECLARHEAD>
+        <TIN>{esc(vals['taxpayer_tin'])}</TIN>
+        <C_DOC>F01</C_DOC>
+        <C_DOC_SUB>034</C_DOC_SUB>
+        <C_DOC_VER>7</C_DOC_VER>
+        <C_DOC_TYPE>{vals['declaration_type']}</C_DOC_TYPE>
+        <C_DOC_CNT>1</C_DOC_CNT>
+        <C_REG>{tax_office_code[:2]}</C_REG>
+        <C_RAJ>{tax_office_code[2:4]}</C_RAJ>
+        <PERIOD_MONTH>12</PERIOD_MONTH>
+        <PERIOD_TYPE>5</PERIOD_TYPE>
+        <PERIOD_YEAR>{vals['year']}</PERIOD_YEAR>
+        <C_STI_ORIG>{tax_office_code}</C_STI_ORIG>
+        <C_DOC_STAN>1</C_DOC_STAN>
+        <LINKED_DOCS xsi:nil="true"/>
+        <D_FILL>{today.strftime('%d%m%Y')}</D_FILL>
+        <SOFTWARE>{F0103309_SOFTWARE}</SOFTWARE>
+    </DECLARHEAD>
+    <DECLARBODY>
+        <HZ>1</HZ>
+        <HY>1</HY>
+        <HZY>{vals['year']}</HZY>
+        <HSTI>{esc(vals.get('tax_office_name') or '')}</HSTI>
+        <HNAME>{esc(vals['taxpayer_name'])}</HNAME>
+        <HLOC>{esc(vals.get('taxpayer_address') or '')}</HLOC>
+{self._contacts_xml(vals)}        <HTIN>{esc(vals['taxpayer_tin'])}</HTIN>
+        <HNACTL>{vals.get('employee_count') or 0}</HNACTL>
+{body_rows}
+        <T2RXXXXG2S ROWNUM="1" xsi:nil="true"/>
+        <HFILL>{today.strftime('%d%m%Y')}</HFILL>
+        <HKEXECUTOR>{esc(vals['taxpayer_tin'])}</HKEXECUTOR>
+        <HBOS>{esc(vals['taxpayer_name'])}</HBOS>
+    </DECLARBODY>
+</DECLAR>'''
+
+    def _contacts_xml(self, vals):
+        """HEMAIL/HTEL — необов'язкові, але з шаблоном у XSD: порожній елемент
+        декларацію робить невалідною, тож без контакту елемента немає."""
+        xml = ''
+        email = (vals.get('taxpayer_email') or '').strip()
+        if re.fullmatch(r'[^@\s]+@[^@\s]+', email):
+            xml += f'        <HEMAIL>{self._escape_xml(email)}</HEMAIL>\n'
+        phone = re.sub(r'[^0-9 ()\-+.,;]', '', vals.get('taxpayer_phone') or '').strip()
+        if len(phone) >= 4:
+            xml += f'        <HTEL>{self._escape_xml(phone)}</HTEL>\n'
         return xml
 
     def _format_amount(self, value):

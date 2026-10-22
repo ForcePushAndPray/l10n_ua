@@ -9,27 +9,48 @@
                 <header>
                     <button name="action_generate_xml" string="Сформувати XML"
                             type="object" class="btn-secondary"
-                            invisible="state == 'submitted'"/>
+                            invisible="state in ('submitted', 'answered') or request_type != 'j1300208'"/>
                     <button name="action_submit" string="Підписати і подати"
                             type="object" class="btn-primary"
-                            invisible="state == 'submitted'"/>
+                            invisible="state in ('submitted', 'answered') or request_type != 'j1300208'"/>
                     <button name="action_draft" string="Повернути в чернетку"
-                            type="object" invisible="state == 'draft'"/>
+                            type="object" invisible="state == 'draft' or tax_document_id"/>
                     <field name="state" widget="statusbar"
-                           statusbar_visible="draft,generated,submitted"/>
+                           statusbar_visible="draft,generated,submitted,answered"/>
                 </header>
                 <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_response" type="object"
+                                class="oe_stat_button" icon="fa-envelope-open-o"
+                                invisible="not response_document_id">
+                            <div class="o_stat_info">
+                                <span class="o_stat_text">Відповідь ДПС</span>
+                            </div>
+                        </button>
+                    </div>
                     <div class="oe_title">
                         <h1><field name="name" readonly="1"/></h1>
                     </div>
                     <group>
                         <group>
-                            <field name="request_type"/>
+                            <field name="request_type" readonly="tax_document_id or response_document_id"/>
                             <field name="request_date"/>
+                            <label for="period_from" string="Період"
+                                   invisible="not period_from and request_type != 'j1300208'"/>
+                            <div class="o_row" invisible="not period_from and request_type != 'j1300208'">
+                                <field name="period_from"
+                                       readonly="request_type != 'j1300208' or state != 'draft'"/> —
+                                <field name="period_to"
+                                       readonly="request_type != 'j1300208' or state != 'draft'"/>
+                            </div>
+                            <field name="extract_option" invisible="request_type != 'j1300208'"
+                                   readonly="state != 'draft'" placeholder="Електронний з печаткою ДПС, без пені"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                         <group>
-                            <field name="submission_date" invisible="state != 'submitted'"/>
+                            <field name="submission_date" invisible="state not in ('submitted', 'answered')"/>
+                            <field name="tax_document_id" invisible="not tax_document_id"/>
+                            <field name="response_document_id" invisible="not response_document_id"/>
                             <field name="xml_filename" invisible="1"/>
                             <field name="xml_file" filename="xml_filename"
                                    invisible="not xml_file"/>
@@ -52,9 +73,12 @@
                 <field name="name"/>
                 <field name="request_type"/>
                 <field name="request_date"/>
+                <field name="period_from" optional="show"/>
+                <field name="period_to" optional="show"/>
                 <field name="submission_date"/>
                 <field name="state" widget="badge"
-                       decoration-success="state == 'submitted'"
+                       decoration-success="state == 'answered'"
+                       decoration-primary="state == 'submitted'"
                        decoration-info="state == 'generated'"/>
             </list>
         </field>
@@ -67,9 +91,9 @@
     </record>
 
     <menuitem id="menu_ua_tax_cabinet_requests"
-              name="Info Requests"
-              parent="menu_ua_tax_cabinet"
+              name="Requests to DPS"
+              parent="l10n_ua_tax.menu_ua_tax_reporting"
               action="l10n_ua_tax_request_action"
-              sequence="10"/>
+              sequence="80"/>
 
 </odoo>

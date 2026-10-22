@@ -45,28 +45,33 @@
                     </group>
 
                     <div class="alert alert-info" role="alert">
-                        <p><strong>КЕП-підпис у браузері</strong></p>
+                        <p><strong>Як працює підпис КЕП</strong></p>
                         <p>
-                            Ключ КЕП і пароль на сервері не зберігаються. Під час перевірки
-                            з'єднання, синхронізації чи подання ви обираєте файл-ключ і вводите
-                            пароль у діалозі підпису — підпис рахується у вашому браузері, як
-                            під час входу до електронного кабінету.
+                            Ключ і пароль на сервері не зберігаються. Кнопки «Test Connection»,
+                            «Sync Documents» і подання документів відкривають вікно підпису: ви
+                            обираєте свій ЦСК, файл-ключ і пароль, а підпис рахується у вашому
+                            браузері — як під час входу до електронного кабінету.
                         </p>
-                        <p class="text-muted"><em>
-                            Бібліотека підпису IIT і список ЦСК мають лежати в
-                            <code>l10n_ua_sign/static/src/lib/euscp</code> (див. README там).
+                        <p>
+                            Для перевірки з'єднання й синхронізації підписується лише код
+                            платника: так кабінет переконується, що запит робите ви. Зчитаний
+                            ключ браузер пам'ятає 20 хвилин у цій вкладці, тож наступні дії
+                            пароль не просять.
+                        </p>
+                        <p class="mb-0">
+                            <a href="https://cabinet.tax.gov.ua" target="_blank">Електронний кабінет</a>
+                            ·
+                            <a href="https://ca.tax.gov.ua" target="_blank">КНЕДП ДПС</a>
+                        </p>
+                        <p class="text-muted mt-2 mb-0" invisible="not use_test_environment"><em>
+                            Увімкнено тестове середовище ДПС (cabinet.tax.gov.ua:9443): подані
+                            документи не фіскальні й до податкової не потрапляють.
                         </em></p>
-                        <hr/>
-                        <p><strong>Useful Links:</strong></p>
-                        <ul>
-                            <li>Tax Cabinet: https://cabinet.tax.gov.ua</li>
-                            <li>Test API: https://cabinet.tax.gov.ua:9443</li>
-                            <li>IIT EUSignCP Library: https://iit.com.ua/downloads</li>
-                            <li>DPS Ukraine CA: https://acskidd.gov.ua</li>
-                        </ul>
-                        <p class="text-muted"><em>
-                            <strong>Test Mode:</strong> Enable "Use Test Environment" to submit documents to the test API.
-                            Documents submitted in test mode are NOT fiscal and do not go to the real tax office.
+                        <p class="text-muted mt-2 mb-0" groups="base.group_system"><em>
+                            Для адміністратора: бібліотека підпису IIT і список ЦСК мають лежати в
+                            <code>l10n_ua_sign/static/src/lib/euscp</code> — вони не в git, після
+                            розгортання з архіву їх треба докласти (див. README там). Якщо їх
+                            немає, вікно підпису про це попередить.
                         </em></p>
                     </div>
                 </sheet>

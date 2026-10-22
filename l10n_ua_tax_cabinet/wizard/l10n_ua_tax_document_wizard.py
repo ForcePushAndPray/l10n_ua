@@ -102,7 +102,7 @@ class L10nUaTaxDocumentWizard(models.TransientModel):
             company = self.env['res.company'].browse(res['company_id'])
             if company:
                 res['taxpayer_tin'] = company.vat or company.company_registry or ''
-                res['taxpayer_name'] = company.name or ''
+                res['taxpayer_name'] = company._l10n_ua_dps_name()
                 res['taxpayer_address'] = self._format_company_address(company)
                 res['taxpayer_phone'] = company.phone or ''
                 res['taxpayer_email'] = company.email or ''

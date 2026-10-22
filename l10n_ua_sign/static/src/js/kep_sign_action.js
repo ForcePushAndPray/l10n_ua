@@ -2,9 +2,17 @@
 
 import { registry } from "@web/core/registry";
 import { useService } from "@web/core/utils/hooks";
-import { Component, useState, onWillStart, onWillUnmount } from "@odoo/owl";
+import { Component, useState, onWillStart } from "@odoo/owl";
 import { _t } from "@web/core/l10n/translation";
-import { checkLibPresent, createSigner, listCAs, KEY_CA_MISMATCH } from "./kep_sign_service";
+import {
+    checkLibPresent,
+    forgetKey,
+    getKeySession,
+    listCAs,
+    readKey,
+    signWithKey,
+    KEY_CA_MISMATCH,
+} from "./kep_sign_service";
 
 // Останній ЦСК користувача: наступного разу ключ зчитується без перебору.
 const CA_STORAGE_KEY = "l10n_ua_sign.ca_name";
@@ -29,15 +37,22 @@ function saveCa(name) {
     }
 }
 
+function lowerFirst(text) {
+    return text ? text.charAt(0).toLowerCase() + text.slice(1) : text;
+}
+
 /**
- * Універсальний client action клієнтського КЕП-підпису у ТРИ явні кроки:
- *   1. Зчитати ключ  → показати дані власника (перевірка, що ключ правильний).
- *   2. Підписати     → рахуємо підписи в браузері.
- *   3. Відправити    → orm.call kep_submit_signed (ДПС / банк / інша установа).
+ * Універсальне вікно клієнтського КЕП-підпису (client action ``l10n_ua_sign.kep_sign``).
  *
- * Модель-агностичний: працює з будь-якою моделлю на l10n_ua.sign.mixin.
- * Параметр ``mode`` (якщо є) передається обом викликам у контексті як
- * ``kep_mode``. Приватний ключ і пароль обробляються лише в браузері.
+ * Відкривається поверх форми (``target: 'new'`` з ``action_kep_sign()``) для будь-якої
+ * моделі на ``l10n_ua.sign.mixin``. Сценарії:
+ *   - лише авторизація (``auth_subject`` без документів: перевірка з'єднання,
+ *     синхронізація) — одна кнопка «Зчитати ключ і <дія>»;
+ *   - документи — спершу ключ (користувач звіряє власника), потім
+ *     «Підписати й <дія>» зі списком того, що підписується.
+ * Ключ зчитується раз на вкладку (див. getKeySession) і далі не просить пароль.
+ * ``mode`` (якщо є) йде обом викликам контракту в контексті як ``kep_mode``.
+ * Приватний ключ і пароль обробляються лише в браузері.
  */
 export class KepSignAction extends Component {
     static template = "l10n_ua_sign.KepSignAction";
@@ -46,17 +61,16 @@ export class KepSignAction extends Component {
     setup() {
         this.orm = useService("orm");
         this.action = useService("action");
-        this.notification = useService("notification");
-        this.signer = createSigner();
 
         const params = this.props.action.params || this.props.action.context || {};
         this.model = params.model;
         this.resId = params.res_id;
         this.callKwargs = params.mode ? { context: { kep_mode: params.mode } } : {};
+        this.inDialog = this.props.action.target === "new";
 
         this.state = useState({
             phase: "loading", // loading | ready | done | error
-            busy: false,
+            stage: null,       // read | sign | send — що саме зараз триває
             error: null,
             libAvailable: false,
             caList: [],        // ЦСК для вибору; "" — визначати автоматично
@@ -64,12 +78,10 @@ export class KepSignAction extends Component {
             password: "",
             keyFileName: "",
             prepared: null,
-            ownerRows: null,   // заповнено після кроку 1
-            signed: null,      // заповнено після кроку 2
-            receipt: null,     // заповнено після кроку 3
+            key: getKeySession(),
+            receipt: null,
         });
         this.keyFileBuffer = null;
-        this._signedPayload = null;
 
         onWillStart(async () => {
             try {
@@ -91,43 +103,95 @@ export class KepSignAction extends Component {
                 this.state.error = this._errMessage(e);
             }
         });
-        // Зчитаний ключ не переживає діалог.
-        onWillUnmount(() => this.signer.reset());
     }
 
     _errMessage(e) {
         return (e && e.data && e.data.message) || (e && e.message) || String(e);
     }
 
-    get docCount() {
-        return (this.state.prepared && this.state.prepared.documents || []).length;
+    get busy() {
+        return !!this.state.stage;
+    }
+
+    get documents() {
+        return (this.state.prepared && this.state.prepared.documents) || [];
+    }
+
+    get authSubject() {
+        return this.state.prepared && this.state.prepared.auth_subject;
     }
 
     /** Підписується лише код для авторизації (перевірка з'єднання, синхронізація). */
     get authOnly() {
-        return !this.docCount && !!(this.state.prepared && this.state.prepared.auth_subject);
+        return !this.documents.length && !!this.authSubject;
     }
 
     get submitLabel() {
-        return (this.state.prepared && this.state.prepared.submit_label)
-            || _t("Відправити");
+        return (this.state.prepared && this.state.prepared.submit_label) || _t("Відправити");
     }
 
-    _resetReadKey() {
-        this.state.ownerRows = null;
-        this.state.signed = null;
-        this._signedPayload = null;
+    get mainLabel() {
+        if (this.authOnly) {
+            return this.state.key
+                ? this.submitLabel
+                : _t("Зчитати ключ і %s").replace("%s", lowerFirst(this.submitLabel));
+        }
+        return this.state.key
+            ? _t("Підписати й %s").replace("%s", lowerFirst(this.submitLabel))
+            : _t("Зчитати ключ");
+    }
+
+    get stageLabel() {
+        return {
+            read: _t("Зчитування ключа…"),
+            sign: _t("Підписання…"),
+            send: _t("Відправлення…"),
+        }[this.state.stage];
+    }
+
+    get keyRows() {
+        const key = this.state.key;
+        if (!key) {
+            return [];
+        }
+        const o = key.owner || {};
+        const rows = [];
+        const push = (label, val) => {
+            if (val) {
+                rows.push({ label, value: String(val) });
+            }
+        };
+        push(_t("Власник"), o.subjCN || o.subjFullName || o.subject);
+        push(_t("Організація"), o.subjOrg);
+        push(_t("РНОКПП"), o.subjDRFOCode);
+        push(_t("ЄДРПОУ"), o.subjEDRPOUCode);
+        push(_t("Видавець"), o.issuerCN);
+        const cert = key.certs && key.certs[0];
+        const info = cert && (cert.infoEx || cert.info);
+        if (info) {
+            push(_t("Сертифікат діє до"), info.certEndTime);
+        }
+        return rows;
+    }
+
+    get keyExpiresAt() {
+        const key = this.state.key;
+        if (!key) {
+            return "";
+        }
+        return new Date(key.expiresAt).toLocaleTimeString("uk-UA", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
     }
 
     onCaChange(ev) {
         this.state.caName = ev.target.value;
         saveCa(this.state.caName);
-        this._resetReadKey();  // ключ, зчитаний з іншим ЦСК, більше не актуальний
     }
 
     onKeyFileChange(ev) {
         const file = ev.target.files && ev.target.files[0];
-        this._resetReadKey();  // зміна ключа скидає зчитане
         if (!file) {
             this.keyFileBuffer = null;
             this.state.keyFileName = "";
@@ -145,18 +209,33 @@ export class KepSignAction extends Component {
         this.state.password = ev.target.value;
     }
 
-    /** Крок 1 — зчитати ключ і показати власника. */
-    async onReadKey() {
-        this.state.busy = true;
+    async onForgetKey() {
+        await forgetKey();
+        this.state.key = null;
+    }
+
+    /** Головна кнопка: стільки кроків, скільки треба для поточного сценарію. */
+    async onMain() {
         this.state.error = null;
         try {
-            const { owner, certs } = await this.signer.readKey(
-                this.keyFileBuffer, this.state.password, this.state.caName || null);
-            if (!this.state.caName) {
-                this._rememberDetectedCa(owner);
+            if (!getKeySession()) {
+                this.state.key = null;
+                await this._readKey();
+                if (!this.authOnly) {
+                    // Документи підписуємо лише після того, як власника ключа звірено.
+                    return;
+                }
             }
-            this.state.ownerRows = this._summarizeOwner(owner, certs);
-            this.notification.add(_t("Ключ зчитано."), { type: "success" });
+            this.state.stage = "sign";
+            const { auth_signature, signed } = await signWithKey(this.state.prepared);
+            this.state.key = getKeySession();
+            this.state.stage = "send";
+            const result = await this.orm.call(
+                this.model, "kep_submit_signed",
+                [this.resId, signed, auth_signature], this.callKwargs
+            );
+            this.state.receipt = (result && result.receipt) || _t("Готово.");
+            this.state.phase = "done";
         } catch (e) {
             this.state.error = this._errMessage(e);
             if (this.state.caName && e && e.code === KEY_CA_MISMATCH) {
@@ -165,10 +244,19 @@ export class KepSignAction extends Component {
                     "ваш ключ, або «Визначати автоматично»."
                 ).replace("%s", this.state.caName);
             }
-            this.notification.add(this.state.error, { type: "danger" });
         } finally {
-            this.state.busy = false;
+            this.state.stage = null;
         }
+    }
+
+    async _readKey() {
+        this.state.stage = "read";
+        const key = await readKey(this.keyFileBuffer, this.state.password, this.state.caName || null);
+        this.state.password = "";
+        if (!this.state.caName) {
+            this._rememberDetectedCa(key.owner);
+        }
+        this.state.key = key;
     }
 
     /** ЦСК, знайдений перебором, — у вибір і на наступний раз. */
@@ -181,70 +269,27 @@ export class KepSignAction extends Component {
         }
     }
 
-    /** Крок 2 — підписати документи вже зчитаним ключем. */
-    async onSign() {
-        this.state.busy = true;
-        this.state.error = null;
-        try {
-            this._signedPayload = await this.signer.sign(this.state.prepared);
-            this.state.signed = true;
-            this.notification.add(_t("Підписано."), { type: "success" });
-        } catch (e) {
-            this.state.error = this._errMessage(e);
-            this.notification.add(this.state.error, { type: "danger" });
-        } finally {
-            this.state.busy = false;
+    /** Скасувати — повернутись до форми, з якої відкрили. */
+    async onCancel() {
+        if (this.inDialog) {
+            await this.action.doAction({ type: "ir.actions.act_window_close" });
+        } else {
+            await this._openRecord();
         }
     }
 
-    /** Крок 3 — відправити підписане (ДПС / банк / інша установа). */
-    async onSend() {
-        this.state.busy = true;
-        this.state.error = null;
-        try {
-            const { auth_signature, signed } = this._signedPayload;
-            const result = await this.orm.call(
-                this.model, "kep_submit_signed",
-                [this.resId, signed, auth_signature], this.callKwargs
-            );
-            this.state.receipt = (result && result.receipt) || _t("Успішно");
-            this.state.phase = "done";
-            this.notification.add(_t("Відправлено."), { type: "success" });
-        } catch (e) {
-            this.state.error = this._errMessage(e);
-            this.notification.add(this.state.error, { type: "danger" });
-        } finally {
-            this.state.busy = false;
-        }
-    }
-
-    /** Зчитати з об'єкта власника читабельні рядки для показу. */
-    _summarizeOwner(owner, certs) {
-        const o = owner || {};
-        const rows = [];
-        const push = (label, val) => {
-            if (val) rows.push({ label, value: String(val) });
-        };
-        push(_t("Власник"), o.subjCN || o.subjFullName || o.subject);
-        push(_t("Організація"), o.subjOrg);
-        push(_t("РНОКПП"), o.subjDRFOCode);
-        push(_t("ЄДРПОУ"), o.subjEDRPOUCode);
-        push(_t("Видавець"), o.issuerCN);
-        const cert = certs && certs[0];
-        const info = cert && (cert.infoEx || cert.info);
-        if (info) {
-            push(_t("Дійсний з"), info.certBeginTime);
-            push(_t("Дійсний до"), info.certEndTime);
-        }
-        if (!rows.length) {
-            rows.push({ label: _t("Ключ"), value: _t("зчитано") });
-        }
-        return rows;
-    }
-
+    /** Закрити після успіху: ``close_action`` споживача або назад до форми (перечитується). */
     async onClose() {
         const closeAction = this.state.prepared && this.state.prepared.close_action;
-        await this.action.doAction(closeAction || {
+        if (closeAction) {
+            await this.action.doAction(closeAction);
+        } else {
+            await this.onCancel();
+        }
+    }
+
+    _openRecord() {
+        return this.action.doAction({
             type: "ir.actions.act_window",
             res_model: this.model,
             res_id: this.resId,

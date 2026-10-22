@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_single_tax_declaration_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.single.tax.declaration.form</field>
+        <field name="model">l10n_ua.single.tax.declaration</field>
+        <field name="arch" type="xml">
+            <form string="Декларація ЄП юрособи">
+                <header>
+                    <button name="action_calculate" string="Розрахувати" type="object"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_calculate" string="Перерахувати" type="object"
+                            invisible="state != 'calculated'"/>
+                    <button name="action_generate_xml" string="Сформувати XML" type="object"
+                            invisible="state != 'calculated'"/>
+                    <button name="action_submit" string="Підписати і подати" type="object"
+                            class="btn-primary" invisible="state != 'calculated'"/>
+                    <button name="action_accept" string="Прийнято" type="object"
+                            invisible="state != 'submitted'"/>
+                    <button name="action_draft" string="В чернетку" type="object"
+                            invisible="state in ('draft', 'accepted')"/>
+                    <field name="state" widget="statusbar"
+                           statusbar_visible="draft,calculated,submitted,accepted"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <div class="alert alert-warning" role="alert" invisible="not line_2">
+                        Дохід перевищує граничний обсяг третьої групи: сума понад нього
+                        оподатковується подвійною ставкою (рядок 2), а з наступного кварталу
+                        компанія має перейти на загальну систему.
+                    </div>
+                    <div class="alert alert-info" role="alert"
+                         invisible="state not in ('submitted', 'accepted')">
+                        Декларацію подано до ДПС, її суми й реквізити не змінюються. Помилку
+                        виправляють уточнюючою декларацією.
+                    </div>
+                    <group>
+                        <group string="Основне">
+                            <field name="year" readonly="state != 'draft'"/>
+                            <field name="period" readonly="state != 'draft'"/>
+                            <field name="rate" readonly="state != 'draft'"/>
+                            <field name="company_id" readonly="state != 'draft'"
+                                   groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Дохід з початку року">
+                            <field name="income_accounting" readonly="1"/>
+                            <field name="income_vat" readonly="1" invisible="rate != '3'"/>
+                            <field name="income_other"
+                                   readonly="state in ('submitted', 'accepted')"/>
+                            <field name="income_total"/>
+                            <field name="income_limit"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Розрахунок" name="lines">
+                            <group>
+                                <group string="II. Дохід">
+                                    <field name="line_1"/>
+                                    <field name="line_2"/>
+                                    <field name="line_3" readonly="state in ('submitted', 'accepted')"/>
+                                    <field name="line_4" readonly="state in ('submitted', 'accepted')"/>
+                                    <field name="line_5"/>
+                                </group>
+                                <group string="III. Єдиний податок">
+                                    <field name="line_6"/>
+                                    <field name="line_7"/>
+                                    <field name="line_8"/>
+                                    <field name="line_9" readonly="state in ('submitted', 'accepted')"/>
+                                    <field name="line_10"/>
+                                    <field name="line_12"/>
+                                </group>
+                                <group string="V. Військовий збір">
+                                    <field name="line_19"/>
+                                    <field name="line_20" readonly="state in ('submitted', 'accepted')"/>
+                                    <field name="line_21"/>
+                                </group>
+                            </group>
+                        </page>
+                        <page string="Подання" name="submission">
+                            <group>
+                                <group string="Підписанти">
+                                    <field name="signatory_name" readonly="state in ('submitted', 'accepted')"/>
+                                    <field name="signatory_rnokpp" readonly="state in ('submitted', 'accepted')"/>
+                                    <field name="accountant_name" readonly="state in ('submitted', 'accepted')"/>
+                                    <field name="accountant_rnokpp" readonly="state in ('submitted', 'accepted')"/>
+                                </group>
+                                <group string="ДПС">
+                                    <field name="xml_file" filename="xml_filename" readonly="1"/>
+                                    <field name="xml_filename" invisible="1"/>
+                                    <field name="submission_date" readonly="1"/>
+                                    <field name="dps_submission_id" invisible="not dps_submission_id"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_single_tax_declaration_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.single.tax.declaration.list</field>
+        <field name="model">l10n_ua.single.tax.declaration</field>
+        <field name="arch" type="xml">
+            <list string="Декларації ЄП юросіб">
+                <field name="name"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="currency_id" column_invisible="1"/>
+                <field name="line_5" sum="1"/>
+                <field name="line_10"/>
+                <field name="line_21"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'accepted'"
+                       decoration-info="state == 'submitted'"
+                       decoration-warning="state == 'calculated'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_single_tax_declaration_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.single.tax.declaration.search</field>
+        <field name="model">l10n_ua.single.tax.declaration</field>
+        <field name="arch" type="xml">
+            <search string="Декларації ЄП юросіб">
+                <field name="name"/>
+                <field name="year"/>
+                <filter string="Чернетки" name="filter_draft" domain="[('state', 'in', ('draft', 'calculated'))]"/>
+                <filter string="Подані" name="filter_filed" domain="[('state', 'in', ('submitted', 'accepted'))]"/>
+                <separator/>
+                <group>
+                    <filter string="Рік" name="groupby_year" domain="[]" context="{'group_by': 'year'}"/>
+                    <filter string="Компанія" name="groupby_company" domain="[]" context="{'group_by': 'company_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_single_tax_declaration_action" model="ir.actions.act_window">
+        <field name="name">Single Tax Declarations (Legal Entities, Group 3)</field>
+        <field name="res_model">l10n_ua.single.tax.declaration</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Поруч із «Деклараціями ЄП ФОП (3 група)» (#453): юрособи подають J0103509. -->
+    <menuitem id="menu_l10n_ua_single_tax_declarations"
+              name="Single Tax Declarations (Legal Entities, Group 3)"
+              parent="l10n_ua_tax.menu_ua_tax_reporting"
+              action="l10n_ua_single_tax_declaration_action"
+              sequence="21"/>
+
+</odoo>

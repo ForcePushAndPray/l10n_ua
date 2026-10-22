@@ -16,7 +16,10 @@ import { _t } from "@web/core/l10n/translation";
  *
  * Публічне API:
  *   checkLibPresent()   → чи лежать файли (HEAD, без завантаження)
- *   createSigner()      → { readKey(key, pwd), sign(spec), reset() }
+ *   listCAs()           → ЦСК для вибору
+ *   readKey(key, pwd, caName) / getKeySession() / forgetKey()
+ *                       → один зчитаний ключ на вкладку, спільний для модулів
+ *   signWithKey(spec)   → підписи для kep_submit_signed
  */
 
 export const EUSCP_BASE = "/l10n_ua_sign/static/src/lib/euscp";
@@ -155,6 +158,85 @@ function b64ToBytes(b64) {
     return bytes;
 }
 
+function bytesToB64(bytes) {
+    let bin = "";
+    for (let i = 0; i < bytes.length; i += 0x8000) {
+        bin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+    }
+    return btoa(bin);
+}
+
+function asciiBytes(text) {
+    return Uint8Array.from(text, (ch) => ch.charCodeAt(0) & 0xff);
+}
+
+function concatBytes(parts) {
+    const out = new Uint8Array(parts.reduce((n, p) => n + p.length, 0));
+    let offset = 0;
+    for (const part of parts) {
+        out.set(part, offset);
+        offset += part.length;
+    }
+    return out;
+}
+
+/** Блок транспортного формату ДПС: ASCII-тег, нуль-байт, довжина (4 байти LE), дані. */
+export function dpsBlock(tag, payload) {
+    const head = new Uint8Array(tag.length + 5);
+    head.set(asciiBytes(tag), 0);
+    new DataView(head.buffer).setUint32(tag.length + 1, payload.length, true);
+    return concatBytes([head, payload]);
+}
+
+// EndUserKeyUsage.KeyAgreement у бібліотеці IIT.
+const KEY_USAGE_KEY_AGREEMENT = 16;
+
+/** Сертифікат шифрування (узгодження ключів) зчитаного ключа. */
+async function ownKeyAgreementCert(eu) {
+    const certs = await eu.GetOwnCertificates();
+    const cert = (certs || []).find(
+        (c) => ((c.infoEx || c.info || {}).keyUsageType & KEY_USAGE_KEY_AGREEMENT) !== 0);
+    if (!cert) {
+        throw new Error(_t(
+            "У ключі немає сертифіката шифрування — ДПС не зможе розшифрувати звіт. " +
+            "Потрібен ключ з двома сертифікатами (підпис і шифрування): зверніться до свого ЦСК."
+        ));
+    }
+    return cert.data;
+}
+
+/**
+ * Транспортний контейнер ДПС для подання звітності (наказ ДПА № 499 від 12.07.2010,
+ * вимога API Електронного кабінету до contentBase64):
+ *
+ *   TRANSPORTABLE\0 len заголовок (FILENAME, EDRPOU…)
+ *   CERTCRYPT\0     len сертифікат шифрування відправника
+ *   UA1_CRYPT\0     len конверт на сертифікат ДПС від [UA1_SIGN\0 len CAdES(XML)]
+ *
+ * Голий конверт без цих блоків ДПС не розбирає — відповідь ERROR_DECRYPT.
+ */
+async function buildDpsTransport(eu, doc, xmlBytes) {
+    if (!doc.recipient_cert_b64) {
+        throw new Error(_t("Немає сертифіката шифрування ДПС — подання неможливе."));
+    }
+    const signed = await eu.SignDataInternal(true, xmlBytes, false);
+    const signBlock = dpsBlock("UA1_SIGN", signed);
+    const envelope = await eu.EnvelopData(
+        [b64ToBytes(doc.recipient_cert_b64)], signBlock, false, false, false);
+    const header = asciiBytes(
+        "PRG_TYPE=Odoo l10n_ua\r\n" +
+        "PRG_VER=19.0\r\n" +
+        `FILENAME=${doc.filename}\r\n` +
+        `EDRPOU=${doc.taxpayer_code || ""}\r\n` +
+        "STTYPE=1\r\n"
+    );
+    return concatBytes([
+        dpsBlock("TRANSPORTABLE", header),
+        dpsBlock("CERTCRYPT", await ownKeyAgreementCert(eu)),
+        dpsBlock("UA1_CRYPT", envelope),
+    ]);
+}
+
 /**
  * Підписати один документ у потрібному форматі.
  * Сигнатури — з euscp.d.ts пакета @it-enterprise/digital-signature:
@@ -179,6 +261,9 @@ async function signOneDocument(eu, doc) {
             [b64ToBytes(doc.recipient_cert_b64)], signedBytes, false, true, true
         );
     }
+    if (fmt === "dps_transport") {
+        return bytesToB64(await buildDpsTransport(eu, doc, bytes));
+    }
     if (fmt === "asic") {
         if (typeof eu.ASiCSignData === "function") {
             return await eu.ASiCSignData(bytes, true);
@@ -189,78 +274,99 @@ async function signOneDocument(eu, doc) {
 }
 
 /**
- * Стейтфул-підписувач: тримає зчитаний приватний ключ між кроками
- * (зчитати → підписати → відправити). Ключ і пароль не покидають браузер.
+ * Зчитаний ключ — один на вкладку, спільний для всіх модулів.
  *
- * Використання:
- *   const signer = createSigner();
- *   const { owner, certs } = await signer.readKey(keyBuffer, password);
- *   const { auth_signature, signed } = await signer.sign(spec);
- *   await signer.reset();   // при закритті діалогу
+ * Бібліотека тримає приватний ключ у своєму worker-і, доки не викликати
+ * ResetPrivateKey. Тож після перевірки з'єднання синхронізація чи підпис
+ * накладної в іншому модулі не просять пароль знову. Ключ забувається через
+ * KEY_TTL_MS після останнього використання, кнопкою «Інший ключ» або з
+ * закриттям вкладки — на сервер він не потрапляє ніколи.
  */
-export function createSigner() {
-    let eu = null;
-    return {
-        get ready() {
-            return !!eu;
-        },
-        /**
-         * Крок 1 — зчитати ключ і повернути дані власника (для підтвердження).
-         * @param {string|null} caName ЦСК із listCAs(); null — бібліотека
-         *     перебирає всі ЦСК (довго). Якщо ключ виданий іншим ЦСК —
-         *     помилка з кодом KEY_CA_MISMATCH.
-         * @returns {{owner: Object, certs: Array}}
-         */
-        async readKey(keyBuffer, password, caName = null) {
-            if (!keyBuffer) {
-                throw new Error(_t("Виберіть файл-ключ (.dat/.jks/.pfx)."));
-            }
-            if (!password) {
-                throw new Error(_t("Введіть пароль до ключа."));
-            }
-            const lib = await getEndUser();
-            eu = null;
-            const owner = await lib.ReadPrivateKeyBinary(keyBuffer, password, null, caName || null);
-            eu = lib;
-            let certs = [];
-            try {
-                certs = await lib.GetOwnCertificates();
-            } catch {
-                certs = [];
-            }
-            return { owner, certs };
-        },
-        /**
-         * Крок 2 — підписати документи вже зчитаним ключем.
-         * @param {{auth_subject?: string, documents: Array}} spec
-         * @returns {{auth_signature: (string|null), signed: Object}}
-         */
-        async sign(spec) {
-            if (!eu) {
-                throw new Error(_t("Спершу зчитайте ключ."));
-            }
-            let authSignature = null;
-            if (spec.auth_subject) {
-                authSignature = await eu.SignDataInternal(true, spec.auth_subject, true);
-            }
-            const signed = {};
-            for (const doc of spec.documents || []) {
-                signed[doc.name] = await signOneDocument(eu, doc);
-            }
-            return { auth_signature: authSignature, signed };
-        },
-        /** Вивантажити ключ із бібліотеки (закриття діалогу). */
-        async reset() {
-            if (!eu) {
-                return;
-            }
-            const lib = eu;
-            eu = null;
-            try {
-                await lib.ResetPrivateKey();
-            } catch {
-                // ключ уже вивантажено — нічого робити
-            }
-        },
-    };
+export const KEY_TTL_MS = 20 * 60 * 1000;
+
+const keySession = {
+    eu: null,
+    owner: null,
+    certs: [],
+    expiresAt: 0,
+    timer: null,
+};
+
+function touchKeySession() {
+    clearTimeout(keySession.timer);
+    keySession.expiresAt = Date.now() + KEY_TTL_MS;
+    keySession.timer = setTimeout(() => forgetKey(), KEY_TTL_MS);
+}
+
+/** Зчитаний ключ: ``{owner, certs, expiresAt}`` або null. */
+export function getKeySession() {
+    if (!keySession.eu || Date.now() >= keySession.expiresAt) {
+        return null;
+    }
+    const { owner, certs, expiresAt } = keySession;
+    return { owner, certs, expiresAt };
+}
+
+/** Вивантажити ключ із бібліотеки. */
+export async function forgetKey() {
+    clearTimeout(keySession.timer);
+    const lib = keySession.eu;
+    Object.assign(keySession, { eu: null, owner: null, certs: [], expiresAt: 0, timer: null });
+    if (lib) {
+        try {
+            await lib.ResetPrivateKey();
+        } catch {
+            // ключ уже вивантажено — нічого робити
+        }
+    }
+}
+
+/**
+ * Зчитати ключ і зробити його ключем вкладки.
+ * @param {string|null} caName ЦСК із listCAs(); null — бібліотека
+ *     перебирає всі ЦСК (довго). Якщо ключ виданий іншим ЦСК —
+ *     помилка з кодом KEY_CA_MISMATCH.
+ * @returns {{owner: Object, certs: Array, expiresAt: number}}
+ */
+export async function readKey(keyBuffer, password, caName = null) {
+    if (!keyBuffer) {
+        throw new Error(_t("Виберіть файл-ключ (.dat/.jks/.pfx)."));
+    }
+    if (!password) {
+        throw new Error(_t("Введіть пароль до ключа."));
+    }
+    const lib = await getEndUser();
+    await forgetKey();
+    const owner = await lib.ReadPrivateKeyBinary(keyBuffer, password, null, caName || null);
+    let certs = [];
+    try {
+        certs = await lib.GetOwnCertificates();
+    } catch {
+        certs = [];
+    }
+    Object.assign(keySession, { eu: lib, owner, certs });
+    touchKeySession();
+    return getKeySession();
+}
+
+/**
+ * Підписати зчитаним ключем вкладки.
+ * @param {{auth_subject?: string, documents: Array}} spec
+ * @returns {{auth_signature: (string|null), signed: Object}}
+ */
+export async function signWithKey(spec) {
+    if (!getKeySession()) {
+        throw new Error(_t("Спершу зчитайте ключ."));
+    }
+    const eu = keySession.eu;
+    touchKeySession();
+    let authSignature = null;
+    if (spec.auth_subject) {
+        authSignature = await eu.SignDataInternal(true, spec.auth_subject, true);
+    }
+    const signed = {};
+    for (const doc of spec.documents || []) {
+        signed[doc.name] = await signOneDocument(eu, doc);
+    }
+    return { auth_signature: authSignature, signed };
 }
