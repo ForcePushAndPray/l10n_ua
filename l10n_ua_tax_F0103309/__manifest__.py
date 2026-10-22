@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Single Tax Declaration (F0103309)',
-    'version': '19.0.1.0.1',
+    'version': '19.0.1.0.2',
     'category': 'Accounting/Localization',
     'summary': 'Single Tax Declaration form F0103309 for FOP',
     'description': """

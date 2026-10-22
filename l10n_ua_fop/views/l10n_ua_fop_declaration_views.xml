@@ -38,6 +38,11 @@
                          invisible="not income_limit_exceeded">
                         <strong>Увага!</strong> Дохід перевищує ліміт для обраної групи ЄП.
                     </div>
+                    <div class="alert alert-warning" role="alert"
+                         invisible="period == 'year' or not fop_group_id or fop_group_id.code not in ('1', '2')">
+                        ФОП 1–2 груп подають декларацію лише за рік (форма F0103407). За квартал
+                        її не сформувати й не подати — створіть декларацію з періодом «Рік».
+                    </div>
                     <div class="alert alert-info" role="alert" invisible="state != 'submitted'">
                         Декларацію подано до ДПС, її не можна змінювати. Щоб дізнатися, чи її
                         зареєстровано, натисніть «Перевірити в ДПС».
