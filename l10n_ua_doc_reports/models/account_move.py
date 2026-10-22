@@ -117,11 +117,19 @@ class AccountMove(models.Model):
         return text
 
     def _get_ua_line_price_unit_excl(self, line):
-        """Unit price without VAT (before discount), also for taxes included in price."""
+        """Unit price without VAT (before discount), also for taxes included in price.
+
+        `compute_all` rounds the base to the currency, so a price kept with
+        the 'Product Price' precision (3-4 decimals) would come out cut to
+        kopecks (#365). The price is taken for a quantity scaling that
+        rounding down to the price precision and divided back.
+        """
         if not line.tax_ids:
             return line.price_unit
+        digits = self.env['decimal.precision'].precision_get('Product Price')
+        scale = 10 ** max(digits - line.currency_id.decimal_places, 0)
         taxes = line.tax_ids.compute_all(
-            line.price_unit, currency=line.currency_id, quantity=1.0,
+            line.price_unit, currency=line.currency_id, quantity=scale,
             product=line.product_id, partner=line.partner_id,
         )
-        return taxes['total_excluded']
+        return taxes['total_excluded'] / scale

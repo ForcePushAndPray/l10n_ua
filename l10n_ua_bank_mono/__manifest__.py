@@ -12,7 +12,6 @@ monobank API integration providing:
 * monobank API connection
 * Automatic bank statement import for FOP (personal API)
 * Corporate API for legal entities
-* Webhook support for real-time updates
 * Multiple accounts support
 
 Extends l10n_ua_bank_sync with monobank-specific functionality.
