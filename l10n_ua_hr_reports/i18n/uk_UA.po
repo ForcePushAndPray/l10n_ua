@@ -1665,8 +1665,7 @@ msgstr ""
 
 #. module: l10n_ua_hr_reports
 #: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__explanation_headcount
-msgid ""
-"Required by the form when the average headcount changed by 25% or more."
+msgid "Required by the form when the average headcount changed by 25% or more."
 msgstr ""
 "Форма вимагає пояснення, якщо середньооблікова кількість змінилася на 25% і "
 "більше."
@@ -1732,7 +1731,8 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
 msgid ""
 "The average headcount changed by 25% or more, or the average wage by 10%\n"
-"                        or more, against the previous month: the form requires the reason on the\n"
+"                        or more, against the previous month: the form "
+"requires the reason on the\n"
 "                        Explanations tab."
 msgstr ""
 "Середньооблікова кількість змінилася на 25% і більше або середня заробітна "
@@ -1743,7 +1743,8 @@ msgstr ""
 #: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_report_labor
 msgid ""
 "The monthly and quarterly «Звіт із праці» of the State Statistics\n"
-"                Service (order № 117 of 15.04.2024): headcount, hours worked and\n"
+"                Service (order № 117 of 15.04.2024): headcount, hours worked "
+"and\n"
 "                the wage fund computed from payslips and contracts."
 msgstr ""
 "Місячний і квартальний «Звіт із праці» Держстату (наказ № 117 від "
@@ -1779,8 +1780,8 @@ msgstr "Значення"
 #: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_accrual_type__l10n_ua_1pv_group
 msgid ""
 "Where this accrual is reported in Section III of the 1-PV labour report. "
-"Left empty, the standard types are filed by their code and any other type by"
-" its category."
+"Left empty, the standard types are filed by their code and any other type by "
+"its category."
 msgstr ""
 "Куди це нарахування потрапляє в розділі III звіту із праці 1-ПВ. Якщо не "
 "заповнено, стандартні типи розподіляються за кодом, інші — за категорією."
@@ -1791,6 +1792,557 @@ msgstr ""
 msgid "xlsxwriter is not installed. Run: pip install xlsxwriter"
 msgstr ""
 "Бібліотеку xlsxwriter не встановлено. Виконайте: pip install xlsxwriter"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__citizenship__0
+msgid "0 - Foreigner or stateless person"
+msgstr "0 - Іноземець або особа без громадянства"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__citizenship__1
+msgid "1 - Citizen of Ukraine"
+msgstr "1 - Громадянин України"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__person_category__1
+msgid "1 - Employee (main place of work)"
+msgstr "1 - Найманий працівник (основне місце роботи)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__person_category__2
+msgid "2 - Employee (concurrent employment)"
+msgstr "2 - Працівник за сумісництвом"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__person_category__3
+msgid "3 - Gig specialist (Diia.City gig contract)"
+msgstr "3 - Гіг-спеціаліст (гіг-контракт Дія Сіті)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__person_category__4
+msgid "4 - Civil law contract"
+msgstr "4 - Особа за цивільно-правовим договором"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__person_category__5
+msgid "5 - Domestic worker"
+msgstr "5 - Домашній працівник"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "A hire notice is created from a hiring order with an employee."
+msgstr ""
+"Повідомлення про прийняття створюється з наказу про прийняття, у якому "
+"вказано працівника."
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "A sent notice cannot be regenerated."
+msgstr "Подане повідомлення не можна сформувати повторно."
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid ""
+"A sent notice cannot be reset to draft; file a cancelling notice instead."
+msgstr ""
+"Подане повідомлення не можна повернути в чернетку — подайте скасовуюче "
+"повідомлення."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__state__accepted
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
+msgid "Accepted"
+msgstr "Прийнято"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__notice_type__cancel
+msgid "Cancelling"
+msgstr "Скасовуюче"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "Cancelling hire notice"
+msgstr "Скасовуюче повідомлення про прийняття"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__citizenship
+msgid "Citizenship"
+msgstr "Громадянство"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__date_start
+msgid "Column 12. The notice must be filed before this date."
+msgstr "Графа 12. Повідомлення подається до цієї дати."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__date_formed
+msgid "Column 13: date the notice was formed."
+msgstr "Графа 13: дата формування повідомлення."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__person_category
+msgid ""
+"Column 5 of the form (CMU Resolution No. 413 as amended by No. 184 of "
+"21.02.2025)."
+msgstr ""
+"Графа 5 форми (постанова КМУ № 413 у ред. постанови № 184 від 21.02.2025)."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__version_id
+msgid "Contract"
+msgstr "Договір"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__version_id
+msgid "Contract version the notice reports (start date, contract type)."
+msgstr "Версія договору, про яку повідомляється (дата початку, тип договору)."
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
+msgid "Create Cancelling Notice"
+msgstr "Створити скасовуюче повідомлення"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_hire_notice
+msgid "Create a hire notice"
+msgstr "Створіть повідомлення про прийняття на роботу"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__order_date
+msgid ""
+"Date of the hiring order, or of the gig / civil law contract (column 11)."
+msgstr ""
+"Дата наказу про прийняття або укладення гіг-контракту / цивільно-правового "
+"договору (графа 11)."
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
+msgid "Dates"
+msgstr "Дати"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__doc_cnt
+msgid "Document No. in Period"
+msgstr "№ документа в періоді"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
+msgid "Download XML"
+msgstr "Завантажити XML"
+
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid ""
+"File the hire notice for %(employee)s before work starts on %(date)s (CMU "
+"Resolution No. 413, Labour Code art. 24)."
+msgstr ""
+"Подайте повідомлення про прийняття %(employee)s до початку роботи %(date)s "
+"(постанова КМУ № 413, ст. 24 КЗпП)."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__date_formed
+msgid "Formed On"
+msgstr "Дата формування"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__person_name
+msgid "Full Name"
+msgstr "ПІБ"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
+msgid "Generate XML"
+msgstr "Сформувати XML"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "Generate the notice XML before sending."
+msgstr "Сформуйте XML повідомлення перед поданням."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model,name:l10n_ua_hr_reports.model_hr_order
+msgid "HR Order"
+msgstr "Кадровий наказ"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.actions.server,name:l10n_ua_hr_reports.ir_cron_check_hire_notice_deadlines_ir_actions_server
+msgid "HR UA: Контроль строків повідомлень ДПС про прийняття на роботу"
+msgstr "HR UA: Контроль строків повідомлень ДПС про прийняття на роботу"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
+msgid "Hire Notice"
+msgstr "Повідомлення про прийняття"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.view_hr_order_form_hire_notice
+msgid "Hire Notice (Tax)"
+msgstr "Повідомлення ДПС"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_order__hire_notice_count
+msgid "Hire Notice Count"
+msgstr "Кількість повідомлень про прийняття"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_order__hire_notice_missing
+msgid "Hire Notice Missing"
+msgstr "Немає повідомлення про прийняття"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model,name:l10n_ua_hr_reports.model_hr_hire_notice
+msgid "Hire Notice to the Tax Authority"
+msgstr "Повідомлення ДПС про прийняття працівника"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_order__hire_notice_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.view_hr_order_form_hire_notice
+msgid "Hire Notices"
+msgstr "Повідомлення про прийняття"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.actions.act_window,name:l10n_ua_hr_reports.action_hr_hire_notice
+#: model:ir.ui.menu,name:l10n_ua_hr_reports.menu_hr_hire_notice
+msgid "Hire Notices (Tax Authority)"
+msgstr "Повідомлення ДПС про прийняття"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "Hire notice"
+msgstr "Повідомлення про прийняття"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "Hire notice XML generated: %s"
+msgstr "Сформовано XML повідомлення про прийняття: %s"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "Hire notice to the tax authority"
+msgstr "Повідомлення ДПС про прийняття на роботу"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__order_id
+msgid "Hiring Order"
+msgstr "Наказ про прийняття"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_order__hire_notice_missing
+msgid "Hiring order without a sent notice to the tax authority."
+msgstr "Наказ про прийняття без поданого повідомлення до ДПС."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__notice_type__initial
+msgid "Initial"
+msgstr "Початкове"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__is_mandatory
+msgid "Mandatory"
+msgstr "Обов'язкове"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
+msgid "Mark as Sent"
+msgstr "Позначити поданим"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.view_hr_order_form_hire_notice
+msgid ""
+"No hire notice has been sent to the tax authority for this order. It must "
+"be\n"
+"                    filed before work starts (CMU Resolution No. 413)."
+msgstr ""
+"За цим наказом повідомлення до ДПС про прийняття не подано. Його подають\n"
+"                    до початку роботи (постанова КМУ № 413)."
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_search
+msgid "Not Sent"
+msgstr "Не подані"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__order_number
+msgid "Not filled for gig and civil law contracts (column 10)."
+msgstr ""
+"Не заповнюється для гіг-контрактів і цивільно-правових договорів (графа 10)."
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
+msgid "Notice"
+msgstr "Повідомлення"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__notice_type
+msgid "Notice Type"
+msgstr "Тип повідомлення"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_hire_notice
+msgid ""
+"Notice to the tax authority about hiring an employee or concluding a gig "
+"contract\n"
+"               (CMU Resolution No. 413). It is filed before work starts."
+msgstr ""
+"Повідомлення ДПС про прийняття працівника на роботу або укладення гіг-"
+"контракту\n"
+"               (постанова КМУ № 413). Подається до початку роботи."
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "Only a draft or generated notice can be marked as sent."
+msgstr "Позначити поданим можна лише чернетку або сформоване повідомлення."
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "Only a sent notice can be accepted."
+msgstr "Прийнятим можна позначити лише подане повідомлення."
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "Only a sent notice can be cancelled."
+msgstr "Скасувати можна лише подане повідомлення."
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "Only a sent notice can be rejected."
+msgstr "Відхиленим можна позначити лише подане повідомлення."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__order_date
+msgid "Order / Contract Date"
+msgstr "Дата наказу / договору"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__order_number
+msgid "Order Number"
+msgstr "Номер наказу"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__is_overdue
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_search
+msgid "Overdue"
+msgstr "Прострочено"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
+msgid "Person"
+msgstr "Особа"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__person_category
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_search
+msgid "Person Category"
+msgstr "Категорія особи"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__person_tin
+msgid "RNOKPP / Passport"
+msgstr "РНОКПП / паспорт"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__receipt_number
+msgid "Receipt Number"
+msgstr "Номер квитанції"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
+msgid "Regenerate XML"
+msgstr "Сформувати XML повторно"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__state__rejected
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_search
+msgid "Rejected"
+msgstr "Відхилено"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "Send hire notice to the tax authority"
+msgstr "Подати повідомлення про прийняття до ДПС"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__state__sent
+msgid "Sent"
+msgstr "Подано"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "Sent to the tax authority. Receipt: %s"
+msgstr "Подано до ДПС. Квитанція: %s"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
+msgid "Sign and Send"
+msgstr "Підписати і подати"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__person_tin
+msgid ""
+"Taxpayer card number, or passport series and number for persons who refused "
+"the RNOKPP for religious reasons."
+msgstr ""
+"РНОКПП, або серія та номер паспорта для осіб, які через релігійні "
+"переконання відмовилися від РНОКПП."
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
+msgid ""
+"The Procedure (CMU Resolution No. 413) requires the notice for employment\n"
+"                        and gig contracts. Category 4 (civil law contract) "
+"is accepted by the form\n"
+"                        but is not subject to the deadline control."
+msgstr ""
+"Порядок (постанова КМУ № 413) вимагає повідомлення для трудових договорів і "
+"гіг-контрактів. Категорію 4 (цивільно-правовий договір) форма допускає, але "
+"строк для неї не контролюється."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__is_mandatory
+msgid ""
+"The Procedure requires this notice before work starts (employment and gig "
+"contracts)."
+msgstr ""
+"Порядок вимагає подати повідомлення до початку роботи (трудові договори та "
+"гіг-контракти)."
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid ""
+"The head of the company is not reported: the tax authority takes this data "
+"from the Unified State Register (CMU Resolution No. 413)."
+msgstr ""
+"Про прийняття керівника не повідомляють: ДПС отримує ці відомості з ЄДР "
+"(постанова КМУ № 413)."
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid ""
+"The hire notice for %(employee)s was not sent before work started on %"
+"(date)s (CMU Resolution No. 413)."
+msgstr ""
+"Повідомлення про прийняття %(employee)s не подано до початку роботи %(date)s "
+"(постанова КМУ № 413)."
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "To generate the hire notice fill in: %s."
+msgstr "Для формування повідомлення про прийняття заповніть: %s."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__unzr
+msgid "UNZR"
+msgstr "УНЗР"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__unzr
+msgid ""
+"Unique record number in the Unified State Demographic Register (if any)."
+msgstr ""
+"Унікальний номер запису в Єдиному державному демографічному реєстрі (за "
+"наявності)."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__date_start
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_search
+msgid "Work Start Date"
+msgstr "Дата початку роботи"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__is_overdue
+msgid "Work has started and the notice has not been sent."
+msgstr "Робота почалась, а повідомлення не подано."
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
+msgid ""
+"Work has started, but the notice has not been sent to the tax authority\n"
+"                        (CMU Resolution No. 413: the notice is filed before "
+"work starts)."
+msgstr ""
+"Робота почалась, а повідомлення до ДПС не подано (постанова КМУ № 413: "
+"повідомлення подається до початку роботи)."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__xml_file
+msgid "XML File"
+msgstr "XML-файл"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__xml_filename
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__xml_filename
+msgid "Xml Filename"
+msgstr "Ім'я XML-файлу"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "company EDRPOU"
+msgstr "код ЄДРПОУ компанії"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "company tax office code"
+msgstr "код ДПІ компанії"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "director (with RNOKPP) of the company"
+msgstr "керівника компанії (з РНОКПП)"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "employee RNOKPP or passport"
+msgstr "РНОКПП або паспорт працівника"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "employee full name"
+msgstr "ПІБ працівника"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "hiring order number"
+msgstr "номер наказу про прийняття"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "order / contract date"
+msgstr "дату наказу / договору"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "work start date"
+msgstr "дату початку роботи"
 
 #. module: l10n_ua_hr_reports
 #: model:ir.ui.menu,name:l10n_ua_hr_reports.menu_hr_report_1df_reporting
