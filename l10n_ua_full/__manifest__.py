@@ -77,6 +77,7 @@ PRRO (Cash Registers)
         'l10n_ua_tax_cabinet',
         'l10n_ua_tax_F0103309',
         'l10n_ua_fop',
+        'l10n_ua_single_tax_legal',
         'l10n_ua_doc_reports',
         # Banking
         'l10n_ua_bank_sync',

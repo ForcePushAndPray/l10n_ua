@@ -53,6 +53,9 @@ LOCKED_FIELDS = frozenset({
 UNLOCK_CTX = 'l10n_ua_fop_declaration_unlock'
 
 F0103309_CODE = 'F0103309'
+# Річна декларація ФОП 1–2 груп — та сама форма, лише за рік (#331).
+F0103407_CODE = 'F0103407'
+DECLARATION_CODES = (F0103309_CODE, F0103407_CODE)
 # Квитанція № 2 у вхідних кабінету: «Квитанцiя № 2[J1499202]» (i буває латинська).
 KVT2_RE = re.compile(r'квитанц[iі]я\s*№\s*2', re.IGNORECASE)
 KVT2_REJECTED_RE = re.compile(r'не\s+прийнят|вiдмов|відмов', re.IGNORECASE)
@@ -374,8 +377,11 @@ class L10nUaFopDeclaration(models.Model):
             if not rec.year or rec.year < FOP_MILITARY_FROM_YEAR:
                 rec.military_levy = 0.0
             elif group_code in FIXED_TAX_GROUPS:
+                # 10 % мінімальної зарплати, встановленої на 1 січня року, за кожен
+                # місяць (пп. 16¹.4 п. 16¹ підрозд. 10 розд. XX ПКУ; рядок 22 форми).
                 rec.military_levy = round(
-                    sum(month_wages) * FOP_MILITARY_MIN_WAGE_SHARE / 100, 2)
+                    month_wages[0] * FOP_MILITARY_MIN_WAGE_SHARE / 100 * months, 2
+                ) if month_wages else 0.0
             else:
                 rec.military_levy = round(
                     rec.total_income * FOP_MILITARY_RATE / 100, 2)
@@ -449,15 +455,18 @@ class L10nUaFopDeclaration(models.Model):
         """Відкрити КЕП-підпис і подання декларації ЄП до ДПС."""
         return self.action_kep_submit()
 
+    def _declaration_code(self):
+        """Електронна форма: F0103309 (3 група, квартал) чи F0103407 (1–2 групи, рік)."""
+        self.ensure_one()
+        return F0103407_CODE if self.fop_group_id.code in FIXED_TAX_GROUPS else F0103309_CODE
+
     def _check_f0103309_group(self):
-        """F0103309 — декларація 3 групи; для 1–2 груп подається інша, річна форма."""
+        """1–2 групи звітують раз на рік (п. 296.2 ПКУ) — формою F0103407."""
         for rec in self:
-            if rec.fop_group_id.code in FIXED_TAX_GROUPS:
+            if rec.fop_group_id.code in FIXED_TAX_GROUPS and rec.period != 'year':
                 raise UserError(_(
-                    'Форма F0103309 — декларація платника єдиного податку 3 групи. '
-                    'ФОП %s групи подають окрему річну декларацію, формування якої '
-                    'ще не підтримується: подайте її в Електронному кабінеті ДПС.'
-                ) % rec.fop_group_id.code)
+                    'ФОП %s групи подає декларацію лише за рік (F0103407). Створіть '
+                    'декларацію з періодом «Рік».') % rec.fop_group_id.code)
 
     # --- контракт l10n_ua.dps.submit.mixin ---
 
@@ -513,7 +522,7 @@ class L10nUaFopDeclaration(models.Model):
             # повторна синхронізація його пропускає, тож прив'язуємо тут.
             linked = self.search([('tax_document_id', '!=', False)]).tax_document_id
             for doc in TaxDocument.search([
-                ('document_type_id.code', '=', 'F0103309'),
+                ('document_type_id.code', 'in', DECLARATION_CODES),
                 ('company_id', '=', self.company_id.id),
                 ('file_xml', '!=', False),
                 ('id', 'not in', linked.ids),
@@ -628,7 +637,7 @@ class L10nUaFopDeclaration(models.Model):
         неприйняття). Повторний виклик нічого не дублює.
         """
         info = self._parse_kvt2(base64.b64decode(doc.file_xml))
-        if not info or info['doc_code'] != F0103309_CODE or not info['period']:
+        if not info or info['doc_code'] not in DECLARATION_CODES or not info['period']:
             return self.browse()
         declaration = self.search([
             ('year', '=', info['year']),
@@ -744,6 +753,8 @@ class L10nUaFopDeclaration(models.Model):
                 'Спершу розрахуйте декларацію (кнопка «Розрахувати»), '
                 'потім формуйте XML.'
             )
+        if self.fop_group_id.code in FIXED_TAX_GROUPS:
+            return self._generate_f0103407_xml()
 
         period_type, period_month, quarter_marker = PERIOD_F0103309.get(
             self.period, ('5', '12', 'H4KV'))
@@ -793,6 +804,44 @@ class L10nUaFopDeclaration(models.Model):
         self.xml_file = base64.b64encode(xml.encode('windows-1251'))
         return True
 
+    def _taxpayer_vals(self):
+        """Реквізити платника й ДПІ — спільні для F0103309 і F0103407."""
+        company = self.company_id
+        tax_office = company.l10n_ua_tax_office_id
+        if tax_office and 'uk_UA' in dict(self.env['res.lang'].get_installed()):
+            tax_office = tax_office.with_context(lang='uk_UA')
+        return {
+            'taxpayer_tin': company.vat or company.company_registry or '',
+            'taxpayer_name': company._l10n_ua_dps_name(),
+            'taxpayer_address': self.env['l10n_ua.tax.document.wizard']
+                ._format_company_address(company),
+            'taxpayer_email': company.email or '',
+            'taxpayer_phone': company.phone or '',
+            'declaration_type': '0',  # Звітна
+            'tax_office_code': tax_office.code if tax_office else '',
+            'tax_office_name': tax_office.name if tax_office else '',
+            'year': self.year,
+            'employee_count': 0,
+            'activities': [(link.kved_id.code, link.kved_id.name)
+                           for link in company.l10n_ua_kved_ids],
+        }
+
+    def _generate_f0103407_xml(self):
+        """Річна декларація 1–2 груп: щоквартальні авансові внески ЄП, дохід за рік,
+        військовий збір за кожен місяць."""
+        vals = dict(
+            self._taxpayer_vals(),
+            group=self.fop_group_id.code,
+            quarterly_tax=[self.monthly_tax_amount * 3] * 4,
+            income_total=self.total_income,
+            military_months=(range(1, 13) if self.military_levy else []),
+            military_amount=self.military_levy,
+        )
+        xml = self.env['l10n_ua.tax.document.wizard']._render_F0103407_xml(vals)
+        self.xml_filename = f"{vals['taxpayer_tin']}_{self.year}_12_F0103407.xml"
+        self.xml_file = base64.b64encode(xml.encode('windows-1251'))
+        return True
+
     def _previous_declaration(self):
         """Подана декларація того ж року й групи за попередній (коротший) період."""
         self.ensure_one()
@@ -829,6 +878,7 @@ class L10nUaFopDeclaration(models.Model):
             value = text(body, tag)
             return float(value) if value else 0.0
 
+        annual = (text(head, 'C_DOC') + text(head, 'C_DOC_SUB')) == 'F01034'
         period = F0103309_PERIOD_TYPES.get(text(head, 'PERIOD_TYPE'))
         if not period:
             period = next((p for tag, p in F0103309_BODY_MARKERS.items()
@@ -838,6 +888,23 @@ class L10nUaFopDeclaration(models.Model):
             filled = datetime.strptime(filled, '%d%m%Y').date() if filled else None
         except ValueError:
             filled = None
+        if annual:
+            # F0103407: розділ II (R02, R001) — перша група, III (R03, R003) — друга.
+            first = any(text(body, tag) for tag in ('R001G3', 'R02G1', 'R02G2', 'R02G3', 'R02G4'))
+            prefix = 'R02' if first else 'R03'
+            return {
+                'year': int(text(head, 'PERIOD_YEAR') or text(body, 'HZY') or 0),
+                'period': 'year',
+                'correction': text(body, 'HZU') == '1',
+                'group_code': '1' if first else '2',
+                'income': amount('R008G3') or amount('R001G3' if first else 'R003G3'),
+                'taxable_income': 0.0,
+                'single_tax': sum(amount('%sG%d' % (prefix, q)) for q in range(1, 5)),
+                'monthly_tax': amount('%sG1' % prefix) / 3,
+                'military_levy': amount('R022G3'),
+                'filled': filled,
+                'esv_annex': text(body, 'HD1') == '1' or bool(head.findall('LINKED_DOCS/DOC')),
+            }
         return {
             'year': int(text(head, 'PERIOD_YEAR') or text(body, 'HZY') or 0),
             'period': period,
@@ -876,7 +943,11 @@ class L10nUaFopDeclaration(models.Model):
         if data['correction']:
             # Уточнююча змінює вже подану; суми звітної не перезаписуємо.
             return self.browse()
-        group = self._group_for_rate(data['taxable_income'], data['single_tax'])
+        if data.get('group_code'):
+            group = self.env['l10n_ua.fop.group'].search(
+                [('code', '=', data['group_code'])], limit=1)
+        else:
+            group = self._group_for_rate(data['taxable_income'], data['single_tax'])
         if not group:
             return self.browse()
         company = doc.company_id or self.env.company
@@ -898,6 +969,8 @@ class L10nUaFopDeclaration(models.Model):
             if declaration.state in ('draft', 'calculated'):
                 # Подане — первинне: суми беремо з декларації, прийнятої ДПС.
                 vals['total_income'] = data['income']
+                if data.get('monthly_tax'):
+                    vals['monthly_tax_amount'] = data['monthly_tax']
             if not declaration.xml_file:
                 vals.update(xml_file=doc.file_xml, xml_filename=doc.file_xml_name)
             declaration.with_context(**{UNLOCK_CTX: True}).write(vals)
@@ -910,6 +983,7 @@ class L10nUaFopDeclaration(models.Model):
                 'fop_group_id': group.id,
                 'company_id': company.id,
                 'total_income': data['income'],
+                'monthly_tax_amount': data.get('monthly_tax') or 0.0,
                 'xml_file': doc.file_xml,
                 'xml_filename': doc.file_xml_name,
                 **accepted,

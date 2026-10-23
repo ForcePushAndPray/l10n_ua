@@ -9,10 +9,10 @@
                 <header>
                     <button name="action_generate_xml" string="Сформувати XML"
                             type="object" class="btn-secondary"
-                            invisible="state in ('submitted', 'answered') or request_type != 'j1300205'"/>
+                            invisible="state in ('submitted', 'answered') or request_type != 'j1300208'"/>
                     <button name="action_submit" string="Підписати і подати"
                             type="object" class="btn-primary"
-                            invisible="state in ('submitted', 'answered') or request_type != 'j1300205'"/>
+                            invisible="state in ('submitted', 'answered') or request_type != 'j1300208'"/>
                     <button name="action_draft" string="Повернути в чернетку"
                             type="object" invisible="state == 'draft' or tax_document_id"/>
                     <field name="state" widget="statusbar"
@@ -36,11 +36,15 @@
                             <field name="request_type" readonly="tax_document_id or response_document_id"/>
                             <field name="request_date"/>
                             <label for="period_from" string="Період"
-                                   invisible="not period_from"/>
-                            <div class="o_row" invisible="not period_from">
-                                <field name="period_from" readonly="1"/> —
-                                <field name="period_to" readonly="1"/>
+                                   invisible="not period_from and request_type != 'j1300208'"/>
+                            <div class="o_row" invisible="not period_from and request_type != 'j1300208'">
+                                <field name="period_from"
+                                       readonly="request_type != 'j1300208' or state != 'draft'"/> —
+                                <field name="period_to"
+                                       readonly="request_type != 'j1300208' or state != 'draft'"/>
                             </div>
+                            <field name="extract_option" invisible="request_type != 'j1300208'"
+                                   readonly="state != 'draft'" placeholder="Електронний з печаткою ДПС, без пені"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
                         <group>

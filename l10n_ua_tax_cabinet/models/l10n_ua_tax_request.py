@@ -1,9 +1,11 @@
 """Інформаційні запити до ДПС (через кабінет, з КЕП-підписом).
 
-Формування й подання з Odoo: J1300205 «Запит про отримання витягу щодо стану
-розрахунків з бюджетами та фондами». Модель наслідує l10n_ua.dps.submit.mixin,
-тож підпис і подання — той самий універсальний потік, що й для декларацій/накладних.
-Структуру XML звірено з офіційним XSD ДПС (tests/schemas/J1300205.xsd).
+Формування й подання з Odoo: J1300208 «Запит щодо отримання витягу з ІКС ДПС
+про стан розрахунків платника» (додаток 1 до Порядку, наказ Мінфіну від
+20.08.2025 № 416, чинний з 14.01.2026; до нього — J1300205). Модель наслідує
+l10n_ua.dps.submit.mixin, тож підпис і подання — той самий універсальний потік,
+що й для декларацій/накладних. Структуру XML звірено з офіційним XSD ДПС
+(tests/schemas/J1300208.xsd, СКЗ 1.34.9.0).
 
 Імпорт з Електронного кабінету: запит F1319104 «Відомості з ДРФО про доходи» і
 відповідь на нього F1419104 — запит з'являється в «Запитах до ДПС», відповідь
@@ -22,11 +24,20 @@ from odoo.exceptions import UserError
 
 # Реквізити форми запиту (fixed-значення з XSD ДПС).
 REQUEST_FORMS = {
-    'j1300205': {
-        'c_doc': 'J13', 'c_doc_sub': '002', 'c_doc_ver': '5',
+    'j1300208': {
+        'c_doc': 'J13', 'c_doc_sub': '002', 'c_doc_ver': '8',
         'label': 'Стан розрахунків з бюджетом (витяг)',
     },
 }
+# Вид витягу: позначки M01–M05 бланка запиту в порядку їх розміщення.
+# Без позначки — електронний витяг з кваліфікованою печаткою ДПС без пені.
+EXTRACT_OPTIONS = [
+    ('m01', 'Електронний з КЕП керівника ДПС — узагальнюючі показники'),
+    ('m02', 'Електронний з КЕП керівника ДПС — у розрізі платежів'),
+    ('m03', 'Паперовий — узагальнюючі показники'),
+    ('m04', 'Паперовий — у розрізі платежів'),
+    ('m05', 'Електронний з печаткою ДПС — з розрахунком пені'),
+]
 SOFTWARE = 'Odoo l10n_ua'
 
 # Запити, які подаються в кабінеті й лише імпортуються: код форми запиту → тип,
@@ -46,9 +57,10 @@ class L10nUaTaxRequest(models.Model):
 
     name = fields.Char(compute='_compute_name', store=True)
     request_type = fields.Selection(
-        selection=[('j1300205', 'Стан розрахунків з бюджетом (J1300205)'),
+        selection=[('j1300208', 'Стан розрахунків з бюджетом (J1300208)'),
+                   ('j1300205', 'Стан розрахунків з бюджетом (J1300205, до 2026)'),
                    ('f1319104', 'Відомості з ДРФО про доходи (F1319104)')],
-        string='Тип запиту', required=True, default='j1300205', tracking=True)
+        string='Тип запиту', required=True, default='j1300208', tracking=True)
     company_id = fields.Many2one(
         'res.company', string='Компанія', required=True,
         default=lambda self: self.env.company)
@@ -65,6 +77,11 @@ class L10nUaTaxRequest(models.Model):
     response_receipt = fields.Text(string='Квитанція', readonly=True, copy=False)
     period_from = fields.Date(string='Період з', copy=False)
     period_to = fields.Date(string='Період по', copy=False)
+    extract_option = fields.Selection(
+        EXTRACT_OPTIONS, string='Вид витягу',
+        help='Порожньо — електронний витяг з кваліфікованою печаткою ДПС, без '
+             'розрахунку пені. Пеня розраховується на дату формування запиту, '
+             'якщо є податковий борг (крім ЄСВ).')
     tax_document_id = fields.Many2one(
         'l10n_ua.tax.document', string='Поданий запит', copy=False,
         index='btree_not_null', ondelete='set null')
@@ -125,6 +142,19 @@ class L10nUaTaxRequest(models.Model):
             raise UserError(_(
                 'Для формування запиту заповніть: %s.') % ', '.join(missing))
         d = self.request_date or date.today()
+        # Один запит — один рік: з першого дня місяця «з» до дати «по».
+        start = self.period_from or date(d.year, 1, 1)
+        end = self.period_to or d
+        if end < start or end.year != start.year:
+            raise UserError(_(
+                'Період запиту має лежати в межах одного року і закінчуватися не '
+                'раніше, ніж починається.'))
+        office_name = company.l10n_ua_tax_office_id.name or self.env[
+            'l10n_ua.tax.office'].search([('code', '=', office)], limit=1).name
+        if not office_name:
+            raise UserError(_(
+                'Для формування запиту вкажіть податковий орган компанії '
+                '(назва ДПС за основним місцем обліку).'))
         form = REQUEST_FORMS[self.request_type]
         return {
             'c_doc': form['c_doc'], 'c_doc_sub': form['c_doc_sub'],
@@ -138,14 +168,20 @@ class L10nUaTaxRequest(models.Model):
             'c_sti_orig': office,
             'd_fill': d.strftime('%d%m%Y'),
             'hname': company._l10n_ua_dps_name(),
+            'hsti': office_name,
+            'month_from': start.month,
+            'year_from': start.year,
+            'date_to': end.strftime('%d%m%Y'),
+            'option': self.extract_option and self.extract_option.upper(),
         }
 
     @api.model
     def _render_request_xml(self, vals):
-        """Стейтлес-рендер XML запиту (J1300205 v5), валідний за XSD ДПС.
+        """Стейтлес-рендер XML запиту (J1300208 v8), валідний за XSD ДПС.
 
-        Кодування windows-1251. Порядок елементів звірено з J1300205.xsd
-        (DHead: fixed J13/002/5, D_FILL/SOFTWARE; DBody: HFILL, HNAME, HTIN).
+        Кодування windows-1251. Порядок елементів звірено з J1300208.xsd
+        (DHead: fixed J13/002/8, D_FILL/SOFTWARE; DBody: HSTI, HMONTH1,
+        HYEAR1, HDATE1, HNAME, HTIN, одна з позначок M01–M05).
         """
         def esc(v):
             return escape(str(v or ''))
@@ -173,9 +209,14 @@ class L10nUaTaxRequest(models.Model):
             '        <SOFTWARE>%s</SOFTWARE>' % SOFTWARE,
             '    </DECLARHEAD>',
             '    <DECLARBODY>',
-            '        <HFILL>%s</HFILL>' % vals['d_fill'],
+            '        <HSTI>%s</HSTI>' % esc(vals['hsti']),
+            '        <HMONTH1>%s</HMONTH1>' % vals['month_from'],
+            '        <HYEAR1>%s</HYEAR1>' % vals['year_from'],
+            '        <HDATE1>%s</HDATE1>' % vals['date_to'],
             '        <HNAME>%s</HNAME>' % esc(vals['hname']),
             '        <HTIN>%s</HTIN>' % esc(vals['tin']),
+        ] + (['        <%s>1</%s>' % (vals['option'], vals['option'])]
+             if vals.get('option') else []) + [
             '    </DECLARBODY>',
             '</DECLAR>',
         ])
