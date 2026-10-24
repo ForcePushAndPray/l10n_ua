@@ -107,3 +107,14 @@ class TestNativeStatement(TransactionCase):
             'description': 'оплата', 'partner_name': 'ТОВ Контрагент',
             'partner_iban': '26007654321098'}])
         self.assertEqual(stmt.line_ids.partner_id, partner)
+
+    def test_statement_form_view(self):
+        """Виписка відкривається власною формою, а не згенерованою."""
+        form = self.env.ref('l10n_ua_bank_sync.l10n_ua_bank_statement_view_form')
+        views = self.env['account.bank.statement'].get_views([(False, 'form')])
+        self.assertEqual(views['views']['form']['id'], form.id)
+        action = self.env.ref('l10n_ua_bank_sync.l10n_ua_bank_statement_action')
+        self.assertIn(form, action.view_ids.view_id)
+        job = self._job()
+        stmt = job._create_native_statement(self._txs())
+        self.assertEqual(stmt.action_open_sync_job()['res_id'], job.id)

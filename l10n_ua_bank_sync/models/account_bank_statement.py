@@ -40,6 +40,16 @@ class AccountBankStatement(models.Model):
                 stmt.l10n_ua_balance_verified
                 and abs(stmt.balance_end - stmt.balance_end_real) < 0.01)
 
+    def action_open_sync_job(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'l10n_ua.bank.sync.job',
+            'res_id': self.l10n_ua_sync_job_id.id,
+            'view_mode': 'form',
+            'views': [(False, 'form')],
+        }
+
 
 class AccountBankStatementLine(models.Model):
     """Рядок native-виписки з зовнішнім ідентифікатором для дедупу імпорту.
