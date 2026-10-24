@@ -1225,6 +1225,7 @@ msgstr "Помилка доставки SMS"
 
 #. module: l10n_ua_bank_sync
 #: model:ir.model.fields,field_description:l10n_ua_bank_sync.field_l10n_ua_bank_statement__sync_provider
+#: model_terms:ir.ui.view,arch_db:l10n_ua_bank_sync.l10n_ua_bank_statement_view_form
 msgid "Source"
 msgstr "Джерело"
 
@@ -1244,6 +1245,7 @@ msgstr "Статус"
 #. module: l10n_ua_bank_sync
 #: model:ir.model.fields,field_description:l10n_ua_bank_sync.field_l10n_ua_bank_transaction__statement_id
 #: model_terms:ir.ui.view,arch_db:l10n_ua_bank_sync.l10n_ua_bank_transaction_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_bank_sync.l10n_ua_bank_statement_view_form
 msgid "Statement"
 msgstr "Виписка"
 
@@ -1306,6 +1308,7 @@ msgstr "Інтервал синхронізації (години)"
 #: model:ir.model.fields,field_description:l10n_ua_bank_sync.field_l10n_ua_bank_transaction__sync_job_id
 #: model_terms:ir.ui.view,arch_db:l10n_ua_bank_sync.l10n_ua_bank_sync_job_view_form
 #: model_terms:ir.ui.view,arch_db:l10n_ua_bank_sync.l10n_ua_bank_transaction_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_bank_sync.l10n_ua_bank_statement_view_form
 msgid "Sync Job"
 msgstr "Завдання синхронізації"
 
@@ -1614,5 +1617,22 @@ msgstr "Транзакцію «%s» уже звірено. Скасуйте зв
 #: model_terms:ir.ui.view,arch_db:l10n_ua_bank_sync.l10n_ua_bank_transaction_view_form
 #: model_terms:ir.ui.view,arch_db:l10n_ua_bank_sync.l10n_ua_bank_transaction_view_list
 #: model_terms:ir.ui.view,arch_db:l10n_ua_bank_sync.l10n_ua_bank_transaction_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_bank_sync.l10n_ua_bank_statement_view_form
 msgid "Payment Purpose"
 msgstr "Призначення платежу"
+
+
+#. module: l10n_ua_bank_sync
+#: model_terms:ir.ui.view,arch_db:l10n_ua_bank_sync.l10n_ua_bank_statement_view_form
+msgid "Balance Mismatch"
+msgstr "Залишки не сходяться"
+
+#. module: l10n_ua_bank_sync
+#: model_terms:ir.ui.view,arch_db:l10n_ua_bank_sync.l10n_ua_bank_statement_view_form
+msgid "e.g. BNK1/2026/0001"
+msgstr "напр. BNK1/2026/0001"
+
+#. module: l10n_ua_bank_sync
+#: model_terms:ir.ui.view,arch_db:l10n_ua_bank_sync.l10n_ua_bank_statement_view_form
+msgid "Attachments"
+msgstr "Вкладення"
