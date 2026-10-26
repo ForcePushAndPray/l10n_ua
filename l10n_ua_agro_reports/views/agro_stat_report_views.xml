@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="agro_stat_report_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.stat.report.form</field>
+        <field name="model">l10n_ua.agro.stat.report</field>
+        <field name="arch" type="xml">
+            <form string="Statistical Report">
+                <header>
+                    <button name="action_compute" string="Compute" type="object"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_done" string="Mark as Done" type="object"
+                            invisible="state != 'draft' or not computed_on"/>
+                    <button name="action_print" string="Print" type="object"
+                            invisible="not computed_on"/>
+                    <button name="action_export_xlsx" string="Export XLSX" type="object"
+                            invisible="not computed_on"/>
+                    <button name="action_draft" string="Set to Draft" type="object"
+                            invisible="state == 'draft'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <div class="alert alert-warning" role="alert" invisible="not warning">
+                        <field name="warning" nolabel="1"/>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="form" readonly="id"/>
+                            <field name="year" readonly="id" options="{'format': false}"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="id"/>
+                        </group>
+                        <group>
+                            <field name="date_deadline"/>
+                            <field name="computed_on"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Rows" name="rows">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <list editable="bottom" create="0" delete="0"
+                                      decoration-muted="not is_auto and not is_manual"
+                                      decoration-info="is_manual">
+                                    <field name="report_state" column_invisible="1"/>
+                                    <field name="section" readonly="1"/>
+                                    <field name="code" readonly="1"/>
+                                    <field name="name" readonly="1"/>
+                                    <field name="column_no" readonly="1" string="Col."/>
+                                    <field name="column_label" optional="show"/>
+                                    <field name="unit" readonly="1" optional="hide"/>
+                                    <field name="is_auto" optional="hide"/>
+                                    <field name="computed_value"/>
+                                    <field name="is_manual" readonly="not is_auto"/>
+                                    <field name="manual_value" readonly="not is_manual"/>
+                                    <field name="value"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="notes" placeholder="Additional notes..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="agro_stat_report_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.stat.report.list</field>
+        <field name="model">l10n_ua.agro.stat.report</field>
+        <field name="arch" type="xml">
+            <list string="Statistical Reports">
+                <field name="name"/>
+                <field name="form"/>
+                <field name="year" options="{'format': false}"/>
+                <field name="date_deadline"/>
+                <field name="company_id" groups="base.group_multi_company"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'" decoration-info="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="agro_stat_report_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.stat.report.search</field>
+        <field name="model">l10n_ua.agro.stat.report</field>
+        <field name="arch" type="xml">
+            <search string="Statistical Reports">
+                <field name="name"/>
+                <field name="year"/>
+                <filter string="Draft" name="filter_draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Done" name="filter_done" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <group>
+                    <filter string="Form" name="groupby_form" domain="[]" context="{'group_by': 'form'}"/>
+                    <filter string="Year" name="groupby_year" domain="[]" context="{'group_by': 'year'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="agro_stat_report_action" model="ir.actions.act_window">
+        <field name="name">Statistical Reports</field>
+        <field name="res_model">l10n_ua.agro.stat.report</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create a State Statistics report</p>
+            <p>
+                Annual forms 4-sg (sown areas), 29-sg (harvest) and 50-sg (economic
+                indicators) computed from plantings, harvest receipts, cost calculations
+                and stock moves. Every cell can be overridden by hand.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_l10n_ua_agro_stat_reports"
+              name="Statistical Reports"
+              parent="l10n_ua_agro_base.menu_l10n_ua_agro_reports"
+              action="agro_stat_report_action"
+              sequence="90"/>
+
+</odoo>

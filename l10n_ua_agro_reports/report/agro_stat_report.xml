@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="paperformat_agro_stat" model="report.paperformat">
+        <field name="name">A4 landscape (statistical reports)</field>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="header_spacing">0</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_agro_stat" model="ir.actions.report">
+        <field name="name">Statistical Report</field>
+        <field name="model">l10n_ua.agro.stat.report</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_agro_reports.report_agro_stat</field>
+        <field name="report_file">l10n_ua_agro_reports.report_agro_stat</field>
+        <field name="print_report_name">'%s_%s' % (object.form, object.year)</field>
+        <field name="paperformat_id" ref="paperformat_agro_stat"/>
+        <field name="binding_model_id" ref="model_l10n_ua_agro_stat_report"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <!-- Шапка й таблиці розділів за бланками наказів Держстату № 69 від
+         19.03.2026 (4-сг, 29-сг) і № 174 від 09.07.2026 (50-сг). -->
+    <template id="report_agro_stat">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="title" t-value="{
+                        '4sg': 'ЗВІТ ПРО ПОСІВНІ ПЛОЩІ СІЛЬСЬКОГОСПОДАРСЬКИХ КУЛЬТУР',
+                        '29sg': 'ЗВІТ ПРО ПЛОЩІ ТА ВАЛОВІ ЗБОРИ СІЛЬСЬКОГОСПОДАРСЬКИХ КУЛЬТУР, ПЛОДІВ, ЯГІД І ВИНОГРАДУ',
+                        '50sg': 'ЗВІТ ПРО ОСНОВНІ ЕКОНОМІЧНІ ПОКАЗНИКИ РОБОТИ СІЛЬСЬКОГОСПОДАРСЬКИХ ПІДПРИЄМСТВ'}[o.form]"/>
+                    <t t-set="period" t-value="('під урожай %s року' if o.form == '4sg' else 'за %s рік') % o.year"/>
+                    <t t-set="order" t-value="'09 липня 2026 року № 174' if o.form == '50sg' else '20 березня 2026 року № 69'"/>
+                    <t t-set="deadline" t-value="{
+                        '4sg': 'на 5-й день після закінчення сівби ярих культур, але не пізніше 2 червня',
+                        '29sg': 'не пізніше 11 січня',
+                        '50sg': 'не пізніше 28 лютого'}[o.form]"/>
+                    <div class="page" style="font-size: 8pt;">
+                        <div style="text-align: center;">
+                            Державне статистичне спостереження<br/>
+                            Статистична конфіденційність забезпечується статтею 29
+                            Закону України "Про офіційну статистику"
+                        </div>
+                        <table style="width: 100%; margin-top: 6px;">
+                            <tr>
+                                <td style="width: 30%; vertical-align: top;">
+                                    Подають: юридичні особи<t t-if="o.form != '50sg'">, відокремлені підрозділи юридичних осіб</t>,
+                                    які здійснюють сільськогосподарську діяльність, – територіальному органу Держстату<br/>
+                                    Термін подання: <t t-out="deadline"/>
+                                </td>
+                                <td style="width: 40%; text-align: center; vertical-align: top;">
+                                    <strong style="font-size: 10pt;" t-out="title"/><br/>
+                                    <t t-out="period"/>
+                                </td>
+                                <td style="width: 30%; text-align: right; vertical-align: top;">
+                                    <strong t-out="'№ %s' % dict(o._fields['form'].selection)[o.form]"/><br/>
+                                    (річна)<br/>
+                                    ЗАТВЕРДЖЕНО<br/>
+                                    Наказ Держстату<br/>
+                                    <t t-out="order"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <table class="table table-sm table-bordered" style="margin-top: 6px;">
+                            <tr>
+                                <td style="width: 30%;">Ідентифікаційний код ЄДРПОУ</td>
+                                <td><span t-out="o.company_id.edrpou"/></td>
+                            </tr>
+                            <tr>
+                                <td>Найменування</td>
+                                <td><span t-out="o.company_id.name"/></td>
+                            </tr>
+                            <tr>
+                                <td>Місцезнаходження (юридична адреса)</td>
+                                <td>
+                                    <span t-out="', '.join(p for p in [o.company_id.zip, o.company_id.state_id.name, o.company_id.city, o.company_id.street, o.company_id.street2] if p)"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Код території (КАТОТТГ)</td>
+                                <td><span t-out="o.company_id.katottg"/></td>
+                            </tr>
+                        </table>
+
+                        <t t-foreach="o._sections()" t-as="section">
+                            <h6 style="margin-top: 10px;"><strong t-out="section['title']"/></h6>
+                            <table class="table table-sm table-bordered" style="font-size: 7.5pt;">
+                                <thead>
+                                    <tr>
+                                        <th style="width: 22%;">Назва</th>
+                                        <th class="text-center">Код рядка</th>
+                                        <t t-foreach="section['columns']" t-as="column">
+                                            <th class="text-center" t-out="column[1]"/>
+                                        </t>
+                                    </tr>
+                                    <tr>
+                                        <th class="text-center">А</th>
+                                        <th class="text-center">Б</th>
+                                        <t t-foreach="section['columns']" t-as="column">
+                                            <th class="text-center" t-out="column[0]"/>
+                                        </t>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="section['rows']" t-as="row">
+                                        <td t-out="row['name']"/>
+                                        <td class="text-center" t-out="row['code']"/>
+                                        <t t-foreach="section['columns']" t-as="column">
+                                            <t t-set="cell" t-value="row['cells'].get(column[0])"/>
+                                            <td class="text-end">
+                                                <t t-if="cell and cell.value">
+                                                    <t t-if="cell.unit == 'ha'" t-out="'%.2f' % cell.value"/>
+                                                    <t t-else="" t-out="'%.1f' % cell.value"/>
+                                                </t>
+                                                <t t-elif="not cell">X</t>
+                                            </td>
+                                        </t>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </t>
+
+                        <table style="width: 100%; margin-top: 18px;">
+                            <tr>
+                                <td style="width: 50%;">
+                                    ______________________________________<br/>
+                                    Місце підпису керівника (власника) або особи,
+                                    відповідальної за достовірність наданої інформації
+                                </td>
+                                <td style="width: 50%;">
+                                    ______________________________________<br/>
+                                    (Власне ім’я ПРІЗВИЩЕ)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>телефон: <span t-out="o.company_id.phone or '__________________'"/></td>
+                                <td>електронна пошта: <span t-out="o.company_id.email or '__________________'"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
