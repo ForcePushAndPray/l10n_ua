@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_ua_agro_planting_view_list_harvest" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.planting.list.harvest</field>
+        <field name="model">l10n_ua.agro.planting</field>
+        <field name="inherit_id" ref="l10n_ua_agro_base.l10n_ua_agro_planting_view_list"/>
+        <field name="arch" type="xml">
+            <field name="area" position="after">
+                <field name="harvest_weight" optional="show" sum="Total"/>
+                <field name="harvest_yield" optional="show"/>
+            </field>
+        </field>
+    </record>
+</odoo>

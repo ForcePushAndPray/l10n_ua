@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Базисні кондиції за ДСТУ: вологість / смітна домішка, % -->
+    <data noupdate="1">
+        <record id="l10n_ua_agro_base.crop_wheat_winter" model="l10n_ua.agro.crop">
+            <field name="base_moisture">14</field>
+            <field name="base_impurity">1</field>
+        </record>
+        <record id="l10n_ua_agro_base.crop_wheat_spring" model="l10n_ua.agro.crop">
+            <field name="base_moisture">14</field>
+            <field name="base_impurity">1</field>
+        </record>
+        <record id="l10n_ua_agro_base.crop_barley_winter" model="l10n_ua.agro.crop">
+            <field name="base_moisture">14</field>
+            <field name="base_impurity">1</field>
+        </record>
+        <record id="l10n_ua_agro_base.crop_barley_spring" model="l10n_ua.agro.crop">
+            <field name="base_moisture">14</field>
+            <field name="base_impurity">1</field>
+        </record>
+        <record id="l10n_ua_agro_base.crop_rye" model="l10n_ua.agro.crop">
+            <field name="base_moisture">14</field>
+            <field name="base_impurity">1</field>
+        </record>
+        <record id="l10n_ua_agro_base.crop_oats" model="l10n_ua.agro.crop">
+            <field name="base_moisture">14</field>
+            <field name="base_impurity">1</field>
+        </record>
+        <record id="l10n_ua_agro_base.crop_corn" model="l10n_ua.agro.crop">
+            <field name="base_moisture">14</field>
+            <field name="base_impurity">1</field>
+        </record>
+        <record id="l10n_ua_agro_base.crop_buckwheat" model="l10n_ua.agro.crop">
+            <field name="base_moisture">14</field>
+            <field name="base_impurity">1</field>
+        </record>
+        <record id="l10n_ua_agro_base.crop_sunflower" model="l10n_ua.agro.crop">
+            <field name="base_moisture">7</field>
+            <field name="base_impurity">1</field>
+        </record>
+        <record id="l10n_ua_agro_base.crop_rapeseed_winter" model="l10n_ua.agro.crop">
+            <field name="base_moisture">8</field>
+            <field name="base_impurity">2</field>
+        </record>
+        <record id="l10n_ua_agro_base.crop_pumpkin_seed" model="l10n_ua.agro.crop">
+            <field name="base_moisture">9</field>
+            <field name="base_impurity">1</field>
+        </record>
+        <record id="l10n_ua_agro_base.crop_soybean" model="l10n_ua.agro.crop">
+            <field name="base_moisture">12</field>
+            <field name="base_impurity">2</field>
+        </record>
+        <record id="l10n_ua_agro_base.crop_pea" model="l10n_ua.agro.crop">
+            <field name="base_moisture">14</field>
+            <field name="base_impurity">1</field>
+        </record>
+    </data>
+</odoo>

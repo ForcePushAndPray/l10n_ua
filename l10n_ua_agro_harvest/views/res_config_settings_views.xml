@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_agro_harvest" model="ir.ui.view">
+        <field name="name">res.config.settings.agro.harvest</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="l10n_ua_agro_base.res_config_settings_view_form_agro"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='l10n_ua_agro_base']" position="inside">
+                <block title="Harvest" name="agro_harvest">
+                    <setting id="agro_harvest_location" string="Harvest Storage"
+                             help="Where the harvest is received by default: own storage or a place at the elevator">
+                        <field name="l10n_ua_agro_harvest_location_id"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

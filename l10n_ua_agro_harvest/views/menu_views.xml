@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_l10n_ua_agro_harvest_receipts"
+              name="Harvest Receipts"
+              parent="l10n_ua_agro_base.menu_l10n_ua_agro_production"
+              action="l10n_ua_agro_harvest_receipt_action"
+              sequence="50"/>
+
+    <menuitem id="menu_l10n_ua_agro_report_yield"
+              name="Yield"
+              parent="l10n_ua_agro_base.menu_l10n_ua_agro_reports"
+              action="l10n_ua_agro_yield_action"
+              sequence="15"/>
+</odoo>
