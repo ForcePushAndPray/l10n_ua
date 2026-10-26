@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_agro_crop_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.crop.list</field>
+        <field name="model">l10n_ua.agro.crop</field>
+        <field name="arch" type="xml">
+            <list string="Crops" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="crop_group"/>
+                <field name="sowing_type"/>
+                <field name="product_id" optional="show"/>
+                <field name="byproduct_id" optional="hide"/>
+                <field name="active" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_crop_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.crop.search</field>
+        <field name="model">l10n_ua.agro.crop</field>
+        <field name="arch" type="xml">
+            <search string="Crops">
+                <field name="name"/>
+                <field name="code"/>
+                <filter string="Winter" name="winter" domain="[('sowing_type', '=', 'winter')]"/>
+                <filter string="Spring" name="spring" domain="[('sowing_type', '=', 'spring')]"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter string="Crop Group" name="groupby_group" domain="[]" context="{'group_by': 'crop_group'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_crop_action" model="ir.actions.act_window">
+        <field name="name">Crops</field>
+        <field name="res_model">l10n_ua.agro.crop</field>
+        <field name="view_mode">list</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_l10n_ua_tax_4df_form_agro_land" model="ir.ui.view">
+        <field name="name">l10n_ua.tax.4df.form.agro.land</field>
+        <field name="model">l10n_ua.tax.4df</field>
+        <field name="inherit_id" ref="l10n_ua_tax_4df.l10n_ua_tax_4df_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='line_4df_ids']/list/field[@name='employee_id']" position="after">
+                <field name="partner_id" optional="show"/>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

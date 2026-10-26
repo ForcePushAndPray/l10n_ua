@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_agro_field_view_form_land" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.field.form.land</field>
+        <field name="model">l10n_ua.agro.field</field>
+        <field name="inherit_id" ref="l10n_ua_agro_base.l10n_ua_agro_field_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='main']/field[@name='area']" position="after">
+                <field name="plots_area"/>
+            </xpath>
+            <xpath expr="//page[@name='rotation']" position="after">
+                <page string="Land Plots" name="plots">
+                    <field name="plot_ids" context="{'default_field_id': id}">
+                        <list>
+                            <field name="cadastral_number"/>
+                            <field name="owner_id"/>
+                            <field name="ownership"/>
+                            <field name="current_lease_id"/>
+                            <field name="area" sum="Total"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

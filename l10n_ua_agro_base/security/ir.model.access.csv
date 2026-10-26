@@ -1,0 +1,12 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_agro_crop_user,l10n_ua.agro.crop.user,model_l10n_ua_agro_crop,group_ua_agro_user,1,0,0,0
+access_agro_crop_manager,l10n_ua.agro.crop.manager,model_l10n_ua_agro_crop,group_ua_agro_manager,1,1,1,1
+access_agro_season_user,l10n_ua.agro.season.user,model_l10n_ua_agro_season,group_ua_agro_user,1,0,0,0
+access_agro_season_manager,l10n_ua.agro.season.manager,model_l10n_ua_agro_season,group_ua_agro_manager,1,1,1,1
+access_agro_field_user,l10n_ua.agro.field.user,model_l10n_ua_agro_field,group_ua_agro_user,1,1,1,0
+access_agro_field_manager,l10n_ua.agro.field.manager,model_l10n_ua_agro_field,group_ua_agro_manager,1,1,1,1
+access_agro_planting_user,l10n_ua.agro.planting.user,model_l10n_ua_agro_planting,group_ua_agro_user,1,1,1,1
+access_agro_crop_account,l10n_ua.agro.crop.account,model_l10n_ua_agro_crop,account.group_account_readonly,1,0,0,0
+access_agro_field_account,l10n_ua.agro.field.account,model_l10n_ua_agro_field,account.group_account_readonly,1,0,0,0
+access_agro_season_account,l10n_ua.agro.season.account,model_l10n_ua_agro_season,account.group_account_readonly,1,0,0,0
+access_agro_planting_account,l10n_ua.agro.planting.account,model_l10n_ua_agro_planting,account.group_account_readonly,1,0,0,0

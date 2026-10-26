@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_agro_rent_accrual_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.rent.accrual.list</field>
+        <field name="model">l10n_ua.agro.rent.accrual</field>
+        <field name="arch" type="xml">
+            <list string="Rent Accruals" decoration-muted="state == 'cancel'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="date_from"/>
+                <field name="date_to"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="amount_gross" sum="Total"/>
+                <field name="amount_pdfo" sum="Total" optional="show"/>
+                <field name="amount_military" sum="Total" optional="show"/>
+                <field name="amount_net" sum="Total"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'posted'"
+                       decoration-info="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_rent_accrual_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.rent.accrual.form</field>
+        <field name="model">l10n_ua.agro.rent.accrual</field>
+        <field name="arch" type="xml">
+            <form string="Rent Accrual">
+                <header>
+                    <button name="action_compute" type="object" string="Compute"
+                            class="btn-primary" invisible="state != 'draft' or line_ids"/>
+                    <button name="action_compute" type="object" string="Recompute"
+                            invisible="state != 'draft' or not line_ids"/>
+                    <button name="action_post" type="object" string="Post"
+                            class="btn-primary" invisible="state != 'draft' or not line_ids"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state != 'posted'" confirm="Cancel the rent accrual?"/>
+                    <button name="action_draft" type="object" string="Reset to Draft"
+                            invisible="state != 'cancel'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_move" type="object" class="oe_stat_button"
+                                icon="fa-bars" invisible="not move_id">
+                            <span class="o_stat_text">Journal Entry</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Period">
+                            <field name="date_from" readonly="state != 'draft'"/>
+                            <field name="date_to" readonly="state != 'draft'"/>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft'"/>
+                            <field name="move_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group string="Accounting">
+                            <field name="journal_id" readonly="state != 'draft'"/>
+                            <field name="expense_account_id" readonly="state != 'draft'"/>
+                            <field name="payable_account_id" readonly="state != 'draft'"/>
+                            <field name="pdfo_account_id" readonly="state != 'draft'"/>
+                            <field name="military_account_id" readonly="state != 'draft'"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Lessors" name="lines">
+                            <field name="line_ids" readonly="state != 'draft'">
+                                <list editable="bottom" create="0">
+                                    <field name="lessor_id"/>
+                                    <field name="lessor_vat" optional="show"/>
+                                    <field name="lease_id"/>
+                                    <field name="katottg" optional="hide"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="amount" sum="Total"/>
+                                    <field name="pdfo_rate" optional="hide"/>
+                                    <field name="pdfo_amount" sum="Total"/>
+                                    <field name="military_rate" optional="hide"/>
+                                    <field name="military_amount" sum="Total"/>
+                                    <field name="net_amount" sum="Total"/>
+                                    <field name="paid_amount" sum="Total" optional="show"/>
+                                    <field name="residual" sum="Total" optional="show"/>
+                                </list>
+                            </field>
+                            <group class="oe_subtotal_footer">
+                                <field name="amount_gross"/>
+                                <field name="amount_pdfo"/>
+                                <field name="amount_military"/>
+                                <field name="amount_net" class="oe_subtotal_footer_separator"/>
+                                <field name="amount_residual"/>
+                            </group>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_rent_accrual_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.rent.accrual.search</field>
+        <field name="model">l10n_ua.agro.rent.accrual</field>
+        <field name="arch" type="xml">
+            <search string="Rent Accruals">
+                <field name="name"/>
+                <field name="line_ids" string="Lessor" filter_domain="[('line_ids.lessor_id', 'ilike', self)]"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Posted" name="posted" domain="[('state', '=', 'posted')]"/>
+                <separator/>
+                <filter string="Date" name="filter_date" date="date"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_rent_accrual_action" model="ir.actions.act_window">
+        <field name="name">Rent Accruals</field>
+        <field name="res_model">l10n_ua.agro.rent.accrual</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <!-- Борги й ПДФО за громадами — аналітика по рядках нарахувань -->
+    <record id="l10n_ua_agro_rent_accrual_line_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.rent.accrual.line.list</field>
+        <field name="model">l10n_ua.agro.rent.accrual.line</field>
+        <field name="arch" type="xml">
+            <list string="Land Rent by Lessor" create="0" edit="0">
+                <field name="accrual_id"/>
+                <field name="date"/>
+                <field name="lessor_id"/>
+                <field name="lessor_vat" optional="show"/>
+                <field name="lease_id"/>
+                <field name="katottg" optional="show"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="amount" sum="Total"/>
+                <field name="pdfo_amount" sum="Total"/>
+                <field name="military_amount" sum="Total"/>
+                <field name="net_amount" sum="Total"/>
+                <field name="paid_amount" sum="Total"/>
+                <field name="residual" sum="Total"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_rent_accrual_line_view_pivot" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.rent.accrual.line.pivot</field>
+        <field name="model">l10n_ua.agro.rent.accrual.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Land Rent by Lessor" sample="1">
+                <field name="lessor_id" type="row"/>
+                <field name="amount" type="measure"/>
+                <field name="pdfo_amount" type="measure"/>
+                <field name="military_amount" type="measure"/>
+                <field name="residual" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_rent_accrual_line_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.rent.accrual.line.search</field>
+        <field name="model">l10n_ua.agro.rent.accrual.line</field>
+        <field name="arch" type="xml">
+            <search string="Land Rent by Lessor">
+                <field name="lessor_id"/>
+                <field name="lease_id"/>
+                <field name="katottg"/>
+                <filter string="With Debt" name="with_debt" domain="[('residual', '&gt;', 0)]"/>
+                <separator/>
+                <filter string="Date" name="filter_date" date="date"/>
+                <group>
+                    <filter string="Lessor" name="groupby_lessor" domain="[]" context="{'group_by': 'lessor_id'}"/>
+                    <filter string="KATOTTG" name="groupby_katottg" domain="[]" context="{'group_by': 'katottg'}"/>
+                    <filter string="Accrual" name="groupby_accrual" domain="[]" context="{'group_by': 'accrual_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_rent_debt_action" model="ir.actions.act_window">
+        <field name="name">Rent Debts</field>
+        <field name="res_model">l10n_ua.agro.rent.accrual.line</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="domain">[('state', '=', 'posted')]</field>
+        <field name="context">{'search_default_with_debt': 1, 'search_default_groupby_lessor': 1}</field>
+    </record>
+
+    <record id="l10n_ua_agro_rent_pdfo_action" model="ir.actions.act_window">
+        <field name="name">PIT on Rent by Community</field>
+        <field name="res_model">l10n_ua.agro.rent.accrual.line</field>
+        <field name="view_mode">pivot,list</field>
+        <field name="domain">[('state', '=', 'posted'), ('pdfo_amount', '!=', 0)]</field>
+        <field name="context">{'pivot_row_groupby': ['katottg'], 'search_default_filter_date': 1}</field>
+    </record>
+
+</odoo>

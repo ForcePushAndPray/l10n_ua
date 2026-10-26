@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="crop_wheat_winter" model="l10n_ua.agro.crop">
+            <field name="name">Winter Wheat</field><field name="code">WHEAT_W</field>
+            <field name="crop_group">cereal</field><field name="sowing_type">winter</field><field name="sequence">10</field>
+        </record>
+        <record id="crop_wheat_spring" model="l10n_ua.agro.crop">
+            <field name="name">Spring Wheat</field><field name="code">WHEAT_S</field>
+            <field name="crop_group">cereal</field><field name="sowing_type">spring</field><field name="sequence">11</field>
+        </record>
+        <record id="crop_barley_winter" model="l10n_ua.agro.crop">
+            <field name="name">Winter Barley</field><field name="code">BARLEY_W</field>
+            <field name="crop_group">cereal</field><field name="sowing_type">winter</field><field name="sequence">12</field>
+        </record>
+        <record id="crop_barley_spring" model="l10n_ua.agro.crop">
+            <field name="name">Spring Barley</field><field name="code">BARLEY_S</field>
+            <field name="crop_group">cereal</field><field name="sowing_type">spring</field><field name="sequence">13</field>
+        </record>
+        <record id="crop_rye" model="l10n_ua.agro.crop">
+            <field name="name">Winter Rye</field><field name="code">RYE</field>
+            <field name="crop_group">cereal</field><field name="sowing_type">winter</field><field name="sequence">14</field>
+        </record>
+        <record id="crop_oats" model="l10n_ua.agro.crop">
+            <field name="name">Oats</field><field name="code">OATS</field>
+            <field name="crop_group">cereal</field><field name="sowing_type">spring</field><field name="sequence">15</field>
+        </record>
+        <record id="crop_corn" model="l10n_ua.agro.crop">
+            <field name="name">Corn for Grain</field><field name="code">CORN</field>
+            <field name="crop_group">cereal</field><field name="sowing_type">spring</field><field name="sequence">16</field>
+        </record>
+        <record id="crop_buckwheat" model="l10n_ua.agro.crop">
+            <field name="name">Buckwheat</field><field name="code">BUCKWHEAT</field>
+            <field name="crop_group">cereal</field><field name="sowing_type">spring</field><field name="sequence">17</field>
+        </record>
+        <record id="crop_sunflower" model="l10n_ua.agro.crop">
+            <field name="name">Sunflower</field><field name="code">SUNFLOWER</field>
+            <field name="crop_group">oilseed</field><field name="sowing_type">spring</field><field name="sequence">20</field>
+        </record>
+        <record id="crop_rapeseed_winter" model="l10n_ua.agro.crop">
+            <field name="name">Winter Rapeseed</field><field name="code">RAPE_W</field>
+            <field name="crop_group">oilseed</field><field name="sowing_type">winter</field><field name="sequence">21</field>
+        </record>
+        <record id="crop_pumpkin_seed" model="l10n_ua.agro.crop">
+            <field name="name">Oil Pumpkin (seeds)</field><field name="code">PUMPKIN</field>
+            <field name="crop_group">oilseed</field><field name="sowing_type">spring</field><field name="sequence">22</field>
+        </record>
+        <record id="crop_soybean" model="l10n_ua.agro.crop">
+            <field name="name">Soybean</field><field name="code">SOY</field>
+            <field name="crop_group">legume</field><field name="sowing_type">spring</field><field name="sequence">30</field>
+        </record>
+        <record id="crop_pea" model="l10n_ua.agro.crop">
+            <field name="name">Pea</field><field name="code">PEA</field>
+            <field name="crop_group">legume</field><field name="sowing_type">spring</field><field name="sequence">31</field>
+        </record>
+        <record id="crop_sugar_beet" model="l10n_ua.agro.crop">
+            <field name="name">Sugar Beet</field><field name="code">SUGAR_BEET</field>
+            <field name="crop_group">industrial</field><field name="sowing_type">spring</field><field name="sequence">40</field>
+        </record>
+        <record id="crop_potato" model="l10n_ua.agro.crop">
+            <field name="name">Potato</field><field name="code">POTATO</field>
+            <field name="crop_group">vegetable</field><field name="sowing_type">spring</field><field name="sequence">50</field>
+        </record>
+        <record id="crop_perennial_grass" model="l10n_ua.agro.crop">
+            <field name="name">Perennial Grasses</field><field name="code">GRASS</field>
+            <field name="crop_group">fodder</field><field name="sowing_type">perennial</field><field name="sequence">60</field>
+        </record>
+    </data>
+</odoo>

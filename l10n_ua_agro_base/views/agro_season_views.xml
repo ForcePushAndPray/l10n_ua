@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_agro_season_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.season.list</field>
+        <field name="model">l10n_ua.agro.season</field>
+        <field name="arch" type="xml">
+            <list string="Seasons">
+                <field name="name"/>
+                <field name="year"/>
+                <field name="date_start"/>
+                <field name="date_end"/>
+                <field name="sown_area"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="state" widget="badge"
+                       decoration-info="state == 'planning'"
+                       decoration-warning="state in ('sowing', 'harvest')"
+                       decoration-muted="state == 'closed'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_season_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.season.form</field>
+        <field name="model">l10n_ua.agro.season</field>
+        <field name="arch" type="xml">
+            <form string="Season">
+                <header>
+                    <button name="action_start_sowing" type="object" string="Start Sowing"
+                            class="btn-primary" invisible="state != 'planning'"/>
+                    <button name="action_start_harvest" type="object" string="Start Harvest"
+                            class="btn-primary" invisible="state != 'sowing'"/>
+                    <button name="action_close" type="object" string="Close Season"
+                            invisible="state != 'harvest'"/>
+                    <button name="action_reopen" type="object" string="Reopen"
+                            invisible="state != 'closed'" groups="l10n_ua_agro_base.group_ua_agro_manager"/>
+                    <field name="state" widget="statusbar"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" placeholder="e.g. Season 2027"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="year"/>
+                            <field name="sown_area"/>
+                        </group>
+                        <group>
+                            <field name="date_start"/>
+                            <field name="date_end"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Plantings" name="plantings">
+                            <field name="planting_ids" context="{'default_season_id': id}">
+                                <list editable="bottom">
+                                    <field name="field_id"/>
+                                    <field name="crop_id"/>
+                                    <field name="variety" optional="show"/>
+                                    <field name="sowing_date" optional="show"/>
+                                    <field name="predecessor_crop_id" optional="show"/>
+                                    <field name="area" sum="Total"/>
+                                </list>
+                            </field>
+                        </page>
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_season_action" model="ir.actions.act_window">
+        <field name="name">Seasons</field>
+        <field name="res_model">l10n_ua.agro.season</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+</odoo>

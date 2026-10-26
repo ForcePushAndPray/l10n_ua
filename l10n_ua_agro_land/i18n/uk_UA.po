@@ -1,0 +1,1661 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ua_agro_land
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260103\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-26 07:57+0000\n"
+"PO-Revision-Date: 2026-10-26 07:57+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: uk_UA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_lease__rent_method__ngo_percent
+msgid "% of Valuation"
+msgstr "% від НГО"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_form
+msgid "0000000000:00:000:0000"
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_form
+msgid "01.01"
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_form
+msgid "<span class=\"o_stat_text\">Journal Entry</span>"
+msgstr "<span class=\"o_stat_text\">Проводка</span>"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.constraint,message:l10n_ua_agro_land.constraint_l10n_ua_agro_land_plot_cadastral_company_uniq
+msgid "A land plot with this cadastral number already exists in the company."
+msgstr "Земельна ділянка з цим кадастровим номером у компанії вже є."
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_form
+msgid "Accounting"
+msgstr "Облік"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__date
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__date
+msgid "Accounting Date"
+msgstr "Дата проводки"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__accrual_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__accrual_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_line_view_search
+msgid "Accrual"
+msgstr "Нарахування"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__amount_gross
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__amount
+msgid "Accrued"
+msgstr "Нараховано"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__message_needaction
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__message_needaction
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__message_needaction
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__message_needaction
+msgid "Action Needed"
+msgstr "Необхідна дія"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_form
+msgid "Activate"
+msgstr "Активувати"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__active
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_lease__state__active
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_search
+msgid "Active"
+msgstr "Діючий"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__activity_ids
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__activity_ids
+msgid "Activities"
+msgstr "Дії"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__activity_exception_decoration
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Оформлення виключення дії"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__activity_state
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__activity_state
+msgid "Activity State"
+msgstr "Стан дії"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__activity_type_icon
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Іконка типу дії"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_form
+msgid "Add Debts"
+msgstr "Додати борги"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.actions.act_window,help:l10n_ua_agro_land.l10n_ua_agro_land_plot_action
+msgid "Add the first land plot"
+msgstr "Додайте першу земельну ділянку"
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/land_lease.py:0
+msgid "Add the leased land plots first."
+msgstr "Спершу додайте ділянки, що орендуються."
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_payment.py:0
+msgid "Add the lessors to pay first."
+msgstr "Спершу додайте орендодавців до виплати."
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.res_config_settings_view_form_agro_land
+msgid "Agro"
+msgstr "Агро"
+
+#. module: l10n_ua_agro_land
+#: model:ir.actions.server,name:l10n_ua_agro_land.ir_cron_agro_lease_expiry_ir_actions_server
+msgid "Agro: land lease expiry"
+msgstr "Агро: закінчення договорів оренди землі"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment_line__amount
+msgid "Amount"
+msgstr "Сума"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__annual_rent
+msgid "Annual Rent"
+msgstr "Річна орендна плата"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_plot__land_type__arable
+msgid "Arable Land"
+msgstr "Рілля"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_search
+msgid "Archived"
+msgstr "Архівовано"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__plots_area
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__area
+msgid "Area (ha)"
+msgstr "Площа (га)"
+
+#. module: l10n_ua_agro_land
+#: model:ir.actions.act_window,name:l10n_ua_agro_land.l10n_ua_agro_land_plot_report_action
+#: model:ir.ui.menu,name:l10n_ua_agro_land.menu_l10n_ua_agro_report_plots
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_pivot
+msgid "Area by Owner"
+msgstr "Площі за власниками"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__message_attachment_count
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__message_attachment_count
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__message_attachment_count
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__message_attachment_count
+msgid "Attachment Count"
+msgstr "Підрахунок прикріплення"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__cadastral_number
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_search
+msgid "Cadastral Number"
+msgstr "Кадастровий номер"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_form
+msgid "Cancel"
+msgstr "Скасувати"
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_accrual.py:0
+msgid "Cancel the accrual before resetting it to draft."
+msgstr "Скасуйте нарахування, перш ніж повертати його в чернетку."
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_accrual.py:0
+msgid "Cancel the posted rent accrual before deleting it."
+msgstr "Скасуйте проведене нарахування, перш ніж видаляти його."
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_payment.py:0
+msgid "Cancel the posted rent payment before deleting it."
+msgstr "Скасуйте проведену виплату, перш ніж видаляти її."
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_form
+msgid "Cancel the rent accrual?"
+msgstr "Скасувати нарахування орендної плати?"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_form
+msgid "Cancel the rent payment?"
+msgstr "Скасувати виплату орендної плати?"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_rent_accrual__state__cancel
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_rent_payment__state__cancel
+msgid "Cancelled"
+msgstr "Скасовано"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_plot__ownership__communal
+msgid "Communal"
+msgstr "Комунальна"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model,name:l10n_ua_agro_land.model_res_company
+msgid "Companies"
+msgstr "Компанії"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__company_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__company_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__company_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__company_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__company_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment_line__company_id
+msgid "Company"
+msgstr "Компанія"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_form
+msgid "Compute"
+msgstr "Розрахувати"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model,name:l10n_ua_agro_land.model_res_config_settings
+msgid "Config Settings"
+msgstr "Налаштування"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model,name:l10n_ua_agro_land.model_res_partner
+msgid "Contact"
+msgstr "Контакт"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__lease_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment_line__lease_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_form
+msgid "Contract"
+msgstr "Договір"
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/land_lease.py:0
+msgid ""
+"Contract %(contract)s with %(lessor)s expires on %(date)s: renew it or "
+"return the plots."
+msgstr ""
+"Договір %(contract)s з %(lessor)s закінчується %(date)s: пролонгуйте його "
+"або поверніть ділянки."
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/land_lease.py:0
+msgid "Contract %s has no end date to renew from."
+msgstr "У договорі %s немає дати закінчення для пролонгації."
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__date
+msgid "Contract Date"
+msgstr "Дата договору"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__name
+msgid "Contract Number"
+msgstr "Номер договору"
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/land_lease.py:0
+msgid "Contract renewed until %s."
+msgstr "Договір пролонговано до %s."
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment_line__create_uid
+msgid "Created by"
+msgstr "Створено"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__create_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__create_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__create_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__create_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__create_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment_line__create_date
+msgid "Created on"
+msgstr "Створено"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment_line__currency_id
+msgid "Currency"
+msgstr "Валюта"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__current_lease_id
+msgid "Current Lease"
+msgstr "Діючий договір"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__date
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment_line__date
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_line_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_search
+msgid "Date"
+msgstr "Дата"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__residual
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment_line__debt
+msgid "Debt"
+msgstr "Борг"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__uom_id
+msgid "Default unit of measure used for all stock operations."
+msgstr ""
+"Стандартна одиниця вимірювання, що використовується для всіх складських "
+"операцій."
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.res_config_settings_view_form_agro_land
+msgid "Defaults for land rent accruals and payments"
+msgstr "Типові значення для нарахувань і виплат орендної плати"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_form
+msgid "Delivery"
+msgstr "Видача"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__picking_ids
+msgid "Delivery Orders"
+msgstr "Видаткові накладні"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_field__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment_line__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_company__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_partner__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_stock_picking__display_name
+msgid "Display Name"
+msgstr "Назва для відображення"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_lease__state__draft
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_rent_accrual__state__draft
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_rent_payment__state__draft
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_search
+msgid "Draft"
+msgstr "Чернетка"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__date_end
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_search
+msgid "End Date"
+msgstr "Дата закінчення"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__expense_account_id
+msgid "Expense Account"
+msgstr "Рахунок витрат"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_lease__state__expired
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_search
+msgid "Expired"
+msgstr "Закінчився"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_search
+msgid "Expiring within 90 days"
+msgstr "Закінчуються протягом 90 днів"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__expiry_notified
+msgid "Expiry Notified"
+msgstr "Нагадування про закінчення надіслано"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_form
+msgid "Extend the contract for the same term?"
+msgstr "Продовжити договір на той самий строк?"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_plot__land_type__fallow
+msgid "Fallow"
+msgstr "Перелоги"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model,name:l10n_ua_agro_land.model_l10n_ua_agro_field
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__field_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_search
+msgid "Field"
+msgstr "Поле"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_form
+msgid "Fill with Debts"
+msgstr "Заповнити боргами"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_lease__rent_method__fixed
+msgid "Fixed Amount"
+msgstr "Фіксована сума"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__message_follower_ids
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__message_follower_ids
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__message_follower_ids
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__message_follower_ids
+msgid "Followers"
+msgstr "Підписники"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__message_partner_ids
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__message_partner_ids
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__message_partner_ids
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Підписники (Партнери)"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__activity_type_icon
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Іконка зі шрифтом Font awesome, напр. fa-tasks"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__has_message
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__has_message
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__has_message
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__has_message
+msgid "Has Message"
+msgstr "Є повідомлення"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_plot__land_type__hayfield
+msgid "Hayfields"
+msgstr "Сіножаті"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_field__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment_line__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_company__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_config_settings__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_partner__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_stock_picking__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__activity_exception_icon
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__activity_exception_icon
+msgid "Icon"
+msgstr "Значок"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__activity_exception_icon
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Іконка для визначення виключення дії."
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__message_needaction
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__message_needaction
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__message_needaction
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Якщо позначено, то нові повідомлення будуть потребувати вашої уваги."
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__message_has_error
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__message_has_sms_error
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__message_has_error
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__message_has_sms_error
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__message_has_error
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__message_has_sms_error
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__message_has_error
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Якщо позначено, деякі повідомлення мають помилку доставки."
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_lease__payment_form__in_kind
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_rent_payment__payment_form__in_kind
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_search
+msgid "In Kind"
+msgstr "Натурою"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_company__l10n_ua_agro_in_kind_income_account_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_config_settings__l10n_ua_agro_in_kind_income_account_id
+msgid "In-kind Payment Income Account"
+msgstr "Рахунок доходу від натуроплати"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__in_kind_product_id
+msgid "In-kind Product"
+msgstr "Продукція для натуроплати"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__income_account_id
+msgid "Income Account"
+msgstr "Рахунок доходу"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__lessor_vat
+msgid ""
+"Individual Tax Number / Registration Number of the Taxpayer Account Card (10"
+" or 12 digits)"
+msgstr ""
+"Індивідуальний податковий номер / Реєстраційний номер облікової картки "
+"платника податків (10 або 12 цифр)"
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/land_plot.py:0
+msgid ""
+"Invalid cadastral number %s: expected the format 0000000000:00:000:0000."
+msgstr ""
+"Хибний кадастровий номер %s: очікується формат 0000000000:00:000:0000."
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__message_is_follower
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__message_is_follower
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__message_is_follower
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__message_is_follower
+msgid "Is Follower"
+msgstr "Стежить"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__journal_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__journal_id
+msgid "Journal"
+msgstr "Журнал"
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_payment.py:0
+msgid "Journal %s has no default account."
+msgstr "У журналі %s не вказано рахунок за замовчуванням."
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__move_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__move_id
+msgid "Journal Entry"
+msgstr "Проводка"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.res_config_settings_view_form_agro_land
+msgid "Journal and Accounts"
+msgstr "Журнал і рахунки"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__katottg
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_line_view_search
+msgid "KATOTTG"
+msgstr "КАТОТТГ"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__katottg
+msgid "Katottg"
+msgstr "КАТОТТГ"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_partner__l10n_ua_agro_lease_count
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_users__l10n_ua_agro_lease_count
+msgid "L10N Ua Agro Lease Count"
+msgstr "Кількість договорів оренди землі"
+
+#. module: l10n_ua_agro_land
+#: model:ir.ui.menu,name:l10n_ua_agro_land.menu_l10n_ua_agro_land
+msgid "Land Bank"
+msgstr "Земельний банк"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_form
+msgid "Land Lease"
+msgstr "Оренда землі"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model,name:l10n_ua_agro_land.model_l10n_ua_agro_land_lease
+msgid "Land Lease Contract"
+msgstr "Договір оренди землі"
+
+#. module: l10n_ua_agro_land
+#: model:ir.actions.act_window,name:l10n_ua_agro_land.l10n_ua_agro_land_lease_action
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_partner__l10n_ua_agro_lease_ids
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_users__l10n_ua_agro_lease_ids
+#: model:ir.ui.menu,name:l10n_ua_agro_land.menu_l10n_ua_agro_land_leases
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.view_partner_form_agro_land
+msgid "Land Leases"
+msgstr "Договори оренди землі"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model,name:l10n_ua_agro_land.model_l10n_ua_agro_land_plot
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_form
+msgid "Land Plot"
+msgstr "Земельна ділянка"
+
+#. module: l10n_ua_agro_land
+#: model:ir.actions.act_window,name:l10n_ua_agro_land.l10n_ua_agro_land_plot_action
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_field__plot_ids
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__plot_ids
+#: model:ir.ui.menu,name:l10n_ua_agro_land.menu_l10n_ua_agro_land_plots
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_field_view_form_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_search
+msgid "Land Plots"
+msgstr "Земельні ділянки"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.res_config_settings_view_form_agro_land
+msgid "Land Rent"
+msgstr "Орендна плата за землю"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model,name:l10n_ua_agro_land.model_l10n_ua_agro_rent_accrual
+msgid "Land Rent Accrual"
+msgstr "Нарахування орендної плати"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model,name:l10n_ua_agro_land.model_l10n_ua_agro_rent_accrual_line
+msgid "Land Rent Accrual Line"
+msgstr "Рядок нарахування орендної плати"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_company__l10n_ua_agro_rent_expense_account_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_config_settings__l10n_ua_agro_rent_expense_account_id
+msgid "Land Rent Expense Account"
+msgstr "Рахунок витрат на орендну плату"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_company__l10n_ua_agro_rent_journal_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_config_settings__l10n_ua_agro_rent_journal_id
+msgid "Land Rent Journal"
+msgstr "Журнал орендної плати"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_company__l10n_ua_agro_rent_payable_account_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_config_settings__l10n_ua_agro_rent_payable_account_id
+msgid "Land Rent Payable Account"
+msgstr "Рахунок розрахунків з орендодавцями"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model,name:l10n_ua_agro_land.model_l10n_ua_agro_rent_payment
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_stock_picking__l10n_ua_agro_rent_payment_id
+msgid "Land Rent Payment"
+msgstr "Виплата орендної плати"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model,name:l10n_ua_agro_land.model_l10n_ua_agro_rent_payment_line
+msgid "Land Rent Payment Line"
+msgstr "Рядок виплати орендної плати"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_line_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_line_view_pivot
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_line_view_search
+msgid "Land Rent by Lessor"
+msgstr "Орендна плата за орендодавцями"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__land_type
+msgid "Land Type"
+msgstr "Вид угідь"
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/land_lease.py:0
+msgid "Land lease expires"
+msgstr "Закінчується договір оренди землі"
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_accrual.py:0
+msgid "Land rent %(contract)s, %(date_from)s - %(date_to)s"
+msgstr "Орендна плата %(contract)s, %(date_from)s - %(date_to)s"
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_payment.py:0
+msgid "Land rent payment, %s"
+msgstr "Виплата орендної плати, %s"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment_line__write_uid
+msgid "Last Updated by"
+msgstr "Востаннє оновлено"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__write_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__write_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__write_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__write_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__write_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment_line__write_date
+msgid "Last Updated on"
+msgstr "Востаннє оновлено"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_plot__use_state__leased
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_search
+msgid "Leased"
+msgstr "В оренді"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__lease_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_form
+msgid "Leases"
+msgstr "Договори оренди"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__lessor_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__lessor_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment_line__lessor_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_line_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_search
+msgid "Lessor"
+msgstr "Орендодавець"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__lessor_is_individual
+msgid "Lessor Is Individual"
+msgstr "Орендодавець — фізособа"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_form
+msgid "Lessors"
+msgstr "Орендодавці"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__line_ids
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__line_ids
+msgid "Lines"
+msgstr "Рядки"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__location
+msgid "Location"
+msgstr "Місцезнаходження"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__message_has_error
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__message_has_error
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__message_has_error
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__message_has_error
+msgid "Message Delivery error"
+msgstr "Помилка доставлення повідомлення"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__message_ids
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__message_ids
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__message_ids
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__message_ids
+msgid "Messages"
+msgstr "Повідомлення"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__amount_military
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__military_amount
+msgid "Military Levy"
+msgstr "Військовий збір"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__military_rate
+msgid "Military Levy %"
+msgstr "ВЗ %"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__military_account_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_company__l10n_ua_agro_military_account_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_config_settings__l10n_ua_agro_military_account_id
+msgid "Military Levy Account"
+msgstr "Рахунок військового збору"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_company__l10n_ua_agro_military_rate
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_config_settings__l10n_ua_agro_military_rate
+msgid "Military Levy Rate (%)"
+msgstr "Ставка військового збору (%)"
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_accrual.py:0
+msgid "Military levy on land rent, %s"
+msgstr "Військовий збір з орендної плати, %s"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_lease__payment_form__money
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_rent_payment__payment_form__money
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_search
+msgid "Money"
+msgstr "Грошима"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__my_activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Дедлайн моєї дії"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__name
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__name
+msgid "Name"
+msgstr "Назва"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Дедлайн наступної дії"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__activity_summary
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__activity_summary
+msgid "Next Activity Summary"
+msgstr "Підсумок наступної дії"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__activity_type_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__activity_type_id
+msgid "Next Activity Type"
+msgstr "Тип наступної дії"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__ngo_value
+msgid "Normative Monetary Valuation"
+msgstr "Нормативна грошова оцінка"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_search
+msgid "Not Registered"
+msgstr "Не зареєстровані"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_plot__use_state__free
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_search
+msgid "Not in Use"
+msgstr "Не використовується"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__note
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__note
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__note
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__note
+msgid "Note"
+msgstr "Примітка"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_form
+msgid "Notes"
+msgstr "Примітки"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__message_needaction_counter
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__message_needaction_counter
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__message_needaction_counter
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Кількість дій"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__message_has_error_counter
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__message_has_error_counter
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__message_has_error_counter
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__message_has_error_counter
+msgid "Number of errors"
+msgstr "Кількість помилок"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__message_needaction_counter
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__message_needaction_counter
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__message_needaction_counter
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Кількість повідомлень, які вимагають дії"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__message_has_error_counter
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__message_has_error_counter
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__message_has_error_counter
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Кількість повідомлень з помилкою доставки"
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_accrual.py:0
+msgid "Only a draft accrual can be recomputed."
+msgstr "Перерахувати можна лише чернетку нарахування."
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_payment.py:0
+msgid "Only a draft payment can be filled."
+msgstr "Заповнити можна лише чернетку виплати."
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_plot__use_state__own
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_search
+msgid "Owned"
+msgstr "Власна"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_plot__ownership__company
+msgid "Owned by the Company"
+msgstr "Власність підприємства"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__owner_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_search
+msgid "Owner"
+msgstr "Власник"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__ownership
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_search
+msgid "Ownership"
+msgstr "Форма власності"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__amount_pdfo
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__pdfo_amount
+msgid "PIT"
+msgstr "ПДФО"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__pdfo_rate
+msgid "PIT %"
+msgstr "ПДФО %"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__pdfo_account_id
+msgid "PIT Account"
+msgstr "Рахунок ПДФО"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_company__l10n_ua_agro_pdfo_rate
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_config_settings__l10n_ua_agro_pdfo_rate
+msgid "PIT Rate (%)"
+msgstr "Ставка ПДФО (%)"
+
+#. module: l10n_ua_agro_land
+#: model:ir.actions.act_window,name:l10n_ua_agro_land.l10n_ua_agro_rent_pdfo_action
+#: model:ir.ui.menu,name:l10n_ua_agro_land.menu_l10n_ua_agro_report_rent_pdfo
+msgid "PIT on Rent by Community"
+msgstr "ПДФО з оренди за громадами"
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_accrual.py:0
+msgid "PIT on land rent, %s"
+msgstr "ПДФО з орендної плати, %s"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__paid_amount
+msgid "Paid"
+msgstr "Виплачено"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_plot__land_type__pasture
+msgid "Pastures"
+msgstr "Пасовища"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__payable_account_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__payable_account_id
+msgid "Payable Account"
+msgstr "Рахунок розрахунків"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment_line__payment_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_form
+msgid "Payment"
+msgstr "Виплата"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__payment_form
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__payment_form
+msgid "Payment Form"
+msgstr "Форма оплати"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__payment_line_ids
+msgid "Payments"
+msgstr "Виплати"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_plot__land_type__perennial
+msgid "Perennial Plantings"
+msgstr "Багаторічні насадження"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_form
+msgid "Period"
+msgstr "Період"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__date_from
+msgid "Period From"
+msgstr "Період з"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__date_to
+msgid "Period To"
+msgstr "Період по"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_company__l10n_ua_agro_pdfo_account_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_res_config_settings__l10n_ua_agro_pdfo_account_id
+msgid "Personal Income Tax Account"
+msgstr "Рахунок ПДФО"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__picking_count
+msgid "Picking Count"
+msgstr "Кількість накладних"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_form
+msgid "Plot"
+msgstr "Ділянка"
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/land_lease.py:0
+msgid ""
+"Plot %(plots)s is already leased under contract %(contract)s for the same "
+"period."
+msgstr ""
+"Ділянка %(plots)s уже в оренді за договором %(contract)s на той самий "
+"період."
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_field__plots_area
+msgid "Plots Area (ha)"
+msgstr "Площа ділянок (га)"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.actions.act_window,help:l10n_ua_agro_land.l10n_ua_agro_land_plot_action
+msgid ""
+"Plots can be imported from a spreadsheet: cadastral number, area, valuation,"
+" owner."
+msgstr ""
+"Ділянки можна імпортувати з таблиці: кадастровий номер, площа, НГО, власник."
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_form
+msgid "Post"
+msgstr "Провести"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_rent_accrual__state__posted
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_rent_payment__state__posted
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_search
+msgid "Posted"
+msgstr "Проведено"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__price_unit
+msgid "Price per Unit"
+msgstr "Ціна за одиницю"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_plot__ownership__private
+msgid "Private (leased)"
+msgstr "Приватна (в оренді)"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__product_id
+msgid "Product"
+msgstr "Продукція"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__purpose_code
+msgid "Purpose Code"
+msgstr "Цільове призначення (КВЦПЗ)"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment_line__quantity
+msgid "Quantity"
+msgstr "Кількість"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__lessor_vat
+msgid "RNOKPP"
+msgstr "РНОКПП"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_form
+msgid "Recompute"
+msgstr "Перерахувати"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.actions.act_window,help:l10n_ua_agro_land.l10n_ua_agro_land_lease_action
+msgid "Register the first land lease contract"
+msgstr "Зареєструйте перший договір оренди землі"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__registration_date
+msgid "Registration Date"
+msgstr "Дата держреєстрації"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__registration_number
+msgid "Registration Record Number"
+msgstr "Номер запису в ДРРП"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_form
+msgid "Renew"
+msgstr "Пролонгувати"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_form
+msgid "Rent"
+msgstr "Орендна плата"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__rent_percent
+msgid "Rent (% of valuation)"
+msgstr "Орендна плата (% від НГО)"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment_line__accrual_line_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_form
+msgid "Rent Accrual"
+msgstr "Нарахування"
+
+#. module: l10n_ua_agro_land
+#: model:ir.actions.act_window,name:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_action
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__accrual_line_ids
+#: model:ir.ui.menu,name:l10n_ua_agro_land.menu_l10n_ua_agro_rent_accruals
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_search
+msgid "Rent Accruals"
+msgstr "Нарахування орендної плати"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__rent_method
+msgid "Rent Calculation"
+msgstr "Розрахунок орендної плати"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__rent_residual
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__amount_residual
+msgid "Rent Debt"
+msgstr "Борг з орендної плати"
+
+#. module: l10n_ua_agro_land
+#: model:ir.actions.act_window,name:l10n_ua_agro_land.l10n_ua_agro_rent_debt_action
+#: model:ir.ui.menu,name:l10n_ua_agro_land.menu_l10n_ua_agro_report_rent_debts
+msgid "Rent Debts"
+msgstr "Борги з орендної плати"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_form
+msgid "Rent Payment"
+msgstr "Виплата орендної плати"
+
+#. module: l10n_ua_agro_land
+#: model:ir.actions.act_window,name:l10n_ua_agro_land.l10n_ua_agro_rent_payment_action
+#: model:ir.ui.menu,name:l10n_ua_agro_land.menu_l10n_ua_agro_rent_payments
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_search
+msgid "Rent Payments"
+msgstr "Виплати орендної плати"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__rent_fixed
+msgid "Rent per Year"
+msgstr "Орендна плата за рік"
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_accrual.py:0
+msgid "Rent under %s has already been paid: cancel the payments first."
+msgstr "Орендну плату за %s уже виплачено: спершу скасуйте виплати."
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_form
+msgid "Reset to Draft"
+msgstr "Повернути в чернетку"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__activity_user_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__activity_user_id
+msgid "Responsible User"
+msgstr "Відповідальний користувач"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__message_has_sms_error
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__message_has_sms_error
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__message_has_sms_error
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Помилка доставки SMS"
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_payment.py:0
+msgid "Set the income account for the in-kind payment."
+msgstr "Вкажіть рахунок доходу для виплати натурою."
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_payment.py:0
+msgid "Set the product and its price for the in-kind payment."
+msgstr "Вкажіть продукцію і її ціну для виплати натурою."
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/land_lease.py:0
+msgid "Set the rent of contract %s."
+msgstr "Вкажіть орендну плату за договором %s."
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_payment.py:0
+msgid "Set the warehouse the products are issued from."
+msgstr "Вкажіть склад, з якого видається продукція."
+
+#. module: l10n_ua_agro_land
+#: model:ir.actions.act_window,name:l10n_ua_agro_land.l10n_ua_agro_config_settings_action
+#: model:ir.ui.menu,name:l10n_ua_agro_land.menu_l10n_ua_agro_settings
+msgid "Settings"
+msgstr "Налаштування"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__date_start
+msgid "Start Date"
+msgstr "Дата початку"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__state
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__state
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__state
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__state
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment_line__state
+msgid "State"
+msgstr "Стан"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_form
+msgid "State Registration"
+msgstr "Державна реєстрація"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_search
+msgid "Status"
+msgstr "Стан"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__activity_state
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Етап заснований на діях\n"
+"Протерміновано: термін виконання вже минув\n"
+"Сьогодні: дата дії сьогодні\n"
+"Заплановано: майбутні дії."
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__term_years
+msgid "Term (years)"
+msgstr "Строк (років)"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_form
+msgid "Terminate"
+msgstr "Розірвати"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_form
+msgid "Terminate the lease contract?"
+msgstr "Розірвати договір оренди?"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_lease__state__terminated
+msgid "Terminated"
+msgstr "Розірваний"
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/land_lease.py:0
+msgid "The lease cannot end before it starts."
+msgstr "Договір не може закінчуватися раніше, ніж починається."
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_form
+msgid ""
+"The lessor is an individual: personal income tax and military levy are "
+"withheld from the rent."
+msgstr ""
+"Орендодавець — фізособа: з орендної плати утримуються ПДФО і військовий "
+"збір."
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_payment.py:0
+msgid "The payment amount must be positive."
+msgstr "Сума виплати має бути додатною."
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_payment.py:0
+msgid ""
+"The payment to %(lessor)s (%(amount)s) exceeds the rent debt (%(debt)s)."
+msgstr ""
+"Виплата %(lessor)s (%(amount)s) перевищує борг з орендної плати (%(debt)s)."
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_accrual.py:0
+msgid "The period cannot end before it starts."
+msgstr "Період не може закінчуватися раніше, ніж починається."
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/land_plot.py:0
+msgid "The plot area must be positive."
+msgstr "Площа ділянки має бути додатною."
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_payment.py:0
+msgid "The products of %s have already been issued: return them first."
+msgstr "Продукцію за %s уже видано: спершу оформіть повернення."
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.actions.act_window,help:l10n_ua_agro_land.l10n_ua_agro_land_lease_action
+msgid ""
+"The rent is computed from the valuation of the plots or as a fixed amount, "
+"and accrued for a period with tax withholding."
+msgstr ""
+"Орендна плата рахується від НГО ділянок або фіксованою сумою і нараховується"
+" за період з утриманням податків."
+
+#. module: l10n_ua_agro_land
+#. odoo-python
+#: code:addons/l10n_ua_agro_land/models/rent_accrual.py:0
+msgid "There is nothing to post: compute the lines first."
+msgstr "Нема чого проводити: спершу заповніть рядки."
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__amount_net
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__net_amount
+msgid "To Pay"
+msgstr "До виплати"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__amount_total
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_field_view_form_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_line_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_list
+msgid "Total"
+msgstr "Разом"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__quantity_total
+msgid "Total Quantity"
+msgstr "Кількість разом"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model,name:l10n_ua_agro_land.model_stock_picking
+msgid "Transfer"
+msgstr "Переміщення"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__activity_exception_decoration
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Тип дії виключення на записі."
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_form
+msgid "UA00000000000000000"
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__uom_id
+msgid "Unit"
+msgstr "Одиниця виміру"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__use_state
+msgid "Use"
+msgstr "Використання"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__ngo_date
+msgid "Valuation Date"
+msgstr "Дата оцінки"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__ngo_total
+msgid "Valuation of Plots"
+msgstr "НГО ділянок"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__warehouse_id
+msgid "Warehouse"
+msgstr "Склад"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__website_message_ids
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__website_message_ids
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__website_message_ids
+#: model:ir.model.fields,field_description:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__website_message_ids
+msgid "Website Messages"
+msgstr "Повідомлення з веб-сайту"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__website_message_ids
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__website_message_ids
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual__website_message_ids
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__website_message_ids
+msgid "Website communication history"
+msgstr "Історія бесіди на сайті"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_rent_accrual_line_view_search
+msgid "With Debt"
+msgstr "З боргом"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.res_config_settings_view_form_agro_land
+msgid "Withheld from the rent of individual lessors (income code 106)"
+msgstr "Утримуються з орендної плати фізособам (код доходу 106)"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.res_config_settings_view_form_agro_land
+msgid "Withholding Rates"
+msgstr "Ставки утримань"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_plot_view_search
+msgid "Without Field"
+msgstr "Без поля"
+
+#. module: l10n_ua_agro_land
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land.l10n_ua_agro_land_lease_view_form
+msgid "e.g. 15/2026"
+msgstr "напр. 15/2026"
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__owner_id
+msgid ""
+"Власник паю (фізособа) або розпорядник землі державної/комунальної "
+"власності."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_accrual_line__katottg
+msgid "Громада за місцезнаходженням ділянки — туди сплачується ПДФО."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__registration_date
+msgid ""
+"Дата державної реєстрації права оренди в Державному реєстрі речових прав."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__income_account_id
+msgid ""
+"Дохід від реалізації продукції, виданої в рахунок орендної плати (712)."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_res_company__l10n_ua_agro_in_kind_income_account_id
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_res_config_settings__l10n_ua_agro_in_kind_income_account_id
+msgid "Дохід від реалізації інших оборотних активів — 712."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__katottg
+msgid ""
+"Код громади, на території якої розташована ділянка: ПДФО з орендної плати "
+"сплачується за місцезнаходженням ділянки."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__purpose_code
+msgid ""
+"Код цільового призначення за КВЦПЗ, напр. 01.01 — для ведення товарного "
+"сільськогосподарського виробництва."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment_line__quantity
+msgid "Кількість продукції для видачі натурою: сума / ціна."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__rent_residual
+msgid "Нараховано, але ще не виплачено (після утримання податків)."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__registration_number
+msgid "Номер запису про інше речове право в ДРРП."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__ngo_value
+msgid "Нормативна грошова оцінка ділянки (НГО) з урахуванням індексації."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__accrual_id
+msgid "Обмежити заповнення боргами за одним нарахуванням."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__lessor_is_individual
+msgid ""
+"Орендодавець — фізособа: орендар як податковий агент утримує ПДФО і ВЗ."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__in_kind_product_id
+msgid "Продукція, якою зазвичай видають орендну плату (зерно, цукор)."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_res_company__l10n_ua_agro_rent_expense_account_id
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_res_config_settings__l10n_ua_agro_rent_expense_account_id
+msgid "Рахунок витрат на орендну плату: 23 (виробництво) або 91."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_res_company__l10n_ua_agro_rent_payable_account_id
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_res_config_settings__l10n_ua_agro_rent_payable_account_id
+msgid "Розрахунки з орендодавцями — 685."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_res_company__l10n_ua_agro_pdfo_account_id
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_res_config_settings__l10n_ua_agro_pdfo_account_id
+msgid "Розрахунки за ПДФО — 6411."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_res_company__l10n_ua_agro_military_account_id
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_res_config_settings__l10n_ua_agro_military_account_id
+msgid "Розрахунки за військовим збором — 642 (6415)."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_lease__annual_rent
+msgid "Річна орендна плата до утримання податків."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_field__plots_area
+msgid "Сумарна площа земельних ділянок поля за кадастром."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_land_plot__cadastral_number
+msgid "Формат 0000000000:00:000:0000."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields,help:l10n_ua_agro_land.field_l10n_ua_agro_rent_payment__price_unit
+msgid ""
+"Ціна одиниці продукції, за якою вона зараховується в рахунок орендної плати."
+msgstr ""
+
+#. module: l10n_ua_agro_land
+#: model:ir.model.fields.selection,name:l10n_ua_agro_land.selection__l10n_ua_agro_land_plot__ownership__state
+msgid "State-owned"
+msgstr "Державна"

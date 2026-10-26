@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_agro_land" model="ir.ui.view">
+        <field name="name">res.config.settings.agro.land</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Agro" string="Agro" name="l10n_ua_agro_base"
+                     groups="l10n_ua_agro_base.group_ua_agro_manager">
+                    <block title="Land Rent" name="agro_land_rent">
+                        <setting id="agro_rent_journal" string="Journal and Accounts"
+                                 help="Defaults for land rent accruals and payments">
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="l10n_ua_agro_rent_journal_id" class="col-lg-5 o_light_label"/>
+                                    <field name="l10n_ua_agro_rent_journal_id"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_ua_agro_rent_expense_account_id" class="col-lg-5 o_light_label"/>
+                                    <field name="l10n_ua_agro_rent_expense_account_id"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_ua_agro_rent_payable_account_id" class="col-lg-5 o_light_label"/>
+                                    <field name="l10n_ua_agro_rent_payable_account_id"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_ua_agro_pdfo_account_id" class="col-lg-5 o_light_label"/>
+                                    <field name="l10n_ua_agro_pdfo_account_id"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_ua_agro_military_account_id" class="col-lg-5 o_light_label"/>
+                                    <field name="l10n_ua_agro_military_account_id"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_ua_agro_in_kind_income_account_id" class="col-lg-5 o_light_label"/>
+                                    <field name="l10n_ua_agro_in_kind_income_account_id"/>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting id="agro_rent_tax_rates" string="Withholding Rates"
+                                 help="Withheld from the rent of individual lessors (income code 106)">
+                            <div class="content-group">
+                                <div class="row mt8">
+                                    <label for="l10n_ua_agro_pdfo_rate" class="col-lg-5 o_light_label"/>
+                                    <field name="l10n_ua_agro_pdfo_rate"/>
+                                </div>
+                                <div class="row">
+                                    <label for="l10n_ua_agro_military_rate" class="col-lg-5 o_light_label"/>
+                                    <field name="l10n_ua_agro_military_rate"/>
+                                </div>
+                            </div>
+                        </setting>
+                    </block>
+                </app>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_config_settings_action" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{'module': 'l10n_ua_agro_base', 'bin_size': False}</field>
+    </record>
+
+</odoo>

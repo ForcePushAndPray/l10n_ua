@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="seq_agro_rent_accrual" model="ir.sequence">
+            <field name="name">Land Rent Accrual</field>
+            <field name="code">l10n_ua.agro.rent.accrual</field>
+            <field name="prefix">RENT/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="seq_agro_rent_payment" model="ir.sequence">
+            <field name="name">Land Rent Payment</field>
+            <field name="code">l10n_ua.agro.rent.payment</field>
+            <field name="prefix">RENTPAY/%(year)s/</field>
+            <field name="padding">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

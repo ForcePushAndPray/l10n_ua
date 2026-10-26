@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_l10n_ua_agro_land"
+              name="Land Bank"
+              parent="l10n_ua_agro_base.menu_l10n_ua_agro_root"
+              sequence="20"/>
+
+    <menuitem id="menu_l10n_ua_agro_land_plots"
+              name="Land Plots"
+              parent="menu_l10n_ua_agro_land"
+              action="l10n_ua_agro_land_plot_action"
+              sequence="10"/>
+
+    <menuitem id="menu_l10n_ua_agro_land_leases"
+              name="Land Leases"
+              parent="menu_l10n_ua_agro_land"
+              action="l10n_ua_agro_land_lease_action"
+              sequence="20"/>
+
+    <menuitem id="menu_l10n_ua_agro_rent_accruals"
+              name="Rent Accruals"
+              parent="menu_l10n_ua_agro_land"
+              action="l10n_ua_agro_rent_accrual_action"
+              groups="account.group_account_readonly"
+              sequence="30"/>
+
+    <menuitem id="menu_l10n_ua_agro_rent_payments"
+              name="Rent Payments"
+              parent="menu_l10n_ua_agro_land"
+              action="l10n_ua_agro_rent_payment_action"
+              groups="account.group_account_readonly"
+              sequence="40"/>
+
+    <menuitem id="menu_l10n_ua_agro_report_plots"
+              name="Area by Owner"
+              parent="l10n_ua_agro_base.menu_l10n_ua_agro_reports"
+              action="l10n_ua_agro_land_plot_report_action"
+              sequence="20"/>
+
+    <menuitem id="menu_l10n_ua_agro_report_rent_debts"
+              name="Rent Debts"
+              parent="l10n_ua_agro_base.menu_l10n_ua_agro_reports"
+              action="l10n_ua_agro_rent_debt_action"
+              groups="account.group_account_readonly"
+              sequence="30"/>
+
+    <menuitem id="menu_l10n_ua_agro_report_rent_pdfo"
+              name="PIT on Rent by Community"
+              parent="l10n_ua_agro_base.menu_l10n_ua_agro_reports"
+              action="l10n_ua_agro_rent_pdfo_action"
+              groups="account.group_account_readonly"
+              sequence="40"/>
+
+    <menuitem id="menu_l10n_ua_agro_settings"
+              name="Settings"
+              parent="l10n_ua_agro_base.menu_l10n_ua_agro_config"
+              action="l10n_ua_agro_config_settings_action"
+              sequence="5"/>
+
+</odoo>
