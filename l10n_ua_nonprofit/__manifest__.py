@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Non-profit Organizations',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Accounting/Localization',
     'summary': 'Ukrainian NGOs and charities: target financing (account 48), '
                'income recognition under P(S)BO 15, report on the use of income',

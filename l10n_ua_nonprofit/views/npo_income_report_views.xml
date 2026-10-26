@@ -22,14 +22,14 @@
                     </div>
                     <group>
                         <group string="Period">
-                            <field name="year" options="{'format': false}" readonly="state != 'draft'"/>
+                            <field name="year" options="{'enable_formatting': false}" readonly="state != 'draft'"/>
                             <field name="period_type" readonly="state != 'draft'"/>
                             <field name="month" invisible="period_type != 'month'"
                                    required="period_type == 'month'" readonly="state != 'draft'"/>
                             <field name="date_from"/>
                             <field name="date_to"/>
                             <field name="report_kind" readonly="state != 'draft'"/>
-                            <field name="clarified_year" options="{'format': false}"
+                            <field name="clarified_year" options="{'enable_formatting': false}"
                                    invisible="report_kind != 'clarifying'"/>
                             <field name="clarified_month"
                                    invisible="report_kind != 'clarifying' or period_type != 'month'"/>
