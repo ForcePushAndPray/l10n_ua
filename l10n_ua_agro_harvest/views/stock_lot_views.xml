@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="view_production_lot_form_agro" model="ir.ui.view">
+        <field name="name">stock.lot.form.agro</field>
+        <field name="model">stock.lot</field>
+        <field name="inherit_id" ref="stock.view_production_lot_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//sheet" position="inside">
+                <notebook name="agro_notebook">
+                <page string="Harvest Quality" name="agro_quality" invisible="not l10n_ua_agro_planting_id">
+                    <group>
+                        <group>
+                            <field name="l10n_ua_agro_planting_id"/>
+                            <field name="l10n_ua_agro_field_id"/>
+                            <field name="l10n_ua_agro_season_id"/>
+                            <field name="l10n_ua_agro_credit_weight"/>
+                        </group>
+                        <group>
+                            <field name="l10n_ua_agro_moisture"/>
+                            <field name="l10n_ua_agro_impurity"/>
+                            <field name="l10n_ua_agro_grain_impurity"/>
+                            <field name="l10n_ua_agro_test_weight"/>
+                            <field name="l10n_ua_agro_oil_content"/>
+                            <field name="l10n_ua_agro_protein"/>
+                        </group>
+                    </group>
+                    <field name="l10n_ua_agro_receipt_ids" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="date"/>
+                            <field name="vehicle"/>
+                            <field name="net_weight" sum="Total"/>
+                            <field name="moisture"/>
+                            <field name="impurity"/>
+                            <field name="credit_weight" sum="Total"/>
+                            <field name="state" widget="badge"/>
+                        </list>
+                    </field>
+                </page>
+                </notebook>
+            </xpath>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_ua_agro_crop_view_list_basis" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.crop.list.basis</field>
+        <field name="model">l10n_ua.agro.crop</field>
+        <field name="inherit_id" ref="l10n_ua_agro_base.l10n_ua_agro_crop_view_list"/>
+        <field name="arch" type="xml">
+            <field name="byproduct_id" position="after">
+                <field name="base_moisture" optional="show"/>
+                <field name="base_impurity" optional="show"/>
+            </field>
+        </field>
+    </record>
+</odoo>

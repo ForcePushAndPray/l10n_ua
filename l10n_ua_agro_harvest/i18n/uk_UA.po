@@ -1,0 +1,594 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ua_agro_harvest
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260103\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-26 08:35+0000\n"
+"PO-Revision-Date: 2026-10-26 08:35+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_needaction
+msgid "Action Needed"
+msgstr "Необхідна дія"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_attachment_count
+msgid "Attachment Count"
+msgstr "Підрахунок прикріплення"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_crop__base_impurity
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__base_impurity
+msgid "Base Impurity (%)"
+msgstr "Базисна смітна домішка (%)"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_crop__base_moisture
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__base_moisture
+msgid "Base Moisture (%)"
+msgstr "Базисна вологість (%)"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_form
+msgid "Basic Conditions"
+msgstr "Базисні кондиції"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__lot_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_search
+msgid "Batch"
+msgstr "Партія"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_form
+msgid "Cancel"
+msgstr "Скасувати"
+
+#. module: l10n_ua_agro_harvest
+#. odoo-python
+#: code:addons/l10n_ua_agro_harvest/models/harvest_receipt.py:0
+msgid "Cancel the harvest receipt before deleting it."
+msgstr "Скасуйте завезення, перш ніж видаляти його."
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_form
+msgid ""
+"Cancel the harvest receipt? The grain will be written back from the storage."
+msgstr "Скасувати завезення? Зерно буде списано назад зі складу."
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields.selection,name:l10n_ua_agro_harvest.selection__l10n_ua_agro_harvest_receipt__state__cancel
+msgid "Cancelled"
+msgstr "Скасовано"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model,name:l10n_ua_agro_harvest.model_res_company
+msgid "Companies"
+msgstr "Компанії"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__company_id
+msgid "Company"
+msgstr "Компанія"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model,name:l10n_ua_agro_harvest.model_res_config_settings
+msgid "Config Settings"
+msgstr "Налаштування"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__create_uid
+msgid "Created by"
+msgstr "Створено"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__create_date
+msgid "Created on"
+msgstr "Створено"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__credit_weight
+msgid "Credit Weight (kg)"
+msgstr "Залікова маса (кг)"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_form
+msgid ""
+"Credit weight = net × (100 − impurity) × (100 − moisture) / ((100 − base "
+"impurity) × (100 − base moisture)); values better than the basic conditions "
+"give no bonus."
+msgstr ""
+"Залікова маса = нетто × (100 − смітна) × (100 − вологість) / ((100 − базисна"
+" смітна) × (100 − базисна вологість)); показники, кращі за базисні, надбавки"
+" не дають."
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model,name:l10n_ua_agro_harvest.model_l10n_ua_agro_crop
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__crop_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_search
+msgid "Crop"
+msgstr "Культура"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__date
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_search
+msgid "Date"
+msgstr "Дата"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_search
+msgid "Day"
+msgstr "День"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__uom_id
+msgid "Default unit of measure used for all stock operations."
+msgstr ""
+"Стандартна одиниця вимірювання, що використовується для всіх складських "
+"операцій."
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_crop__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_planting__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_res_company__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_res_config_settings__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__display_name
+msgid "Display Name"
+msgstr "Назва для відображення"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields.selection,name:l10n_ua_agro_harvest.selection__l10n_ua_agro_harvest_receipt__state__draft
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_search
+msgid "Draft"
+msgstr "Чернетка"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__driver
+msgid "Driver"
+msgstr "Водій"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__field_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__l10n_ua_agro_field_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_search
+msgid "Field"
+msgstr "Поле"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_follower_ids
+msgid "Followers"
+msgstr "Підписники"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Підписники (Партнери)"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__grain_impurity
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__l10n_ua_agro_grain_impurity
+msgid "Grain Impurity (%)"
+msgstr "Зернова домішка (%)"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__gross_weight
+msgid "Gross (kg)"
+msgstr "Брутто (кг)"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_pivot
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.res_config_settings_view_form_agro_harvest
+msgid "Harvest"
+msgstr "Урожай"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_res_company__l10n_ua_agro_harvest_location_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_res_config_settings__l10n_ua_agro_harvest_location_id
+msgid "Harvest Location"
+msgstr "Місце оприбуткування врожаю"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.view_production_lot_form_agro
+msgid "Harvest Quality"
+msgstr "Якість урожаю"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model,name:l10n_ua_agro_harvest.model_l10n_ua_agro_harvest_receipt
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_form
+msgid "Harvest Receipt"
+msgstr "Завезення з поля"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.actions.act_window,name:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_action
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_planting__harvest_receipt_ids
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__l10n_ua_agro_receipt_ids
+#: model:ir.ui.menu,name:l10n_ua_agro_harvest.menu_l10n_ua_agro_harvest_receipts
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_search
+msgid "Harvest Receipts"
+msgstr "Завезення з поля"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.res_config_settings_view_form_agro_harvest
+msgid "Harvest Storage"
+msgstr "Зберігання врожаю"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_planting__harvest_weight
+msgid "Harvested (t)"
+msgstr "Зібрано (т)"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__has_message
+msgid "Has Message"
+msgstr "Є повідомлення"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_crop__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_planting__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_res_company__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_res_config_settings__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Якщо позначено, то нові повідомлення будуть потребувати вашої уваги."
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_has_error
+#: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Якщо позначено, деякі повідомлення мають помилку доставки."
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__impurity
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__l10n_ua_agro_impurity
+msgid "Impurity (%)"
+msgstr "Смітна домішка (%)"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_is_follower
+msgid "Is Follower"
+msgstr "Стежить"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_form
+msgid "Laboratory"
+msgstr "Лабораторія"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__write_uid
+msgid "Last Updated by"
+msgstr "Востаннє оновлено"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__write_date
+msgid "Last Updated on"
+msgstr "Востаннє оновлено"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__weight_loss
+msgid "Loss (kg)"
+msgstr "Зменшення маси (кг)"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model,name:l10n_ua_agro_harvest.model_stock_lot
+msgid "Lot/Serial"
+msgstr "Партія/Серійний номер"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_has_error
+msgid "Message Delivery error"
+msgstr "Помилка доставлення повідомлення"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_ids
+msgid "Messages"
+msgstr "Повідомлення"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__moisture
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__l10n_ua_agro_moisture
+msgid "Moisture (%)"
+msgstr "Вологість (%)"
+
+#. module: l10n_ua_agro_harvest
+#. odoo-python
+#: code:addons/l10n_ua_agro_harvest/models/harvest_receipt.py:0
+msgid "Moisture and impurity must be between 0 and 100 %."
+msgstr "Вологість і смітна домішка мають бути від 0 до 100 %."
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__name
+msgid "Name"
+msgstr "Назва"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__net_weight
+msgid "Net (kg)"
+msgstr "Нетто (кг)"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__note
+msgid "Note"
+msgstr "Примітка"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_form
+msgid "Notes"
+msgstr "Примітки"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Кількість дій"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_has_error_counter
+msgid "Number of errors"
+msgstr "Кількість помилок"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Кількість повідомлень, які вимагають дії"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Кількість повідомлень з помилкою доставки"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__oil_content
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__l10n_ua_agro_oil_content
+msgid "Oil Content (%)"
+msgstr "Олійність (%)"
+
+#. module: l10n_ua_agro_harvest
+#. odoo-python
+#: code:addons/l10n_ua_agro_harvest/models/harvest_receipt.py:0
+msgid "Only a cancelled receipt can be reset to draft."
+msgstr "Повернути в чернетку можна лише скасоване завезення."
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model,name:l10n_ua_agro_harvest.model_l10n_ua_agro_planting
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__planting_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__l10n_ua_agro_planting_id
+msgid "Planting"
+msgstr "Посів"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__product_id
+msgid "Product"
+msgstr "Продукція"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__protein
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__l10n_ua_agro_protein
+msgid "Protein (%)"
+msgstr "Білок (%)"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_form
+msgid "Receive"
+msgstr "Оприбуткувати"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__received_qty
+#: model:ir.model.fields.selection,name:l10n_ua_agro_harvest.selection__l10n_ua_agro_harvest_receipt__state__done
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_search
+msgid "Received"
+msgstr "Оприбутковано"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__l10n_ua_agro_credit_weight
+msgid "Received (kg)"
+msgstr "Оприбутковано (кг)"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.actions.act_window,help:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_action
+msgid "Register the first vehicle from the field"
+msgstr "Зареєструйте першу машину з поля"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_form
+msgid "Reset to Draft"
+msgstr "Повернути в чернетку"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Помилка доставки SMS"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__season_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__l10n_ua_agro_season_id
+msgid "Season"
+msgstr "Сезон"
+
+#. module: l10n_ua_agro_harvest
+#. odoo-python
+#: code:addons/l10n_ua_agro_harvest/models/harvest_receipt.py:0
+msgid "Set the product the crop is received as."
+msgstr "Вкажіть продукцію, якою оприбутковується культура."
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_form
+msgid "Shipment"
+msgstr "Перевезення"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__state
+msgid "State"
+msgstr "Стан"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__move_id
+msgid "Stock Move"
+msgstr "Складський рух"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__location_dest_id
+msgid "Storage"
+msgstr "Місце зберігання"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__tare_weight
+msgid "Tare (kg)"
+msgstr "Тара (кг)"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__test_weight
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__l10n_ua_agro_test_weight
+msgid "Test Weight (g/l)"
+msgstr "Натура (г/л)"
+
+#. module: l10n_ua_agro_harvest
+#. odoo-python
+#: code:addons/l10n_ua_agro_harvest/models/harvest_receipt.py:0
+msgid ""
+"The grain of %(receipt)s has already left the storage: only %(available)s of"
+" %(quantity)s is left, so the receipt cannot be cancelled."
+msgstr ""
+"Зерно за %(receipt)s уже вибуло зі складу: лишилося %(available)s з "
+"%(quantity)s, тому завезення не можна скасувати."
+
+#. module: l10n_ua_agro_harvest
+#. odoo-python
+#: code:addons/l10n_ua_agro_harvest/models/harvest_receipt.py:0
+msgid "The tare cannot exceed the gross weight."
+msgstr "Тара не може перевищувати брутто."
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_planting_view_list_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_planting_yield_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.view_production_lot_form_agro
+msgid "Total"
+msgstr "Разом"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__uom_id
+msgid "Unit"
+msgstr "Одиниця"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__vehicle
+msgid "Vehicle"
+msgstr "Транспорт"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__website_message_ids
+msgid "Website Messages"
+msgstr "Повідомлення з веб-сайту"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__website_message_ids
+msgid "Website communication history"
+msgstr "Історія бесіди на сайті"
+
+#. module: l10n_ua_agro_harvest
+#. odoo-python
+#: code:addons/l10n_ua_agro_harvest/models/harvest_receipt.py:0
+msgid "Weigh the vehicle first: the credit weight is zero."
+msgstr "Спершу зважте машину: залікова маса нульова."
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.actions.act_window,help:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_action
+msgid ""
+"Weigh the vehicle, enter the laboratory analysis: the credit weight is "
+"received into a batch of the field."
+msgstr ""
+"Зважте машину, внесіть аналіз лабораторії: залікова маса оприбутковується в "
+"партію поля."
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_form
+msgid "Weighing"
+msgstr "Зважування"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.res_config_settings_view_form_agro_harvest
+msgid ""
+"Where the harvest is received by default: own storage or a place at the "
+"elevator"
+msgstr ""
+"Куди за замовчуванням оприбутковується врожай: власний склад або місце на "
+"елеваторі"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.actions.act_window,name:l10n_ua_agro_harvest.l10n_ua_agro_yield_action
+#: model:ir.ui.menu,name:l10n_ua_agro_harvest.menu_l10n_ua_agro_report_yield
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_planting_yield_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_planting_yield_view_pivot
+msgid "Yield"
+msgstr "Урожайність"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_planting__harvest_yield
+msgid "Yield (c/ha)"
+msgstr "Урожайність (ц/га)"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_form
+msgid "e.g. ВК 4417 АР"
+msgstr ""
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_crop__base_moisture
+msgid ""
+"Базисна вологість (ДСТУ / договір): понад неї маса зменшується за формулою "
+"Дюваля."
+msgstr ""
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_crop__base_impurity
+msgid "Базисна смітна домішка."
+msgstr ""
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_planting__harvest_weight
+msgid "Валовий збір у заліковій масі."
+msgstr ""
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__location_dest_id
+msgid "Власний склад / тік або місце зберігання на елеваторі."
+msgstr ""
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__credit_weight
+msgid "Залікова маса за формулою Дюваля — оприбутковується на склад."
+msgstr ""
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__received_qty
+msgid ""
+"Оприбутковано на склад в одиниці виміру товару (з її точністю). Зерно краще "
+"вести в кг."
+msgstr ""
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,help:l10n_ua_agro_harvest.field_res_company__l10n_ua_agro_harvest_location_id
+#: model:ir.model.fields,help:l10n_ua_agro_harvest.field_res_config_settings__l10n_ua_agro_harvest_location_id
+msgid "Склад / тік, куди за замовчуванням оприбутковується врожай."
+msgstr ""
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_planting__harvest_yield
+msgid "Урожайність, ц/га, у заліковій масі."
+msgstr ""

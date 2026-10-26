@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_agro_harvest_receipt_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.harvest.receipt.list</field>
+        <field name="model">l10n_ua.agro.harvest.receipt</field>
+        <field name="arch" type="xml">
+            <list string="Harvest Receipts" decoration-muted="state == 'cancel'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="field_id"/>
+                <field name="crop_id"/>
+                <field name="vehicle" optional="show"/>
+                <field name="net_weight" sum="Total"/>
+                <field name="moisture" optional="show"/>
+                <field name="impurity" optional="show"/>
+                <field name="credit_weight" sum="Total"/>
+                <field name="lot_id" optional="show"/>
+                <field name="location_dest_id" optional="hide"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'" decoration-info="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_harvest_receipt_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.harvest.receipt.form</field>
+        <field name="model">l10n_ua.agro.harvest.receipt</field>
+        <field name="arch" type="xml">
+            <form string="Harvest Receipt">
+                <header>
+                    <button name="action_done" type="object" string="Receive"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state == 'cancel'" confirm="Cancel the harvest receipt? The grain will be written back from the storage."/>
+                    <button name="action_draft" type="object" string="Reset to Draft"
+                            invisible="state != 'cancel'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group string="Shipment">
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="planting_id" readonly="state != 'draft'" options="{'no_create': True}"/>
+                            <field name="field_id"/>
+                            <field name="product_id" readonly="state != 'draft'"/>
+                            <field name="vehicle" readonly="state != 'draft'" placeholder="e.g. ВК 4417 АР"/>
+                            <field name="driver" readonly="state != 'draft'"/>
+                            <field name="location_dest_id" readonly="state != 'draft'"/>
+                            <field name="lot_id" invisible="not lot_id"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft'"/>
+                        </group>
+                        <group string="Weighing">
+                            <field name="gross_weight" readonly="state != 'draft'"/>
+                            <field name="tare_weight" readonly="state != 'draft'"/>
+                            <field name="net_weight"/>
+                            <field name="weight_loss"/>
+                            <field name="credit_weight" class="fw-bold"/>
+                            <label for="received_qty" invisible="state != 'done'"/>
+                            <div class="o_row" invisible="state != 'done'">
+                                <field name="received_qty"/>
+                                <field name="uom_id" options="{'no_open': True}"/>
+                            </div>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Laboratory">
+                            <field name="moisture" readonly="state != 'draft'"/>
+                            <field name="impurity" readonly="state != 'draft'"/>
+                            <field name="grain_impurity" readonly="state != 'draft'"/>
+                            <field name="test_weight" readonly="state != 'draft'"/>
+                            <field name="oil_content" readonly="state != 'draft'"/>
+                            <field name="protein" readonly="state != 'draft'"/>
+                        </group>
+                        <group string="Basic Conditions">
+                            <field name="base_moisture" readonly="state != 'draft'"/>
+                            <field name="base_impurity" readonly="state != 'draft'"/>
+                            <div class="text-muted" colspan="2">
+                                Credit weight = net × (100 − impurity) × (100 − moisture) / ((100 − base impurity) × (100 − base moisture)); values better than the basic conditions give no bonus.
+                            </div>
+                        </group>
+                    </group>
+                    <field name="note" placeholder="Notes"/>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_harvest_receipt_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.harvest.receipt.search</field>
+        <field name="model">l10n_ua.agro.harvest.receipt</field>
+        <field name="arch" type="xml">
+            <search string="Harvest Receipts">
+                <field name="name"/>
+                <field name="field_id"/>
+                <field name="crop_id"/>
+                <field name="vehicle"/>
+                <field name="lot_id"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Received" name="done" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter string="Date" name="filter_date" date="date"/>
+                <group>
+                    <filter string="Field" name="groupby_field" domain="[]" context="{'group_by': 'field_id'}"/>
+                    <filter string="Crop" name="groupby_crop" domain="[]" context="{'group_by': 'crop_id'}"/>
+                    <filter string="Day" name="groupby_day" domain="[]" context="{'group_by': 'date:day'}"/>
+                    <filter string="Batch" name="groupby_lot" domain="[]" context="{'group_by': 'lot_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_harvest_receipt_view_pivot" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.harvest.receipt.pivot</field>
+        <field name="model">l10n_ua.agro.harvest.receipt</field>
+        <field name="arch" type="xml">
+            <pivot string="Harvest" sample="1">
+                <field name="crop_id" type="row"/>
+                <field name="date" interval="day" type="col"/>
+                <field name="credit_weight" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_harvest_receipt_action" model="ir.actions.act_window">
+        <field name="name">Harvest Receipts</field>
+        <field name="res_model">l10n_ua.agro.harvest.receipt</field>
+        <field name="view_mode">list,form,pivot</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Register the first vehicle from the field</p>
+            <p>Weigh the vehicle, enter the laboratory analysis: the credit weight is received into a batch of the field.</p>
+        </field>
+    </record>
+
+    <!-- Урожайність — по посівах -->
+    <record id="l10n_ua_agro_planting_yield_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.planting.yield.list</field>
+        <field name="model">l10n_ua.agro.planting</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <list string="Yield" create="0" edit="0">
+                <field name="season_id"/>
+                <field name="field_id"/>
+                <field name="crop_id"/>
+                <field name="area" sum="Total"/>
+                <field name="harvest_weight" sum="Total"/>
+                <field name="harvest_yield"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_planting_yield_view_pivot" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.planting.yield.pivot</field>
+        <field name="model">l10n_ua.agro.planting</field>
+        <field name="priority">90</field>
+        <field name="arch" type="xml">
+            <pivot string="Yield" sample="1">
+                <field name="crop_id" type="row"/>
+                <field name="season_id" type="col"/>
+                <field name="area" type="measure"/>
+                <field name="harvest_weight" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_yield_action" model="ir.actions.act_window">
+        <field name="name">Yield</field>
+        <field name="res_model">l10n_ua.agro.planting</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+            (0, 0, {'view_mode': 'list', 'view_id': ref('l10n_ua_agro_planting_yield_view_list')}),
+            (0, 0, {'view_mode': 'pivot', 'view_id': ref('l10n_ua_agro_planting_yield_view_pivot')})]"/>
+        <field name="domain">[('harvest_weight', '&gt;', 0)]</field>
+        <field name="context">{'search_default_groupby_season': 1}</field>
+    </record>
+
+</odoo>
