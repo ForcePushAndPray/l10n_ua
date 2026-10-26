@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_agro_stat_report_user,l10n_ua.agro.stat.report.user,model_l10n_ua_agro_stat_report,l10n_ua_agro_base.group_ua_agro_user,1,0,0,0
+access_agro_stat_report_manager,l10n_ua.agro.stat.report.manager,model_l10n_ua_agro_stat_report,l10n_ua_agro_base.group_ua_agro_manager,1,1,1,1
+access_agro_stat_report_accountant,l10n_ua.agro.stat.report.accountant,model_l10n_ua_agro_stat_report,account.group_account_user,1,1,1,1
+access_agro_stat_report_line_user,l10n_ua.agro.stat.report.line.user,model_l10n_ua_agro_stat_report_line,l10n_ua_agro_base.group_ua_agro_user,1,0,0,0
+access_agro_stat_report_line_manager,l10n_ua.agro.stat.report.line.manager,model_l10n_ua_agro_stat_report_line,l10n_ua_agro_base.group_ua_agro_manager,1,1,1,1
+access_agro_stat_report_line_accountant,l10n_ua.agro.stat.report.line.accountant,model_l10n_ua_agro_stat_report_line,account.group_account_user,1,1,1,1

@@ -1,0 +1,1021 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ua_agro_reports
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260103\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-26 11:50+0000\n"
+"PO-Revision-Date: 2026-10-26 11:50+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.actions.report,print_report_name:l10n_ua_agro_reports.action_report_agro_stat
+msgid "'%s_%s' % (object.form, object.year)"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.report_agro_stat
+msgid ""
+",\n"
+"                                    які здійснюють сільськогосподарську діяльність, – територіальному органу Держстату<br/>\n"
+"                                    Термін подання:"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.report_agro_stat
+msgid ", відокремлені підрозділи юридичних осіб"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0060
+msgid "0060 Пшениця та спельта озима тверда"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0070
+msgid "0070 Пшениця та спельта озима інша, крім твердої"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0090
+msgid "0090 Пшениця та спельта яра тверда"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0100
+msgid "0100 Пшениця та спельта яра інша, крім твердої"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0110
+msgid "0110 Кукурудза"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0130
+msgid "0130 Ячмінь озимий"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0140
+msgid "0140 Ячмінь ярий"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0160
+msgid "0160 Жито озиме"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0170
+msgid "0170 Жито яре"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0190
+msgid "0190 Тритикале озиме"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0200
+msgid "0200 Тритикале яре"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0210
+msgid "0210 Овес"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0220
+msgid "0220 Гречка"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0230
+msgid "0230 Сорго"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0240
+msgid "0240 Просо"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0250
+msgid "0250 Рис"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0260
+msgid "0260 Культури зернові інші, гібриди, суміші колосових"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0280
+msgid "0280 Квасоля"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0300
+msgid "0300 Нут"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0310
+msgid "0310 Сочевиця"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0320
+msgid "0320 Горох"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0340
+msgid "0340 Вика озима"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0350
+msgid "0350 Вика яра"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0380
+msgid "0380 Культури зернобобові інші"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0410
+msgid "0410 Соя"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0450
+msgid "0450 Льон олійний (кудряш)"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0470
+msgid "0470 Гірчиця"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0490
+msgid "0490 Ріпак озимий"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0500
+msgid "0500 Кольза (ріпак ярий)"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0520
+msgid "0520 Соняшник"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0550
+msgid "0550 Мак олійний"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0597
+msgid "0597 Культури олійні інші"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0640
+msgid "0640 Льон-довгунець"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0680
+msgid "0680 Коноплі"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0750
+msgid "0750 Буряк цукровий фабричний"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0760
+msgid "0760 Буряк цукровий маточний"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0770
+msgid "0770 Буряк цукровий на насіння"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0790
+msgid "0790 Прянощі"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__0960
+msgid "0960 Рослини ефіроолійні"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1050
+msgid "1050 Рослини лікарські"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1170
+msgid "1170 Тютюн"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1180
+msgid "1180 Махорка"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1210
+msgid "1210 Рослини енергетичні"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1220
+msgid "1220 Культури технічні інші"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1250
+msgid "1250 Картопля"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1310
+msgid ""
+"1310 Коренеплоди та бульбоплоди їстівні з високим вмістом крохмалю та "
+"інуліну інші"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1351
+msgid "1351 Капуста відкритого ґрунту"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1601
+msgid "1601 Перець стручковий солодкий відкритого ґрунту"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1621
+msgid "1621 Огірки та корнішони відкритого ґрунту"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1641
+msgid "1641 Помідори відкритого ґрунту"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1661
+msgid "1661 Кабачки та цукіні відкритого ґрунту"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1711
+msgid "1711 Часник відкритого ґрунту"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1721
+msgid "1721 Цибуля відкритого ґрунту"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1831
+msgid "1831 Морква столова відкритого ґрунту"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1851
+msgid "1851 Буряк столовий відкритого ґрунту"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1940
+msgid "1940 Овочі коренеплідні та овочі цибулинні маточні"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1951
+msgid "1951 Культури овочеві інші відкритого ґрунту"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1970
+msgid "1970 Кавуни"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__1980
+msgid "1980 Дині"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__2020
+msgid "2020 Культури овочеві на насіння"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__2070
+msgid "2070 Культури баштанні продовольчі на насіння"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__2180
+msgid "2180 Буряк кормовий"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__2210
+msgid "2210 Коренеплоди кормові інші"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__2220
+msgid "2220 Культури баштанні кормові"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__2230
+msgid "2230 Кукурудза кормова на зелену масу"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__2250
+msgid "2250 Люцерна"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__2260
+msgid "2260 Трави однорічні та багаторічні інші (крім люцерни)"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__2389
+msgid ""
+"2389 Культури кормові інші (крім культур кормових маточних та на насіння)"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_crop__l10n_ua_stat_code__2490
+msgid "2490 Культури кормові маточні та на насіння"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_stat_report__form__29sg
+msgid "29-сг"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_stat_report__form__4sg
+msgid "4-сг"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,help:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__year
+msgid "4-сг — рік урожаю, під який посіяно; 29-сг і 50-сг — звітний рік."
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_stat_report__form__50sg
+msgid "50-сг"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.report_agro_stat
+msgid ""
+"<br/>\n"
+"                                    (річна)<br/>\n"
+"                                    ЗАТВЕРДЖЕНО<br/>\n"
+"                                    Наказ Держстату<br/>"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.constraint,message:l10n_ua_agro_reports.constraint_l10n_ua_agro_stat_report_line_report_cell_uniq
+msgid "A cell of the report can only appear once."
+msgstr "Клітинка звіту може бути лише одна."
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.constraint,message:l10n_ua_agro_reports.constraint_l10n_ua_agro_stat_report_form_year_company_uniq
+msgid "A report of this form for this year already exists."
+msgstr "Звіт цієї форми за цей рік уже існує."
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__message_needaction
+msgid "Action Needed"
+msgstr "Необхідна дія"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__activity_ids
+msgid "Activities"
+msgstr "Дії"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Оформлення виключення дії"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__activity_state
+msgid "Activity State"
+msgstr "Стан дії"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Іконка типу дії"
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.agro_stat_report_view_form
+msgid "Additional notes..."
+msgstr "Додаткові примітки..."
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model,name:l10n_ua_agro_reports.model_l10n_ua_agro_stat_report
+msgid "Agricultural Statistical Report"
+msgstr "Статистичний звіт с/г підприємства"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model,name:l10n_ua_agro_reports.model_l10n_ua_agro_stat_report_line
+msgid "Agricultural Statistical Report Cell"
+msgstr "Клітинка статистичного звіту с/г підприємства"
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.actions.act_window,help:l10n_ua_agro_reports.agro_stat_report_action
+msgid ""
+"Annual forms 4-sg (sown areas), 29-sg (harvest) and 50-sg (economic\n"
+"                indicators) computed from plantings, harvest receipts, cost calculations\n"
+"                and stock moves. Every cell can be overridden by hand."
+msgstr ""
+"Річні форми 4-сг (посівні площі), 29-сг (урожай) і 50-сг (економічні\n"
+"                показники), розраховані з посівів, завезень урожаю, калькуляцій\n"
+"                і складського руху. Будь-яку клітинку можна перекрити вручну."
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__message_attachment_count
+msgid "Attachment Count"
+msgstr "Підрахунок прикріплення"
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.agro_stat_report_view_form
+msgid "Col."
+msgstr "Гр."
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__column_no
+msgid "Column"
+msgstr "Графа"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__column_label
+msgid "Column Name"
+msgstr "Назва графи"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__company_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__company_id
+msgid "Company"
+msgstr "Компанія"
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.agro_stat_report_view_form
+msgid "Compute"
+msgstr "Розрахувати"
+
+#. module: l10n_ua_agro_reports
+#. odoo-python
+#: code:addons/l10n_ua_agro_reports/models/agro_stat_report.py:0
+msgid "Compute the report before marking it as done."
+msgstr "Розрахуйте звіт, перш ніж позначити його поданим."
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__is_auto
+msgid "Computed"
+msgstr "Обчислюється"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__computed_on
+msgid "Computed On"
+msgstr "Розраховано"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__computed_value
+msgid "Computed Value"
+msgstr "Обчислене значення"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model,name:l10n_ua_agro_reports.model_res_partner
+msgid "Contact"
+msgstr "Контакт"
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.actions.act_window,help:l10n_ua_agro_reports.agro_stat_report_action
+msgid "Create a State Statistics report"
+msgstr "Створіть звіт для Держстату"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__create_uid
+msgid "Created by"
+msgstr "Створено"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__create_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__create_date
+msgid "Created on"
+msgstr "Створено"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model,name:l10n_ua_agro_reports.model_l10n_ua_agro_crop
+msgid "Crop"
+msgstr "Культура"
+
+#. module: l10n_ua_agro_reports
+#. odoo-python
+#: code:addons/l10n_ua_agro_reports/models/agro_stat_report.py:0
+msgid "Crop «%s» has no Derzhstat row code: it is left out of the report."
+msgstr "Культура «%s» не має коду рядка Держстату — до звіту не потрапила."
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_crop__l10n_ua_stat_code
+msgid "Derzhstat Row Code"
+msgstr "Код рядка Держстату"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_crop__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_res_partner__display_name
+msgid "Display Name"
+msgstr "Назва для відображення"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_stat_report__state__done
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.agro_stat_report_view_search
+msgid "Done"
+msgstr "Подано"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_stat_report__state__draft
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.agro_stat_report_view_search
+msgid "Draft"
+msgstr "Чернетка"
+
+#. module: l10n_ua_agro_reports
+#. odoo-python
+#: code:addons/l10n_ua_agro_reports/models/agro_stat_report.py:0
+msgid "EDRPOU: %s"
+msgstr "ЄДРПОУ: %s"
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.agro_stat_report_view_form
+msgid "Export XLSX"
+msgstr "Експорт XLSX"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__date_deadline
+msgid "Filing Deadline"
+msgstr "Термін подання"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__message_follower_ids
+msgid "Followers"
+msgstr "Підписники"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Підписники (Партнери)"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,help:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Іконка зі шрифтом Font awesome, напр. fa-tasks"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.agro_stat_report_view_search
+msgid "Form"
+msgstr "Форма"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__has_message
+msgid "Has Message"
+msgstr "Є повідомлення"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_crop__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_res_partner__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__activity_exception_icon
+msgid "Icon"
+msgstr "Значок"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,help:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Іконка для визначення виключення дії."
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,help:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Якщо позначено, то нові повідомлення будуть потребувати вашої уваги."
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,help:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__message_has_error
+#: model:ir.model.fields,help:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Якщо позначено, деякі повідомлення мають помилку доставки."
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__name
+msgid "Indicator"
+msgstr "Показник"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__message_is_follower
+msgid "Is Follower"
+msgstr "Стежить"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__write_uid
+msgid "Last Updated by"
+msgstr "Востаннє оновлено"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__write_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__write_date
+msgid "Last Updated on"
+msgstr "Востаннє оновлено"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__is_manual
+msgid "Manual"
+msgstr "Вручну"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__manual_value
+msgid "Manual Value"
+msgstr "Значення вручну"
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.agro_stat_report_view_form
+msgid "Mark as Done"
+msgstr "Позначити поданим"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__message_has_error
+msgid "Message Delivery error"
+msgstr "Помилка доставлення повідомлення"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__message_ids
+msgid "Messages"
+msgstr "Повідомлення"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Дедлайн моєї дії"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__name
+msgid "Name"
+msgstr "Назва"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Дедлайн наступної дії"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__activity_summary
+msgid "Next Activity Summary"
+msgstr "Підсумок наступної дії"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__activity_type_id
+msgid "Next Activity Type"
+msgstr "Тип наступної дії"
+
+#. module: l10n_ua_agro_reports
+#. odoo-python
+#: code:addons/l10n_ua_agro_reports/models/agro_stat_report.py:0
+msgid ""
+"No posted crop cost calculation for the %s season: section I has no "
+"production cost."
+msgstr ""
+"Немає проведеної калькуляції собівартості сезону %s — у розділі І немає "
+"виробничої собівартості."
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__notes
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.agro_stat_report_view_form
+msgid "Notes"
+msgstr "Примітки"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Кількість дій"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__message_has_error_counter
+msgid "Number of errors"
+msgstr "Кількість помилок"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,help:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Кількість повідомлень, які вимагають дії"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,help:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Кількість повідомлень з помилкою доставки"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,help:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__is_auto
+msgid "Odoo computes this cell. Cells it has no data for are entered by hand."
+msgstr ""
+"Odoo обчислює цю клітинку. Клітинки, для яких даних немає, заповнюються "
+"вручну."
+
+#. module: l10n_ua_agro_reports
+#. odoo-python
+#: code:addons/l10n_ua_agro_reports/models/agro_stat_report.py:0
+msgid "Only a draft report can be recomputed."
+msgstr "Перерахувати можна лише чернетку звіту."
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.agro_stat_report_view_form
+msgid "Print"
+msgstr "Друк"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_res_partner__l10n_ua_agro_processor
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_res_users__l10n_ua_agro_processor
+msgid "Processing Enterprise"
+msgstr "Переробне підприємство"
+
+#. module: l10n_ua_agro_reports
+#. odoo-python
+#: code:addons/l10n_ua_agro_reports/models/agro_stat_report.py:0
+msgid "Product «%s» is not measured by weight: left out of section III."
+msgstr ""
+"Товар «%s» обліковується не у вагових одиницях — до розділу ІІІ не потрапив."
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_stat_report_line__unit__c
+msgid "Quintals"
+msgstr "ц"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__report_id
+msgid "Report"
+msgstr "Звіт"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,help:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__is_manual
+msgid ""
+"Report the value entered by hand instead of the computed one. The value is "
+"kept when the report is recomputed."
+msgstr ""
+"Подавати введене вручну значення замість обчисленого. Воно зберігається при "
+"перерахунку."
+
+#. module: l10n_ua_agro_reports
+#. odoo-python
+#: code:addons/l10n_ua_agro_reports/models/agro_stat_report.py:0
+msgid "Reset the report to draft to change its rows."
+msgstr "Поверніть звіт у чернетку, щоб змінити рядки."
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__activity_user_id
+msgid "Responsible User"
+msgstr "Відповідальний користувач"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__code
+msgid "Row Code"
+msgstr "Код рядка"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__line_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.agro_stat_report_view_form
+msgid "Rows"
+msgstr "Рядки"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Помилка доставки SMS"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__section
+msgid "Section"
+msgstr "Розділ"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__sequence
+msgid "Sequence"
+msgstr "Послідовність"
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.agro_stat_report_view_form
+msgid "Set to Draft"
+msgstr "У чернетку"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__state
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__report_state
+msgid "State"
+msgstr "Статус"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.actions.report,name:l10n_ua_agro_reports.action_report_agro_stat
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.agro_stat_report_view_form
+msgid "Statistical Report"
+msgstr "Статистичний звіт"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.actions.act_window,name:l10n_ua_agro_reports.agro_stat_report_action
+#: model:ir.ui.menu,name:l10n_ua_agro_reports.menu_l10n_ua_agro_stat_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.agro_stat_report_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.agro_stat_report_view_search
+msgid "Statistical Reports"
+msgstr "Статистична звітність"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,help:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Етап заснований на діях\n"
+"Протерміновано: термін виконання вже минув\n"
+"Сьогодні: дата дії сьогодні\n"
+"Заплановано: майбутні дії."
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_stat_report_line__unit__kuah
+msgid "Thousand UAH"
+msgstr "тис.грн"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,help:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Тип дії виключення на записі."
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__unit
+msgid "Unit"
+msgstr "Одиниця"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report_line__value
+msgid "Value"
+msgstr "Значення"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__warning
+msgid "Warning"
+msgstr "Попередження"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__website_message_ids
+msgid "Website Messages"
+msgstr "Повідомлення з веб-сайту"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,help:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__website_message_ids
+msgid "Website communication history"
+msgstr "Історія бесіди на сайті"
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,field_description:l10n_ua_agro_reports.field_l10n_ua_agro_stat_report__year
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.agro_stat_report_view_search
+msgid "Year"
+msgstr "Рік"
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.report_agro_stat
+msgid ""
+"______________________________________<br/>\n"
+"                                    (Власне ім’я ПРІЗВИЩЕ)"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.report_agro_stat
+msgid ""
+"______________________________________<br/>\n"
+"                                    Місце підпису керівника (власника) або особи,\n"
+"                                    відповідальної за достовірність наданої інформації"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields.selection,name:l10n_ua_agro_reports.selection__l10n_ua_agro_stat_report_line__unit__ha
+msgid "ha"
+msgstr "га"
+
+#. module: l10n_ua_agro_reports
+#. odoo-python
+#: code:addons/l10n_ua_agro_reports/models/agro_stat_report.py:0
+msgid "xlsxwriter is not installed. Run: pip install xlsxwriter"
+msgstr "xlsxwriter не встановлено. Виконайте: pip install xlsxwriter"
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.report_agro_stat
+msgid "Ідентифікаційний код ЄДРПОУ"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.report_agro_stat
+msgid ""
+"Державне статистичне спостереження<br/>\n"
+"                            Статистична конфіденційність забезпечується статтею 29\n"
+"                            Закону України \"Про офіційну статистику\""
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.report_agro_stat
+msgid "Код рядка"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,help:l10n_ua_agro_reports.field_l10n_ua_agro_crop__l10n_ua_stat_code
+msgid ""
+"Код рядка культури у формах № 4-сг і 29-сг (наказ Держстату від 19.03.2026 №"
+" 69). Визначає й вид продукції у формі № 50-сг."
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.report_agro_stat
+msgid "Код території (КАТОТТГ)"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.report_agro_stat
+msgid "Місцезнаходження (юридична адреса)"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.report_agro_stat
+msgid "Назва"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.report_agro_stat
+msgid "Найменування"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.report_agro_stat
+msgid "Подають: юридичні особи"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model:ir.model.fields,help:l10n_ua_agro_reports.field_res_partner__l10n_ua_agro_processor
+#: model:ir.model.fields,help:l10n_ua_agro_reports.field_res_users__l10n_ua_agro_processor
+msgid ""
+"Покупець переробляє продукцію сам (елеватор-переробник, олійноекстракційний,"
+" цукровий завод тощо): продаж йому — графа 5 розділу ІІІ форми № 50-сг."
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.report_agro_stat
+msgid "електронна пошта:"
+msgstr ""
+
+#. module: l10n_ua_agro_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_reports.report_agro_stat
+msgid "телефон:"
+msgstr ""

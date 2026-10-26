@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Коди рядків Держстату для культур довідника: лише порожні, тож
+         оновлення модуля не затирає правок користувача. -->
+    <function model="l10n_ua.agro.crop" name="_l10n_ua_fill_stat_codes"/>
+</odoo>

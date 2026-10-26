@@ -214,6 +214,7 @@ class AgroWorkOrder(models.Model):
             lines.append((0, 0, {
                 'name': '%s: %s' % (self.name, line.product_id.display_name),
                 'account_id': debit_account.id,
+                'product_id': line.product_id.id,       # стаття витрат у статзвітності (50-сг)
                 'debit': line.amount,
                 'analytic_distribution': distribution,
                 'l10n_ua_agro_planting_id': self.planting_id.id,
