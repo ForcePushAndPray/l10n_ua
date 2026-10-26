@@ -16,6 +16,7 @@ MEDOC_RK_FORM = '1201216'
 # (Порядок № 1307, пп. 8, 12).
 NON_PAYER_IPN = '100000000000'
 NON_PAYER_REASON = '02'
+EXPORT_IPN = '300000000000'
 
 # Ставка ПДВ рядка → (код ставки, поле обсягу, поле суми ПДВ) у шапці ПН
 _RATE_TOTALS = {
@@ -148,15 +149,22 @@ class L10nUaTaxInvoice(models.Model):
         card.add('N2_1', self.number)
         card.add('N2_11', self.number)
         buyer_ipn = self._medoc_buyer_ipn()
-        if buyer_ipn:
+        reason = self.non_payer_reason
+        if buyer_ipn and not reason:
             card.add('N3', partner.name)
             card.add('N4', buyer_ipn)
             card.add('EDR_POK', partner.edrpou)
+        elif reason == '07':
+            # експорт: покупець — нерезидент, умовний ІПН 300000000000
+            card.add('N3', partner.name)
+            card.add('N4', EXPORT_IPN)
+            card.add('N13', '1')
+            card.add('N14', reason)
         else:
             card.add('N3', 'Неплатник')
             card.add('N4', NON_PAYER_IPN)
             card.add('N13', '1')
-            card.add('N14', NON_PAYER_REASON)
+            card.add('N14', reason or NON_PAYER_REASON)
 
         totals = {}
         vat_by_field = {}

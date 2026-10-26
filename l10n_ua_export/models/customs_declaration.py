@@ -16,7 +16,8 @@ class L10nUaCustomsDeclaration(models.Model):
     _order = 'date desc, id desc'
 
     name = fields.Char(string='Declaration Number', required=True, tracking=True, copy=False,
-                       help='Номер митної декларації, напр. UA500020/2026/012345.')
+                       help='Номер митної декларації у форматі ЄАІС, напр. 26UA500020000123U4 — він '
+                            'переноситься в ПН на експорт.')
     date = fields.Date(string='Clearance Date', required=True, tracking=True,
                        help='Дата митного оформлення (випуску) — дата першої події з ПДВ.')
     regime = fields.Selection([('ek10', 'EK-10 Export'), ('ek11', 'EK-11 Re-export')],
@@ -161,6 +162,11 @@ class L10nUaCustomsDeclaration(models.Model):
             'company_id': company.id,
             'move_id': self.invoice_ids[:1].id,
             'non_payer_reason': '07',
+            # з 01.07.2024 — обов'язкові реквізити ПН на експорт
+            'contract_number': self.agreement_id.code or False,
+            'contract_date': self.agreement_id.signature_date or self.agreement_id.start_date or False,
+            'customs_number': self.name,
+            'customs_date': self.date,
             'line_ids': lines,
         })
         self.tax_invoice_id = tax_invoice
