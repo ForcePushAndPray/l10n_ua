@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_agro_work_order_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.work.order.list</field>
+        <field name="model">l10n_ua.agro.work.order</field>
+        <field name="arch" type="xml">
+            <list string="Work Orders" decoration-muted="state == 'cancel'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="field_id"/>
+                <field name="crop_id"/>
+                <field name="operation_type_id"/>
+                <field name="area_done" sum="Total"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="labor_amount" sum="Total" optional="show"/>
+                <field name="material_amount" sum="Total" optional="show"/>
+                <field name="fuel_amount" sum="Total" optional="show"/>
+                <field name="total_amount" sum="Total"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'" decoration-info="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_work_order_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.work.order.form</field>
+        <field name="model">l10n_ua.agro.work.order</field>
+        <field name="arch" type="xml">
+            <form string="Work Order">
+                <header>
+                    <button name="action_load_norms" type="object" string="Load Norms"
+                            invisible="state != 'draft'"/>
+                    <button name="action_done" type="object" string="Validate"
+                            class="btn-primary" invisible="state != 'draft'"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state == 'cancel'" confirm="Cancel the work order? The materials will be returned to the warehouse."/>
+                    <button name="action_draft" type="object" string="Reset to Draft"
+                            invisible="state != 'cancel'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,done"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_move" type="object" class="oe_stat_button"
+                                icon="fa-bars" invisible="not move_id"
+                                groups="account.group_account_readonly">
+                            <span class="o_stat_text">Journal Entry</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="planting_id" readonly="state != 'draft'"
+                                   options="{'no_create': True}"/>
+                            <field name="field_id"/>
+                            <field name="crop_id"/>
+                        </group>
+                        <group>
+                            <field name="operation_type_id" readonly="state != 'draft'"/>
+                            <field name="area_done" readonly="state != 'draft'"/>
+                            <field name="warehouse_id" readonly="state != 'draft'"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft'"/>
+                            <field name="move_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Operators" name="workers">
+                            <field name="worker_ids" readonly="state != 'draft'">
+                                <list editable="bottom">
+                                    <field name="employee_id"/>
+                                    <field name="machine_id"/>
+                                    <field name="volume"/>
+                                    <field name="hours" optional="show"/>
+                                    <field name="rate"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="amount" sum="Total"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Materials and Fuel" name="materials">
+                            <field name="material_ids" readonly="state != 'draft'">
+                                <list editable="bottom" decoration-danger="deviation &gt; 0">
+                                    <field name="product_id"/>
+                                    <field name="is_fuel"/>
+                                    <field name="norm_quantity" optional="show"/>
+                                    <field name="quantity"/>
+                                    <field name="deviation" optional="show"/>
+                                    <field name="uom_id" optional="show"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="amount" sum="Total"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                    <group class="oe_subtotal_footer">
+                        <field name="labor_amount"/>
+                        <field name="material_amount"/>
+                        <field name="fuel_amount"/>
+                        <field name="total_amount" class="oe_subtotal_footer_separator"/>
+                    </group>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_work_order_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.work.order.search</field>
+        <field name="model">l10n_ua.agro.work.order</field>
+        <field name="arch" type="xml">
+            <search string="Work Orders">
+                <field name="name"/>
+                <field name="field_id"/>
+                <field name="crop_id"/>
+                <field name="operation_type_id"/>
+                <field name="worker_ids" string="Operator" filter_domain="[('worker_ids.employee_id', 'ilike', self)]"/>
+                <filter string="Draft" name="draft" domain="[('state', '=', 'draft')]"/>
+                <filter string="Done" name="done" domain="[('state', '=', 'done')]"/>
+                <separator/>
+                <filter string="Date" name="filter_date" date="date"/>
+                <group>
+                    <filter string="Field" name="groupby_field" domain="[]" context="{'group_by': 'field_id'}"/>
+                    <filter string="Crop" name="groupby_crop" domain="[]" context="{'group_by': 'crop_id'}"/>
+                    <filter string="Operation" name="groupby_operation" domain="[]" context="{'group_by': 'operation_type_id'}"/>
+                    <filter string="Season" name="groupby_season" domain="[]" context="{'group_by': 'season_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_work_order_action" model="ir.actions.act_window">
+        <field name="name">Work Orders</field>
+        <field name="res_model">l10n_ua.agro.work.order</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Register the first field work</p>
+            <p>A work order records the operation done on a field, the operators and machines, and the materials and fuel written off.</p>
+        </field>
+    </record>
+
+    <!-- Виробіток механізаторів — для табеля / відомості -->
+    <record id="l10n_ua_agro_work_order_worker_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.work.order.worker.list</field>
+        <field name="model">l10n_ua.agro.work.order.worker</field>
+        <field name="arch" type="xml">
+            <list string="Operator Output" create="0" edit="0">
+                <field name="date"/>
+                <field name="order_id"/>
+                <field name="employee_id"/>
+                <field name="machine_id"/>
+                <field name="volume" sum="Total"/>
+                <field name="hours" sum="Total"/>
+                <field name="rate"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="amount" sum="Total"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_work_order_worker_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.work.order.worker.search</field>
+        <field name="model">l10n_ua.agro.work.order.worker</field>
+        <field name="arch" type="xml">
+            <search string="Operator Output">
+                <field name="employee_id"/>
+                <field name="machine_id"/>
+                <filter string="Date" name="filter_date" date="date"/>
+                <group>
+                    <filter string="Operator" name="groupby_employee" domain="[]" context="{'group_by': 'employee_id'}"/>
+                    <filter string="Machine" name="groupby_machine" domain="[]" context="{'group_by': 'machine_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_work_order_worker_action" model="ir.actions.act_window">
+        <field name="name">Operator Output</field>
+        <field name="res_model">l10n_ua.agro.work.order.worker</field>
+        <field name="view_mode">list</field>
+        <field name="domain">[('state', '=', 'done')]</field>
+        <field name="context">{'search_default_groupby_employee': 1}</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_agro_operation_type_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.operation.type.list</field>
+        <field name="model">l10n_ua.agro.operation.type</field>
+        <field name="arch" type="xml">
+            <list string="Field Operations" editable="bottom">
+                <field name="sequence" widget="handle"/>
+                <field name="name"/>
+                <field name="code"/>
+                <field name="category"/>
+                <field name="unit"/>
+                <field name="piece_rate"/>
+                <field name="fuel_norm"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="active" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_operation_type_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.operation.type.search</field>
+        <field name="model">l10n_ua.agro.operation.type</field>
+        <field name="arch" type="xml">
+            <search string="Field Operations">
+                <field name="name"/>
+                <field name="code"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter string="Category" name="groupby_category" domain="[]" context="{'group_by': 'category'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_operation_type_action" model="ir.actions.act_window">
+        <field name="name">Field Operations</field>
+        <field name="res_model">l10n_ua.agro.operation.type</field>
+        <field name="view_mode">list</field>
+    </record>
+
+</odoo>

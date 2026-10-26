@@ -6,11 +6,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0-20260103\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-26 07:57+0000\n"
-"PO-Revision-Date: 2026-10-26 07:57+0000\n"
+"POT-Creation-Date: 2026-10-26 08:19+0000\n"
+"PO-Revision-Date: 2026-10-26 08:19+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
-"Language: uk_UA\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
@@ -49,6 +48,7 @@ msgstr "Сільськогосподарський сезон"
 #. module: l10n_ua_agro_base
 #: model:ir.ui.menu,name:l10n_ua_agro_base.menu_l10n_ua_agro_root
 #: model:res.groups.privilege,name:l10n_ua_agro_base.res_groups_privilege_l10n_ua_agro
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.res_config_settings_view_form_agro
 msgid "Agro"
 msgstr "Агро"
 
@@ -508,6 +508,12 @@ msgstr "Сезони"
 #: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_crop__sequence
 msgid "Sequence"
 msgstr "Послідовність"
+
+#. module: l10n_ua_agro_base
+#: model:ir.actions.act_window,name:l10n_ua_agro_base.l10n_ua_agro_config_settings_action
+#: model:ir.ui.menu,name:l10n_ua_agro_base.menu_l10n_ua_agro_settings
+msgid "Settings"
+msgstr "Налаштування"
 
 #. module: l10n_ua_agro_base
 #: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_season__state__sowing

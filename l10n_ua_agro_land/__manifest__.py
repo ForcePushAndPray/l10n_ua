@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Agro Land Bank and Land Share Lease',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Agriculture/Localization',
     'summary': 'Land plots, lease of land shares from individuals, rent accrual '
                'with PIT and military levy withholding, payment in money or in kind',

@@ -43,6 +43,12 @@
               groups="group_ua_agro_manager"
               sequence="90"/>
 
+    <menuitem id="menu_l10n_ua_agro_settings"
+              name="Settings"
+              parent="menu_l10n_ua_agro_config"
+              action="l10n_ua_agro_config_settings_action"
+              sequence="5"/>
+
     <menuitem id="menu_l10n_ua_agro_seasons"
               name="Seasons"
               parent="menu_l10n_ua_agro_config"

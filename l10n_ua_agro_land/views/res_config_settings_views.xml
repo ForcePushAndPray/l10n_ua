@@ -4,11 +4,9 @@
     <record id="res_config_settings_view_form_agro_land" model="ir.ui.view">
         <field name="name">res.config.settings.agro.land</field>
         <field name="model">res.config.settings</field>
-        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="inherit_id" ref="l10n_ua_agro_base.res_config_settings_view_form_agro"/>
         <field name="arch" type="xml">
-            <xpath expr="//form" position="inside">
-                <app data-string="Agro" string="Agro" name="l10n_ua_agro_base"
-                     groups="l10n_ua_agro_base.group_ua_agro_manager">
+            <xpath expr="//app[@name='l10n_ua_agro_base']" position="inside">
                     <block title="Land Rent" name="agro_land_rent">
                         <setting id="agro_rent_journal" string="Journal and Accounts"
                                  help="Defaults for land rent accruals and payments">
@@ -53,17 +51,9 @@
                             </div>
                         </setting>
                     </block>
-                </app>
             </xpath>
         </field>
     </record>
 
-    <record id="l10n_ua_agro_config_settings_action" model="ir.actions.act_window">
-        <field name="name">Settings</field>
-        <field name="res_model">res.config.settings</field>
-        <field name="view_mode">form</field>
-        <field name="target">current</field>
-        <field name="context">{'module': 'l10n_ua_agro_base', 'bin_size': False}</field>
-    </record>
 
 </odoo>

@@ -1,0 +1,53 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ua_agro_operations_salary
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260103\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-26 08:19+0000\n"
+"PO-Revision-Date: 2026-10-26 08:19+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_ua_agro_operations_salary
+#: model:ir.model.fields,field_description:l10n_ua_agro_operations_salary.field_hr_piece_work_entry__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_operations_salary.field_l10n_ua_agro_work_order__display_name
+msgid "Display Name"
+msgstr "Відображувана назва"
+
+#. module: l10n_ua_agro_operations_salary
+#: model:ir.model,name:l10n_ua_agro_operations_salary.model_l10n_ua_agro_work_order
+msgid "Field Work Order"
+msgstr "Наряд на польові роботи"
+
+#. module: l10n_ua_agro_operations_salary
+#: model:ir.model.fields,field_description:l10n_ua_agro_operations_salary.field_hr_piece_work_entry__l10n_ua_agro_worker_id
+msgid "Field Work Order Line"
+msgstr "Рядок наряду на польові роботи"
+
+#. module: l10n_ua_agro_operations_salary
+#: model:ir.model.fields,field_description:l10n_ua_agro_operations_salary.field_hr_piece_work_entry__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_operations_salary.field_l10n_ua_agro_work_order__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_agro_operations_salary
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations_salary/models/agro_work_order.py:0
+msgid ""
+"The pay of %(employee)s for %(date)s is already in the validated payslip "
+"%(payslip)s: cancel the payslip first."
+msgstr ""
+"Оплата %(employee)s за %(date)s уже в проведеному розрахунковому листі "
+"%(payslip)s: спершу скасуйте його."
+
+#. module: l10n_ua_agro_operations_salary
+#: model:ir.model,name:l10n_ua_agro_operations_salary.model_hr_piece_work_entry
+msgid "Наряд відрядної оплати"
+msgstr ""

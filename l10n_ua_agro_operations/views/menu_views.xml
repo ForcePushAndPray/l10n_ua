@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <menuitem id="menu_l10n_ua_agro_work_orders"
+              name="Work Orders"
+              parent="l10n_ua_agro_base.menu_l10n_ua_agro_production"
+              action="l10n_ua_agro_work_order_action"
+              sequence="30"/>
+
+    <menuitem id="menu_l10n_ua_agro_tech_cards"
+              name="Technological Cards"
+              parent="l10n_ua_agro_base.menu_l10n_ua_agro_production"
+              action="l10n_ua_agro_tech_card_action"
+              sequence="40"/>
+
+    <menuitem id="menu_l10n_ua_agro_report_costs"
+              name="Plan / Actual Costs"
+              parent="l10n_ua_agro_base.menu_l10n_ua_agro_reports"
+              action="l10n_ua_agro_cost_report_action"
+              sequence="50"/>
+
+    <menuitem id="menu_l10n_ua_agro_report_output"
+              name="Operator Output"
+              parent="l10n_ua_agro_base.menu_l10n_ua_agro_reports"
+              action="l10n_ua_agro_work_order_worker_action"
+              sequence="60"/>
+
+    <menuitem id="menu_l10n_ua_agro_operation_types"
+              name="Field Operations"
+              parent="l10n_ua_agro_base.menu_l10n_ua_agro_config"
+              action="l10n_ua_agro_operation_type_action"
+              sequence="30"/>
+
+    <menuitem id="menu_l10n_ua_agro_machines"
+              name="Machinery"
+              parent="l10n_ua_agro_base.menu_l10n_ua_agro_config"
+              action="l10n_ua_agro_machine_action"
+              sequence="40"/>
+
+</odoo>

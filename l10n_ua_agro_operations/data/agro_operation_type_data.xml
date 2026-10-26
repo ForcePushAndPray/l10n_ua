@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <record id="operation_plough" model="l10n_ua.agro.operation.type">
+            <field name="name">Ploughing</field><field name="code">PLOUGH</field><field name="sequence">10</field>
+            <field name="category">tillage</field><field name="unit">ha</field>
+            <field name="piece_rate">120</field><field name="fuel_norm">18</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="operation_disc" model="l10n_ua.agro.operation.type">
+            <field name="name">Disking</field><field name="code">DISC</field><field name="sequence">20</field>
+            <field name="category">tillage</field><field name="unit">ha</field>
+            <field name="piece_rate">70</field><field name="fuel_norm">9</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="operation_cult" model="l10n_ua.agro.operation.type">
+            <field name="name">Pre-sowing Cultivation</field><field name="code">CULT</field><field name="sequence">30</field>
+            <field name="category">tillage</field><field name="unit">ha</field>
+            <field name="piece_rate">60</field><field name="fuel_norm">7</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="operation_sow" model="l10n_ua.agro.operation.type">
+            <field name="name">Sowing</field><field name="code">SOW</field><field name="sequence">40</field>
+            <field name="category">sowing</field><field name="unit">ha</field>
+            <field name="piece_rate">90</field><field name="fuel_norm">6</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="operation_fert" model="l10n_ua.agro.operation.type">
+            <field name="name">Fertilizer Application</field><field name="code">FERT</field><field name="sequence">50</field>
+            <field name="category">fertilizing</field><field name="unit">ha</field>
+            <field name="piece_rate">45</field><field name="fuel_norm">3</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="operation_spray" model="l10n_ua.agro.operation.type">
+            <field name="name">Spraying</field><field name="code">SPRAY</field><field name="sequence">60</field>
+            <field name="category">protection</field><field name="unit">ha</field>
+            <field name="piece_rate">35</field><field name="fuel_norm">1.5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="operation_interrow" model="l10n_ua.agro.operation.type">
+            <field name="name">Inter-row Cultivation</field><field name="code">INTERROW</field><field name="sequence">70</field>
+            <field name="category">tillage</field><field name="unit">ha</field>
+            <field name="piece_rate">55</field><field name="fuel_norm">5</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="operation_harv_grain" model="l10n_ua.agro.operation.type">
+            <field name="name">Grain Harvesting</field><field name="code">HARV_GRAIN</field><field name="sequence">80</field>
+            <field name="category">harvest</field><field name="unit">ha</field>
+            <field name="piece_rate">180</field><field name="fuel_norm">16</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="operation_harv_pumpkin" model="l10n_ua.agro.operation.type">
+            <field name="name">Pumpkin Seed Harvesting</field><field name="code">HARV_PUMPKIN</field><field name="sequence">90</field>
+            <field name="category">harvest</field><field name="unit">ha</field>
+            <field name="piece_rate">220</field><field name="fuel_norm">14</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="operation_haul" model="l10n_ua.agro.operation.type">
+            <field name="name">Grain Hauling</field><field name="code">HAUL</field><field name="sequence">100</field>
+            <field name="category">transport</field><field name="unit">t</field>
+            <field name="piece_rate">25</field><field name="fuel_norm">0.8</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="operation_mow" model="l10n_ua.agro.operation.type">
+            <field name="name">Mowing</field><field name="code">MOW</field><field name="sequence">110</field>
+            <field name="category">harvest</field><field name="unit">ha</field>
+            <field name="piece_rate">50</field><field name="fuel_norm">4</field>
+            <field name="company_id" eval="False"/>
+        </record>
+        <record id="operation_other" model="l10n_ua.agro.operation.type">
+            <field name="name">Other Work</field><field name="code">OTHER</field><field name="sequence">120</field>
+            <field name="category">other</field><field name="unit">hour</field>
+            <field name="piece_rate">150</field><field name="fuel_norm">0</field>
+            <field name="company_id" eval="False"/>
+        </record>
+    </data>
+</odoo>

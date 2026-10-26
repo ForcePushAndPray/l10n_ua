@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_agro_machine_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.machine.list</field>
+        <field name="model">l10n_ua.agro.machine</field>
+        <field name="arch" type="xml">
+            <list string="Machinery" editable="bottom">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="machine_type"/>
+                <field name="license_plate" optional="show"/>
+                <field name="fuel_product_id" optional="show"/>
+                <field name="fuel_factor" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="active" column_invisible="True"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_machine_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.machine.search</field>
+        <field name="model">l10n_ua.agro.machine</field>
+        <field name="arch" type="xml">
+            <search string="Machinery">
+                <field name="name" filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]"/>
+                <field name="license_plate"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter string="Type" name="groupby_type" domain="[]" context="{'group_by': 'machine_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_machine_action" model="ir.actions.act_window">
+        <field name="name">Machinery</field>
+        <field name="res_model">l10n_ua.agro.machine</field>
+        <field name="view_mode">list</field>
+    </record>
+
+</odoo>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Розділ «Агро» в налаштуваннях: модулі агро додають у нього свої блоки -->
+    <record id="res_config_settings_view_form_agro" model="ir.ui.view">
+        <field name="name">res.config.settings.agro</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="base.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//form" position="inside">
+                <app data-string="Agro" string="Agro" name="l10n_ua_agro_base"
+                     groups="l10n_ua_agro_base.group_ua_agro_manager"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_config_settings_action" model="ir.actions.act_window">
+        <field name="name">Settings</field>
+        <field name="res_model">res.config.settings</field>
+        <field name="view_mode">form</field>
+        <field name="target">current</field>
+        <field name="context">{'module': 'l10n_ua_agro_base', 'bin_size': False}</field>
+    </record>
+
+</odoo>
