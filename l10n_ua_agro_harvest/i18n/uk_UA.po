@@ -6,8 +6,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0-20260103\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-26 08:35+0000\n"
-"PO-Revision-Date: 2026-10-26 08:35+0000\n"
+"POT-Creation-Date: 2026-10-26 09:18+0000\n"
+"PO-Revision-Date: 2026-10-26 09:18+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -16,9 +16,49 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: l10n_ua_agro_harvest
+#: model:ir.actions.report,print_report_name:l10n_ua_agro_harvest.action_report_lot_quality
+msgid "'Quality %s' % object.name"
+msgstr "'Якість %s' % object.name"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid ", EDRPOU code:"
+msgstr ", код ЄДРПОУ:"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+msgid ", driver"
+msgstr ", водій"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+msgid ""
+";\n"
+"                                vehicle"
+msgstr ""
+";\n"
+"                                машина"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "; storage"
+msgstr "; місце зберігання"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "<br/>EDRPOU code:"
+msgstr "<br/>Код ЄДРПОУ:"
+
+#. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_needaction
 msgid "Action Needed"
 msgstr "Необхідна дія"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid "Agronomist <span class=\"line\"> </span>"
+msgstr "Агроном <span class=\"line\"> </span>"
 
 #. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_attachment_count
@@ -43,10 +83,21 @@ msgid "Basic Conditions"
 msgstr "Базисні кондиції"
 
 #. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid "Basic condition"
+msgstr "Базисна кондиція"
+
+#. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__lot_id
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
 msgid "Batch"
 msgstr "Партія"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.actions.report,name:l10n_ua_agro_harvest.action_report_lot_quality
+msgid "Batch Quality Card"
+msgstr "Картка якості партії"
 
 #. module: l10n_ua_agro_harvest
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_form
@@ -69,6 +120,16 @@ msgstr "Скасувати завезення? Зерно буде списан�
 #: model:ir.model.fields.selection,name:l10n_ua_agro_harvest.selection__l10n_ua_agro_harvest_receipt__state__cancel
 msgid "Cancelled"
 msgstr "Скасовано"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__combine_operator
+msgid "Combine Operator"
+msgstr "Комбайнер"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+msgid "Combine operator"
+msgstr "Комбайнер"
 
 #. module: l10n_ua_agro_harvest
 #: model:ir.model,name:l10n_ua_agro_harvest.model_res_company
@@ -112,11 +173,22 @@ msgstr ""
 " не дають."
 
 #. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "Credit weight, kg"
+msgstr "Залікова маса, кг"
+
+#. module: l10n_ua_agro_harvest
 #: model:ir.model,name:l10n_ua_agro_harvest.model_l10n_ua_agro_crop
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__crop_id
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
 msgid "Crop"
 msgstr "Культура"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid "Crop, harvest year"
+msgstr "Культура, рік урожаю"
 
 #. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__date
@@ -158,11 +230,23 @@ msgid "Driver"
 msgstr "Водій"
 
 #. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+msgid "Driver <span class=\"line\"> </span>"
+msgstr "Водій <span class=\"line\"> </span>"
+
+#. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__field_id
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__l10n_ua_agro_field_id
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
 msgid "Field"
 msgstr "Поле"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "Field, crop"
+msgstr "Поле, культура"
 
 #. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_follower_ids
@@ -175,15 +259,40 @@ msgid "Followers (Partners)"
 msgstr "Підписники (Партнери)"
 
 #. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+msgid "Foreman <span class=\"line\"> </span>"
+msgstr "Бригадир <span class=\"line\"> </span>"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+msgid "Form No. 77"
+msgstr "Форма № 77"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "Form No. 78"
+msgstr "Форма № 78"
+
+#. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__grain_impurity
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__l10n_ua_agro_grain_impurity
 msgid "Grain Impurity (%)"
 msgstr "Зернова домішка (%)"
 
 #. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid "Grain impurity, %"
+msgstr "Зернова домішка, %"
+
+#. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__gross_weight
 msgid "Gross (kg)"
 msgstr "Брутто (кг)"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+msgid "Gross, kg"
+msgstr "Брутто, кг"
 
 #. module: l10n_ua_agro_harvest
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_pivot
@@ -234,6 +343,11 @@ msgid "Has Message"
 msgstr "Є повідомлення"
 
 #. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+msgid "Head of the threshing floor <span class=\"line\"> </span>"
+msgstr "Завідувач току <span class=\"line\"> </span>"
+
+#. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_crop__id
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__id
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_planting__id
@@ -261,6 +375,22 @@ msgid "Impurity (%)"
 msgstr "Смітна домішка (%)"
 
 #. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid "Impurity, %"
+msgstr "Смітна домішка, %"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid "In stock"
+msgstr "На складі"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid "Indicator"
+msgstr "Показник"
+
+#. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__message_is_follower
 msgid "Is Follower"
 msgstr "Стежить"
@@ -269,6 +399,17 @@ msgstr "Стежить"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_form
 msgid "Laboratory"
 msgstr "Лабораторія"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "Laboratory assistant <span class=\"line\"> </span>"
+msgstr "Лаборант <span class=\"line\"> </span>"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "Laboratory, %"
+msgstr "Лабораторія, %"
 
 #. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__write_uid
@@ -313,6 +454,12 @@ msgid "Moisture and impurity must be between 0 and 100 %."
 msgstr "Вологість і смітна домішка мають бути від 0 до 100 %."
 
 #. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid "Moisture, %"
+msgstr "Вологість, %"
+
+#. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__name
 msgid "Name"
 msgstr "Назва"
@@ -321,6 +468,17 @@ msgstr "Назва"
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__net_weight
 msgid "Net (kg)"
 msgstr "Нетто (кг)"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+msgid "Net, kg"
+msgstr "Нетто, кг"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "No."
+msgstr "№"
 
 #. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__note
@@ -353,10 +511,20 @@ msgid "Number of messages with delivery error"
 msgstr "Кількість повідомлень з помилкою доставки"
 
 #. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid "Number of receipts"
+msgstr "Кількість завезень"
+
+#. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__oil_content
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__l10n_ua_agro_oil_content
 msgid "Oil Content (%)"
 msgstr "Олійність (%)"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid "Oil content, %"
+msgstr "Олійність, %"
 
 #. module: l10n_ua_agro_harvest
 #. odoo-python
@@ -372,6 +540,11 @@ msgid "Planting"
 msgstr "Посів"
 
 #. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid "Produce"
+msgstr "Продукція"
+
+#. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__product_id
 msgid "Product"
 msgstr "Продукція"
@@ -381,6 +554,32 @@ msgstr "Продукція"
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__l10n_ua_agro_protein
 msgid "Protein (%)"
 msgstr "Білок (%)"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid "Protein, %"
+msgstr "Білок, %"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid "QUALITY CARD of batch"
+msgstr "КАРТКА ЯКОСТІ партії"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+msgid "REGISTER No. ____ of grain and other produce dispatched from the field"
+msgstr "РЕЄСТР № ____ відправки зерна та іншої продукції з поля"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "REGISTER No. ____ of grain and other produce received"
+msgstr "РЕЄСТР № ____ приймання зерна та іншої продукції"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "Receipt"
+msgstr "Завезення"
 
 #. module: l10n_ua_agro_harvest
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_form
@@ -395,9 +594,29 @@ msgid "Received"
 msgstr "Оприбутковано"
 
 #. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid "Received (credit weight), kg"
+msgstr "Оприбутковано (залікова маса), кг"
+
+#. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__l10n_ua_agro_credit_weight
 msgid "Received (kg)"
 msgstr "Оприбутковано (кг)"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+msgid "Received by (signature)"
+msgstr "Прийняв (підпис)"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.actions.report,name:l10n_ua_agro_harvest.action_report_dispatch_register
+msgid "Register of Grain Dispatched from the Field (No. 77)"
+msgstr "Реєстр відправки зерна з поля (№ 77)"
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.actions.report,name:l10n_ua_agro_harvest.action_report_receipt_register
+msgid "Register of Grain Received (No. 78)"
+msgstr "Реєстр приймання зерна (№ 78)"
 
 #. module: l10n_ua_agro_harvest
 #: model_terms:ir.actions.act_window,help:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_action
@@ -452,10 +671,20 @@ msgid "Tare (kg)"
 msgstr "Тара (кг)"
 
 #. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+msgid "Tare, kg"
+msgstr "Тара, кг"
+
+#. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__test_weight
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_stock_lot__l10n_ua_agro_test_weight
 msgid "Test Weight (g/l)"
 msgstr "Натура (г/л)"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid "Test weight, g/l"
+msgstr "Натура, г/л"
 
 #. module: l10n_ua_agro_harvest
 #. odoo-python
@@ -468,10 +697,23 @@ msgstr ""
 "%(quantity)s, тому завезення не можна скасувати."
 
 #. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid ""
+"The indicators are averaged over the receipts of the batch, weighted by the "
+"net weight."
+msgstr "Показники усереднено за завезеннями партії, зважено за масою нетто."
+
+#. module: l10n_ua_agro_harvest
 #. odoo-python
 #: code:addons/l10n_ua_agro_harvest/models/harvest_receipt.py:0
 msgid "The tare cannot exceed the gross weight."
 msgstr "Тара не може перевищувати брутто."
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "Time"
+msgstr "Час"
 
 #. module: l10n_ua_agro_harvest
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_list
@@ -482,6 +724,12 @@ msgid "Total"
 msgstr "Разом"
 
 #. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_dispatch_register
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "Total trips:"
+msgstr "Усього рейсів:"
+
+#. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__uom_id
 msgid "Unit"
 msgstr "Одиниця"
@@ -490,6 +738,11 @@ msgstr "Одиниця"
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__vehicle
 msgid "Vehicle"
 msgstr "Транспорт"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "Vehicle, driver"
+msgstr "Машина, водій"
 
 #. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__website_message_ids
@@ -517,9 +770,29 @@ msgstr ""
 "партію поля."
 
 #. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,field_description:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__weigher_id
+msgid "Weigher"
+msgstr "Ваговий"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "Weigher <span class=\"line\"> </span>"
+msgstr "Ваговий <span class=\"line\"> </span>"
+
+#. module: l10n_ua_agro_harvest
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.l10n_ua_agro_harvest_receipt_view_form
 msgid "Weighing"
 msgstr "Зважування"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "Weight, kg"
+msgstr "Маса, кг"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid "Weighted average"
+msgstr "Середньозважене"
 
 #. module: l10n_ua_agro_harvest
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.res_config_settings_view_form_agro_harvest
@@ -549,6 +822,39 @@ msgid "e.g. ВК 4417 АР"
 msgstr ""
 
 #. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "gross"
+msgstr "брутто"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "impurity"
+msgstr "смітна"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_lot_quality
+msgid ""
+"internal document of the producer; not a certificate of an accredited "
+"laboratory"
+msgstr ""
+"внутрішній документ виробника; не є сертифікатом акредитованої лабораторії"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "moisture"
+msgstr "вологість"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "net"
+msgstr "нетто"
+
+#. module: l10n_ua_agro_harvest
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_harvest.report_receipt_register
+msgid "tare"
+msgstr "тара"
+
+#. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_crop__base_moisture
 msgid ""
 "Базисна вологість (ДСТУ / договір): понад неї маса зменшується за формулою "
@@ -576,6 +882,11 @@ msgid "Залікова маса за формулою Дюваля — опри
 msgstr ""
 
 #. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__combine_operator
+msgid "Комбайнер, з бункера якого завантажено машину."
+msgstr ""
+
+#. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__received_qty
 msgid ""
 "Оприбутковано на склад в одиниці виміру товару (з її точністю). Зерно краще "
@@ -591,4 +902,9 @@ msgstr ""
 #. module: l10n_ua_agro_harvest
 #: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_planting__harvest_yield
 msgid "Урожайність, ц/га, у заліковій масі."
+msgstr ""
+
+#. module: l10n_ua_agro_harvest
+#: model:ir.model.fields,help:l10n_ua_agro_harvest.field_l10n_ua_agro_harvest_receipt__weigher_id
+msgid "Хто зважив машину й прийняв зерно (завідувач току, ваговий)."
 msgstr ""

@@ -24,6 +24,25 @@ class TestAgroHarvest(TransactionCase):
         cls.field = cls.env['l10n_ua.agro.field'].create({'name': 'Велике', 'code': 'H-01', 'area': 50.0})
         cls.planting = cls.env['l10n_ua.agro.planting'].create({
             'field_id': cls.field.id, 'season_id': season.id, 'crop_id': cls.wheat.id, 'area': 50.0})
+        if 'l10n_ua.agro.fair.value' in cls.env:
+            # з l10n_ua_agro_account кожне оприбуткування оцінюється (П(С)БО 30)
+            cls._setup_valuation()
+
+    @classmethod
+    def _setup_valuation(cls):
+        Account = cls.env['account.account']
+
+        def account(code, account_type):
+            return Account.search([('code', '=', code), ('company_ids', 'in', cls.company.id)], limit=1) \
+                or Account.create({'code': code, 'name': code, 'account_type': account_type,
+                                   'company_ids': [(6, 0, cls.company.ids)]})
+        cls.company.write({
+            'l10n_ua_agro_valuation_method': 'fair_value',
+            'l10n_ua_agro_produce_account_id': account('27', 'asset_current').id,
+            'l10n_ua_agro_recognition_income_account_id': account('710', 'income').id,
+        })
+        cls.env['l10n_ua.agro.fair.value'].create({
+            'product_id': cls.grain.id, 'date': date(2098, 1, 1), 'price': 8000.0})
 
     def _receipt(self, gross, tare, moisture, impurity, **vals):
         return self.env['l10n_ua.agro.harvest.receipt'].create(dict({
@@ -81,3 +100,25 @@ class TestAgroHarvest(TransactionCase):
         empty = self._receipt(0, 0, 14.0, 1.0)
         with self.assertRaises(UserError):
             empty.action_done()
+
+    def test_registers_and_quality_card(self):
+        r1 = self._receipt(35000, 14000, 15.0, 2.0, vehicle='ВК 0001 АА', driver='Ковальчук П.')
+        r2 = self._receipt(34000, 14000, 14.5, 1.5, vehicle='ВК 0001 АА', driver='Ковальчук П.',
+                           date=datetime(2098, 7, 20, 13, 0))
+        r3 = self._receipt(33000, 14200, 14.0, 1.0, vehicle='ВК 0002 АА', driver='Савчук О.')
+        (r1 | r2 | r3).action_done()
+        receipts = r1 | r2 | r3
+        dispatch = receipts._print_registers(True)
+        self.assertEqual(len(dispatch), 2)                      # дві машини
+        first = [g for g in dispatch if g['key'][1] == 'ВК 0001 АА'][0]
+        self.assertEqual(len(first['receipts']), 2)
+        self.assertEqual(first['net'], 41000)
+        received = receipts._print_registers(False)
+        self.assertEqual(len(received), 1)                      # один день, один склад
+        self.assertAlmostEqual(received[0]['credit'], sum(receipts.mapped('credit_weight')), places=1)
+        Report = self.env['ir.actions.report']
+        for ref in ('action_report_dispatch_register', 'action_report_receipt_register'):
+            html, _fmt = Report._render_qweb_html('l10n_ua_agro_harvest.%s' % ref, receipts.ids)
+            self.assertIn('ВК 0001 АА'.encode(), html)
+        html, _fmt = Report._render_qweb_html('l10n_ua_agro_harvest.action_report_lot_quality', r1.lot_id.ids)
+        self.assertIn(r1.lot_id.name.encode(), html)

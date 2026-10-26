@@ -27,6 +27,10 @@ class StockLot(models.Model):
     l10n_ua_agro_protein = fields.Float(
         string='Protein (%)', digits=(5, 2), compute='_compute_l10n_ua_agro_quality')
 
+    def _l10n_ua_agro_basis(self):
+        crop = self.l10n_ua_agro_planting_id.crop_id
+        return crop.base_moisture, crop.base_impurity
+
     @api.depends('l10n_ua_agro_receipt_ids.state', 'l10n_ua_agro_receipt_ids.credit_weight')
     def _compute_l10n_ua_agro_quality(self):
         indicators = ('moisture', 'impurity', 'grain_impurity', 'test_weight', 'oil_content', 'protein')
