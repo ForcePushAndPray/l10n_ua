@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_ua_agro_fair_value_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.fair.value.list</field>
+        <field name="model">l10n_ua.agro.fair.value</field>
+        <field name="arch" type="xml">
+            <list string="Fair Values" editable="top">
+                <field name="date"/>
+                <field name="product_id"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="price"/>
+                <field name="uom_id"/>
+                <field name="source" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+    <record id="l10n_ua_agro_fair_value_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.fair.value.search</field>
+        <field name="model">l10n_ua.agro.fair.value</field>
+        <field name="arch" type="xml">
+            <search string="Fair Values">
+                <field name="product_id"/>
+                <filter string="Date" name="filter_date" date="date"/>
+                <group>
+                    <filter string="Product" name="groupby_product" domain="[]" context="{'group_by': 'product_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+    <record id="l10n_ua_agro_fair_value_action" model="ir.actions.act_window">
+        <field name="name">Fair Values</field>
+        <field name="res_model">l10n_ua.agro.fair.value</field>
+        <field name="view_mode">list</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Set the fair value of the produce</p>
+            <p>Active market price less the costs to sell (P(S)BO 30): the harvest is recognized at it.</p>
+        </field>
+    </record>
+</odoo>

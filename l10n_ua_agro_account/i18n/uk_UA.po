@@ -1,0 +1,806 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ua_agro_account
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260103\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-26 08:58+0000\n"
+"PO-Revision-Date: 2026-10-26 08:58+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_res_company__l10n_ua_agro_produce_account_id
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_res_config_settings__l10n_ua_agro_produce_account_id
+msgid "27 «Продукція сільськогосподарського виробництва»."
+msgstr ""
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_res_company__l10n_ua_agro_recognition_income_account_id
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_res_config_settings__l10n_ua_agro_recognition_income_account_id
+msgid ""
+"710 «Дохід від первісного визнання та від зміни вартості активів, які "
+"обліковуються за справедливою вартістю»."
+msgstr ""
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_res_company__l10n_ua_agro_overhead_account_id
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_res_config_settings__l10n_ua_agro_overhead_account_id
+msgid ""
+"91 «Загальновиробничі витрати» — розподіляються на посіви в калькуляції."
+msgstr ""
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_res_company__l10n_ua_agro_recognition_expense_account_id
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_res_config_settings__l10n_ua_agro_recognition_expense_account_id
+msgid ""
+"940 «Витрати від первісного визнання та від зміни вартості активів, які "
+"обліковуються за справедливою вартістю» — сюди закривається собівартість."
+msgstr ""
+
+#. module: l10n_ua_agro_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_view_form
+msgid "<span class=\"o_stat_text\">Journal Entry</span>"
+msgstr "<span class=\"o_stat_text\">Запис журналу</span>"
+
+#. module: l10n_ua_agro_account
+#: model:ir.ui.menu,name:l10n_ua_agro_account.menu_l10n_ua_agro_accounting
+msgid "Accounting"
+msgstr "Облік"
+
+#. module: l10n_ua_agro_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.res_config_settings_view_form_agro_account
+msgid "Accounts"
+msgstr "Рахунки"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__message_needaction
+msgid "Action Needed"
+msgstr "Необхідна дія"
+
+#. module: l10n_ua_agro_account
+#: model_terms:ir.actions.act_window,help:l10n_ua_agro_account.l10n_ua_agro_fair_value_action
+msgid ""
+"Active market price less the costs to sell (P(S)BO 30): the harvest is "
+"recognized at it."
+msgstr ""
+"Ціна активного ринку мінус витрати на місці продажу (П(С)БО 30): за нею "
+"визнається врожай."
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_res_company__l10n_ua_agro_produce_account_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_res_config_settings__l10n_ua_agro_produce_account_id
+msgid "Agricultural Produce Account"
+msgstr "Рахунок сільгосппродукції"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__include_overhead
+msgid "Allocate Overhead (91)"
+msgstr "Розподіляти ЗВВ (91)"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__credited_amount
+msgid "Already Credited"
+msgstr "Уже списано"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__area
+msgid "Area (ha)"
+msgstr "Площа (га)"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__message_attachment_count
+msgid "Attachment Count"
+msgstr "Підрахунок прикріплення"
+
+#. module: l10n_ua_agro_account
+#: model_terms:ir.actions.act_window,help:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_action
+msgid "Calculate the cost of the season"
+msgstr "Розрахуйте собівартість сезону"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__calculation_id
+msgid "Calculation"
+msgstr "Калькуляція"
+
+#. module: l10n_ua_agro_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_view_form
+msgid "Cancel"
+msgstr "Скасувати"
+
+#. module: l10n_ua_agro_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_view_form
+msgid "Cancel the calculation? Its journal entry will be reversed."
+msgstr "Скасувати калькуляцію? Її проводку буде сторновано."
+
+#. module: l10n_ua_agro_account
+#. odoo-python
+#: code:addons/l10n_ua_agro_account/models/cost_calculation.py:0
+msgid "Cancel the posted calculation before deleting it."
+msgstr "Скасуйте проведену калькуляцію, перш ніж видаляти її."
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields.selection,name:l10n_ua_agro_account.selection__l10n_ua_agro_cost_calculation__state__cancel
+msgid "Cancelled"
+msgstr "Скасовано"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__closing_amount
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__closing_amount
+msgid "Closed from 23"
+msgstr "Закрито з 23"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__date
+msgid "Closing Date"
+msgstr "Дата закриття"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model,name:l10n_ua_agro_account.model_res_company
+msgid "Companies"
+msgstr "Компанії"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__company_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__company_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_fair_value__company_id
+msgid "Company"
+msgstr "Компанія"
+
+#. module: l10n_ua_agro_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_view_form
+msgid "Compute"
+msgstr "Розрахувати"
+
+#. module: l10n_ua_agro_account
+#. odoo-python
+#: code:addons/l10n_ua_agro_account/models/cost_calculation.py:0
+msgid "Compute the calculation first."
+msgstr "Спершу розрахуйте калькуляцію."
+
+#. module: l10n_ua_agro_account
+#: model:ir.model,name:l10n_ua_agro_account.model_res_config_settings
+msgid "Config Settings"
+msgstr "Налаштування"
+
+#. module: l10n_ua_agro_account
+#. odoo-python
+#: code:addons/l10n_ua_agro_account/models/cost_calculation.py:0
+msgid "Cost of %(planting)s, %(season)s"
+msgstr "Собівартість %(planting)s, %(season)s"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__cost_per_ha
+msgid "Cost per ha"
+msgstr "Собівартість 1 га"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__cost_per_ton
+msgid "Cost per t"
+msgstr "Собівартість 1 т"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__date_from
+msgid "Costs From"
+msgstr "Витрати з"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_fair_value__create_uid
+msgid "Created by"
+msgstr "Створено"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__create_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__create_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_fair_value__create_date
+msgid "Created on"
+msgstr "Створено"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__crop_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_line_view_search
+msgid "Crop"
+msgstr "Культура"
+
+#. module: l10n_ua_agro_account
+#: model:ir.actions.act_window,name:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_line_action
+#: model:ir.ui.menu,name:l10n_ua_agro_account.menu_l10n_ua_agro_report_unit_cost
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_line_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_line_view_pivot
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_line_view_search
+msgid "Crop Cost"
+msgstr "Собівартість культур"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model,name:l10n_ua_agro_account.model_l10n_ua_agro_cost_calculation
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_account_bank_statement_line__l10n_ua_agro_calculation_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_account_move__l10n_ua_agro_calculation_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_view_form
+msgid "Crop Cost Calculation"
+msgstr "Калькуляція собівартості"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model,name:l10n_ua_agro_account.model_l10n_ua_agro_cost_calculation_line
+msgid "Crop Cost Calculation Line"
+msgstr "Рядок калькуляції собівартості"
+
+#. module: l10n_ua_agro_account
+#: model:ir.actions.act_window,name:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_action
+#: model:ir.ui.menu,name:l10n_ua_agro_account.menu_l10n_ua_agro_cost_calculations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_view_search
+msgid "Crop Cost Calculations"
+msgstr "Калькуляції собівартості"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_fair_value__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_harvest_receipt__currency_id
+msgid "Currency"
+msgstr "Валюта"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_fair_value__date
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_fair_value_view_search
+msgid "Date"
+msgstr "Дата"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_l10n_ua_agro_fair_value__uom_id
+msgid "Default unit of measure used for all stock operations."
+msgstr ""
+"Стандартна одиниця вимірювання, що використовується для всіх складських "
+"операцій."
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__direct_cost
+msgid "Direct Costs"
+msgstr "Прямі витрати"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_account_move__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_fair_value__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_harvest_receipt__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_tech_card__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_res_company__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_res_config_settings__display_name
+msgid "Display Name"
+msgstr "Назва для відображення"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields.selection,name:l10n_ua_agro_account.selection__l10n_ua_agro_cost_calculation__state__draft
+msgid "Draft"
+msgstr "Чернетка"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_fair_value__price
+msgid "Fair Value"
+msgstr "Справедлива вартість"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields.selection,name:l10n_ua_agro_account.selection__res_company__l10n_ua_agro_valuation_method__fair_value
+msgid "Fair Value less Costs to Sell"
+msgstr "Справедлива вартість мінус витрати на місці продажу"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model,name:l10n_ua_agro_account.model_l10n_ua_agro_fair_value
+msgid "Fair Value of Agricultural Produce"
+msgstr "Справедлива вартість сільгосппродукції"
+
+#. module: l10n_ua_agro_account
+#: model:ir.actions.act_window,name:l10n_ua_agro_account.l10n_ua_agro_fair_value_action
+#: model:ir.ui.menu,name:l10n_ua_agro_account.menu_l10n_ua_agro_fair_values
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_fair_value_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_fair_value_view_search
+msgid "Fair Values"
+msgstr "Справедлива вартість"
+
+#. module: l10n_ua_agro_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.res_config_settings_view_form_agro_account
+msgid ""
+"Fair value less costs to sell (Dt 27 / Ct 710) or planned cost (Dt 27 / Ct "
+"23)"
+msgstr ""
+"Справедлива вартість мінус витрати на місці продажу (Дт 27 / Кт 710) або "
+"планова собівартість (Дт 27 / Кт 23)"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__field_id
+msgid "Field"
+msgstr "Поле"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__message_follower_ids
+msgid "Followers"
+msgstr "Підписники"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Підписники (Партнери)"
+
+#. module: l10n_ua_agro_account
+#. odoo-python
+#: code:addons/l10n_ua_agro_account/models/harvest_receipt.py:0
+msgid "Harvest %(receipt)s: %(product)s, %(weight)s kg"
+msgstr "Урожай %(receipt)s: %(product)s, %(weight)s кг"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model,name:l10n_ua_agro_account.model_l10n_ua_agro_harvest_receipt
+msgid "Harvest Receipt"
+msgstr "Завезення з поля"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__valuation_method
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_res_company__l10n_ua_agro_valuation_method
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_res_config_settings__l10n_ua_agro_valuation_method
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.res_config_settings_view_form_agro_account
+msgid "Harvest Valuation"
+msgstr "Оцінка врожаю"
+
+#. module: l10n_ua_agro_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.res_config_settings_view_form_agro_account
+msgid "Harvest Valuation and Cost (P(S)BO 30)"
+msgstr "Оцінка врожаю й собівартість (П(С)БО 30)"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__harvest_weight
+msgid "Harvested (t)"
+msgstr "Зібрано (т)"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__has_message
+msgid "Has Message"
+msgstr "Є повідомлення"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_account_move__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_fair_value__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_harvest_receipt__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_tech_card__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_res_company__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_res_config_settings__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Якщо позначено, то нові повідомлення будуть потребувати вашої уваги."
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__message_has_error
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Якщо позначено, деякі повідомлення мають помилку доставки."
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__allocated_cost
+msgid "Indirect Costs"
+msgstr "Непрямі витрати"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__indirect_amount
+msgid "Indirect Costs (23)"
+msgstr "Непрямі витрати (23)"
+
+#. module: l10n_ua_agro_account
+#. odoo-python
+#: code:addons/l10n_ua_agro_account/models/cost_calculation.py:0
+msgid "Indirect costs allocated to plantings"
+msgstr "Непрямі витрати розподілено на посіви"
+
+#. module: l10n_ua_agro_account
+#: model_terms:ir.actions.act_window,help:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_action
+msgid ""
+"Indirect costs and overhead are allocated to the plantings, the season is "
+"closed from account 23 and the cost of a ton is computed."
+msgstr ""
+"Непрямі й загальновиробничі витрати розподіляються на посіви, сезон "
+"закривається з рахунку 23, рахується собівартість тонни."
+
+#. module: l10n_ua_agro_account
+#. odoo-python
+#: code:addons/l10n_ua_agro_account/models/cost_calculation.py:0
+msgid "Indirect costs to %s"
+msgstr "Непрямі витрати на %s"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_res_company__l10n_ua_agro_recognition_expense_account_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_res_config_settings__l10n_ua_agro_recognition_expense_account_id
+msgid "Initial Recognition Expense Account"
+msgstr "Рахунок витрат первісного визнання"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_res_company__l10n_ua_agro_recognition_income_account_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_res_config_settings__l10n_ua_agro_recognition_income_account_id
+msgid "Initial Recognition Income Account"
+msgstr "Рахунок доходу первісного визнання"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__message_is_follower
+msgid "Is Follower"
+msgstr "Стежить"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__journal_id
+msgid "Journal"
+msgstr "Журнал"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model,name:l10n_ua_agro_account.model_account_move
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__move_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_harvest_receipt__account_move_id
+msgid "Journal Entry"
+msgstr "Запис у журналі"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_fair_value__write_uid
+msgid "Last Updated by"
+msgstr "Востаннє оновлено"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__write_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__write_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_fair_value__write_date
+msgid "Last Updated on"
+msgstr "Востаннє оновлено"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__message_has_error
+msgid "Message Delivery error"
+msgstr "Помилка доставлення повідомлення"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__message_ids
+msgid "Messages"
+msgstr "Повідомлення"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__name
+msgid "Name"
+msgstr "Назва"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__note
+msgid "Note"
+msgstr "Примітка"
+
+#. module: l10n_ua_agro_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_view_form
+msgid "Notes"
+msgstr "Примітки"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Кількість дій"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__message_has_error_counter
+msgid "Number of errors"
+msgstr "Кількість помилок"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Кількість повідомлень, які вимагають дії"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Кількість повідомлень з помилкою доставки"
+
+#. module: l10n_ua_agro_account
+#. odoo-python
+#: code:addons/l10n_ua_agro_account/models/cost_calculation.py:0
+msgid "Only a draft calculation can be recomputed."
+msgstr "Перерахувати можна лише чернетку калькуляції."
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__overhead_cost
+msgid "Overhead"
+msgstr "ЗВВ"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__overhead_amount
+msgid "Overhead (91)"
+msgstr "ЗВВ (91)"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields.selection,name:l10n_ua_agro_account.selection__res_company__l10n_ua_agro_valuation_method__planned_cost
+msgid "Planned Cost"
+msgstr "Планова собівартість"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_tech_card__planned_unit_cost
+msgid "Planned Cost per kg"
+msgstr "Планова собівартість 1 кг"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_tech_card__planned_yield
+msgid "Planned Yield (c/ha)"
+msgstr "Планова урожайність (ц/га)"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__planting_id
+msgid "Planting"
+msgstr "Посів"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__line_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_view_form
+msgid "Plantings"
+msgstr "Посіви"
+
+#. module: l10n_ua_agro_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_view_form
+msgid "Post"
+msgstr "Провести"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields.selection,name:l10n_ua_agro_account.selection__l10n_ua_agro_cost_calculation__state__posted
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_view_search
+msgid "Posted"
+msgstr "Проведено"
+
+#. module: l10n_ua_agro_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.res_config_settings_view_form_agro_account
+msgid ""
+"Produce (27), initial recognition income (710) and expense (940), overhead "
+"(91)"
+msgstr ""
+"Продукція (27), дохід (710) і витрати (940) первісного визнання, ЗВВ (91)"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_fair_value__product_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_fair_value_view_search
+msgid "Product"
+msgstr "Продукція"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_res_company__l10n_ua_agro_overhead_account_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_res_config_settings__l10n_ua_agro_overhead_account_id
+msgid "Production Overhead Account"
+msgstr "Рахунок загальновиробничих витрат"
+
+#. module: l10n_ua_agro_account
+#. odoo-python
+#: code:addons/l10n_ua_agro_account/models/cost_calculation.py:0
+msgid "Production overhead allocated to plantings"
+msgstr "ЗВВ розподілено на посіви"
+
+#. module: l10n_ua_agro_account
+#. odoo-python
+#: code:addons/l10n_ua_agro_account/models/cost_calculation.py:0
+msgid "Production overhead to %s"
+msgstr "ЗВВ на %s"
+
+#. module: l10n_ua_agro_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_view_form
+msgid "Recompute"
+msgstr "Перерахувати"
+
+#. module: l10n_ua_agro_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_view_form
+msgid "Reset to Draft"
+msgstr "Повернути в чернетку"
+
+#. module: l10n_ua_agro_account
+#. odoo-python
+#: code:addons/l10n_ua_agro_account/models/cost_calculation.py:0
+#: code:addons/l10n_ua_agro_account/models/harvest_receipt.py:0
+msgid "Reversal of %s"
+msgstr "Сторно %s"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Помилка доставки SMS"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__season_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__season_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_line_view_search
+msgid "Season"
+msgstr "Сезон"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__total_cost
+msgid "Season Cost"
+msgstr "Собівартість сезону"
+
+#. module: l10n_ua_agro_account
+#. odoo-python
+#: code:addons/l10n_ua_agro_account/models/cost_calculation.py:0
+#: code:addons/l10n_ua_agro_account/models/harvest_receipt.py:0
+msgid "Set the accounts of the harvest valuation in the Agro settings."
+msgstr "Вкажіть рахунки оцінки врожаю в налаштуваннях Агро."
+
+#. module: l10n_ua_agro_account
+#. odoo-python
+#: code:addons/l10n_ua_agro_account/models/cost_calculation.py:0
+msgid "Set the crop production account in the Agro settings."
+msgstr "Вкажіть рахунок витрат рослинництва в налаштуваннях Агро."
+
+#. module: l10n_ua_agro_account
+#. odoo-python
+#: code:addons/l10n_ua_agro_account/models/harvest_receipt.py:0
+msgid ""
+"Set the fair value of %(product)s on %(date)s (Agro → Configuration → Fair "
+"Values)."
+msgstr ""
+"Вкажіть справедливу вартість %(product)s на %(date)s (Агро → Налаштування → "
+"Справедлива вартість)."
+
+#. module: l10n_ua_agro_account
+#: model_terms:ir.actions.act_window,help:l10n_ua_agro_account.l10n_ua_agro_fair_value_action
+msgid "Set the fair value of the produce"
+msgstr "Вкажіть справедливу вартість продукції"
+
+#. module: l10n_ua_agro_account
+#. odoo-python
+#: code:addons/l10n_ua_agro_account/models/harvest_receipt.py:0
+msgid ""
+"Set the planned yield in the technological card of %(crop)s for %(season)s: "
+"the harvest is valued at the planned cost."
+msgstr ""
+"Вкажіть планову урожайність у техкарті %(crop)s на %(season)s: урожай "
+"оцінюється за плановою собівартістю."
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_fair_value__source
+msgid "Source"
+msgstr "Джерело"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__state
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__state
+msgid "State"
+msgstr "Стан"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model,name:l10n_ua_agro_account.model_l10n_ua_agro_tech_card
+msgid "Technological Card"
+msgstr "Технологічна карта"
+
+#. module: l10n_ua_agro_account
+#. odoo-python
+#: code:addons/l10n_ua_agro_account/models/harvest_receipt.py:0
+msgid ""
+"The cost of %(season)s is already calculated (%(calc)s): cancel the "
+"calculation first."
+msgstr ""
+"Собівартість %(season)s уже розраховано (%(calc)s): спершу скасуйте "
+"калькуляцію."
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.constraint,message:l10n_ua_agro_account.constraint_l10n_ua_agro_fair_value_product_date_uniq
+msgid "There is already a fair value of this product on this date."
+msgstr "Справедлива вартість цієї продукції на цю дату вже є."
+
+#. module: l10n_ua_agro_account
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_line_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_cost_calculation_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_account.l10n_ua_agro_harvest_receipt_view_list_account
+msgid "Total"
+msgstr "Разом"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__total_cost
+msgid "Total Cost"
+msgstr "Витрати разом"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_fair_value__uom_id
+msgid "Unit"
+msgstr "Одиниця"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_harvest_receipt__valuation_amount
+msgid "Valuation"
+msgstr "Оцінка"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_harvest_receipt__valuation_price
+msgid "Valuation Price per kg"
+msgstr "Ціна оцінки за 1 кг"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__website_message_ids
+msgid "Website Messages"
+msgstr "Повідомлення з веб-сайту"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__website_message_ids
+msgid "Website communication history"
+msgstr "Історія бесіди на сайті"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,field_description:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__is_wip
+msgid "Work in Progress"
+msgstr "Незавершене виробництво"
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__harvest_weight
+msgid "Валовий збір у заліковій масі."
+msgstr ""
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__date
+msgid "Дата закриття: витрати рахуються до неї включно, на неї ж проводка."
+msgstr ""
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_l10n_ua_agro_fair_value__source
+msgid "Джерело ціни: біржа, котирування трейдерів, договір."
+msgstr ""
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__valuation_method
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_res_company__l10n_ua_agro_valuation_method
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_res_config_settings__l10n_ua_agro_valuation_method
+msgid ""
+"П(С)БО 30: сільгосппродукція при первісному визнанні — за справедливою "
+"вартістю мінус витрати на місці продажу; якщо її неможливо визначити — за "
+"собівартістю (протягом року за плановою, наприкінці — доведення до "
+"фактичної)."
+msgstr ""
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_l10n_ua_agro_tech_card__planned_yield
+msgid "Планова урожайність основної продукції, ц/га."
+msgstr ""
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_l10n_ua_agro_tech_card__planned_unit_cost
+msgid ""
+"Планові витрати на 1 га / планова урожайність — для оцінки врожаю за "
+"плановою собівартістю."
+msgstr ""
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__is_wip
+msgid ""
+"Посів наступного сезону (напр. озимі): витрати лишаються на 23 як "
+"незавершене виробництво."
+msgstr ""
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation__include_overhead
+msgid "Розподілити загальновиробничі витрати (91) за період на посіви."
+msgstr ""
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_l10n_ua_agro_harvest_receipt__valuation_price
+msgid ""
+"Справедлива вартість мінус витрати на місці продажу або планова "
+"собівартість, грн/кг."
+msgstr ""
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_l10n_ua_agro_cost_calculation_line__credited_amount
+msgid "Уже списано з 23 при оприбуткуванні врожаю за плановою собівартістю."
+msgstr ""
+
+#. module: l10n_ua_agro_account
+#: model:ir.model.fields,help:l10n_ua_agro_account.field_l10n_ua_agro_fair_value__price
+msgid ""
+"Ціна активного ринку за одиницю мінус очікувані витрати на місці продажу."
+msgstr ""

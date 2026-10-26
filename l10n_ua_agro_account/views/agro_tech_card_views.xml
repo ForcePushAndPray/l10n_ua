@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_ua_agro_tech_card_view_form_account" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.tech.card.form.account</field>
+        <field name="model">l10n_ua.agro.tech.card</field>
+        <field name="inherit_id" ref="l10n_ua_agro_operations.l10n_ua_agro_tech_card_view_form"/>
+        <field name="arch" type="xml">
+            <field name="cost_total" position="after">
+                <field name="planned_yield"/>
+                <field name="planned_unit_cost"/>
+            </field>
+        </field>
+    </record>
+</odoo>

@@ -1,0 +1,10 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_agro_fair_value_user,l10n_ua.agro.fair.value.user,model_l10n_ua_agro_fair_value,l10n_ua_agro_base.group_ua_agro_user,1,0,0,0
+access_agro_fair_value_manager,l10n_ua.agro.fair.value.manager,model_l10n_ua_agro_fair_value,l10n_ua_agro_base.group_ua_agro_manager,1,1,1,1
+access_agro_fair_value_accountant,l10n_ua.agro.fair.value.accountant,model_l10n_ua_agro_fair_value,account.group_account_user,1,1,1,1
+access_agro_cost_calculation_readonly,l10n_ua.agro.cost.calculation.readonly,model_l10n_ua_agro_cost_calculation,account.group_account_readonly,1,0,0,0
+access_agro_cost_calculation_accountant,l10n_ua.agro.cost.calculation.accountant,model_l10n_ua_agro_cost_calculation,account.group_account_user,1,1,1,1
+access_agro_cost_calculation_manager,l10n_ua.agro.cost.calculation.manager,model_l10n_ua_agro_cost_calculation,l10n_ua_agro_base.group_ua_agro_manager,1,0,0,0
+access_agro_cost_calculation_line_readonly,l10n_ua.agro.cost.calculation.line.readonly,model_l10n_ua_agro_cost_calculation_line,account.group_account_readonly,1,0,0,0
+access_agro_cost_calculation_line_accountant,l10n_ua.agro.cost.calculation.line.accountant,model_l10n_ua_agro_cost_calculation_line,account.group_account_user,1,1,1,1
+access_agro_cost_calculation_line_manager,l10n_ua.agro.cost.calculation.line.manager,model_l10n_ua_agro_cost_calculation_line,l10n_ua_agro_base.group_ua_agro_manager,1,0,0,0
