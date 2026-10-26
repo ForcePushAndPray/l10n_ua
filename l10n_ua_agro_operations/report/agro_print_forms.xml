@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="paperformat_agro_landscape" model="report.paperformat">
+        <field name="name">UA Agro Forms A4 Landscape</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">5</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_vzsg3" model="ir.actions.report">
+        <field name="name">Act on Fertilizers and Plant Protection (VZSG-3)</field>
+        <field name="model">l10n_ua.agro.work.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_agro_operations.report_vzsg3</field>
+        <field name="report_file">l10n_ua_agro_operations.report_vzsg3</field>
+        <field name="paperformat_id" ref="paperformat_agro_landscape"/>
+        <field name="binding_model_id" ref="model_l10n_ua_agro_work_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_vzsg4" model="ir.actions.report">
+        <field name="name">Act on Seeds (VZSG-4)</field>
+        <field name="model">l10n_ua.agro.work.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_agro_operations.report_vzsg4</field>
+        <field name="report_file">l10n_ua_agro_operations.report_vzsg4</field>
+        <field name="paperformat_id" ref="paperformat_agro_landscape"/>
+        <field name="binding_model_id" ref="model_l10n_ua_agro_work_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_operator_sheet" model="ir.actions.report">
+        <field name="name">Tractor Operator Record Sheet (67-B)</field>
+        <field name="model">l10n_ua.agro.work.order</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_agro_operations.report_operator_sheet</field>
+        <field name="report_file">l10n_ua_agro_operations.report_operator_sheet</field>
+        <field name="paperformat_id" ref="paperformat_agro_landscape"/>
+        <field name="binding_model_id" ref="model_l10n_ua_agro_work_order"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <template id="agro_form_style">
+        <style>
+            .o_ua_agro { font-size: 9pt; }
+            .o_ua_agro .title { text-align: center; font-weight: bold; font-size: 12pt; margin: 4px 0; }
+            .o_ua_agro .subtitle { text-align: center; margin-bottom: 6px; }
+            .o_ua_agro .form-code { text-align: right; font-size: 8pt; }
+            .o_ua_agro table { width: 100%; border-collapse: collapse; }
+            .o_ua_agro .plain td { border: none; padding: 2px 4px; vertical-align: top; }
+            .o_ua_agro .grid th, .o_ua_agro .grid td { border: 1px solid #000; padding: 2px 3px; }
+            .o_ua_agro .grid th { text-align: center; font-weight: normal; font-size: 7.5pt; }
+            .o_ua_agro .num { text-align: right; white-space: nowrap; }
+            .o_ua_agro .mid { text-align: center; }
+            .o_ua_agro .total td { font-weight: bold; }
+            .o_ua_agro .sign td { padding-top: 14px; }
+            .o_ua_agro .line { border-bottom: 1px solid #000; display: inline-block; min-width: 180px; }
+            .o_ua_agro .caption { font-size: 7pt; font-style: italic; }
+        </style>
+    </template>
+
+    <!-- Шапка: підприємство, код ЄДРПОУ, «ЗАТВЕРДЖУЮ» -->
+    <template id="agro_form_header">
+        <table class="plain">
+            <tr>
+                <td style="width: 60%;">
+                    <div><strong t-out="h['company'].name"/></div>
+                    <div>EDRPOU code: <span t-out="h['edrpou']"/></div>
+                </td>
+                <td style="width: 40%;">
+                    <div class="form-code">Form No. <t t-out="form_code"/></div>
+                    <div><strong>APPROVED</strong></div>
+                    <div><t t-out="h['chief_position'] or 'Head of the enterprise'"/></div>
+                    <div><span class="line">&#160;</span> <t t-out="h['chief']"/></div>
+                    <div>«____» ______________ 20__</div>
+                </td>
+            </tr>
+        </table>
+    </template>
+
+    <template id="report_vzsg3">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <t t-set="h" t-value="docs._print_header()"/>
+                <t t-set="rows" t-value="docs._print_material_rows(('fertilizer', 'protection'))"/>
+                <t t-set="form_code" t-value="'VZSG-3'"/>
+                <div class="page o_ua_agro">
+                    <t t-call="l10n_ua_agro_operations.agro_form_style"/>
+                    <t t-call="l10n_ua_agro_operations.agro_form_header"/>
+                    <div class="title">ACT No. ____ on the use of mineral, organic and bacterial fertilizers and plant protection products</div>
+                    <div class="subtitle">
+                        for the period <t t-out="h['date_from']" t-options="{'widget': 'date'}"/> – <t t-out="h['date_to']" t-options="{'widget': 'date'}"/>,
+                        for the harvest of <t t-out="h['years']"/>
+                    </div>
+                    <table class="grid">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">Field</th>
+                                <th rowspan="2">Crop</th>
+                                <th rowspan="2">Fertilizer, plant protection product</th>
+                                <th rowspan="2">Active ingredient, %</th>
+                                <th colspan="2">Account</th>
+                                <th rowspan="2">Unit</th>
+                                <th rowspan="2">Price</th>
+                                <th rowspan="2">Dates</th>
+                                <th rowspan="2">Area applied, ha</th>
+                                <th rowspan="2">Quantity (physical weight)</th>
+                                <th rowspan="2">In active ingredient</th>
+                                <th rowspan="2">Amount</th>
+                            </tr>
+                            <tr><th>Dt</th><th>Ct</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="rows" t-as="r">
+                                <td t-out="r['field'].display_name"/>
+                                <td t-out="r['crop'].name"/>
+                                <td t-out="r['product'].display_name"/>
+                                <td class="num"><t t-if="r['ai']" t-out="'%.2f' % r['ai']"/></td>
+                                <td class="mid" t-out="r['debit']"/>
+                                <td class="mid" t-out="r['credit']"/>
+                                <td class="mid" t-out="r['uom'].name"/>
+                                <td class="num" t-out="'%.2f' % r['price']"/>
+                                <td class="mid" t-out="r['dates']"/>
+                                <td class="num" t-out="'%.2f' % r['area']"/>
+                                <td class="num" t-out="'%.3f' % r['quantity']"/>
+                                <td class="num"><t t-if="r['ai']" t-out="'%.3f' % r['quantity_ai']"/></td>
+                                <td class="num" t-out="'%.2f' % r['amount']"/>
+                            </tr>
+                            <tr class="total">
+                                <td colspan="12">Total</td>
+                                <td class="num" t-out="'%.2f' % sum(r['amount'] for r in rows)"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>Attached: limit cards (VZSG-1) and delivery notes for the materials issued — ______ documents.</p>
+                    <table class="plain sign">
+                        <tr>
+                            <td style="width: 50%;">Head of the division <span class="line">&#160;</span></td>
+                            <td>Agronomist <span class="line">&#160;</span> <t t-out="', '.join(h['responsible'].mapped('name'))"/></td>
+                        </tr>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_vzsg4">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <t t-set="h" t-value="docs._print_header()"/>
+                <t t-set="rows" t-value="docs._print_material_rows(('seed',))"/>
+                <t t-set="form_code" t-value="'VZSG-4'"/>
+                <div class="page o_ua_agro">
+                    <t t-call="l10n_ua_agro_operations.agro_form_style"/>
+                    <t t-call="l10n_ua_agro_operations.agro_form_header"/>
+                    <div class="title">ACT No. ____ on the consumption of seeds and planting material</div>
+                    <div class="subtitle">
+                        for the period <t t-out="h['date_from']" t-options="{'widget': 'date'}"/> – <t t-out="h['date_to']" t-options="{'widget': 'date'}"/>,
+                        for the harvest of <t t-out="h['years']"/>
+                    </div>
+                    <table class="grid">
+                        <thead>
+                            <tr>
+                                <th rowspan="2">Field</th>
+                                <th rowspan="2">Crop</th>
+                                <th rowspan="2">Seeds (planting material), variety</th>
+                                <th colspan="2">Account</th>
+                                <th rowspan="2">Unit</th>
+                                <th rowspan="2">Sowing dates</th>
+                                <th rowspan="2">Area sown, ha</th>
+                                <th rowspan="2">Rate per ha</th>
+                                <th rowspan="2">Actual per ha</th>
+                                <th rowspan="2">Used on the area</th>
+                                <th rowspan="2">Price</th>
+                                <th rowspan="2">Amount</th>
+                            </tr>
+                            <tr><th>Dt</th><th>Ct</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr t-foreach="rows" t-as="r">
+                                <td t-out="r['field'].display_name"/>
+                                <td t-out="r['crop'].name"/>
+                                <td><t t-out="r['product'].display_name"/><t t-if="r['planting'].variety">, <t t-out="r['planting'].variety"/></t></td>
+                                <td class="mid" t-out="r['debit']"/>
+                                <td class="mid" t-out="r['credit']"/>
+                                <td class="mid" t-out="r['uom'].name"/>
+                                <td class="mid" t-out="r['dates']"/>
+                                <td class="num" t-out="'%.2f' % r['area']"/>
+                                <td class="num"><t t-if="r['norm_ha']" t-out="'%.2f' % r['norm_ha']"/></td>
+                                <td class="num" t-out="'%.2f' % r['actual_ha']"/>
+                                <td class="num" t-out="'%.3f' % r['quantity']"/>
+                                <td class="num" t-out="'%.2f' % r['price']"/>
+                                <td class="num" t-out="'%.2f' % r['amount']"/>
+                            </tr>
+                            <tr class="total">
+                                <td colspan="12">Total</td>
+                                <td class="num" t-out="'%.2f' % sum(r['amount'] for r in rows)"/>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <p>Attached: limit cards (VZSG-1), internal delivery notes (VZSG-8), documents on the varietal quality of the seeds — ______ documents.</p>
+                    <table class="plain sign">
+                        <tr>
+                            <td style="width: 50%;">Foreman <span class="line">&#160;</span></td>
+                            <td>Agronomist <span class="line">&#160;</span> <t t-out="', '.join(h['responsible'].mapped('name'))"/></td>
+                        </tr>
+                    </table>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_operator_sheet">
+        <t t-call="web.html_container">
+            <t t-set="h" t-value="docs._print_header()"/>
+            <t t-foreach="docs._print_operator_sheets()" t-as="s">
+                <t t-call="web.basic_layout">
+                    <div class="page o_ua_agro">
+                        <t t-call="l10n_ua_agro_operations.agro_form_style"/>
+                        <table class="plain">
+                            <tr>
+                                <td style="width: 60%;">
+                                    <div><strong t-out="h['company'].name"/></div>
+                                    <div>EDRPOU code: <span t-out="h['edrpou']"/></div>
+                                </td>
+                                <td class="form-code">Form No. 67-B</td>
+                            </tr>
+                        </table>
+                        <div class="title">TRACTOR OPERATOR RECORD SHEET No. ____</div>
+                        <div class="subtitle">
+                            <strong t-out="s['employee'].name"/>
+                            <t t-if="s['employee'].job_title">, <t t-out="s['employee'].job_title"/></t>
+                            — for the period <t t-out="h['date_from']" t-options="{'widget': 'date'}"/> – <t t-out="h['date_to']" t-options="{'widget': 'date'}"/>
+                        </div>
+                        <table class="grid">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">Date</th>
+                                    <th rowspan="2">Work order</th>
+                                    <th rowspan="2">Machine</th>
+                                    <th rowspan="2">Work done</th>
+                                    <th rowspan="2">Field, crop</th>
+                                    <th rowspan="2">Unit</th>
+                                    <th rowspan="2">Output</th>
+                                    <th rowspan="2">Hours</th>
+                                    <th colspan="2">Fuel, l</th>
+                                    <th rowspan="2">Piece rate</th>
+                                    <th rowspan="2">Pay</th>
+                                </tr>
+                                <tr><th>by norm</th><th>actual</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="s['rows']" t-as="r">
+                                    <td class="mid" t-out="r['date']" t-options="{'widget': 'date'}"/>
+                                    <td t-out="r['order'].name"/>
+                                    <td t-out="r['machine'].display_name or ''"/>
+                                    <td t-out="r['operation'].name"/>
+                                    <td><t t-out="r['field'].display_name"/>, <t t-out="r['crop'].name"/></td>
+                                    <td class="mid" t-out="r['unit']"/>
+                                    <td class="num" t-out="'%.2f' % r['volume']"/>
+                                    <td class="num" t-out="'%.1f' % r['hours']"/>
+                                    <td class="num" t-out="'%.1f' % r['fuel_norm']"/>
+                                    <td class="num" t-out="'%.1f' % r['fuel_fact']"/>
+                                    <td class="num" t-out="'%.2f' % r['rate']"/>
+                                    <td class="num" t-out="'%.2f' % r['amount']"/>
+                                </tr>
+                                <tr class="total">
+                                    <td colspan="6">Total — machine-days: <t t-out="s['machine_days']"/></td>
+                                    <td class="num" t-out="'%.2f' % s['volume']"/>
+                                    <td class="num" t-out="'%.1f' % s['hours']"/>
+                                    <td class="num" t-out="'%.1f' % s['fuel_norm']"/>
+                                    <td class="num" t-out="'%.1f' % s['fuel_fact']"/>
+                                    <td/>
+                                    <td class="num" t-out="'%.2f' % s['amount']"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <table class="plain sign">
+                            <tr>
+                                <td style="width: 34%;">Tractor operator <span class="line">&#160;</span></td>
+                                <td style="width: 33%;">Foreman <span class="line">&#160;</span> <t t-out="', '.join(h['responsible'].mapped('name'))"/></td>
+                                <td>Accountant <span class="line">&#160;</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

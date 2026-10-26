@@ -356,6 +356,11 @@ class AgroWorkOrderMaterial(models.Model):
         for line in self:
             line.deviation = line.quantity - line.norm_quantity if line.norm_quantity else 0.0
 
+    @api.onchange('product_id')
+    def _onchange_product_fuel(self):
+        if self.product_id:
+            self.is_fuel = self.product_id.l10n_ua_agro_material_type == 'fuel'
+
     @api.constrains('quantity')
     def _check_quantity(self):
         for line in self:

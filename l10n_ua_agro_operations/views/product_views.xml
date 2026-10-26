@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="product_template_form_view_agro" model="ir.ui.view">
+        <field name="name">product.template.form.agro</field>
+        <field name="model">product.template</field>
+        <field name="inherit_id" ref="product.product_template_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='group_general']" position="inside">
+                <field name="l10n_ua_agro_material_type"
+                       groups="l10n_ua_agro_base.group_ua_agro_user"/>
+                <field name="l10n_ua_agro_active_ingredient"
+                       invisible="l10n_ua_agro_material_type not in ('fertilizer', 'protection')"
+                       groups="l10n_ua_agro_base.group_ua_agro_user"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

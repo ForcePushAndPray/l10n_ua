@@ -15,6 +15,7 @@
             <field name="categ_id" ref="product_category_fuel"/>
             <field name="uom_id" ref="uom.product_uom_litre"/>
             <field name="standard_price">55.0</field>
+            <field name="l10n_ua_agro_material_type">fuel</field>
         </record>
     </data>
 </odoo>

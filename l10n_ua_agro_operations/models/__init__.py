@@ -8,3 +8,5 @@ from . import agro_planting
 from . import account_move_line
 from . import stock_move
 from . import agro_analytic
+from . import product_template
+from . import agro_print

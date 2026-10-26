@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Agro Field Operations',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Agriculture/Localization',
     'summary': 'Technological cards, field work orders, write-off of seeds, '
                'fertilizers, plant protection products and fuel to fields',
@@ -22,6 +22,11 @@ Part of the "Agro" industry solution (epic #477, issue #471).
   the norm. Validation writes the materials off the warehouse and posts
   Dt 23 / Ct 20 with the field and crop analytics.
 * Plan / actual cost report per field and crop.
+* Printed forms from the selected work orders: act on fertilizers and plant
+  protection products (VZSG-3) and on seeds (VZSG-4) - recommended forms of
+  the Ministry of Agrarian Policy order No. 929 of 21.12.2007 - and the
+  tractor operator record sheet (form No. 67-B) per operator; signatories
+  (agronomist / foreman, storekeeper) on the work order.
 
 The piece-rate pay of the operators goes to payroll through
 ``l10n_ua_agro_operations_salary``.
@@ -50,6 +55,8 @@ The piece-rate pay of the operators goes to payroll through
         'views/agro_planting_views.xml',
         'views/res_config_settings_views.xml',
         'report/agro_cost_report_views.xml',
+        'report/agro_print_forms.xml',
+        'views/product_views.xml',
         'views/menu_views.xml',
     ],
     'images': ['static/description/icon.png'],
