@@ -295,4 +295,133 @@
         </t>
     </template>
 
+
+    <record id="action_report_tech_card" model="ir.actions.report">
+        <field name="name">Technological Card</field>
+        <field name="model">l10n_ua.agro.tech.card</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_agro_operations.report_tech_card</field>
+        <field name="report_file">l10n_ua_agro_operations.report_tech_card</field>
+        <field name="paperformat_id" ref="paperformat_agro_landscape"/>
+        <field name="binding_model_id" ref="model_l10n_ua_agro_tech_card"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'%s' % (object.name or '').replace('/', '-')</field>
+    </record>
+
+    <template id="report_tech_card">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="lines" t-value="o._print_lines()"/>
+                    <t t-set="operations" t-value="lines[0]"/>
+                    <t t-set="materials" t-value="lines[1]"/>
+                    <t t-set="partner" t-value="o.company_id.partner_id"/>
+                    <div class="page o_ua_agro">
+                        <t t-call="l10n_ua_agro_operations.agro_form_style"/>
+                        <table class="plain">
+                            <tr>
+                                <td style="width: 60%;"><strong t-out="o.company_id.name"/></td>
+                                <td style="width: 40%;">
+                                    <div><strong>APPROVED</strong></div>
+                                    <div><t t-out="partner.l10n_ua_chief_position or ''"/> <span class="line">&#160;</span> <t t-out="partner.l10n_ua_chief_name or ''"/></div>
+                                    <div t-if="o.state == 'approved'"><t t-out="o.approved_date" t-options="{'widget': 'date'}"/></div>
+                                    <div t-else="">«____» ______________ 20__</div>
+                                </td>
+                            </tr>
+                        </table>
+                        <div class="title">TECHNOLOGICAL CARD for growing <t t-out="o.crop_id.name"/></div>
+                        <div class="subtitle">
+                            for the harvest of <t t-out="o.season_id.year"/>, area <t t-out="'%.2f' % o.area"/> ha
+                            <t t-if="o.planting_ids">(<t t-out="', '.join(o.planting_ids.mapped('field_id.display_name'))"/>)</t>
+                        </div>
+                        <table class="grid">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2">Operation</th>
+                                    <th rowspan="2">Dates</th>
+                                    <th rowspan="2">Unit</th>
+                                    <th colspan="2">Volume of work</th>
+                                    <th colspan="2">Fuel, l</th>
+                                    <th colspan="2">Operator pay</th>
+                                    <th colspan="2">Cost</th>
+                                </tr>
+                                <tr>
+                                    <th>per ha</th><th>total</th>
+                                    <th>per ha</th><th>total</th>
+                                    <th>per ha</th><th>total</th>
+                                    <th>per ha</th><th>total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="operations" t-as="r">
+                                    <td t-out="r['operation']"/>
+                                    <td class="mid">
+                                        <t t-if="r['date_from']" t-out="r['date_from'].strftime('%d.%m')"/><t t-if="r['date_to']"> – <t t-out="r['date_to'].strftime('%d.%m')"/></t>
+                                    </td>
+                                    <td class="mid" t-out="r['unit']"/>
+                                    <td class="num" t-out="'%.2f' % r['volume_ha']"/>
+                                    <td class="num" t-out="'%.2f' % r['volume']"/>
+                                    <td class="num" t-out="'%.1f' % r['fuel_ha']"/>
+                                    <td class="num" t-out="'%.0f' % r['fuel']"/>
+                                    <td class="num" t-out="'%.2f' % r['labor_ha']"/>
+                                    <td class="num" t-out="'%.2f' % r['labor']"/>
+                                    <td class="num" t-out="'%.2f' % r['cost_ha']"/>
+                                    <td class="num" t-out="'%.2f' % r['cost']"/>
+                                </tr>
+                                <tr class="total">
+                                    <td colspan="5">Total operations</td>
+                                    <td class="num" t-out="'%.1f' % sum(r['fuel_ha'] for r in operations)"/>
+                                    <td class="num" t-out="'%.0f' % sum(r['fuel'] for r in operations)"/>
+                                    <td class="num" t-out="'%.2f' % sum(r['labor_ha'] for r in operations)"/>
+                                    <td class="num" t-out="'%.2f' % sum(r['labor'] for r in operations)"/>
+                                    <td class="num" t-out="'%.2f' % sum(r['cost_ha'] for r in operations)"/>
+                                    <td class="num" t-out="'%.2f' % sum(r['cost'] for r in operations)"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br/>
+                        <table class="grid">
+                            <thead>
+                                <tr>
+                                    <th>Material</th>
+                                    <th>Operation</th>
+                                    <th>Unit</th>
+                                    <th>Rate per ha</th>
+                                    <th>For the area</th>
+                                    <th>Price</th>
+                                    <th>Cost per ha</th>
+                                    <th>Cost</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="materials" t-as="r">
+                                    <td t-out="r['product']"/>
+                                    <td t-out="r['operation']"/>
+                                    <td class="mid" t-out="r['uom']"/>
+                                    <td class="num" t-out="'%.3f' % r['rate_ha']"/>
+                                    <td class="num" t-out="'%.3f' % r['quantity']"/>
+                                    <td class="num" t-out="'%.2f' % r['price']"/>
+                                    <td class="num" t-out="'%.2f' % r['cost_ha']"/>
+                                    <td class="num" t-out="'%.2f' % r['cost']"/>
+                                </tr>
+                                <tr class="total">
+                                    <td colspan="6">Total materials</td>
+                                    <td class="num" t-out="'%.2f' % sum(r['cost_ha'] for r in materials)"/>
+                                    <td class="num" t-out="'%.2f' % sum(r['cost'] for r in materials)"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p><strong>Planned cost: <t t-out="'%.2f' % o.cost_ha"/> per ha, <t t-out="'%.2f' % o.cost_total"/> for the area.</strong></p>
+                        <table class="plain sign">
+                            <tr>
+                                <td style="width: 50%;">Prepared by (agronomist) <span class="line">&#160;</span> <t t-out="o.author_id.name or ''"/></td>
+                                <td>Approved by <span class="line">&#160;</span> <t t-out="o.approved_by_id.name or ''"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
 </odoo>

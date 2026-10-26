@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Agro Field Operations',
-    'version': '19.0.1.1.0',
+    'version': '19.0.1.2.0',
     'category': 'Agriculture/Localization',
     'summary': 'Technological cards, field work orders, write-off of seeds, '
                'fertilizers, plant protection products and fuel to fields',
