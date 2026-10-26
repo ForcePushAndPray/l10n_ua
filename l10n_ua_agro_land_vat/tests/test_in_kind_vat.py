@@ -4,6 +4,7 @@ from datetime import date
 from odoo.exceptions import UserError
 from odoo.tests import tagged
 
+from odoo.addons.l10n_ua_account_vat.tests.common_pn import set_pn_requisites
 from odoo.addons.l10n_ua_agro_land.tests.common import AgroLandTestCase
 
 
@@ -13,7 +14,8 @@ class TestInKindVat(AgroLandTestCase):
     @classmethod
     def setUpClass(cls):
         super().setUpClass()
-        cls.company.l10n_ua_is_vat_payer = True
+        cls.company.write({'l10n_ua_is_vat_payer': True, 'l10n_ua_vat_ipn': '123456789012'})
+        set_pn_requisites(cls.env, cls.company)
         cls.acc_6412 = cls._account('6412', 'Розрахунки за ПДВ', 'liability_payable')
         cls.acc_949 = cls._account('949', 'Інші витрати операційної діяльності', 'expense')
         cls.vat14 = cls.env['account.tax'].create({
@@ -78,8 +80,8 @@ class TestInKindVat(AgroLandTestCase):
         self.assertAlmostEqual(first.total_vat, round(7392 - base1, 2), places=2)
         first.action_generate_xml()
         xml = base64.b64decode(first.file_xml).decode('windows-1251')
-        self.assertIn('<BUYER_IPN>100000000000</BUYER_IPN>', xml)
-        self.assertIn('<BUYER_NAME>Неплатник</BUYER_NAME>', xml)
+        self.assertIn('<HKBUY>100000000000</HKBUY>', xml)
+        self.assertIn('<HNAMEBUY>Неплатник</HNAMEBUY>', xml)
         self.assertIn('<HTYPR>02</HTYPR>', xml)
 
     def test_vat_on_top_and_cancel(self):

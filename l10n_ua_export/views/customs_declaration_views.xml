@@ -44,7 +44,7 @@
                     <widget name="web_ribbon" title="Settled" invisible="settlement_state != 'settled'"/>
                     <div class="oe_title">
                         <label for="name"/>
-                        <h1><field name="name" placeholder="UA500020/2026/012345" readonly="state != 'draft'"/></h1>
+                        <h1><field name="name" placeholder="26UA500020000123U4" readonly="state != 'draft'"/></h1>
                     </div>
                     <group>
                         <group string="Customs">

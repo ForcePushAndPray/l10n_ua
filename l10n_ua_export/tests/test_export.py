@@ -45,7 +45,7 @@ class TestExport(AccountTestInvoicingCommon):
 
     def _declaration(self, invoice, clearance=date(2026, 9, 3)):
         declaration = self.env['l10n_ua.customs.declaration'].create({
-            'name': 'UA500020/2026/%06d' % invoice.id, 'date': clearance, 'partner_id': self.buyer.id,
+            'name': '26UA500020%07dU' % invoice.id, 'date': clearance, 'partner_id': self.buyer.id,
             'agreement_id': self.contract.id, 'invoice_ids': [(6, 0, invoice.ids)], 'customs_value': 460000.0})
         declaration.action_confirm()
         return declaration
@@ -63,6 +63,9 @@ class TestExport(AccountTestInvoicingCommon):
         self.assertAlmostEqual(tax_invoice.total_base, 460000.0, places=2)  # 10 000 € × 46,00
         self.assertEqual(tax_invoice.total_vat, 0.0)
         self.assertEqual(tax_invoice.line_ids.uktzed_code, '1207709100')
+        self.assertEqual(tax_invoice.contract_number, 'EXP-1/2026')
+        self.assertEqual(tax_invoice.customs_number, declaration.name)
+        self.assertEqual(tax_invoice.customs_date, date(2026, 9, 3))
         with self.assertRaises(UserError):
             declaration.action_create_tax_invoice()
 
