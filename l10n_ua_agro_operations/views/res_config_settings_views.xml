@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="res_config_settings_view_form_agro_operations" model="ir.ui.view">
+        <field name="name">res.config.settings.agro.operations</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="l10n_ua_agro_base.res_config_settings_view_form_agro"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='l10n_ua_agro_base']" position="inside">
+                <block title="Field Operations" name="agro_operations">
+                    <setting id="agro_operations_accounts" string="Write-off to Fields"
+                             help="Materials and fuel written off by work orders: Dt crop production / Ct materials">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_ua_agro_warehouse_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_ua_agro_warehouse_id"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_ua_agro_operations_journal_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_ua_agro_operations_journal_id"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_ua_agro_production_account_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_ua_agro_production_account_id"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_ua_agro_material_account_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_ua_agro_material_account_id"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

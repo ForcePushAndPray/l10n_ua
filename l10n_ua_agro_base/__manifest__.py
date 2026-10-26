@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Agro Base',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Agriculture/Localization',
     'summary': 'Agriculture for Ukrainian crop farms: fields, crops, seasons, '
                'crop rotation and sown area structure',
@@ -38,6 +38,7 @@ Base of the "Agro" industry solution (epic #477), shared by all
         'views/agro_season_views.xml',
         'views/agro_field_views.xml',
         'views/agro_planting_views.xml',
+        'views/res_config_settings_views.xml',
         'views/menu_views.xml',
     ],
     'images': ['static/description/icon.png'],

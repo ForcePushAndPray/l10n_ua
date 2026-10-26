@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_agro_planting_view_list_costs" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.planting.list.costs</field>
+        <field name="model">l10n_ua.agro.planting</field>
+        <field name="inherit_id" ref="l10n_ua_agro_base.l10n_ua_agro_planting_view_list"/>
+        <field name="arch" type="xml">
+            <field name="area" position="after">
+                <field name="currency_id" column_invisible="True"/>
+                <field name="planned_cost" optional="show"/>
+                <field name="actual_cost" optional="show"/>
+                <button name="action_view_work_orders" type="object" icon="fa-list"
+                        title="Work Orders" invisible="not work_order_count"/>
+                <field name="work_order_count" column_invisible="True"/>
+            </field>
+        </field>
+    </record>
+
+</odoo>

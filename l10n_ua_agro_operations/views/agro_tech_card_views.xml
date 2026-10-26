@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_agro_tech_card_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.tech.card.list</field>
+        <field name="model">l10n_ua.agro.tech.card</field>
+        <field name="arch" type="xml">
+            <list string="Technological Cards">
+                <field name="name"/>
+                <field name="season_id"/>
+                <field name="crop_id"/>
+                <field name="area"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="cost_ha"/>
+                <field name="cost_total"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_tech_card_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.tech.card.form</field>
+        <field name="model">l10n_ua.agro.tech.card</field>
+        <field name="arch" type="xml">
+            <form string="Technological Card">
+                <sheet>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. Winter wheat — Season 2027"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="crop_id"/>
+                            <field name="season_id"/>
+                            <field name="area"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" invisible="1"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                        <group string="Planned Cost">
+                            <field name="material_cost_ha"/>
+                            <field name="operation_cost_ha"/>
+                            <field name="cost_ha"/>
+                            <field name="cost_total"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Operations" name="operations">
+                            <field name="operation_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="operation_type_id"/>
+                                    <field name="date_from" optional="show"/>
+                                    <field name="date_to" optional="show"/>
+                                    <field name="volume_ha"/>
+                                    <field name="unit" optional="show"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="cost_ha" sum="Total"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Materials" name="materials">
+                            <field name="material_ids">
+                                <list editable="bottom">
+                                    <field name="sequence" widget="handle"/>
+                                    <field name="operation_type_id"/>
+                                    <field name="product_id"/>
+                                    <field name="rate_ha"/>
+                                    <field name="uom_id" optional="show"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="price_unit"/>
+                                    <field name="cost_ha" sum="Total"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Plantings" name="plantings">
+                            <field name="planting_ids">
+                                <list>
+                                    <field name="field_id"/>
+                                    <field name="variety"/>
+                                    <field name="area" sum="Total"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_tech_card_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.tech.card.search</field>
+        <field name="model">l10n_ua.agro.tech.card</field>
+        <field name="arch" type="xml">
+            <search string="Technological Cards">
+                <field name="name"/>
+                <field name="crop_id"/>
+                <field name="season_id"/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter string="Season" name="groupby_season" domain="[]" context="{'group_by': 'season_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_tech_card_action" model="ir.actions.act_window">
+        <field name="name">Technological Cards</field>
+        <field name="res_model">l10n_ua.agro.tech.card</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create the first technological card</p>
+            <p>Plan the operations and the application rates per hectare for a crop in a season.</p>
+        </field>
+    </record>
+
+</odoo>
