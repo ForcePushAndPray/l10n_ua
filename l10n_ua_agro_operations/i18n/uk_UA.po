@@ -6,14 +6,19 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 19.0-20260103\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-26 09:09+0000\n"
-"PO-Revision-Date: 2026-10-26 09:09+0000\n"
+"POT-Creation-Date: 2026-10-26 09:14+0000\n"
+"PO-Revision-Date: 2026-10-26 09:14+0000\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: \n"
+
+#. module: l10n_ua_agro_operations
+#: model:ir.actions.report,print_report_name:l10n_ua_agro_operations.action_report_tech_card
+msgid "'%s' % (object.name or '').replace('/', '-')"
+msgstr "'%s' % (object.name or '').replace('/', '-')"
 
 #. module: l10n_ua_agro_operations
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_vzsg3
@@ -26,12 +31,18 @@ msgstr ""
 "                        під урожай"
 
 #. module: l10n_ua_agro_operations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
+msgid ", area"
+msgstr ", площа"
+
+#. module: l10n_ua_agro_operations
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.l10n_ua_agro_work_order_view_form
 msgid "<span class=\"o_stat_text\">Journal Entry</span>"
 msgstr "<span class=\"o_stat_text\">Проводка</span>"
 
 #. module: l10n_ua_agro_operations
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.agro_form_header
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
 msgid "<strong>APPROVED</strong>"
 msgstr "<strong>ЗАТВЕРДЖУЮ</strong>"
 
@@ -147,6 +158,12 @@ msgstr "Фактично на 1 га"
 
 #. module: l10n_ua_agro_operations
 #. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
+msgid "Add the operations and materials before approving the card."
+msgstr "Додайте операції й матеріали, перш ніж затверджувати карту."
+
+#. module: l10n_ua_agro_operations
+#. odoo-python
 #: code:addons/l10n_ua_agro_operations/models/agro_work_order.py:0
 msgid "Add the operators or the materials of the work order."
 msgstr "Додайте механізаторів або матеріали наряду."
@@ -186,6 +203,31 @@ msgid "Analytic Account"
 msgstr "Аналітичний рахунок"
 
 #. module: l10n_ua_agro_operations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.l10n_ua_agro_tech_card_view_form
+msgid "Approve"
+msgstr "Затвердити"
+
+#. module: l10n_ua_agro_operations
+#: model:ir.model.fields.selection,name:l10n_ua_agro_operations.selection__l10n_ua_agro_tech_card__state__approved
+msgid "Approved"
+msgstr "Затверджена"
+
+#. module: l10n_ua_agro_operations
+#: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card__approved_by_id
+msgid "Approved by"
+msgstr "Затвердив"
+
+#. module: l10n_ua_agro_operations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
+msgid "Approved by <span class=\"line\"> </span>"
+msgstr "Затвердив <span class=\"line\"> </span>"
+
+#. module: l10n_ua_agro_operations
+#: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card__approved_date
+msgid "Approved on"
+msgstr "Дата затвердження"
+
+#. module: l10n_ua_agro_operations
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.l10n_ua_agro_machine_view_search
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.l10n_ua_agro_operation_type_view_search
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.l10n_ua_agro_tech_card_view_form
@@ -213,6 +255,12 @@ msgstr "Внесено на площу, га"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_vzsg4
 msgid "Area sown, ha"
 msgstr "Засіяна площа, га"
+
+#. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
+msgid "Area, ha"
+msgstr "Площа, га"
 
 #. module: l10n_ua_agro_operations
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_vzsg3
@@ -310,7 +358,15 @@ msgid "Config Settings"
 msgstr "Налаштування"
 
 #. module: l10n_ua_agro_operations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.l10n_ua_agro_tech_card_view_form
+msgid "Copy to Next Season"
+msgstr "Копіювати на наступний сезон"
+
+#. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_work_order_material__amount
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
 msgid "Cost"
 msgstr "Вартість"
 
@@ -321,8 +377,11 @@ msgid "Cost Type"
 msgstr "Вид витрат"
 
 #. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card_material__cost_ha
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card_operation__cost_ha
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
 msgid "Cost per ha"
 msgstr "Витрати на 1 га"
 
@@ -330,6 +389,12 @@ msgstr "Витрати на 1 га"
 #: model_terms:ir.actions.act_window,help:l10n_ua_agro_operations.l10n_ua_agro_tech_card_action
 msgid "Create the first technological card"
 msgstr "Створіть першу технологічну карту"
+
+#. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
+msgid "Create the season %s first."
+msgstr "Спершу створіть сезон %s."
 
 #. module: l10n_ua_agro_operations
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_machine__create_uid
@@ -407,6 +472,7 @@ msgid "Date"
 msgstr "Дата"
 
 #. module: l10n_ua_agro_operations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_vzsg3
 msgid "Dates"
 msgstr "Дати"
@@ -462,6 +528,7 @@ msgid "Done"
 msgstr "Проведено"
 
 #. module: l10n_ua_agro_operations
+#: model:ir.model.fields.selection,name:l10n_ua_agro_operations.selection__l10n_ua_agro_tech_card__state__draft
 #: model:ir.model.fields.selection,name:l10n_ua_agro_operations.selection__l10n_ua_agro_work_order__state__draft
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.l10n_ua_agro_work_order_view_search
 msgid "Draft"
@@ -478,6 +545,11 @@ msgstr "Дт"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_operator_sheet
 msgid "EDRPOU code:"
 msgstr "Код ЄДРПОУ:"
+
+#. module: l10n_ua_agro_operations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.l10n_ua_agro_tech_card_view_form
+msgid "Export XLSX"
+msgstr "Вивантажити XLSX"
 
 #. module: l10n_ua_agro_operations
 #: model:l10n_ua.agro.operation.type,name:l10n_ua_agro_operations.operation_fert
@@ -575,6 +647,11 @@ msgid "Font awesome icon e.g. fa-tasks"
 msgstr "Іконка зі шрифтом Font awesome, напр. fa-tasks"
 
 #. module: l10n_ua_agro_operations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
+msgid "For the area"
+msgstr "На площу"
+
+#. module: l10n_ua_agro_operations
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_operator_sheet
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_vzsg4
 msgid "Foreman <span class=\"line\"> </span>"
@@ -591,6 +668,8 @@ msgid "Form No. 67-B"
 msgstr "Форма № 67-Б"
 
 #. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card_operation__date_from
 msgid "From"
 msgstr "З"
@@ -619,7 +698,17 @@ msgid "Fuel and Lubricants"
 msgstr "Паливно-мастильні матеріали"
 
 #. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
+#: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card_operation__fuel_ha
+msgid "Fuel per ha, l"
+msgstr "Пальне на 1 га, л"
+
+#. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_operator_sheet
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
 msgid "Fuel, l"
 msgstr "Пальне, л"
 
@@ -802,8 +891,11 @@ msgid "Machinery"
 msgstr "Сільгосптехніка"
 
 #. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card_material__product_id
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_work_order_material__product_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
 msgid "Material"
 msgstr "Матеріал"
 
@@ -934,10 +1026,13 @@ msgid "Only a draft work order can be filled."
 msgstr "Заповнити можна лише чернетку наряду."
 
 #. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card_material__operation_type_id
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card_operation__operation_type_id
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_work_order__operation_type_id
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.l10n_ua_agro_work_order_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
 msgid "Operation"
 msgstr "Операція"
 
@@ -967,6 +1062,11 @@ msgstr "Механізатор"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.l10n_ua_agro_work_order_worker_view_search
 msgid "Operator Output"
 msgstr "Виробіток механізаторів"
+
+#. module: l10n_ua_agro_operations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
+msgid "Operator pay"
+msgstr "Оплата механізаторів"
 
 #. module: l10n_ua_agro_operations
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_work_order__worker_ids
@@ -1003,10 +1103,19 @@ msgid "Output"
 msgstr "Виробіток"
 
 #. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_work_order_worker__amount
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_operator_sheet
 msgid "Pay"
 msgstr "Оплата"
+
+#. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
+#: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card_operation__labor_ha
+msgid "Pay per ha"
+msgstr "Оплата на 1 га"
 
 #. module: l10n_ua_agro_operations
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_operation_type__piece_rate
@@ -1055,6 +1164,23 @@ msgid "Planned Cost per ha"
 msgstr "Планові витрати на 1 га"
 
 #. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
+msgid "Planned cost"
+msgstr "Планові витрати"
+
+#. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
+msgid "Planned cost per ha"
+msgstr "Планові витрати на 1 га"
+
+#. module: l10n_ua_agro_operations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
+msgid "Planned cost:"
+msgstr "Планові витрати:"
+
+#. module: l10n_ua_agro_operations
 #: model:ir.model.fields.selection,name:l10n_ua_agro_operations.selection__l10n_ua_agro_operation_type__category__protection
 msgid "Plant Protection"
 msgstr "Захист рослин"
@@ -1089,7 +1215,20 @@ msgid "Pre-sowing Cultivation"
 msgstr "Передпосівна культивація"
 
 #. module: l10n_ua_agro_operations
+#: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card__author_id
+msgid "Prepared by"
+msgstr "Склав"
+
+#. module: l10n_ua_agro_operations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
+msgid "Prepared by (agronomist) <span class=\"line\"> </span>"
+msgstr "Склав (агроном) <span class=\"line\"> </span>"
+
+#. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card_material__price_unit
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_vzsg3
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_vzsg4
 msgid "Price"
@@ -1106,6 +1245,8 @@ msgid "Pumpkin Seed Harvesting"
 msgstr "Збирання гарбуза на насіння"
 
 #. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_work_order_material__quantity
 msgid "Quantity"
 msgstr "Кількість"
@@ -1116,7 +1257,10 @@ msgid "Quantity (physical weight)"
 msgstr "Кількість (фізична вага)"
 
 #. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card_material__rate_ha
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_vzsg4
 msgid "Rate per ha"
 msgstr "Норма на 1 га"
@@ -1132,6 +1276,7 @@ msgid "Registration Number"
 msgstr "Держномер"
 
 #. module: l10n_ua_agro_operations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.l10n_ua_agro_tech_card_view_form
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.l10n_ua_agro_work_order_view_form
 msgid "Reset to Draft"
 msgstr "Повернути в чернетку"
@@ -1224,10 +1369,17 @@ msgid "Spraying"
 msgstr "Обприскування"
 
 #. module: l10n_ua_agro_operations
+#: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card__state
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_work_order__state
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_work_order_material__state
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_work_order_worker__state
 msgid "State"
+msgstr "Стан"
+
+#. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
+msgid "Status"
 msgstr "Стан"
 
 #. module: l10n_ua_agro_operations
@@ -1259,11 +1411,25 @@ msgid "Storekeeper"
 msgstr "Комірник"
 
 #. module: l10n_ua_agro_operations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
+msgid "TECHNOLOGICAL CARD for growing"
+msgstr "ТЕХНОЛОГІЧНА КАРТА вирощування"
+
+#. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
+msgid "TECHNOLOGICAL CARD: %(crop)s, harvest %(year)s"
+msgstr "ТЕХНОЛОГІЧНА КАРТА: %(crop)s, урожай %(year)s"
+
+#. module: l10n_ua_agro_operations
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_operator_sheet
 msgid "TRACTOR OPERATOR RECORD SHEET No. ____"
 msgstr "ОБЛІКОВИЙ ЛИСТ ТРАКТОРИСТА-МАШИНІСТА № ____"
 
 #. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
+#: model:ir.actions.report,name:l10n_ua_agro_operations.action_report_tech_card
 #: model:ir.model,name:l10n_ua_agro_operations.model_l10n_ua_agro_tech_card
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.l10n_ua_agro_tech_card_view_form
 msgid "Technological Card"
@@ -1286,6 +1452,12 @@ msgstr "Операція технологічної карти"
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.l10n_ua_agro_tech_card_view_search
 msgid "Technological Cards"
 msgstr "Технологічні карти"
+
+#. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
+msgid "The %(season)s already has a technological card for %(crop)s."
+msgstr "На %(season)s уже є технологічна карта для %(crop)s."
 
 #. module: l10n_ua_agro_operations
 #. odoo-python
@@ -1320,6 +1492,8 @@ msgid "Tillage"
 msgstr "Обробіток ґрунту"
 
 #. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card_operation__date_to
 msgid "To"
 msgstr "По"
@@ -1338,6 +1512,20 @@ msgstr "Разом"
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_work_order__total_amount
 msgid "Total Cost"
 msgstr "Витрати разом"
+
+#. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
+msgid "Total materials"
+msgstr "Разом матеріали"
+
+#. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
+msgid "Total operations"
+msgstr "Разом операції"
 
 #. module: l10n_ua_agro_operations
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_operator_sheet
@@ -1381,9 +1569,12 @@ msgid "Type of the exception activity on record."
 msgstr "Тип дії виключення на записі."
 
 #. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card_material__uom_id
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_work_order_material__uom_id
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_operator_sheet
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_vzsg3
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_vzsg4
 msgid "Unit"
@@ -1407,6 +1598,19 @@ msgid "Validate"
 msgstr "Провести"
 
 #. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
+msgid "Volume"
+msgstr "Обсяг"
+
+#. module: l10n_ua_agro_operations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
+msgid "Volume of work"
+msgstr "Обсяг робіт"
+
+#. module: l10n_ua_agro_operations
+#. odoo-python
+#: code:addons/l10n_ua_agro_operations/models/agro_tech_card.py:0
 #: model:ir.model.fields,field_description:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card_operation__volume_ha
 msgid "Volume per ha"
 msgstr "Обсяг на 1 га"
@@ -1495,6 +1699,16 @@ msgid "e.g. Winter wheat — Season 2027"
 msgstr "напр. Пшениця озима — Сезон 2027"
 
 #. module: l10n_ua_agro_operations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
+msgid "for the area."
+msgstr "на площу."
+
+#. module: l10n_ua_agro_operations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
+msgid "for the harvest of"
+msgstr "під урожай"
+
+#. module: l10n_ua_agro_operations
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_vzsg3
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_vzsg4
 msgid "for the period"
@@ -1502,6 +1716,7 @@ msgstr "за період"
 
 #. module: l10n_ua_agro_operations
 #: model:ir.model.fields.selection,name:l10n_ua_agro_operations.selection__l10n_ua_agro_operation_type__unit__ha
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
 msgid "ha"
 msgstr "га"
 
@@ -1516,14 +1731,35 @@ msgid "km"
 msgstr "км"
 
 #. module: l10n_ua_agro_operations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
+msgid "per ha"
+msgstr "на 1 га"
+
+#. module: l10n_ua_agro_operations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
+msgid "per ha,"
+msgstr "на 1 га,"
+
+#. module: l10n_ua_agro_operations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
+msgid "total"
+msgstr "усього"
+
+#. module: l10n_ua_agro_operations
 #: model:ir.model.fields.selection,name:l10n_ua_agro_operations.selection__l10n_ua_agro_operation_type__unit__trip
 msgid "trips"
 msgstr "рейсів"
 
 #. module: l10n_ua_agro_operations
 #: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.agro_form_header
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_operations.report_tech_card
 msgid "«____» ______________ 20__"
 msgstr "«____» ______________ 20__ р."
+
+#. module: l10n_ua_agro_operations
+#: model:ir.model.fields,help:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card__author_id
+msgid "Агроном, який склав технологічну карту."
+msgstr ""
 
 #. module: l10n_ua_agro_operations
 #: model:ir.model.fields,help:l10n_ua_agro_operations.field_l10n_ua_agro_crop__analytic_account_id
@@ -1568,6 +1804,11 @@ msgstr ""
 #. module: l10n_ua_agro_operations
 #: model:ir.model.fields,help:l10n_ua_agro_operations.field_l10n_ua_agro_work_order_material__norm_quantity
 msgid "Кількість за нормою техкарти або нормою пального."
+msgstr ""
+
+#. module: l10n_ua_agro_operations
+#: model:ir.model.fields,help:l10n_ua_agro_operations.field_l10n_ua_agro_tech_card__state
+msgid "Наряди беруть норми лише з затвердженої технологічної карти."
 msgstr ""
 
 #. module: l10n_ua_agro_operations

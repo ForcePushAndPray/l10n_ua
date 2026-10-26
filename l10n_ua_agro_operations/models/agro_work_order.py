@@ -105,6 +105,7 @@ class AgroWorkOrder(models.Model):
             ('crop_id', '=', self.crop_id.id),
             ('season_id', '=', self.season_id.id),
             ('company_id', '=', self.company_id.id),
+            ('state', '=', 'approved'),
         ], limit=1)
 
     def action_load_norms(self):

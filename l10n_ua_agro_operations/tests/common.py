@@ -56,6 +56,7 @@ class AgroOperationsTestCase(TransactionCase):
                 (0, 0, {'operation_type_id': cls.op_sow.id, 'product_id': cls.seed.id, 'rate_ha': 220.0}),
                 (0, 0, {'operation_type_id': cls.op_fert.id, 'product_id': cls.fertilizer.id, 'rate_ha': 150.0}),
             ]})
+        cls.card.action_approve()
         cls.tractor = cls.env['l10n_ua.agro.machine'].create({
             'name': 'John Deere 8R', 'code': '01', 'fuel_product_id': cls.diesel.id, 'fuel_factor': 1.1})
         cls.operator = cls.env['hr.employee'].create({'name': 'Мельник Іван Степанович'})
