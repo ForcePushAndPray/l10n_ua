@@ -33,7 +33,7 @@
                     <group>
                         <group string="Period">
                             <field name="period_type" readonly="id"/>
-                            <field name="year" readonly="id"/>
+                            <field name="year" options="{'enable_formatting': false}" readonly="id"/>
                             <field name="month" readonly="id" invisible="period_type != 'month'"
                                    required="period_type == 'month'"/>
                             <field name="quarter" readonly="id" invisible="period_type != 'quarter'"

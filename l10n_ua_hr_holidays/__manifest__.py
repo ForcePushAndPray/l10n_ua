@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - HR Holidays',
-    'version': '19.0.1.1.2',
+    'version': '19.0.1.1.3',
     'category': 'Human Resources/Localization',
     'summary': 'Ukrainian holidays and sick leave management',
     'description': """
@@ -13,7 +13,7 @@ Holidays and sick leave management for Ukrainian localization:
 * Vacation balance tracking per employee
 * Vacation schedule (yearly planning)
 * Sick leave management (e-TVN support)
-* Sick leave payment calculation (employer + FSS)
+* Sick leave payment calculation (employer + Pension Fund from day 6)
 * Average salary calculation for vacation pay
 * Maternity leave support
 * Vacation compensation on termination

@@ -53,7 +53,7 @@
                     </div>
                     <group>
                         <group string="Основне">
-                            <field name="year" readonly="state in ('submitted', 'accepted')"/>
+                            <field name="year" options="{'enable_formatting': false}" readonly="state in ('submitted', 'accepted')"/>
                             <field name="period" readonly="state in ('submitted', 'accepted')"/>
                             <field name="fop_group_id" readonly="state in ('submitted', 'accepted')"/>
                             <field name="income_limit" invisible="not fop_group_id"/>
@@ -123,7 +123,7 @@
                   decoration-danger="income_limit_exceeded"
                   decoration-muted="state == 'accepted'">
                 <field name="name"/>
-                <field name="year"/>
+                <field name="year" options="{'enable_formatting': false}"/>
                 <field name="period"/>
                 <field name="fop_group_id"/>
                 <field name="total_income" sum="Разом дохід"/>

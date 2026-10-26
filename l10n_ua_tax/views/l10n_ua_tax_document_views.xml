@@ -11,7 +11,7 @@
                 <field name="name"/>
                 <field name="document_type_id"/>
                 <field name="document_number" optional="show"/>
-                <field name="year"/>
+                <field name="year" options="{'enable_formatting': false}"/>
                 <field name="period"/>
                 <field name="company_id" groups="base.group_multi_company"/>
                 <field name="state" widget="badge"
@@ -45,7 +45,7 @@
                             <field name="document_date"/>
                         </group>
                         <group string="Period">
-                            <field name="year"/>
+                            <field name="year" options="{'enable_formatting': false}"/>
                             <field name="period"/>
                             <field name="period_id"/>
                         </group>

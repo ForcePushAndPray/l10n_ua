@@ -9,7 +9,7 @@
                 <field name="name"/>
                 <field name="kvkv_id"/>
                 <field name="kfk_id" optional="show"/>
-                <field name="year" optional="show"/>
+                <field name="year" options="{'enable_formatting': false}" optional="show"/>
                 <field name="active" optional="hide"/>
             </list>
         </field>
@@ -25,7 +25,7 @@
                         <group>
                             <field name="code"/>
                             <field name="name"/>
-                            <field name="year"/>
+                            <field name="year" options="{'enable_formatting': false}"/>
                         </group>
                         <group>
                             <field name="kvkv_code" readonly="1"/>

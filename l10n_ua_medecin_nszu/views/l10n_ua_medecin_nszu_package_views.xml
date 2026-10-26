@@ -9,7 +9,7 @@
                 <field name="name"/>
                 <field name="package_type"/>
                 <field name="payment_model"/>
-                <field name="year"/>
+                <field name="year" options="{'enable_formatting': false}"/>
                 <field name="base_tariff" widget="monetary"/>
                 <field name="is_active" widget="boolean_toggle"/>
                 <field name="currency_id" column_invisible="True"/>
@@ -31,7 +31,7 @@
                             <field name="payment_model"/>
                         </group>
                         <group>
-                            <field name="year"/>
+                            <field name="year" options="{'enable_formatting': false}"/>
                             <field name="base_tariff"/>
                             <field name="currency_id"/>
                             <field name="is_active"/>

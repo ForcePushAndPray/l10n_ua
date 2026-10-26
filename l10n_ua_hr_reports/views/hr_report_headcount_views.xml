@@ -21,7 +21,7 @@
                     </div>
                     <group>
                         <group string="Period">
-                            <field name="year"/>
+                            <field name="year" options="{'enable_formatting': false}"/>
                             <field name="month"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>
@@ -58,7 +58,7 @@
         <field name="arch" type="xml">
             <list string="Average Headcount Reports">
                 <field name="name"/>
-                <field name="year"/>
+                <field name="year" options="{'enable_formatting': false}"/>
                 <field name="month"/>
                 <field name="avg_headcount"/>
                 <field name="avg_headcount_full"/>

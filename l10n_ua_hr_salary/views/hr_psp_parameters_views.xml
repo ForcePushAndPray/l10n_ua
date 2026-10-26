@@ -9,7 +9,7 @@
                 <sheet>
                     <group>
                         <group string="Period">
-                            <field name="year"/>
+                            <field name="year" options="{'enable_formatting': false}"/>
                             <field name="date_from"/>
                             <field name="date_to"/>
                             <field name="active"/>
@@ -59,7 +59,7 @@
         <field name="model">hr.psp.parameters</field>
         <field name="arch" type="xml">
             <list string="PSP Parameters">
-                <field name="year"/>
+                <field name="year" options="{'enable_formatting': false}"/>
                 <field name="date_from"/>
                 <field name="date_to"/>
                 <field name="subsistence_minimum"/>

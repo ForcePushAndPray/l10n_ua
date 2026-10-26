@@ -21,7 +21,7 @@
                     </div>
                     <group>
                         <group string="Period">
-                            <field name="year"/>
+                            <field name="year" options="{'enable_formatting': false}"/>
                             <field name="month"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                             <field name="currency_id" invisible="1"/>
@@ -83,7 +83,7 @@
         <field name="arch" type="xml">
             <list string="Wage Fund Reports">
                 <field name="name"/>
-                <field name="year"/>
+                <field name="year" options="{'enable_formatting': false}"/>
                 <field name="month"/>
                 <field name="total_employees"/>
                 <field name="total_gross" sum="Total"/>

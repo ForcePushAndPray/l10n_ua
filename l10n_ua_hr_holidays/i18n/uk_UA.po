@@ -612,13 +612,13 @@ msgstr "Належить днів"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__fss_amount
-msgid "FSS Amount"
-msgstr "Сума ФСС"
+msgid "PFU Amount"
+msgstr "Сума ПФУ"
 
 #. module: l10n_ua_hr_holidays
 #: model:ir.model.fields,field_description:l10n_ua_hr_holidays.field_hr_sick_leave__fss_days
-msgid "FSS Days"
-msgstr "Дні ФСС"
+msgid "PFU Days"
+msgstr "Дні ПФУ"
 
 #. module: l10n_ua_hr_holidays
 #: model_terms:ir.actions.act_window,help:l10n_ua_hr_holidays.action_hr_vacation_schedule_line_calendar
