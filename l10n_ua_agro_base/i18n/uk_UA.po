@@ -1,0 +1,733 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ua_agro_base
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260103\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-26 07:57+0000\n"
+"PO-Revision-Date: 2026-10-26 07:57+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: uk_UA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_ua_agro_base
+#: model_terms:ir.actions.act_window,help:l10n_ua_agro_base.l10n_ua_agro_field_action
+msgid ""
+"A field is a unit of the crop rotation: one crop (or several) is sown on it "
+"each season."
+msgstr ""
+"Поле — одиниця сівозміни: щосезону на ньому сіють одну культуру (або "
+"кілька)."
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.constraint,message:l10n_ua_agro_base.constraint_l10n_ua_agro_season_year_company_uniq
+msgid "A season for this harvest year already exists in the company."
+msgstr "Сезон з цим роком урожаю в компанії вже є."
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__message_needaction
+msgid "Action Needed"
+msgstr "Необхідна дія"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_crop__active
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__active
+msgid "Active"
+msgstr "Діючий"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model,name:l10n_ua_agro_base.model_l10n_ua_agro_season
+msgid "Agricultural Season"
+msgstr "Сільськогосподарський сезон"
+
+#. module: l10n_ua_agro_base
+#: model:ir.ui.menu,name:l10n_ua_agro_base.menu_l10n_ua_agro_root
+#: model:res.groups.privilege,name:l10n_ua_agro_base.res_groups_privilege_l10n_ua_agro
+msgid "Agro"
+msgstr "Агро"
+
+#. module: l10n_ua_agro_base
+#: model:ir.module.category,name:l10n_ua_agro_base.module_category_l10n_ua_agro
+msgid "Agro (UA)"
+msgstr "Агро (UA)"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_field__land_type__arable
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_field_view_search
+msgid "Arable Land"
+msgstr "Рілля"
+
+#. module: l10n_ua_agro_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_crop_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_field_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_field_view_search
+msgid "Archived"
+msgstr "Архівовано"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__area
+msgid "Area (ha)"
+msgstr "Площа (га)"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__message_attachment_count
+msgid "Attachment Count"
+msgstr "Підрахунок прикріплення"
+
+#. module: l10n_ua_agro_base
+#: model:l10n_ua.agro.crop,name:l10n_ua_agro_base.crop_buckwheat
+msgid "Buckwheat"
+msgstr "Гречка"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_crop__byproduct_id
+msgid "By-product"
+msgstr "Побічна продукція"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_crop__crop_group__cereal
+msgid "Cereals"
+msgstr "Зернові"
+
+#. module: l10n_ua_agro_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_season_view_form
+msgid "Close Season"
+msgstr "Закрити сезон"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_season__state__closed
+msgid "Closed"
+msgstr "Закрито"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_crop__code
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__code
+msgid "Code"
+msgstr "Код"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_crop__color
+msgid "Color"
+msgstr "Колір"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__company_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_planting__company_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_season__company_id
+msgid "Company"
+msgstr "Компанія"
+
+#. module: l10n_ua_agro_base
+#: model:ir.ui.menu,name:l10n_ua_agro_base.menu_l10n_ua_agro_config
+msgid "Configuration"
+msgstr "Налаштування"
+
+#. module: l10n_ua_agro_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_field_view_form
+msgid "Contour"
+msgstr "Контур"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__geojson
+msgid "Contour (GeoJSON)"
+msgstr "Контур (GeoJSON)"
+
+#. module: l10n_ua_agro_base
+#: model:l10n_ua.agro.crop,name:l10n_ua_agro_base.crop_corn
+msgid "Corn for Grain"
+msgstr "Кукурудза на зерно"
+
+#. module: l10n_ua_agro_base
+#: model_terms:ir.actions.act_window,help:l10n_ua_agro_base.l10n_ua_agro_field_action
+msgid "Create the first field"
+msgstr "Створіть перше поле"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_crop__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_planting__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_season__create_uid
+msgid "Created by"
+msgstr "Створено"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_crop__create_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__create_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_planting__create_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_season__create_date
+msgid "Created on"
+msgstr "Створено"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model,name:l10n_ua_agro_base.model_l10n_ua_agro_crop
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_planting__crop_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_field_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_planting_view_search
+msgid "Crop"
+msgstr "Культура"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_crop__crop_group
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_planting__crop_group
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_crop_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_planting_view_search
+msgid "Crop Group"
+msgstr "Група культур"
+
+#. module: l10n_ua_agro_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_field_view_form
+msgid "Crop Rotation"
+msgstr "Сівозміна"
+
+#. module: l10n_ua_agro_base
+#: model:ir.actions.act_window,name:l10n_ua_agro_base.l10n_ua_agro_crop_action
+#: model:ir.ui.menu,name:l10n_ua_agro_base.menu_l10n_ua_agro_crops
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_crop_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_crop_view_search
+msgid "Crops"
+msgstr "Культури"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__current_crop_id
+msgid "Current Crop"
+msgstr "Поточна культура"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__current_planting_id
+msgid "Current Planting"
+msgstr "Поточний посів"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_crop__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_planting__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_season__display_name
+msgid "Display Name"
+msgstr "Назва для відображення"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_season__date_end
+msgid "End Date"
+msgstr "Дата закінчення"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_field__land_type__fallow
+msgid "Fallow"
+msgstr "Перелоги"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model,name:l10n_ua_agro_base.model_l10n_ua_agro_field
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_planting__field_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_field_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_planting_view_search
+msgid "Field"
+msgstr "Поле"
+
+#. module: l10n_ua_agro_base
+#: model:ir.actions.act_window,name:l10n_ua_agro_base.l10n_ua_agro_field_action
+#: model:ir.ui.menu,name:l10n_ua_agro_base.menu_l10n_ua_agro_fields
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_field_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_field_view_search
+msgid "Fields"
+msgstr "Поля"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_crop__crop_group__fodder
+msgid "Fodder Crops"
+msgstr "Кормові"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__message_follower_ids
+msgid "Followers"
+msgstr "Підписники"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Підписники (Партнери)"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_season__state__harvest
+msgid "Harvest"
+msgstr "Збирання"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_season__year
+msgid "Harvest Year"
+msgstr "Рік урожаю"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__has_message
+msgid "Has Message"
+msgstr "Є повідомлення"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_field__land_type__hayfield
+msgid "Hayfields"
+msgstr "Сіножаті"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_crop__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_planting__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_season__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,help:l10n_ua_agro_base.field_l10n_ua_agro_field__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Якщо позначено, то нові повідомлення будуть потребувати вашої уваги."
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,help:l10n_ua_agro_base.field_l10n_ua_agro_field__message_has_error
+#: model:ir.model.fields,help:l10n_ua_agro_base.field_l10n_ua_agro_field__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Якщо позначено, деякі повідомлення мають помилку доставки."
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_crop__crop_group__industrial
+msgid "Industrial Crops"
+msgstr "Технічні"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__message_is_follower
+msgid "Is Follower"
+msgstr "Стежить"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__land_type
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_planting__land_type
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_field_view_search
+msgid "Land Type"
+msgstr "Вид угідь"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_crop__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_planting__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_season__write_uid
+msgid "Last Updated by"
+msgstr "Востаннє оновлено"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_crop__write_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__write_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_planting__write_date
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_season__write_date
+msgid "Last Updated on"
+msgstr "Востаннє оновлено"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_crop__crop_group__legume
+msgid "Legumes"
+msgstr "Зернобобові"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_crop__product_id
+msgid "Main Product"
+msgstr "Основна продукція"
+
+#. module: l10n_ua_agro_base
+#: model:res.groups,name:l10n_ua_agro_base.group_ua_agro_manager
+msgid "Manager"
+msgstr "Керівник"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__message_has_error
+msgid "Message Delivery error"
+msgstr "Помилка доставлення повідомлення"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__message_ids
+msgid "Messages"
+msgstr "Повідомлення"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_crop__name
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__name
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_season__name
+msgid "Name"
+msgstr "Назва"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__note
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_planting__note
+msgid "Note"
+msgstr "Примітка"
+
+#. module: l10n_ua_agro_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_field_view_form
+msgid "Notes"
+msgstr "Примітки"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Кількість дій"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__message_has_error_counter
+msgid "Number of errors"
+msgstr "Кількість помилок"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,help:l10n_ua_agro_base.field_l10n_ua_agro_field__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Кількість повідомлень, які вимагають дії"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,help:l10n_ua_agro_base.field_l10n_ua_agro_field__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Кількість повідомлень з помилкою доставки"
+
+#. module: l10n_ua_agro_base
+#: model:l10n_ua.agro.crop,name:l10n_ua_agro_base.crop_oats
+msgid "Oats"
+msgstr "Овес"
+
+#. module: l10n_ua_agro_base
+#: model:l10n_ua.agro.crop,name:l10n_ua_agro_base.crop_pumpkin_seed
+msgid "Oil Pumpkin (seeds)"
+msgstr "Гарбуз олійний (на насіння)"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_crop__crop_group__oilseed
+msgid "Oilseeds"
+msgstr "Олійні"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_crop__crop_group__other
+msgid "Other"
+msgstr "Інше"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_field__land_type__pasture
+msgid "Pastures"
+msgstr "Пасовища"
+
+#. module: l10n_ua_agro_base
+#: model:l10n_ua.agro.crop,name:l10n_ua_agro_base.crop_pea
+msgid "Pea"
+msgstr "Горох"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_crop__sowing_type__perennial
+msgid "Perennial"
+msgstr "Багаторічна"
+
+#. module: l10n_ua_agro_base
+#: model:l10n_ua.agro.crop,name:l10n_ua_agro_base.crop_perennial_grass
+msgid "Perennial Grasses"
+msgstr "Багаторічні трави"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_crop__crop_group__perennial
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_field__land_type__perennial
+msgid "Perennial Plantings"
+msgstr "Багаторічні насадження"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_season__state__planning
+msgid "Planning"
+msgstr "Планування"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model,name:l10n_ua_agro_base.model_l10n_ua_agro_planting
+msgid "Planting"
+msgstr "Посів"
+
+#. module: l10n_ua_agro_base
+#: model:ir.actions.act_window,name:l10n_ua_agro_base.l10n_ua_agro_planting_action
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__planting_ids
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_season__planting_ids
+#: model:ir.ui.menu,name:l10n_ua_agro_base.menu_l10n_ua_agro_plantings
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_planting_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_planting_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_season_view_form
+msgid "Plantings"
+msgstr "Посіви"
+
+#. module: l10n_ua_agro_base
+#: model:l10n_ua.agro.crop,name:l10n_ua_agro_base.crop_potato
+msgid "Potato"
+msgstr "Картопля"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_planting__predecessor_crop_id
+msgid "Predecessor"
+msgstr "Попередник"
+
+#. module: l10n_ua_agro_base
+#: model:ir.ui.menu,name:l10n_ua_agro_base.menu_l10n_ua_agro_production
+msgid "Production"
+msgstr "Виробництво"
+
+#. module: l10n_ua_agro_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_season_view_form
+msgid "Reopen"
+msgstr "Відкрити знову"
+
+#. module: l10n_ua_agro_base
+#: model:ir.ui.menu,name:l10n_ua_agro_base.menu_l10n_ua_agro_reports
+msgid "Reporting"
+msgstr "Звіти"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Помилка доставки SMS"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_planting__season_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_planting_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_season_view_form
+msgid "Season"
+msgstr "Сезон"
+
+#. module: l10n_ua_agro_base
+#. odoo-python
+#: code:addons/l10n_ua_agro_base/models/agro_season.py:0
+msgid "Season %s"
+msgstr "Сезон %s"
+
+#. module: l10n_ua_agro_base
+#: model:ir.actions.act_window,name:l10n_ua_agro_base.l10n_ua_agro_season_action
+#: model:ir.ui.menu,name:l10n_ua_agro_base.menu_l10n_ua_agro_seasons
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_season_view_list
+msgid "Seasons"
+msgstr "Сезони"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_crop__sequence
+msgid "Sequence"
+msgstr "Послідовність"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_season__state__sowing
+msgid "Sowing"
+msgstr "Посівна"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_planting__sowing_date
+msgid "Sowing Date"
+msgstr "Дата сівби"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_crop__sowing_type
+msgid "Sowing Type"
+msgstr "Тип сівби"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_planting__area
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_season__sown_area
+msgid "Sown Area (ha)"
+msgstr "Посівна площа (га)"
+
+#. module: l10n_ua_agro_base
+#: model:ir.actions.act_window,name:l10n_ua_agro_base.l10n_ua_agro_planting_report_action
+#: model:ir.ui.menu,name:l10n_ua_agro_base.menu_l10n_ua_agro_report_sown_area
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_planting_view_graph
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_planting_view_pivot
+msgid "Sown Area Structure"
+msgstr "Структура посівних площ"
+
+#. module: l10n_ua_agro_base
+#: model:l10n_ua.agro.crop,name:l10n_ua_agro_base.crop_soybean
+msgid "Soybean"
+msgstr "Соя"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_crop__sowing_type__spring
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_crop_view_search
+msgid "Spring"
+msgstr "Яра"
+
+#. module: l10n_ua_agro_base
+#: model:l10n_ua.agro.crop,name:l10n_ua_agro_base.crop_barley_spring
+msgid "Spring Barley"
+msgstr "Ячмінь ярий"
+
+#. module: l10n_ua_agro_base
+#: model:l10n_ua.agro.crop,name:l10n_ua_agro_base.crop_wheat_spring
+msgid "Spring Wheat"
+msgstr "Пшениця яра"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_season__date_start
+msgid "Start Date"
+msgstr "Дата початку"
+
+#. module: l10n_ua_agro_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_season_view_form
+msgid "Start Harvest"
+msgstr "Почати збирання"
+
+#. module: l10n_ua_agro_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_season_view_form
+msgid "Start Sowing"
+msgstr "Почати посівну"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_season__state
+msgid "State"
+msgstr "Стан"
+
+#. module: l10n_ua_agro_base
+#: model:l10n_ua.agro.crop,name:l10n_ua_agro_base.crop_sugar_beet
+msgid "Sugar Beet"
+msgstr "Цукрові буряки"
+
+#. module: l10n_ua_agro_base
+#: model:l10n_ua.agro.crop,name:l10n_ua_agro_base.crop_sunflower
+msgid "Sunflower"
+msgstr "Соняшник"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.constraint,message:l10n_ua_agro_base.constraint_l10n_ua_agro_crop_code_uniq
+msgid "The crop code must be unique."
+msgstr "Код культури має бути унікальним."
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.constraint,message:l10n_ua_agro_base.constraint_l10n_ua_agro_field_code_company_uniq
+msgid "The field code must be unique in the company."
+msgstr "Код поля має бути унікальним у компанії."
+
+#. module: l10n_ua_agro_base
+#. odoo-python
+#: code:addons/l10n_ua_agro_base/models/agro_season.py:0
+msgid "The season cannot end before it starts."
+msgstr "Сезон не може закінчуватися раніше, ніж починається."
+
+#. module: l10n_ua_agro_base
+#. odoo-python
+#: code:addons/l10n_ua_agro_base/models/agro_planting.py:0
+msgid "The sown area must be positive."
+msgstr "Посівна площа має бути додатною."
+
+#. module: l10n_ua_agro_base
+#. odoo-python
+#: code:addons/l10n_ua_agro_base/models/agro_planting.py:0
+msgid ""
+"The sown area of field %(field)s in %(season)s (%(sown).4f ha) exceeds the "
+"field area (%(area).4f ha)."
+msgstr ""
+"Посівна площа поля %(field)s у %(season)s (%(sown).4f га) перевищує площу "
+"поля (%(area).4f га)."
+
+#. module: l10n_ua_agro_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_field_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_field_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_planting_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_season_view_form
+msgid "Total"
+msgstr "Разом"
+
+#. module: l10n_ua_agro_base
+#: model:res.groups,name:l10n_ua_agro_base.group_ua_agro_user
+msgid "User"
+msgstr "Користувач"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_planting__variety
+msgid "Variety / Hybrid"
+msgstr "Сорт / гібрид"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_crop__crop_group__vegetable
+msgid "Vegetables and Melons"
+msgstr "Овочеві та баштанні"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,field_description:l10n_ua_agro_base.field_l10n_ua_agro_field__website_message_ids
+msgid "Website Messages"
+msgstr "Повідомлення з веб-сайту"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,help:l10n_ua_agro_base.field_l10n_ua_agro_field__website_message_ids
+msgid "Website communication history"
+msgstr "Історія бесіди на сайті"
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields.selection,name:l10n_ua_agro_base.selection__l10n_ua_agro_crop__sowing_type__winter
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_crop_view_search
+msgid "Winter"
+msgstr "Озима"
+
+#. module: l10n_ua_agro_base
+#: model:l10n_ua.agro.crop,name:l10n_ua_agro_base.crop_barley_winter
+msgid "Winter Barley"
+msgstr "Ячмінь озимий"
+
+#. module: l10n_ua_agro_base
+#: model:l10n_ua.agro.crop,name:l10n_ua_agro_base.crop_rapeseed_winter
+msgid "Winter Rapeseed"
+msgstr "Ріпак озимий"
+
+#. module: l10n_ua_agro_base
+#: model:l10n_ua.agro.crop,name:l10n_ua_agro_base.crop_rye
+msgid "Winter Rye"
+msgstr "Жито озиме"
+
+#. module: l10n_ua_agro_base
+#: model:l10n_ua.agro.crop,name:l10n_ua_agro_base.crop_wheat_winter
+msgid "Winter Wheat"
+msgstr "Пшениця озима"
+
+#. module: l10n_ua_agro_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_field_view_form
+msgid "e.g. Behind the farm"
+msgstr "напр. За фермою"
+
+#. module: l10n_ua_agro_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_season_view_form
+msgid "e.g. Season 2027"
+msgstr "напр. Сезон 2027"
+
+#. module: l10n_ua_agro_base
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_base.l10n_ua_agro_field_view_form
+msgid "{\"type\": \"Polygon\", \"coordinates\": [...]}"
+msgstr ""
+
+#. module: l10n_ua_agro_base
+#: model:res.groups,comment:l10n_ua_agro_base.group_ua_agro_user
+msgid "Агроном, обліковець: поля, посіви, оренда землі."
+msgstr ""
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,help:l10n_ua_agro_base.field_l10n_ua_agro_field__geojson
+msgid ""
+"Контур поля у GeoJSON (WGS84), напр. експорт із Публічної кадастрової карти."
+msgstr ""
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,help:l10n_ua_agro_base.field_l10n_ua_agro_planting__predecessor_crop_id
+msgid "Культура на цьому полі в попередньому сезоні (сівозміна)."
+msgstr ""
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,help:l10n_ua_agro_base.field_l10n_ua_agro_crop__sowing_type
+msgid ""
+"Озимі сіють під урожай наступного року — витрати переходять між сезонами."
+msgstr ""
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,help:l10n_ua_agro_base.field_l10n_ua_agro_crop__product_id
+msgid "Основна продукція (зерно, насіння), яку оприбутковують з урожаю."
+msgstr ""
+
+#. module: l10n_ua_agro_base
+#: model:ir.model.fields,help:l10n_ua_agro_base.field_l10n_ua_agro_crop__byproduct_id
+msgid "Побічна продукція (солома, лушпиння)."
+msgstr ""
+
+#. module: l10n_ua_agro_base
+#: model:res.groups,comment:l10n_ua_agro_base.group_ua_agro_manager
+msgid "Повний доступ: довідники культур, сезони, налаштування."
+msgstr ""

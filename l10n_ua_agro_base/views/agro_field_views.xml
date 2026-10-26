@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_agro_field_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.field.list</field>
+        <field name="model">l10n_ua.agro.field</field>
+        <field name="arch" type="xml">
+            <list string="Fields">
+                <field name="code"/>
+                <field name="name"/>
+                <field name="land_type"/>
+                <field name="current_crop_id" optional="show"/>
+                <field name="company_id" groups="base.group_multi_company" optional="show"/>
+                <field name="area" sum="Total"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_field_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.field.form</field>
+        <field name="model">l10n_ua.agro.field</field>
+        <field name="arch" type="xml">
+            <form string="Field">
+                <sheet>
+                    <div class="oe_button_box" name="button_box"/>
+                    <widget name="web_ribbon" title="Archived" bg_color="text-bg-danger" invisible="active"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="e.g. Behind the farm"/></h1>
+                    </div>
+                    <group>
+                        <group name="main">
+                            <field name="code"/>
+                            <field name="area"/>
+                            <field name="land_type"/>
+                        </group>
+                        <group name="current">
+                            <field name="current_crop_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="active" invisible="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Crop Rotation" name="rotation">
+                            <field name="planting_ids" context="{'default_field_id': id}">
+                                <list editable="bottom" default_order="season_id desc">
+                                    <field name="season_id"/>
+                                    <field name="crop_id"/>
+                                    <field name="variety" optional="show"/>
+                                    <field name="sowing_date" optional="show"/>
+                                    <field name="area" sum="Total"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Contour" name="contour">
+                            <field name="geojson" placeholder='{"type": "Polygon", "coordinates": [...]}'/>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_field_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.field.search</field>
+        <field name="model">l10n_ua.agro.field</field>
+        <field name="arch" type="xml">
+            <search string="Fields">
+                <field name="name" filter_domain="['|', ('name', 'ilike', self), ('code', 'ilike', self)]"/>
+                <field name="planting_ids" string="Crop" filter_domain="[('planting_ids.crop_id', 'ilike', self)]"/>
+                <filter string="Arable Land" name="arable" domain="[('land_type', '=', 'arable')]"/>
+                <separator/>
+                <filter string="Archived" name="inactive" domain="[('active', '=', False)]"/>
+                <group>
+                    <filter string="Land Type" name="groupby_land_type" domain="[]" context="{'group_by': 'land_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_field_action" model="ir.actions.act_window">
+        <field name="name">Fields</field>
+        <field name="res_model">l10n_ua.agro.field</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create the first field</p>
+            <p>A field is a unit of the crop rotation: one crop (or several) is sown on it each season.</p>
+        </field>
+    </record>
+
+</odoo>

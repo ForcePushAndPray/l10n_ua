@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- Галузевий апп (band 60–69, docs/menu_registry.md §2, §4): агроном
+         працює в домені щодня. -->
+    <menuitem id="menu_l10n_ua_agro_root"
+              name="Agro"
+              sequence="60"
+              web_icon="l10n_ua_agro_base,static/description/icon.png"
+              groups="group_ua_agro_user"/>
+
+    <menuitem id="menu_l10n_ua_agro_production"
+              name="Production"
+              parent="menu_l10n_ua_agro_root"
+              sequence="10"/>
+
+    <menuitem id="menu_l10n_ua_agro_fields"
+              name="Fields"
+              parent="menu_l10n_ua_agro_production"
+              action="l10n_ua_agro_field_action"
+              sequence="10"/>
+
+    <menuitem id="menu_l10n_ua_agro_plantings"
+              name="Plantings"
+              parent="menu_l10n_ua_agro_production"
+              action="l10n_ua_agro_planting_action"
+              sequence="20"/>
+
+    <menuitem id="menu_l10n_ua_agro_reports"
+              name="Reporting"
+              parent="menu_l10n_ua_agro_root"
+              sequence="80"/>
+
+    <menuitem id="menu_l10n_ua_agro_report_sown_area"
+              name="Sown Area Structure"
+              parent="menu_l10n_ua_agro_reports"
+              action="l10n_ua_agro_planting_report_action"
+              sequence="10"/>
+
+    <menuitem id="menu_l10n_ua_agro_config"
+              name="Configuration"
+              parent="menu_l10n_ua_agro_root"
+              groups="group_ua_agro_manager"
+              sequence="90"/>
+
+    <menuitem id="menu_l10n_ua_agro_seasons"
+              name="Seasons"
+              parent="menu_l10n_ua_agro_config"
+              action="l10n_ua_agro_season_action"
+              sequence="10"/>
+
+    <menuitem id="menu_l10n_ua_agro_crops"
+              name="Crops"
+              parent="menu_l10n_ua_agro_config"
+              action="l10n_ua_agro_crop_action"
+              sequence="20"/>
+
+</odoo>

@@ -28,6 +28,7 @@
 | Бюджетні установи | 8 | 🟢 | [docs/budget.md](docs/budget.md) |
 | Заклади освіти | 6 | 🟡 | [docs/education.md](docs/education.md) |
 | Заклади охорони здоров'я | 6 | 🟢 | [docs/medicine.md](docs/medicine.md) |
+| Сільське господарство (рослинництво) | 3 | 🟡 | [docs/agro.md](docs/agro.md) |
 
 ### Легенда готовності
 

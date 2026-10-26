@@ -21,6 +21,7 @@
 | 54 | `menu_ua_tax_root` | Taxes UA | group_ua_tax_accountant | tax | власний апп | апп |
 | 55 | `menu_l10n_ua_education_root` | Освіта (UA) | group_ua_education_user | education_base | власний апп | апп (✅ власна іконка) |
 | 56 | `menu_medecin_root` | Медицина (UA) | group_ua_medecin_user | medecin_base | власний апп | апп (✅ web_icon) |
+| 60 | `menu_l10n_ua_agro_root` | Agro | group_ua_agro_user | agro_base | власний апп | апп (✅ web_icon) |
 | 65 | `menu_telegram_bot_root` | Telegram | ⚠ немає | telegram_bot_m2o | власний апп | апп (+group) |
 | 100 | `menu_l10n_ua_root` | Ukraine | ⚠ немає | account_base | Finance→Config | лише крос-довідники (KOATUU/KVED/subconto) |
 | 100 | `menu_l10n_ua_budget_root` | Бюджетний облік (UA) | group_ua_budget_user | budget_base | Finance→Config | під Accounting-апп |
@@ -83,7 +84,7 @@ vs «Бюджетний облік»).
 **Власний корінь-апп (тайл у лаунчері) — лише** високочастотним операційним
 персонам, що працюють у домені щодня:
 
-> Accounting · Bank · Taxes · Payroll · Marketplaces · Медицина · Освіта
+> Accounting · Bank · Taxes · Payroll · Marketplaces · Медицина · Освіта · Агро
 
 **Усе інше — вкладається й НЕ отримує тайл:**
 

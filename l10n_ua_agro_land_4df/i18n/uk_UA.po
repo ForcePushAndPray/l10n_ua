@@ -1,0 +1,68 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ua_agro_land_4df
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260103\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-26 07:57+0000\n"
+"PO-Revision-Date: 2026-10-26 07:57+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"Language: uk_UA\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_ua_agro_land_4df
+#: model:ir.model,name:l10n_ua_agro_land_4df.model_l10n_ua_tax_4df
+msgid "4ДФ — об'єднана звітність ПДФО/ВЗ/ЄСВ"
+msgstr ""
+
+#. module: l10n_ua_agro_land_4df
+#. odoo-python
+#: code:addons/l10n_ua_agro_land_4df/models/l10n_ua_tax_4df.py:0
+msgid "A 4DF line must belong to an employee or an individual."
+msgstr "Рядок 4ДФ має належати працівнику або фізособі."
+
+#. module: l10n_ua_agro_land_4df
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_4df.field_l10n_ua_tax_4df__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_4df.field_l10n_ua_tax_4df_line_4df__display_name
+msgid "Display Name"
+msgstr "Назва для відображення"
+
+#. module: l10n_ua_agro_land_4df
+#. odoo-python
+#: code:addons/l10n_ua_agro_land_4df/models/l10n_ua_tax_4df.py:0
+msgid ""
+"Fill in the RNOKPP of the lessors to include their land rent in 4DF: %s."
+msgstr ""
+"Заповніть РНОКПП орендодавців, щоб включити їхню орендну плату в 4ДФ: %s."
+
+#. module: l10n_ua_agro_land_4df
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_4df.field_l10n_ua_tax_4df__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_4df.field_l10n_ua_tax_4df_line_4df__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_agro_land_4df
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_4df.field_l10n_ua_tax_4df_line_4df__partner_id
+msgid "Individual"
+msgstr "Фізособа"
+
+#. module: l10n_ua_agro_land_4df
+#: model:ir.model,name:l10n_ua_agro_land_4df.model_l10n_ua_tax_4df_line_4df
+msgid "Додаток 4ДФ — ПДФО/ВЗ по фізособах"
+msgstr ""
+
+#. module: l10n_ua_agro_land_4df
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_4df.field_l10n_ua_tax_4df_line_4df__employee_id
+msgid "Працівник"
+msgstr "Працівник"
+
+#. module: l10n_ua_agro_land_4df
+#: model:ir.model.fields,help:l10n_ua_agro_land_4df.field_l10n_ua_tax_4df_line_4df__partner_id
+msgid "Фізособа, яка не є працівником (орендодавець паю)."
+msgstr ""
