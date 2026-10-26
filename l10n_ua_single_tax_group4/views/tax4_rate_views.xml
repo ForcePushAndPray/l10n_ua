@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_ua_tax4_rate_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.tax4.rate.list</field>
+        <field name="model">l10n_ua.tax4.rate</field>
+        <field name="arch" type="xml">
+            <list string="Ставки ЄП 4 групи" editable="bottom">
+                <field name="land_type"/>
+                <field name="mountain_zone"/>
+                <field name="rate"/>
+            </list>
+        </field>
+    </record>
+    <record id="l10n_ua_tax4_rate_action" model="ir.actions.act_window">
+        <field name="name">Ставки ЄП 4 групи</field>
+        <field name="res_model">l10n_ua.tax4.rate</field>
+        <field name="view_mode">list</field>
+    </record>
+    <menuitem id="menu_l10n_ua_tax4_rates"
+              name="Ставки ЄП 4 групи"
+              parent="l10n_ua_tax.menu_ua_tax_config"
+              action="l10n_ua_tax4_rate_action"
+              sequence="60"/>
+</odoo>

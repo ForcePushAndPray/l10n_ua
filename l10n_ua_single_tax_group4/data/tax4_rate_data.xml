@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- ПКУ п. 293.9: ставки ЄП 4 групи, % бази оподаткування (НГО) -->
+    <data noupdate="1">
+        <record id="tax4_rate_arable" model="l10n_ua.tax4.rate">
+            <field name="land_type">arable</field>
+            <field name="mountain_zone" eval="False"/>
+            <field name="rate">0.95</field>
+        </record>
+        <record id="tax4_rate_hayfield" model="l10n_ua.tax4.rate">
+            <field name="land_type">hayfield</field>
+            <field name="mountain_zone" eval="False"/>
+            <field name="rate">0.95</field>
+        </record>
+        <record id="tax4_rate_pasture" model="l10n_ua.tax4.rate">
+            <field name="land_type">pasture</field>
+            <field name="mountain_zone" eval="False"/>
+            <field name="rate">0.95</field>
+        </record>
+        <record id="tax4_rate_fallow" model="l10n_ua.tax4.rate">
+            <field name="land_type">fallow</field>
+            <field name="mountain_zone" eval="False"/>
+            <field name="rate">0.95</field>
+        </record>
+        <record id="tax4_rate_arable_mountain" model="l10n_ua.tax4.rate">
+            <field name="land_type">arable</field>
+            <field name="mountain_zone" eval="True"/>
+            <field name="rate">0.57</field>
+        </record>
+        <record id="tax4_rate_hayfield_mountain" model="l10n_ua.tax4.rate">
+            <field name="land_type">hayfield</field>
+            <field name="mountain_zone" eval="True"/>
+            <field name="rate">0.57</field>
+        </record>
+        <record id="tax4_rate_pasture_mountain" model="l10n_ua.tax4.rate">
+            <field name="land_type">pasture</field>
+            <field name="mountain_zone" eval="True"/>
+            <field name="rate">0.57</field>
+        </record>
+        <record id="tax4_rate_fallow_mountain" model="l10n_ua.tax4.rate">
+            <field name="land_type">fallow</field>
+            <field name="mountain_zone" eval="True"/>
+            <field name="rate">0.57</field>
+        </record>
+        <record id="tax4_rate_perennial" model="l10n_ua.tax4.rate">
+            <field name="land_type">perennial</field>
+            <field name="mountain_zone" eval="False"/>
+            <field name="rate">0.57</field>
+        </record>
+        <record id="tax4_rate_perennial_mountain" model="l10n_ua.tax4.rate">
+            <field name="land_type">perennial</field>
+            <field name="mountain_zone" eval="True"/>
+            <field name="rate">0.19</field>
+        </record>
+    </data>
+</odoo>
