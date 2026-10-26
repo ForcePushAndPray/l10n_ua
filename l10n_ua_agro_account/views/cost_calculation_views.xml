@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_agro_cost_calculation_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.cost.calculation.list</field>
+        <field name="model">l10n_ua.agro.cost.calculation</field>
+        <field name="arch" type="xml">
+            <list string="Crop Cost Calculations" decoration-muted="state == 'cancel'">
+                <field name="name"/>
+                <field name="season_id"/>
+                <field name="date"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="total_cost" sum="Total"/>
+                <field name="closing_amount" sum="Total"/>
+                <field name="company_id" groups="base.group_multi_company" optional="hide"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'posted'" decoration-info="state == 'draft'"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_cost_calculation_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.cost.calculation.form</field>
+        <field name="model">l10n_ua.agro.cost.calculation</field>
+        <field name="arch" type="xml">
+            <form string="Crop Cost Calculation">
+                <header>
+                    <button name="action_compute" type="object" string="Compute"
+                            class="btn-primary" invisible="state != 'draft' or line_ids"/>
+                    <button name="action_compute" type="object" string="Recompute"
+                            invisible="state != 'draft' or not line_ids"/>
+                    <button name="action_post" type="object" string="Post"
+                            class="btn-primary" invisible="state != 'draft' or not line_ids"/>
+                    <button name="action_cancel" type="object" string="Cancel"
+                            invisible="state != 'posted'" confirm="Cancel the calculation? Its journal entry will be reversed."/>
+                    <button name="action_draft" type="object" string="Reset to Draft"
+                            invisible="state != 'cancel'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,posted"/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="action_open_move" type="object" class="oe_stat_button"
+                                icon="fa-bars" invisible="not move_id">
+                            <span class="o_stat_text">Journal Entry</span>
+                        </button>
+                    </div>
+                    <div class="oe_title">
+                        <h1><field name="name" readonly="1"/></h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="season_id" readonly="state != 'draft'"/>
+                            <field name="date_from" readonly="state != 'draft'"/>
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="valuation_method"/>
+                            <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft'"/>
+                            <field name="move_id" invisible="1"/>
+                            <field name="currency_id" invisible="1"/>
+                        </group>
+                        <group>
+                            <field name="journal_id" readonly="state != 'draft'"/>
+                            <field name="include_overhead" readonly="state != 'draft'"/>
+                            <field name="indirect_amount"/>
+                            <field name="overhead_amount"/>
+                            <field name="total_cost"/>
+                            <field name="closing_amount"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Plantings" name="lines">
+                            <field name="line_ids" readonly="1">
+                                <list decoration-muted="is_wip">
+                                    <field name="crop_id"/>
+                                    <field name="field_id"/>
+                                    <field name="season_id" optional="hide"/>
+                                    <field name="is_wip" optional="show"/>
+                                    <field name="area" sum="Total"/>
+                                    <field name="harvest_weight" sum="Total"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="direct_cost" sum="Total"/>
+                                    <field name="allocated_cost" sum="Total"/>
+                                    <field name="overhead_cost" sum="Total"/>
+                                    <field name="total_cost" sum="Total"/>
+                                    <field name="credited_amount" sum="Total" optional="hide"/>
+                                    <field name="closing_amount" sum="Total"/>
+                                    <field name="cost_per_ha"/>
+                                    <field name="cost_per_ton"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Notes" name="notes">
+                            <field name="note"/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_cost_calculation_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.cost.calculation.search</field>
+        <field name="model">l10n_ua.agro.cost.calculation</field>
+        <field name="arch" type="xml">
+            <search string="Crop Cost Calculations">
+                <field name="name"/>
+                <field name="season_id"/>
+                <filter string="Posted" name="posted" domain="[('state', '=', 'posted')]"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_cost_calculation_action" model="ir.actions.act_window">
+        <field name="name">Crop Cost Calculations</field>
+        <field name="res_model">l10n_ua.agro.cost.calculation</field>
+        <field name="view_mode">list,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Calculate the cost of the season</p>
+            <p>Indirect costs and overhead are allocated to the plantings, the season is closed from account 23 and the cost of a ton is computed.</p>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_cost_calculation_line_view_pivot" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.cost.calculation.line.pivot</field>
+        <field name="model">l10n_ua.agro.cost.calculation.line</field>
+        <field name="arch" type="xml">
+            <pivot string="Crop Cost" sample="1">
+                <field name="crop_id" type="row"/>
+                <field name="direct_cost" type="measure"/>
+                <field name="allocated_cost" type="measure"/>
+                <field name="overhead_cost" type="measure"/>
+                <field name="total_cost" type="measure"/>
+            </pivot>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_cost_calculation_line_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.cost.calculation.line.list</field>
+        <field name="model">l10n_ua.agro.cost.calculation.line</field>
+        <field name="arch" type="xml">
+            <list string="Crop Cost" create="0" edit="0">
+                <field name="calculation_id"/>
+                <field name="crop_id"/>
+                <field name="field_id"/>
+                <field name="area" sum="Total"/>
+                <field name="harvest_weight" sum="Total"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="total_cost" sum="Total"/>
+                <field name="cost_per_ha"/>
+                <field name="cost_per_ton"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_cost_calculation_line_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.cost.calculation.line.search</field>
+        <field name="model">l10n_ua.agro.cost.calculation.line</field>
+        <field name="arch" type="xml">
+            <search string="Crop Cost">
+                <field name="crop_id"/>
+                <field name="field_id"/>
+                <field name="calculation_id"/>
+                <group>
+                    <filter string="Crop" name="groupby_crop" domain="[]" context="{'group_by': 'crop_id'}"/>
+                    <filter string="Season" name="groupby_season" domain="[]" context="{'group_by': 'season_id'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_agro_cost_calculation_line_action" model="ir.actions.act_window">
+        <field name="name">Crop Cost</field>
+        <field name="res_model">l10n_ua.agro.cost.calculation.line</field>
+        <field name="view_mode">list,pivot</field>
+        <field name="domain">[('state', '=', 'posted'), ('is_wip', '=', False)]</field>
+        <field name="context">{'search_default_groupby_crop': 1}</field>
+    </record>
+
+</odoo>

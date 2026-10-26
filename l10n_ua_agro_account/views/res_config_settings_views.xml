@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_agro_account" model="ir.ui.view">
+        <field name="name">res.config.settings.agro.account</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="l10n_ua_agro_base.res_config_settings_view_form_agro"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='l10n_ua_agro_base']" position="inside">
+                <block title="Harvest Valuation and Cost (P(S)BO 30)" name="agro_account">
+                    <setting id="agro_valuation_method" string="Harvest Valuation"
+                             help="Fair value less costs to sell (Dt 27 / Ct 710) or planned cost (Dt 27 / Ct 23)">
+                        <field name="l10n_ua_agro_valuation_method" widget="radio"/>
+                    </setting>
+                    <setting id="agro_account_accounts" string="Accounts"
+                             help="Produce (27), initial recognition income (710) and expense (940), overhead (91)">
+                        <div class="content-group">
+                            <div class="row mt8">
+                                <label for="l10n_ua_agro_produce_account_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_ua_agro_produce_account_id"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_ua_agro_recognition_income_account_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_ua_agro_recognition_income_account_id"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_ua_agro_recognition_expense_account_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_ua_agro_recognition_expense_account_id"/>
+                            </div>
+                            <div class="row">
+                                <label for="l10n_ua_agro_overhead_account_id" class="col-lg-5 o_light_label"/>
+                                <field name="l10n_ua_agro_overhead_account_id"/>
+                            </div>
+                        </div>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

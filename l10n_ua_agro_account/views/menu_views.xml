@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_l10n_ua_agro_accounting"
+              name="Accounting"
+              parent="l10n_ua_agro_base.menu_l10n_ua_agro_root"
+              groups="account.group_account_readonly"
+              sequence="30"/>
+    <menuitem id="menu_l10n_ua_agro_cost_calculations"
+              name="Crop Cost Calculations"
+              parent="menu_l10n_ua_agro_accounting"
+              action="l10n_ua_agro_cost_calculation_action"
+              sequence="10"/>
+    <menuitem id="menu_l10n_ua_agro_report_unit_cost"
+              name="Crop Cost"
+              parent="l10n_ua_agro_base.menu_l10n_ua_agro_reports"
+              action="l10n_ua_agro_cost_calculation_line_action"
+              groups="account.group_account_readonly"
+              sequence="55"/>
+    <menuitem id="menu_l10n_ua_agro_fair_values"
+              name="Fair Values"
+              parent="l10n_ua_agro_base.menu_l10n_ua_agro_config"
+              action="l10n_ua_agro_fair_value_action"
+              sequence="50"/>
+</odoo>
