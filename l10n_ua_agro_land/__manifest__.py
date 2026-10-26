@@ -29,7 +29,7 @@ Part of the "Agro" industry solution (epic #477, issue #470).
   community where the plot is located.
 
 In-kind payment is booked as the sale of other current assets; VAT on
-in-kind payments of VAT payers is not computed yet.
+in-kind payments of VAT payers - ``l10n_ua_agro_land_vat``.
 The 4DF bridge (``l10n_ua_agro_land_4df``) puts the rent into the
 quarterly 4DF report with income code 106.
     """,

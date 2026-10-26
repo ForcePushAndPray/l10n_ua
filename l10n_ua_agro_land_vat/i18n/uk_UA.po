@@ -1,0 +1,152 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ua_agro_land_vat
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260103\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-26 09:53+0000\n"
+"PO-Revision-Date: 2026-10-26 09:53+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_ua_agro_land_vat
+#: model:ir.model,name:l10n_ua_agro_land_vat.model_res_company
+msgid "Companies"
+msgstr "Компанії"
+
+#. module: l10n_ua_agro_land_vat
+#: model:ir.model,name:l10n_ua_agro_land_vat.model_res_config_settings
+msgid "Config Settings"
+msgstr "Налаштування"
+
+#. module: l10n_ua_agro_land_vat
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_vat.field_l10n_ua_agro_rent_payment__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_vat.field_res_company__display_name
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_vat.field_res_config_settings__display_name
+msgid "Display Name"
+msgstr "Назва для відображення"
+
+#. module: l10n_ua_agro_land_vat
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_vat.field_l10n_ua_agro_rent_payment__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_vat.field_res_company__id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_vat.field_res_config_settings__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_agro_land_vat
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_vat.field_res_company__l10n_ua_agro_in_kind_vat_expense_account_id
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_vat.field_res_config_settings__l10n_ua_agro_in_kind_vat_expense_account_id
+msgid "In-kind Rent VAT Expense Account"
+msgstr "Рахунок витрат на ПДВ з натуроплати"
+
+#. module: l10n_ua_agro_land_vat
+#: model:ir.model,name:l10n_ua_agro_land_vat.model_l10n_ua_agro_rent_payment
+msgid "Land Rent Payment"
+msgstr "Виплата орендної плати"
+
+#. module: l10n_ua_agro_land_vat
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land_vat.res_config_settings_view_form_agro_land_vat
+msgid "Off: VAT is charged on top of the value of the produce and expensed"
+msgstr ""
+"Вимкнено: ПДВ нараховується зверху вартості продукції й відноситься до "
+"витрат"
+
+#. module: l10n_ua_agro_land_vat
+#. odoo-python
+#: code:addons/l10n_ua_agro_land_vat/models/rent_payment.py:0
+msgid "Reversal of %s"
+msgstr "Сторно %s"
+
+#. module: l10n_ua_agro_land_vat
+#. odoo-python
+#: code:addons/l10n_ua_agro_land_vat/models/rent_payment.py:0
+msgid ""
+"Set the VAT account of the sales tax of %s and the in-kind rent VAT expense "
+"account."
+msgstr ""
+"Вкажіть рахунок ПДВ у податку на продаж %s і рахунок витрат на ПДВ з "
+"натуроплати."
+
+#. module: l10n_ua_agro_land_vat
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_vat.field_l10n_ua_agro_rent_payment__tax_invoice_count
+msgid "Tax Invoice Count"
+msgstr "Кількість ПН"
+
+#. module: l10n_ua_agro_land_vat
+#. odoo-python
+#: code:addons/l10n_ua_agro_land_vat/models/rent_payment.py:0
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_vat.field_l10n_ua_agro_rent_payment__tax_invoice_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land_vat.l10n_ua_agro_rent_payment_view_form_vat
+msgid "Tax Invoices"
+msgstr "Податкові накладні"
+
+#. module: l10n_ua_agro_land_vat
+#. odoo-python
+#: code:addons/l10n_ua_agro_land_vat/models/rent_payment.py:0
+msgid ""
+"Tax invoices %s are already registered: issue adjustment calculations before"
+" cancelling the payment."
+msgstr ""
+"Податкові накладні %s уже зареєстровано: оформіть розрахунки коригування, "
+"перш ніж скасовувати виплату."
+
+#. module: l10n_ua_agro_land_vat
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_vat.field_l10n_ua_agro_rent_payment__vat_amount
+msgid "VAT"
+msgstr "ПДВ"
+
+#. module: l10n_ua_agro_land_vat
+#. odoo-python
+#: code:addons/l10n_ua_agro_land_vat/models/rent_payment.py:0
+msgid "VAT %s"
+msgstr "ПДВ %s"
+
+#. module: l10n_ua_agro_land_vat
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_vat.field_l10n_ua_agro_rent_payment__vat_move_id
+msgid "VAT Entry"
+msgstr "Проводка ПДВ"
+
+#. module: l10n_ua_agro_land_vat
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_vat.field_res_company__l10n_ua_agro_in_kind_vat_included
+#: model:ir.model.fields,field_description:l10n_ua_agro_land_vat.field_res_config_settings__l10n_ua_agro_in_kind_vat_included
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land_vat.res_config_settings_view_form_agro_land_vat
+msgid "VAT Included in the In-kind Rent"
+msgstr "ПДВ включено у вартість натуроплати"
+
+#. module: l10n_ua_agro_land_vat
+#: model_terms:ir.ui.view,arch_db:l10n_ua_agro_land_vat.res_config_settings_view_form_agro_land_vat
+msgid "VAT on In-kind Rent"
+msgstr "ПДВ з натуроплати"
+
+#. module: l10n_ua_agro_land_vat
+#. odoo-python
+#: code:addons/l10n_ua_agro_land_vat/models/rent_payment.py:0
+msgid "VAT on in-kind land rent, %(lessor)s, %(payment)s"
+msgstr "ПДВ з орендної плати натурою, %(lessor)s, %(payment)s"
+
+#. module: l10n_ua_agro_land_vat
+#. odoo-python
+#: code:addons/l10n_ua_agro_land_vat/models/rent_payment.py:0
+msgid "id"
+msgstr "id"
+
+#. module: l10n_ua_agro_land_vat
+#: model:ir.model.fields,help:l10n_ua_agro_land_vat.field_res_company__l10n_ua_agro_in_kind_vat_expense_account_id
+#: model:ir.model.fields,help:l10n_ua_agro_land_vat.field_res_config_settings__l10n_ua_agro_in_kind_vat_expense_account_id
+msgid "Рахунок витрат на ПДВ, нарахований зверху вартості натуроплати (94)."
+msgstr ""
+
+#. module: l10n_ua_agro_land_vat
+#: model:ir.model.fields,help:l10n_ua_agro_land_vat.field_res_company__l10n_ua_agro_in_kind_vat_included
+#: model:ir.model.fields,help:l10n_ua_agro_land_vat.field_res_config_settings__l10n_ua_agro_in_kind_vat_included
+msgid ""
+"Увімкнено: вартість виданої продукції включає ПДВ (ПДВ виділяється, Дт 712 —"
+" Кт 641). Вимкнено: ПДВ нараховується зверху й відноситься до витрат (Дт 94 "
+"— Кт 641)."
+msgstr ""

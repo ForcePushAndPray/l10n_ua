@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_ua_agro_rent_payment_view_form_vat" model="ir.ui.view">
+        <field name="name">l10n_ua.agro.rent.payment.form.vat</field>
+        <field name="model">l10n_ua.agro.rent.payment</field>
+        <field name="inherit_id" ref="l10n_ua_agro_land.l10n_ua_agro_rent_payment_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[@name='button_box']" position="inside">
+                <button name="action_view_tax_invoices" type="object" class="oe_stat_button"
+                        icon="fa-file-text-o" invisible="not tax_invoice_count">
+                    <field name="tax_invoice_count" widget="statinfo" string="Tax Invoices"/>
+                </button>
+            </xpath>
+            <field name="amount_total" position="after">
+                <field name="vat_amount" invisible="not vat_amount"/>
+                <field name="vat_move_id" invisible="not vat_move_id" groups="account.group_account_readonly"/>
+            </field>
+        </field>
+    </record>
+</odoo>

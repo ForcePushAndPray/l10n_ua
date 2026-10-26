@@ -9,6 +9,10 @@ from odoo.exceptions import UserError
 
 _logger = logging.getLogger(__name__)
 
+# Покупець у ПН, що не надається покупцю (Порядок 1307 п. 16).
+NON_PAYER_IPN = '100000000000'
+NON_PAYER_NAME = 'Неплатник'
+
 VAT_RATE_SELECTION = [
     ('20', '20%'),
     ('14', '14%'),
@@ -110,6 +114,18 @@ class L10nUaTaxInvoice(models.Model):
     is_import = fields.Boolean(
         string='Імпортна операція',
         default=False,
+    )
+    # ПН, що не надається покупцю (Порядок 1307 п. 16): покупець —
+    # «Неплатник» з ІПН 100000000000, у ПН — тип причини.
+    non_payer_reason = fields.Selection(
+        selection=[
+            ('02', '02 — постачання неплатнику податку'),
+            ('07', '07 — вивезення товарів за межі митної території'),
+        ],
+        string='Не підлягає наданню покупцю',
+        tracking=True,
+        help='Тип причини, з якої ПН не видається покупцю. Покупцем у документі '
+             'зазначається «Неплатник», ІПН — 100000000000.',
     )
     # Lines
     line_ids = fields.One2many(
@@ -383,6 +399,9 @@ class L10nUaTaxInvoice(models.Model):
         company = self.company_id
         seller_ipn = company.l10n_ua_vat_ipn or company.vat or company.company_registry or ''
         buyer_ipn = self.partner_ipn or ''
+        buyer_name = self.partner_id.name
+        if self.non_payer_reason:
+            buyer_ipn, buyer_name = NON_PAYER_IPN, NON_PAYER_NAME
 
         lines_xml = []
         for i, line in enumerate(self.line_ids, 1):
@@ -418,7 +437,8 @@ class L10nUaTaxInvoice(models.Model):
     <SELLER_IPN>{seller_ipn}</SELLER_IPN>
     <SELLER_NAME>{company.name}</SELLER_NAME>
     <BUYER_IPN>{buyer_ipn}</BUYER_IPN>
-    <BUYER_NAME>{self.partner_id.name}</BUYER_NAME>
+    <BUYER_NAME>{buyer_name}</BUYER_NAME>{f'''
+    <HTYPR>{self.non_payer_reason}</HTYPR>''' if self.non_payer_reason else ''}
     <IS_IMPORT>{'1' if self.is_import else '0'}</IS_IMPORT>
     <RYADKI>
 {lines_str}
