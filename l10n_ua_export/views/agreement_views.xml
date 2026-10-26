@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="l10n_ua_agreement_view_form_export" model="ir.ui.view">
+        <field name="name">l10n_ua.agreement.form.export</field>
+        <field name="model">l10n_ua.agreement</field>
+        <field name="inherit_id" ref="l10n_ua_agreement.l10n_ua_agreement_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//notebook" position="inside">
+                <page string="Foreign Trade" name="foreign_trade">
+                    <group>
+                        <group>
+                            <field name="l10n_ua_foreign_trade"/>
+                            <field name="l10n_ua_incoterm_id" invisible="not l10n_ua_foreign_trade"/>
+                            <field name="l10n_ua_incoterm_place" invisible="not l10n_ua_foreign_trade"/>
+                            <field name="l10n_ua_settlement_days" invisible="not l10n_ua_foreign_trade"/>
+                        </group>
+                    </group>
+                    <field name="l10n_ua_customs_declaration_ids" invisible="not l10n_ua_foreign_trade" readonly="1">
+                        <list>
+                            <field name="name"/>
+                            <field name="date"/>
+                            <field name="currency_id" column_invisible="True"/>
+                            <field name="amount_total"/>
+                            <field name="amount_residual"/>
+                            <field name="settlement_deadline"/>
+                            <field name="settlement_state" widget="badge"/>
+                        </list>
+                    </field>
+                </page>
+            </xpath>
+        </field>
+    </record>
+</odoo>

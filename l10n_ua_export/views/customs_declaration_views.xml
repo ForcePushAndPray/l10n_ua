@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="l10n_ua_customs_declaration_view_list" model="ir.ui.view">
+        <field name="name">l10n_ua.customs.declaration.list</field>
+        <field name="model">l10n_ua.customs.declaration</field>
+        <field name="arch" type="xml">
+            <list string="Export Customs Declarations" decoration-danger="settlement_state == 'overdue'"
+                  decoration-warning="settlement_state == 'due_soon'" decoration-muted="state == 'cancel'">
+                <field name="name"/>
+                <field name="date"/>
+                <field name="partner_id"/>
+                <field name="agreement_id" optional="show"/>
+                <field name="currency_id" column_invisible="True"/>
+                <field name="company_currency_id" column_invisible="True"/>
+                <field name="customs_value" optional="show"/>
+                <field name="amount_total"/>
+                <field name="amount_residual"/>
+                <field name="settlement_deadline"/>
+                <field name="settlement_state" widget="badge" decoration-success="settlement_state == 'settled'"
+                       decoration-danger="settlement_state == 'overdue'" decoration-warning="settlement_state == 'due_soon'"/>
+                <field name="state" optional="hide"/>
+            </list>
+        </field>
+    </record>
+
+    <record id="l10n_ua_customs_declaration_view_form" model="ir.ui.view">
+        <field name="name">l10n_ua.customs.declaration.form</field>
+        <field name="model">l10n_ua.customs.declaration</field>
+        <field name="arch" type="xml">
+            <form string="Export Customs Declaration">
+                <header>
+                    <button name="action_confirm" type="object" string="Confirm" class="btn-primary"
+                            invisible="state != 'draft'"/>
+                    <button name="action_create_tax_invoice" type="object" string="Create Tax Invoice (0 %, 07)"
+                            class="btn-primary" invisible="state != 'confirmed' or tax_invoice_id"/>
+                    <button name="action_cancel" type="object" string="Cancel" invisible="state == 'cancel'"/>
+                    <button name="action_draft" type="object" string="Reset to Draft" invisible="state != 'cancel'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed"/>
+                </header>
+                <sheet>
+                    <widget name="web_ribbon" title="Overdue" bg_color="text-bg-danger"
+                            invisible="settlement_state != 'overdue'"/>
+                    <widget name="web_ribbon" title="Settled" invisible="settlement_state != 'settled'"/>
+                    <div class="oe_title">
+                        <label for="name"/>
+                        <h1><field name="name" placeholder="UA500020/2026/012345" readonly="state != 'draft'"/></h1>
+                    </div>
+                    <group>
+                        <group string="Customs">
+                            <field name="date" readonly="state != 'draft'"/>
+                            <field name="regime" readonly="state != 'draft'"/>
+                            <field name="partner_id" readonly="state != 'draft'"/>
+                            <field name="agreement_id" readonly="state != 'draft'"/>
+                            <field name="incoterm_id"/>
+                            <field name="customs_value" readonly="state != 'draft'"/>
+                            <field name="company_currency_id" invisible="1"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                        </group>
+                        <group string="Currency Control">
+                            <field name="currency_id"/>
+                            <field name="amount_total"/>
+                            <field name="amount_residual"/>
+                            <field name="settlement_days"/>
+                            <field name="settlement_deadline"/>
+                            <field name="settlement_state"/>
+                            <field name="tax_invoice_id" invisible="not tax_invoice_id"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Invoices" name="invoices">
+                            <field name="invoice_ids" readonly="state != 'draft'">
+                                <list>
+                                    <field name="name"/>
+                                    <field name="invoice_date"/>
+                                    <field name="partner_id"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="amount_total"/>
+                                    <field name="amount_residual"/>
+                                    <field name="payment_state" widget="badge"/>
+                                </list>
+                            </field>
+                        </page>
+                        <page string="Deliveries" name="pickings">
+                            <field name="picking_ids" readonly="state != 'draft'"/>
+                        </page>
+                        <page string="Accompanying Documents" name="documents">
+                            <group>
+                                <group>
+                                    <field name="phyto_certificate"/>
+                                    <field name="phyto_certificate_date"/>
+                                    <field name="origin_certificate"/>
+                                    <field name="origin_certificate_date"/>
+                                </group>
+                                <group>
+                                    <field name="quality_certificate"/>
+                                    <field name="quality_certificate_date"/>
+                                </group>
+                            </group>
+                        </page>
+                    </notebook>
+                </sheet>
+                <chatter/>
+            </form>
+        </field>
+    </record>
+
+    <record id="l10n_ua_customs_declaration_view_search" model="ir.ui.view">
+        <field name="name">l10n_ua.customs.declaration.search</field>
+        <field name="model">l10n_ua.customs.declaration</field>
+        <field name="arch" type="xml">
+            <search string="Export Customs Declarations">
+                <field name="name"/>
+                <field name="partner_id"/>
+                <field name="agreement_id"/>
+                <filter string="Unsettled" name="unsettled"
+                        domain="[('state', '=', 'confirmed'), ('settlement_state', '!=', 'settled')]"/>
+                <filter string="Overdue" name="overdue" domain="[('settlement_state', '=', 'overdue')]"/>
+                <filter string="Due Soon" name="due_soon" domain="[('settlement_state', '=', 'due_soon')]"/>
+                <separator/>
+                <filter string="Clearance Date" name="filter_date" date="date"/>
+                <group>
+                    <filter string="Buyer" name="groupby_partner" domain="[]" context="{'group_by': 'partner_id'}"/>
+                    <filter string="Contract" name="groupby_agreement" domain="[]" context="{'group_by': 'agreement_id'}"/>
+                    <filter string="Currency Control" name="groupby_settlement" domain="[]" context="{'group_by': 'settlement_state'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="l10n_ua_customs_declaration_action" model="ir.actions.act_window">
+        <field name="name">Export Customs Declarations</field>
+        <field name="res_model">l10n_ua.customs.declaration</field>
+        <field name="view_mode">list,form</field>
+    </record>
+
+    <record id="l10n_ua_currency_control_action" model="ir.actions.act_window">
+        <field name="name">Currency Control (Export)</field>
+        <field name="res_model">l10n_ua.customs.declaration</field>
+        <field name="view_mode">list,form</field>
+        <field name="context">{'search_default_unsettled': 1}</field>
+    </record>
+
+</odoo>

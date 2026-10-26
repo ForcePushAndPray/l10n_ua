@@ -1,0 +1,857 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* l10n_ua_export
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 19.0-20260103\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-26 10:05+0000\n"
+"PO-Revision-Date: 2026-10-26 10:05+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: l10n_ua_export
+#: model:ir.actions.report,print_report_name:l10n_ua_export.action_report_commercial_invoice
+msgid "'Commercial Invoice %s' % (object.name or '').replace('/', '-')"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.actions.report,print_report_name:l10n_ua_export.action_report_packing_list
+msgid "'Packing List %s' % (object.name or '').replace('/', '-')"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+msgid ""
+"(Incoterms 2020)<br/>\n"
+"                                    Currency <span class=\"ua\">/ Валюта</span>:"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+msgid ", SWIFT"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+msgid ""
+"<br/>\n"
+"                                    Contract <span class=\"ua\">/ Контракт</span>:"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+msgid ""
+"<br/>\n"
+"                                    EDRPOU <span class=\"ua\">/ ЄДРПОУ</span>:"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+msgid ""
+"<br/>\n"
+"                                    VAT <span class=\"ua\">/ Податковий номер</span>:"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.view_move_form_export
+msgid "<span class=\"o_stat_text\">Customs</span>"
+msgstr "<span class=\"o_stat_text\">Митниця</span>"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+msgid "<strong>Buyer</strong> <span class=\"ua\">/ Покупець</span><br/>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid "<strong>Consignee</strong> <span class=\"ua\">/ Одержувач</span><br/>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+msgid "<strong>Seller</strong> <span class=\"ua\">/ Продавець</span><br/>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid "<strong>Shipper</strong> <span class=\"ua\">/ Відправник</span><br/>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.constraint,message:l10n_ua_export.constraint_l10n_ua_customs_declaration_name_company_uniq
+msgid "A customs declaration with this number already exists."
+msgstr "Митна декларація з таким номером уже є."
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_form
+msgid "Accompanying Documents"
+msgstr "Супровідні документи"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__message_needaction
+msgid "Action Needed"
+msgstr "Необхідна дія"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__activity_ids
+msgid "Activities"
+msgstr "Дії"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__activity_exception_decoration
+msgid "Activity Exception Decoration"
+msgstr "Оформлення виключення дії"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__activity_state
+msgid "Activity State"
+msgstr "Стан дії"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__activity_type_icon
+msgid "Activity Type Icon"
+msgstr "Іконка типу дії"
+
+#. module: l10n_ua_export
+#: model:ir.model,name:l10n_ua_export.model_l10n_ua_agreement
+msgid "Agreement"
+msgstr "Договір"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+msgid "Amount<br/><span class=\"ua\">Сума</span>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__message_attachment_count
+msgid "Attachment Count"
+msgstr "Підрахунок прикріплення"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+msgid "Bank details <span class=\"ua\">/ Банківські реквізити</span>:"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__partner_id
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_search
+msgid "Buyer"
+msgstr "Покупець"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+msgid "COMMERCIAL INVOICE No."
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_form
+msgid "Cancel"
+msgstr "Скасувати"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields.selection,name:l10n_ua_export.selection__l10n_ua_customs_declaration__state__cancel
+msgid "Cancelled"
+msgstr "Скасовано"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__origin_certificate
+msgid "Certificate of Origin"
+msgstr "Сертифікат походження"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__origin_certificate_date
+msgid "Certificate of Origin Date"
+msgstr "Дата сертифіката походження"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid "Certificate of origin <span class=\"ua\">/ Сертифікат походження</span> №"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__date
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_search
+msgid "Clearance Date"
+msgstr "Дата митного оформлення"
+
+#. module: l10n_ua_export
+#: model:ir.actions.report,name:l10n_ua_export.action_report_commercial_invoice
+msgid "Commercial Invoice (EN/UA)"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model,name:l10n_ua_export.model_res_company
+msgid "Companies"
+msgstr "Компанії"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__company_id
+msgid "Company"
+msgstr "Компанія"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__company_currency_id
+msgid "Company Currency"
+msgstr "Валюта компанії"
+
+#. module: l10n_ua_export
+#: model:ir.model,name:l10n_ua_export.model_res_config_settings
+msgid "Config Settings"
+msgstr "Налаштування"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_form
+msgid "Confirm"
+msgstr "Підтвердити"
+
+#. module: l10n_ua_export
+#. odoo-python
+#: code:addons/l10n_ua_export/models/customs_declaration.py:0
+msgid "Confirm the customs declaration first."
+msgstr "Спершу підтвердьте митну декларацію."
+
+#. module: l10n_ua_export
+#: model:ir.model.fields.selection,name:l10n_ua_export.selection__l10n_ua_customs_declaration__state__confirmed
+msgid "Confirmed"
+msgstr "Підтверджено"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_search
+msgid "Contract"
+msgstr "Контракт"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid "Contract <span class=\"ua\">/ Контракт</span>:"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__currency_id
+msgid "Contract Currency"
+msgstr "Валюта контракту"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_form
+msgid "Create Tax Invoice (0 %, 07)"
+msgstr "Створити ПН (0 %, 07)"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__create_uid
+msgid "Created by"
+msgstr "Створено"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__create_date
+msgid "Created on"
+msgstr "Створено"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__settlement_state
+#: model:ir.ui.menu,name:l10n_ua_export.menu_l10n_ua_currency_control
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_search
+msgid "Currency Control"
+msgstr "Валютний контроль"
+
+#. module: l10n_ua_export
+#: model:ir.actions.act_window,name:l10n_ua_export.l10n_ua_currency_control_action
+msgid "Currency Control (Export)"
+msgstr "Валютний контроль (експорт)"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_form
+msgid "Customs"
+msgstr "Митниця"
+
+#. module: l10n_ua_export
+#. odoo-python
+#: code:addons/l10n_ua_export/models/account_move.py:0
+#: model:ir.model.fields,field_description:l10n_ua_export.field_account_bank_statement_line__l10n_ua_customs_declaration_ids
+#: model:ir.model.fields,field_description:l10n_ua_export.field_account_move__l10n_ua_customs_declaration_ids
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_agreement__l10n_ua_customs_declaration_ids
+msgid "Customs Declarations"
+msgstr "Митні декларації"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__regime
+msgid "Customs Regime"
+msgstr "Митний режим"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__customs_value
+msgid "Customs Value (UAH)"
+msgstr "Митна вартість (грн)"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+msgid "Date <span class=\"ua\">/ Дата</span>:"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.res_config_settings_view_form_export
+msgid ""
+"Days from the customs clearance to receive the payment (currency control)"
+msgstr "Днів від митного оформлення до надходження оплати (валютний контроль)"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__name
+msgid "Declaration Number"
+msgstr "Номер декларації"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__picking_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_form
+msgid "Deliveries"
+msgstr "Відвантаження"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid "Delivery<br/><span class=\"ua\">Відвантаження</span>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+msgid "Description of goods<br/><span class=\"ua\">Опис товару</span>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+msgid "Director <span class=\"ua\">/ Директор</span> <span class=\"line\"> </span>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_account_move__display_name
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_agreement__display_name
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__display_name
+#: model:ir.model.fields,field_description:l10n_ua_export.field_res_company__display_name
+#: model:ir.model.fields,field_description:l10n_ua_export.field_res_config_settings__display_name
+msgid "Display Name"
+msgstr "Відображувана назва"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields.selection,name:l10n_ua_export.selection__l10n_ua_customs_declaration__state__draft
+msgid "Draft"
+msgstr "Чернетка"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields.selection,name:l10n_ua_export.selection__l10n_ua_customs_declaration__settlement_state__due_soon
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_search
+msgid "Due Soon"
+msgstr "Наближається строк"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields.selection,name:l10n_ua_export.selection__l10n_ua_customs_declaration__regime__ek10
+msgid "EK-10 Export"
+msgstr "ЕК-10 Експорт"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields.selection,name:l10n_ua_export.selection__l10n_ua_customs_declaration__regime__ek11
+msgid "EK-11 Re-export"
+msgstr "ЕК-11 Реекспорт"
+
+#. module: l10n_ua_export
+#: model:ir.ui.menu,name:l10n_ua_export.menu_l10n_ua_export
+msgid "Export"
+msgstr "Експорт"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.res_config_settings_view_form_export
+msgid "Export (Ukraine)"
+msgstr "Експорт (Україна)"
+
+#. module: l10n_ua_export
+#: model:ir.model,name:l10n_ua_export.model_l10n_ua_customs_declaration
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_form
+msgid "Export Customs Declaration"
+msgstr "Митна декларація на експорт"
+
+#. module: l10n_ua_export
+#: model:ir.actions.act_window,name:l10n_ua_export.l10n_ua_customs_declaration_action
+#: model:ir.ui.menu,name:l10n_ua_export.menu_l10n_ua_customs_declarations
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_search
+msgid "Export Customs Declarations"
+msgstr "Митні декларації (експорт)"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.res_config_settings_view_form_export
+msgid "Export Settlement Deadline"
+msgstr "Граничний строк розрахунків за експортом"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_res_company__l10n_ua_export_settlement_days
+#: model:ir.model.fields,field_description:l10n_ua_export.field_res_config_settings__l10n_ua_export_settlement_days
+msgid "Export Settlement Deadline (days)"
+msgstr "Граничний строк розрахунків за експортом (днів)"
+
+#. module: l10n_ua_export
+#. odoo-python
+#: code:addons/l10n_ua_export/models/customs_declaration.py:0
+msgid "Export settlement deadline"
+msgstr "Граничний строк розрахунків за експортом"
+
+#. module: l10n_ua_export
+#. odoo-python
+#: code:addons/l10n_ua_export/models/customs_declaration.py:0
+msgid ""
+"Export under %(declaration)s: %(residual)s %(currency)s unpaid, the "
+"settlement deadline is %(deadline)s."
+msgstr ""
+"Експорт за %(declaration)s: не сплачено %(residual)s %(currency)s, граничний"
+" строк розрахунків — %(deadline)s."
+
+#. module: l10n_ua_export
+#: model:ir.actions.server,name:l10n_ua_export.ir_cron_export_settlement_ir_actions_server
+msgid "Export: currency control deadlines"
+msgstr "Експорт: строки валютного контролю"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__message_follower_ids
+msgid "Followers"
+msgstr "Підписники"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Підписники (Партнери)"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,help:l10n_ua_export.field_l10n_ua_customs_declaration__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Іконка зі шрифтом Font awesome, напр. fa-tasks"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_agreement_view_form_export
+msgid "Foreign Trade"
+msgstr "ЗЕД"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_agreement__l10n_ua_foreign_trade
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__agreement_id
+msgid "Foreign Trade Contract"
+msgstr "Зовнішньоекономічний контракт"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid "Goods<br/><span class=\"ua\">Товар</span>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+msgid "HS code<br/><span class=\"ua\">Код УКТ ЗЕД</span>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__has_message
+msgid "Has Message"
+msgstr "Є повідомлення"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_account_move__id
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_agreement__id
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__id
+#: model:ir.model.fields,field_description:l10n_ua_export.field_res_company__id
+#: model:ir.model.fields,field_description:l10n_ua_export.field_res_config_settings__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__activity_exception_icon
+msgid "Icon"
+msgstr "Значок"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,help:l10n_ua_export.field_l10n_ua_customs_declaration__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Іконка для визначення виключення дії."
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,help:l10n_ua_export.field_l10n_ua_customs_declaration__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Якщо позначено, то нові повідомлення будуть потребувати вашої уваги."
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,help:l10n_ua_export.field_l10n_ua_customs_declaration__message_has_error
+#: model:ir.model.fields,help:l10n_ua_export.field_l10n_ua_customs_declaration__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Якщо позначено, деякі повідомлення мають помилку доставки."
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_agreement__l10n_ua_incoterm_id
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__incoterm_id
+msgid "Incoterms"
+msgstr "Інкотермс"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_agreement__l10n_ua_incoterm_place
+msgid "Incoterms Place"
+msgstr "Місце поставки (Інкотермс)"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__amount_total
+msgid "Invoiced"
+msgstr "Виставлено"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__invoice_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_form
+msgid "Invoices"
+msgstr "Рахунки"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__message_is_follower
+msgid "Is Follower"
+msgstr "Стежить"
+
+#. module: l10n_ua_export
+#: model:ir.model,name:l10n_ua_export.model_account_move
+msgid "Journal Entry"
+msgstr "Проводка"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__write_uid
+msgid "Last Updated by"
+msgstr "Востаннє оновлено"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__write_date
+msgid "Last Updated on"
+msgstr "Востаннє оновлено"
+
+#. module: l10n_ua_export
+#. odoo-python
+#: code:addons/l10n_ua_export/models/customs_declaration.py:0
+msgid "Link the export invoices to the customs declaration."
+msgstr "Додайте до митної декларації експортні рахунки."
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid "Lot<br/><span class=\"ua\">Партія</span>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__message_has_error
+msgid "Message Delivery error"
+msgstr "Помилка доставлення повідомлення"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__message_ids
+msgid "Messages"
+msgstr "Повідомлення"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Дедлайн моєї дії"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid "Net weight, kg<br/><span class=\"ua\">Нетто, кг</span>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Дедлайн наступної дії"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__activity_summary
+msgid "Next Activity Summary"
+msgstr "Підсумок наступної дії"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__activity_type_id
+msgid "Next Activity Type"
+msgstr "Тип наступної дії"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid "No.<br/><span class=\"ua\">№</span>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Кількість дій"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__message_has_error_counter
+msgid "Number of errors"
+msgstr "Кількість помилок"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,help:l10n_ua_export.field_l10n_ua_customs_declaration__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Кількість повідомлень, які вимагають дії"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,help:l10n_ua_export.field_l10n_ua_customs_declaration__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Кількість повідомлень з помилкою доставки"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields.selection,name:l10n_ua_export.selection__l10n_ua_customs_declaration__settlement_state__open
+msgid "Open"
+msgstr "Відкрито"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields.selection,name:l10n_ua_export.selection__l10n_ua_customs_declaration__settlement_state__overdue
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_search
+msgid "Overdue"
+msgstr "Прострочено"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid "PACKING LIST"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.actions.report,name:l10n_ua_export.action_report_packing_list
+msgid "Packing List (EN/UA)"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__phyto_certificate
+msgid "Phytosanitary Certificate"
+msgstr "Фітосанітарний сертифікат"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__phyto_certificate_date
+msgid "Phytosanitary Certificate Date"
+msgstr "Дата фітосанітарного сертифіката"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid ""
+"Phytosanitary certificate <span class=\"ua\">/ Фітосанітарний "
+"сертифікат</span> №"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__quality_certificate
+msgid "Quality Certificate"
+msgstr "Посвідчення якості"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__quality_certificate_date
+msgid "Quality Certificate Date"
+msgstr "Дата посвідчення якості"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid "Quality certificate <span class=\"ua\">/ Посвідчення якості</span> №"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid "Quantity<br/><span class=\"ua\">Кількість</span>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__reminder_sent
+msgid "Reminder Sent"
+msgstr "Нагадування надіслано"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_form
+msgid "Reset to Draft"
+msgstr "Повернути в чернетку"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__activity_user_id
+msgid "Responsible User"
+msgstr "Відповідальний користувач"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Помилка доставки SMS"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields.selection,name:l10n_ua_export.selection__l10n_ua_customs_declaration__settlement_state__settled
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_form
+msgid "Settled"
+msgstr "Розраховано"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__settlement_days
+msgid "Settlement Days"
+msgstr "Строк розрахунків, днів"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__settlement_deadline
+msgid "Settlement Deadline"
+msgstr "Граничний строк розрахунків"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_agreement__l10n_ua_settlement_days
+msgid "Settlement Deadline (days)"
+msgstr "Граничний строк розрахунків (днів)"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid "Signature <span class=\"ua\">/ Підпис</span> <span class=\"line\"> </span>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__state
+msgid "State"
+msgstr "Стан"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,help:l10n_ua_export.field_l10n_ua_customs_declaration__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Етап заснований на діях\n"
+"Протерміновано: термін виконання вже минув\n"
+"Сьогодні: дата дії сьогодні\n"
+"Заплановано: майбутні дії."
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__tax_invoice_id
+msgid "Tax Invoice"
+msgstr "Податкова накладна"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid "Terms <span class=\"ua\">/ Умови</span>:"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+msgid "Terms of delivery <span class=\"ua\">/ Умови поставки</span>:"
+msgstr ""
+
+#. module: l10n_ua_export
+#. odoo-python
+#: code:addons/l10n_ua_export/models/customs_declaration.py:0
+msgid "The tax invoice %s already exists."
+msgstr "Податкова накладна %s уже є."
+
+#. module: l10n_ua_export
+#. odoo-python
+#: code:addons/l10n_ua_export/models/customs_declaration.py:0
+msgid ""
+"The tax invoice %s is registered: issue an adjustment calculation first."
+msgstr ""
+"Податкову накладну %s зареєстровано: спершу оформіть розрахунок коригування."
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid "Total <span class=\"ua\">/ Разом</span>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,help:l10n_ua_export.field_l10n_ua_customs_declaration__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Тип дії виключення на записі."
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_form
+msgid "UA500020/2026/012345"
+msgstr "UA500020/2026/012345"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+msgid "Unit price<br/><span class=\"ua\">Ціна</span>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid "Unit<br/><span class=\"ua\">Од.</span>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__amount_residual
+msgid "Unpaid"
+msgstr "Не сплачено"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.l10n_ua_customs_declaration_view_search
+msgid "Unsettled"
+msgstr "Не розраховано"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+msgid ""
+"VAT 0 % — export (art. 195 of the Tax Code of Ukraine). <span "
+"class=\"ua\">ПДВ 0 % — експорт (ст. 195 ПКУ).</span>"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,field_description:l10n_ua_export.field_l10n_ua_customs_declaration__website_message_ids
+msgid "Website Messages"
+msgstr "Повідомлення з веб-сайту"
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,help:l10n_ua_export.field_l10n_ua_customs_declaration__website_message_ids
+msgid "Website communication history"
+msgstr "Історія бесіди на сайті"
+
+#. module: l10n_ua_export
+#. odoo-python
+#: code:addons/l10n_ua_export/models/account_move.py:0
+msgid "id"
+msgstr "id"
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+msgid "ІНВОЙС №"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,help:l10n_ua_export.field_res_company__l10n_ua_export_settlement_days
+#: model:ir.model.fields,help:l10n_ua_export.field_res_config_settings__l10n_ua_export_settlement_days
+msgid ""
+"Граничний строк розрахунків за експортом з дати митного оформлення, якщо в "
+"договорі не вказано інший. Чинне значення встановлює НБУ (постанова № 5 від "
+"02.01.2019 зі змінами воєнного часу) — перевірте актуальний строк."
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,help:l10n_ua_export.field_l10n_ua_agreement__l10n_ua_settlement_days
+msgid "Граничний строк розрахунків за експортом з дати митного оформлення."
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,help:l10n_ua_export.field_l10n_ua_customs_declaration__date
+msgid "Дата митного оформлення (випуску) — дата першої події з ПДВ."
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,help:l10n_ua_export.field_l10n_ua_agreement__l10n_ua_foreign_trade
+msgid ""
+"Зовнішньоекономічний договір (контракт) — для митного оформлення й валютного"
+" контролю."
+msgstr ""
+
+#. module: l10n_ua_export
+#: model:ir.model.fields,help:l10n_ua_export.field_l10n_ua_customs_declaration__name
+msgid "Номер митної декларації, напр. UA500020/2026/012345."
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid "ПАКУВАЛЬНИЙ ЛИСТ — митна декларація"
+msgstr ""
+
+#. module: l10n_ua_export
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_commercial_invoice
+#: model_terms:ir.ui.view,arch_db:l10n_ua_export.report_packing_list
+msgid "від"
+msgstr ""
