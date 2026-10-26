@@ -91,7 +91,7 @@
             <t t-call="web.basic_layout">
                 <t t-set="h" t-value="docs._print_header()"/>
                 <t t-set="rows" t-value="docs._print_material_rows(('fertilizer', 'protection'))"/>
-                <t t-set="form_code" t-value="'VZSG-3'"/>
+                <t t-set="form_code" t-value="'ВЗСГ-3'"/>
                 <div class="page o_ua_agro">
                     <t t-call="l10n_ua_agro_operations.agro_form_style"/>
                     <t t-call="l10n_ua_agro_operations.agro_form_header"/>
@@ -157,7 +157,7 @@
             <t t-call="web.basic_layout">
                 <t t-set="h" t-value="docs._print_header()"/>
                 <t t-set="rows" t-value="docs._print_material_rows(('seed',))"/>
-                <t t-set="form_code" t-value="'VZSG-4'"/>
+                <t t-set="form_code" t-value="'ВЗСГ-4'"/>
                 <div class="page o_ua_agro">
                     <t t-call="l10n_ua_agro_operations.agro_form_style"/>
                     <t t-call="l10n_ua_agro_operations.agro_form_header"/>
@@ -236,8 +236,7 @@
                         </table>
                         <div class="title">TRACTOR OPERATOR RECORD SHEET No. ____</div>
                         <div class="subtitle">
-                            <strong t-out="s['employee'].name"/>
-                            <t t-if="s['employee'].job_title">, <t t-out="s['employee'].job_title"/></t>
+                            <strong t-out="s['employee'].name"/><t t-if="s['employee'].job_title">, <t t-out="s['employee'].job_title"/></t>
                             — for the period <t t-out="h['date_from']" t-options="{'widget': 'date'}"/> – <t t-out="h['date_to']" t-options="{'widget': 'date'}"/>
                         </div>
                         <table class="grid">
