@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="res_config_settings_view_form_export" model="ir.ui.view">
+        <field name="name">res.config.settings.export</field>
+        <field name="model">res.config.settings</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//app[@name='account']" position="inside">
+                <block title="Export (Ukraine)" name="l10n_ua_export">
+                    <setting id="l10n_ua_export_settlement" string="Export Settlement Deadline"
+                             help="Days from the customs clearance to receive the payment (currency control)">
+                        <field name="l10n_ua_export_settlement_days"/>
+                    </setting>
+                </block>
+            </xpath>
+        </field>
+    </record>
+</odoo>

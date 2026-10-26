@@ -22,7 +22,7 @@
 | ПРРО (фіскалізація) | 2 | 🟢 | [docs/prro.md](docs/prro.md) |
 | Доставка | 4 | 🟡 | [docs/delivery.md](docs/delivery.md) |
 | Маркетплейси | 5 | 🟢 | [docs/marketplaces.md](docs/marketplaces.md) |
-| Договори з клієнтами | 1 | 🟢 | [docs/agreements.md](docs/agreements.md) |
+| Договори з клієнтами та ЗЕД | 2 | 🟢 | [docs/agreements.md](docs/agreements.md) |
 | Ціни постачальників | 6 | ✅ | [docs/supplier_prices.md](docs/supplier_prices.md) |
 | HR та зарплата (1С:ЗУП) | 13 | ✅ | [docs/hr.md](docs/hr.md) |
 | Бюджетні установи | 8 | 🟢 | [docs/budget.md](docs/budget.md) |

@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="action_report_commercial_invoice" model="ir.actions.report">
+        <field name="name">Commercial Invoice (EN/UA)</field>
+        <field name="model">account.move</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_export.report_commercial_invoice</field>
+        <field name="report_file">l10n_ua_export.report_commercial_invoice</field>
+        <field name="binding_model_id" ref="account.model_account_move"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Commercial Invoice %s' % (object.name or '').replace('/', '-')</field>
+    </record>
+
+    <record id="action_report_packing_list" model="ir.actions.report">
+        <field name="name">Packing List (EN/UA)</field>
+        <field name="model">l10n_ua.customs.declaration</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_export.report_packing_list</field>
+        <field name="report_file">l10n_ua_export.report_packing_list</field>
+        <field name="binding_model_id" ref="model_l10n_ua_customs_declaration"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Packing List %s' % (object.name or '').replace('/', '-')</field>
+    </record>
+
+    <template id="export_style">
+        <style>
+            .o_ua_export { font-size: 9.5pt; }
+            .o_ua_export .title { text-align: center; font-weight: bold; font-size: 14pt; margin: 6px 0 2px 0; }
+            .o_ua_export .subtitle { text-align: center; margin-bottom: 10px; }
+            .o_ua_export table { width: 100%; border-collapse: collapse; }
+            .o_ua_export .plain td { border: none; padding: 2px 4px; vertical-align: top; }
+            .o_ua_export .grid th, .o_ua_export .grid td { border: 1px solid #000; padding: 3px; }
+            .o_ua_export .grid th { text-align: center; font-weight: normal; font-size: 8pt; background: #f2f2f2; }
+            .o_ua_export .num { text-align: right; white-space: nowrap; }
+            .o_ua_export .ua { color: #555; font-size: 8pt; }
+            .o_ua_export .total td { font-weight: bold; }
+            .o_ua_export .sign td { padding-top: 22px; }
+            .o_ua_export .line { border-bottom: 1px solid #000; display: inline-block; min-width: 200px; }
+        </style>
+    </template>
+
+    <template id="report_commercial_invoice">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="company" t-value="o.company_id"/>
+                    <t t-set="agreement" t-value="o.l10n_ua_agreement_id"/>
+                    <div class="page o_ua_export">
+                        <t t-call="l10n_ua_export.export_style"/>
+                        <div class="title">COMMERCIAL INVOICE No. <t t-out="o.name"/></div>
+                        <div class="subtitle ua">ІНВОЙС № <t t-out="o.name"/> від <t t-out="o.invoice_date" t-options="{'widget': 'date'}"/></div>
+                        <table class="plain">
+                            <tr>
+                                <td style="width: 50%;">
+                                    <strong>Seller</strong> <span class="ua">/ Продавець</span><br/>
+                                    <t t-out="company.name"/><br/>
+                                    <t t-out="company.partner_id.contact_address or ''"/><br/>
+                                    EDRPOU <span class="ua">/ ЄДРПОУ</span>: <t t-out="company.partner_id.edrpou or ''"/>
+                                </td>
+                                <td>
+                                    <strong>Buyer</strong> <span class="ua">/ Покупець</span><br/>
+                                    <t t-out="o.commercial_partner_id.name"/><br/>
+                                    <t t-out="o.commercial_partner_id.contact_address or ''"/><br/>
+                                    VAT <span class="ua">/ Податковий номер</span>: <t t-out="o.commercial_partner_id.vat or ''"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    Date <span class="ua">/ Дата</span>: <t t-out="o.invoice_date" t-options="{'widget': 'date'}"/><br/>
+                                    Contract <span class="ua">/ Контракт</span>: <t t-out="agreement.display_name or ''"/>
+                                </td>
+                                <td>
+                                    Terms of delivery <span class="ua">/ Умови поставки</span>:
+                                    <t t-out="agreement.l10n_ua_incoterm_id.code or ''"/> <t t-out="agreement.l10n_ua_incoterm_place or ''"/>
+                                    (Incoterms 2020)<br/>
+                                    Currency <span class="ua">/ Валюта</span>: <t t-out="o.currency_id.name"/>
+                                </td>
+                            </tr>
+                        </table>
+                        <br/>
+                        <table class="grid">
+                            <thead>
+                                <tr>
+                                    <th>No.<br/><span class="ua">№</span></th>
+                                    <th>Description of goods<br/><span class="ua">Опис товару</span></th>
+                                    <th>HS code<br/><span class="ua">Код УКТ ЗЕД</span></th>
+                                    <th>Quantity<br/><span class="ua">Кількість</span></th>
+                                    <th>Unit<br/><span class="ua">Од.</span></th>
+                                    <th>Unit price<br/><span class="ua">Ціна</span></th>
+                                    <th>Amount<br/><span class="ua">Сума</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="o._l10n_ua_export_lines()" t-as="line">
+                                    <td class="num" t-out="line_index + 1"/>
+                                    <td t-out="line.name"/>
+                                    <td t-out="line.product_id.uktzed_code or ''"/>
+                                    <td class="num" t-out="line.quantity" t-options="{'widget': 'float', 'precision': 3}"/>
+                                    <td t-out="line.product_uom_id.name"/>
+                                    <td class="num" t-out="line.price_unit" t-options="{'widget': 'float', 'precision': 2}"/>
+                                    <td class="num" t-out="line.price_subtotal" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                </tr>
+                                <tr class="total">
+                                    <td colspan="6">Total <span class="ua">/ Разом</span></td>
+                                    <td class="num" t-out="o.amount_total" t-options="{'widget': 'monetary', 'display_currency': o.currency_id}"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p>VAT 0 % — export (art. 195 of the Tax Code of Ukraine). <span class="ua">ПДВ 0 % — експорт (ст. 195 ПКУ).</span></p>
+                        <p t-if="company.partner_id.bank_ids">
+                            Bank details <span class="ua">/ Банківські реквізити</span>:
+                            <t t-out="company.partner_id.bank_ids[:1].acc_number"/>, <t t-out="company.partner_id.bank_ids[:1].bank_id.name or ''"/>
+                            <t t-if="company.partner_id.bank_ids[:1].bank_id.bic">, SWIFT <t t-out="company.partner_id.bank_ids[:1].bank_id.bic"/></t>
+                        </p>
+                        <table class="plain sign">
+                            <tr>
+                                <td>Director <span class="ua">/ Директор</span> <span class="line">&#160;</span>
+                                    <t t-out="company.partner_id.l10n_ua_chief_name or ''"/></td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_packing_list">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="rows" t-value="o._l10n_ua_packing_rows()"/>
+                    <div class="page o_ua_export">
+                        <t t-call="l10n_ua_export.export_style"/>
+                        <div class="title">PACKING LIST</div>
+                        <div class="subtitle ua">ПАКУВАЛЬНИЙ ЛИСТ — митна декларація <t t-out="o.name"/> від <t t-out="o.date" t-options="{'widget': 'date'}"/></div>
+                        <table class="plain">
+                            <tr>
+                                <td style="width: 50%;"><strong>Shipper</strong> <span class="ua">/ Відправник</span><br/>
+                                    <t t-out="o.company_id.name"/></td>
+                                <td><strong>Consignee</strong> <span class="ua">/ Одержувач</span><br/>
+                                    <t t-out="o.partner_id.name"/><br/><t t-out="o.partner_id.contact_address or ''"/></td>
+                            </tr>
+                            <tr>
+                                <td>Contract <span class="ua">/ Контракт</span>: <t t-out="o.agreement_id.display_name or ''"/></td>
+                                <td>Terms <span class="ua">/ Умови</span>: <t t-out="o.incoterm_id.code or ''"/> <t t-out="o.agreement_id.l10n_ua_incoterm_place or ''"/></td>
+                            </tr>
+                        </table>
+                        <br/>
+                        <table class="grid">
+                            <thead>
+                                <tr>
+                                    <th>No.<br/><span class="ua">№</span></th>
+                                    <th>Goods<br/><span class="ua">Товар</span></th>
+                                    <th>Lot<br/><span class="ua">Партія</span></th>
+                                    <th>Delivery<br/><span class="ua">Відвантаження</span></th>
+                                    <th>Quantity<br/><span class="ua">Кількість</span></th>
+                                    <th>Unit<br/><span class="ua">Од.</span></th>
+                                    <th>Net weight, kg<br/><span class="ua">Нетто, кг</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr t-foreach="rows" t-as="r">
+                                    <td class="num" t-out="r_index + 1"/>
+                                    <td t-out="r['product'].display_name"/>
+                                    <td t-out="r['lot'].name or ''"/>
+                                    <td t-out="r['picking'].name"/>
+                                    <td class="num" t-out="r['quantity']" t-options="{'widget': 'float', 'precision': 3}"/>
+                                    <td t-out="r['uom'].name"/>
+                                    <td class="num" t-out="r['net']" t-options="{'widget': 'float', 'precision': 1}"/>
+                                </tr>
+                                <tr class="total">
+                                    <td colspan="6">Total <span class="ua">/ Разом</span></td>
+                                    <td class="num" t-out="sum(r['net'] for r in rows)" t-options="{'widget': 'float', 'precision': 1}"/>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <p>
+                            <t t-if="o.phyto_certificate">Phytosanitary certificate <span class="ua">/ Фітосанітарний сертифікат</span> № <t t-out="o.phyto_certificate"/> <t t-out="o.phyto_certificate_date" t-options="{'widget': 'date'}"/><br/></t>
+                            <t t-if="o.origin_certificate">Certificate of origin <span class="ua">/ Сертифікат походження</span> № <t t-out="o.origin_certificate"/> <t t-out="o.origin_certificate_date" t-options="{'widget': 'date'}"/><br/></t>
+                            <t t-if="o.quality_certificate">Quality certificate <span class="ua">/ Посвідчення якості</span> № <t t-out="o.quality_certificate"/> <t t-out="o.quality_certificate_date" t-options="{'widget': 'date'}"/></t>
+                        </p>
+                        <table class="plain sign">
+                            <tr><td>Signature <span class="ua">/ Підпис</span> <span class="line">&#160;</span></td></tr>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>

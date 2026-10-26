@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <menuitem id="menu_l10n_ua_export"
+              name="Export"
+              parent="account.menu_finance_receivables"
+              groups="account.group_account_invoice"
+              sequence="80"/>
+    <menuitem id="menu_l10n_ua_customs_declarations"
+              name="Export Customs Declarations"
+              parent="menu_l10n_ua_export"
+              action="l10n_ua_customs_declaration_action"
+              sequence="10"/>
+    <menuitem id="menu_l10n_ua_currency_control"
+              name="Currency Control"
+              parent="menu_l10n_ua_export"
+              action="l10n_ua_currency_control_action"
+              sequence="20"/>
+</odoo>
