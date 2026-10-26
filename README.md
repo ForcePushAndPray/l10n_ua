@@ -17,7 +17,7 @@
 | Напрямок | Модулів | Статус | Деталі |
 |----------|:-------:|:------:|--------|
 | Базові та бухгалтерія | 6 | 🟢 | [docs/core_accounting.md](docs/core_accounting.md) |
-| Податки та звітність | 6 | 🟢 | [docs/taxes.md](docs/taxes.md) |
+| Податки та звітність | 7 | 🟢 | [docs/taxes.md](docs/taxes.md) |
 | Банки та платежі | 5 | 🟢 | [docs/banks.md](docs/banks.md) |
 | ПРРО (фіскалізація) | 2 | 🟢 | [docs/prro.md](docs/prro.md) |
 | Доставка | 4 | 🟡 | [docs/delivery.md](docs/delivery.md) |
