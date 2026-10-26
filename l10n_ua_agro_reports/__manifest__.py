@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Agro Statistical Reports (4-sg, 29-sg, 50-sg)',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.0.1',
     'category': 'Accounting/Localization',
     'summary': 'Annual State Statistics Service reports of an agricultural enterprise: '
                'sown areas (4-sg), harvest (29-sg), economic indicators (50-sg)',
