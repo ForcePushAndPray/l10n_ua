@@ -40,6 +40,10 @@ class AgroHarvestReceipt(models.Model):
         'res.company', required=True, default=lambda self: self.env.company)
     vehicle = fields.Char(string='Vehicle')
     driver = fields.Char(string='Driver')
+    combine_operator = fields.Char(string='Combine Operator', help='Комбайнер, з бункера якого завантажено машину.')
+    weigher_id = fields.Many2one(
+        'res.users', string='Weigher', default=lambda self: self.env.user,
+        help='Хто зважив машину й прийняв зерно (завідувач току, ваговий).')
     location_dest_id = fields.Many2one(
         'stock.location', string='Storage', required=True,
         domain="[('usage', '=', 'internal'), ('company_id', 'in', (company_id, False))]",
@@ -233,6 +237,23 @@ class AgroHarvestReceipt(models.Model):
         })
         back.picked = True
         back._action_done()
+
+    # --- Друк: реєстри ф. № 77 / № 78 ---
+
+    def _print_registers(self, by_vehicle=True):
+        """Групи для реєстрів: відправки (ф. № 77) — машина × день,
+        приймання (ф. № 78) — день × місце зберігання."""
+        groups = {}
+        receipts = self.filtered(lambda r: r.state != 'cancel').sorted(lambda r: (r.date, r.id))
+        for receipt in receipts:
+            day = fields.Datetime.context_timestamp(receipt, receipt.date).date()
+            key = (day, receipt.vehicle or '', receipt.driver or '') if by_vehicle \
+                else (day, receipt.location_dest_id)
+            groups.setdefault(key, self.browse())
+            groups[key] |= receipt
+        return [{'key': key, 'day': key[0], 'receipts': recs,
+                 'net': sum(recs.mapped('net_weight')), 'credit': sum(recs.mapped('credit_weight'))}
+                for key, recs in groups.items()]
 
     def action_draft(self):
         for receipt in self:

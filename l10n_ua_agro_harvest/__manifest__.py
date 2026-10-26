@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - Agro Harvest',
-    'version': '19.0.1.0.0',
+    'version': '19.0.1.1.0',
     'category': 'Agriculture/Localization',
     'summary': 'Harvest receipts from fields: weighing, laboratory analysis, '
                'credit weight by basic conditions, batches, storage, yield',
@@ -24,6 +24,11 @@ Part of the "Agro" industry solution (epic #477, issue #472).
   batch carries the weighted quality of all its receipts.
 * Yield report: gross harvest and yield in centners per hectare by field,
   crop and season.
+* Printed forms: register of grain dispatched from the field (form No. 77)
+  per vehicle and day, register of grain received (form No. 78) per day
+  and storage, quality card of a batch. The consignment note (1-TN) for
+  carrying the grain from the farm to the elevator is printed from the
+  internal transfer (``l10n_ua_stock_forms``).
 
 The accounting valuation of the harvest (Dt 27 / Ct 23, P(S)BO 30) is
 done by ``l10n_ua_agro_account`` (#473).
@@ -45,6 +50,7 @@ done by ``l10n_ua_agro_account`` (#473).
         'views/stock_lot_views.xml',
         'views/agro_planting_views.xml',
         'views/res_config_settings_views.xml',
+        'report/harvest_forms.xml',
         'views/menu_views.xml',
     ],
     'images': ['static/description/icon.png'],

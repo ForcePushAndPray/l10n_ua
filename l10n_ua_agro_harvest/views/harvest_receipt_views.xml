@@ -50,6 +50,8 @@
                             <field name="product_id" readonly="state != 'draft'"/>
                             <field name="vehicle" readonly="state != 'draft'" placeholder="e.g. ВК 4417 АР"/>
                             <field name="driver" readonly="state != 'draft'"/>
+                            <field name="combine_operator" readonly="state != 'draft'"/>
+                            <field name="weigher_id" readonly="state != 'draft'"/>
                             <field name="location_dest_id" readonly="state != 'draft'"/>
                             <field name="lot_id" invisible="not lot_id"/>
                             <field name="company_id" groups="base.group_multi_company" readonly="state != 'draft'"/>

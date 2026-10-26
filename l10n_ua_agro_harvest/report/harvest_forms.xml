@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="paperformat_agro_harvest" model="report.paperformat">
+        <field name="name">UA Agro Harvest A4 Landscape</field>
+        <field name="default" eval="False"/>
+        <field name="format">A4</field>
+        <field name="orientation">Landscape</field>
+        <field name="margin_top">10</field>
+        <field name="margin_bottom">10</field>
+        <field name="margin_left">8</field>
+        <field name="margin_right">8</field>
+        <field name="header_line" eval="False"/>
+        <field name="header_spacing">5</field>
+        <field name="dpi">90</field>
+    </record>
+
+    <record id="action_report_dispatch_register" model="ir.actions.report">
+        <field name="name">Register of Grain Dispatched from the Field (No. 77)</field>
+        <field name="model">l10n_ua.agro.harvest.receipt</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_agro_harvest.report_dispatch_register</field>
+        <field name="report_file">l10n_ua_agro_harvest.report_dispatch_register</field>
+        <field name="paperformat_id" ref="paperformat_agro_harvest"/>
+        <field name="binding_model_id" ref="model_l10n_ua_agro_harvest_receipt"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_receipt_register" model="ir.actions.report">
+        <field name="name">Register of Grain Received (No. 78)</field>
+        <field name="model">l10n_ua.agro.harvest.receipt</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_agro_harvest.report_receipt_register</field>
+        <field name="report_file">l10n_ua_agro_harvest.report_receipt_register</field>
+        <field name="paperformat_id" ref="paperformat_agro_harvest"/>
+        <field name="binding_model_id" ref="model_l10n_ua_agro_harvest_receipt"/>
+        <field name="binding_type">report</field>
+    </record>
+
+    <record id="action_report_lot_quality" model="ir.actions.report">
+        <field name="name">Batch Quality Card</field>
+        <field name="model">stock.lot</field>
+        <field name="report_type">qweb-pdf</field>
+        <field name="report_name">l10n_ua_agro_harvest.report_lot_quality</field>
+        <field name="report_file">l10n_ua_agro_harvest.report_lot_quality</field>
+        <field name="binding_model_id" ref="stock.model_stock_lot"/>
+        <field name="binding_type">report</field>
+        <field name="print_report_name">'Quality %s' % object.name</field>
+    </record>
+
+    <template id="harvest_form_style">
+        <style>
+            .o_ua_harvest { font-size: 9pt; }
+            .o_ua_harvest .title { text-align: center; font-weight: bold; font-size: 12pt; margin: 4px 0; }
+            .o_ua_harvest .subtitle { text-align: center; margin-bottom: 6px; }
+            .o_ua_harvest .form-code { text-align: right; font-size: 8pt; }
+            .o_ua_harvest table { width: 100%; border-collapse: collapse; }
+            .o_ua_harvest .plain td { border: none; padding: 2px 4px; vertical-align: top; }
+            .o_ua_harvest .grid th, .o_ua_harvest .grid td { border: 1px solid #000; padding: 2px 3px; }
+            .o_ua_harvest .grid th { text-align: center; font-weight: normal; font-size: 7.5pt; }
+            .o_ua_harvest .num { text-align: right; white-space: nowrap; }
+            .o_ua_harvest .mid { text-align: center; }
+            .o_ua_harvest .total td { font-weight: bold; }
+            .o_ua_harvest .sign td { padding-top: 14px; }
+            .o_ua_harvest .line { border-bottom: 1px solid #000; display: inline-block; min-width: 170px; }
+            .o_ua_harvest .page-break { page-break-after: always; }
+        </style>
+    </template>
+
+    <template id="report_dispatch_register">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <div class="page o_ua_harvest">
+                    <t t-call="l10n_ua_agro_harvest.harvest_form_style"/>
+                    <t t-foreach="docs._print_registers(True)" t-as="g">
+                        <t t-set="company" t-value="g['receipts'][:1].company_id"/>
+                        <div t-att-class="'page-break' if not g_last else ''">
+                            <table class="plain">
+                                <tr>
+                                    <td style="width: 70%;"><strong t-out="company.name"/><br/>EDRPOU code: <t t-out="company.partner_id.edrpou or ''"/></td>
+                                    <td class="form-code">Form No. 77</td>
+                                </tr>
+                            </table>
+                            <div class="title">REGISTER No. ____ of grain and other produce dispatched from the field</div>
+                            <div class="subtitle">
+                                <t t-out="g['day']" t-options="{'widget': 'date'}"/>;
+                                vehicle <strong t-out="g['key'][1]"/>, driver <strong t-out="g['key'][2]"/>
+                            </div>
+                            <table class="grid">
+                                <thead>
+                                    <tr>
+                                        <th>No.</th>
+                                        <th>Time</th>
+                                        <th>Field</th>
+                                        <th>Crop</th>
+                                        <th>Combine operator</th>
+                                        <th>Gross, kg</th>
+                                        <th>Tare, kg</th>
+                                        <th>Net, kg</th>
+                                        <th>Moisture, %</th>
+                                        <th>Impurity, %</th>
+                                        <th>Receipt</th>
+                                        <th>Received by (signature)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="g['receipts']" t-as="r">
+                                        <td class="mid" t-out="r_index + 1"/>
+                                        <td class="mid" t-out="r.date" t-options="{'widget': 'datetime', 'format': 'HH:mm'}"/>
+                                        <td t-out="r.field_id.display_name"/>
+                                        <td t-out="r.crop_id.name"/>
+                                        <td t-out="r.combine_operator or ''"/>
+                                        <td class="num" t-out="'%.0f' % r.gross_weight"/>
+                                        <td class="num" t-out="'%.0f' % r.tare_weight"/>
+                                        <td class="num" t-out="'%.0f' % r.net_weight"/>
+                                        <td class="num" t-out="'%.1f' % r.moisture"/>
+                                        <td class="num" t-out="'%.1f' % r.impurity"/>
+                                        <td t-out="r.name"/>
+                                        <td/>
+                                    </tr>
+                                    <tr class="total">
+                                        <td colspan="7">Total trips: <t t-out="len(g['receipts'])"/></td>
+                                        <td class="num" t-out="'%.0f' % g['net']"/>
+                                        <td colspan="4"/>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="plain sign">
+                                <tr>
+                                    <td style="width: 34%;">Driver <span class="line">&#160;</span></td>
+                                    <td style="width: 33%;">Foreman <span class="line">&#160;</span></td>
+                                    <td>Head of the threshing floor <span class="line">&#160;</span></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_receipt_register">
+        <t t-call="web.html_container">
+            <t t-call="web.basic_layout">
+                <div class="page o_ua_harvest">
+                    <t t-call="l10n_ua_agro_harvest.harvest_form_style"/>
+                    <t t-foreach="docs._print_registers(False)" t-as="g">
+                        <t t-set="company" t-value="g['receipts'][:1].company_id"/>
+                        <div t-att-class="'page-break' if not g_last else ''">
+                            <table class="plain">
+                                <tr>
+                                    <td style="width: 70%;"><strong t-out="company.name"/><br/>EDRPOU code: <t t-out="company.partner_id.edrpou or ''"/></td>
+                                    <td class="form-code">Form No. 78</td>
+                                </tr>
+                            </table>
+                            <div class="title">REGISTER No. ____ of grain and other produce received</div>
+                            <div class="subtitle">
+                                <t t-out="g['day']" t-options="{'widget': 'date'}"/>; storage <strong t-out="g['key'][1].display_name"/>
+                            </div>
+                            <table class="grid">
+                                <thead>
+                                    <tr>
+                                        <th rowspan="2">No.</th>
+                                        <th rowspan="2">Time</th>
+                                        <th rowspan="2">Receipt</th>
+                                        <th rowspan="2">Vehicle, driver</th>
+                                        <th rowspan="2">Field, crop</th>
+                                        <th colspan="3">Weight, kg</th>
+                                        <th colspan="2">Laboratory, %</th>
+                                        <th rowspan="2">Credit weight, kg</th>
+                                        <th rowspan="2">Batch</th>
+                                    </tr>
+                                    <tr><th>gross</th><th>tare</th><th>net</th><th>moisture</th><th>impurity</th></tr>
+                                </thead>
+                                <tbody>
+                                    <tr t-foreach="g['receipts']" t-as="r">
+                                        <td class="mid" t-out="r_index + 1"/>
+                                        <td class="mid" t-out="r.date" t-options="{'widget': 'datetime', 'format': 'HH:mm'}"/>
+                                        <td t-out="r.name"/>
+                                        <td><t t-out="r.vehicle or ''"/><t t-if="r.driver">, <t t-out="r.driver"/></t></td>
+                                        <td><t t-out="r.field_id.display_name"/>, <t t-out="r.crop_id.name"/></td>
+                                        <td class="num" t-out="'%.0f' % r.gross_weight"/>
+                                        <td class="num" t-out="'%.0f' % r.tare_weight"/>
+                                        <td class="num" t-out="'%.0f' % r.net_weight"/>
+                                        <td class="num" t-out="'%.1f' % r.moisture"/>
+                                        <td class="num" t-out="'%.1f' % r.impurity"/>
+                                        <td class="num" t-out="'%.0f' % r.credit_weight"/>
+                                        <td t-out="r.lot_id.name or ''"/>
+                                    </tr>
+                                    <tr class="total">
+                                        <td colspan="7">Total trips: <t t-out="len(g['receipts'])"/></td>
+                                        <td class="num" t-out="'%.0f' % g['net']"/>
+                                        <td colspan="2"/>
+                                        <td class="num" t-out="'%.0f' % g['credit']"/>
+                                        <td/>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <table class="plain sign">
+                                <tr>
+                                    <td style="width: 50%;">Weigher <span class="line">&#160;</span> <t t-out="', '.join(g['receipts'].weigher_id.mapped('name'))"/></td>
+                                    <td>Laboratory assistant <span class="line">&#160;</span></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </t>
+                </div>
+            </t>
+        </t>
+    </template>
+
+    <template id="report_lot_quality">
+        <t t-call="web.html_container">
+            <t t-foreach="docs" t-as="o">
+                <t t-call="web.basic_layout">
+                    <t t-set="basis" t-value="o._l10n_ua_agro_basis()"/>
+                    <div class="page o_ua_harvest" style="font-size: 10pt;">
+                        <t t-call="l10n_ua_agro_harvest.harvest_form_style"/>
+                        <div><strong t-out="o.company_id.name"/>, EDRPOU code: <t t-out="o.company_id.partner_id.edrpou or ''"/></div>
+                        <div class="title">QUALITY CARD of batch <t t-out="o.name"/></div>
+                        <div class="subtitle">internal document of the producer; not a certificate of an accredited laboratory</div>
+                        <table class="plain">
+                            <tr><td style="width: 35%;">Produce</td><td><strong t-out="o.product_id.display_name"/></td></tr>
+                            <tr><td>Crop, harvest year</td><td><t t-out="o.l10n_ua_agro_planting_id.crop_id.name"/>, <t t-out="o.l10n_ua_agro_season_id.year"/></td></tr>
+                            <tr><td>Field</td><td t-out="o.l10n_ua_agro_field_id.display_name"/></tr>
+                            <tr><td>Received (credit weight), kg</td><td t-out="'%.0f' % o.l10n_ua_agro_credit_weight"/></tr>
+                            <tr><td>In stock</td><td><t t-out="'%.3f' % o.product_qty"/> <t t-out="o.product_uom_id.name"/></td></tr>
+                            <tr><td>Number of receipts</td><td t-out="len(o.l10n_ua_agro_receipt_ids.filtered(lambda r: r.state == 'done'))"/></tr>
+                        </table>
+                        <br/>
+                        <table class="grid" style="width: 70%;">
+                            <thead>
+                                <tr><th>Indicator</th><th>Weighted average</th><th>Basic condition</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Moisture, %</td><td class="num" t-out="'%.2f' % o.l10n_ua_agro_moisture"/><td class="num" t-out="'%.1f' % basis[0]"/></tr>
+                                <tr><td>Impurity, %</td><td class="num" t-out="'%.2f' % o.l10n_ua_agro_impurity"/><td class="num" t-out="'%.1f' % basis[1]"/></tr>
+                                <tr t-if="o.l10n_ua_agro_grain_impurity"><td>Grain impurity, %</td><td class="num" t-out="'%.2f' % o.l10n_ua_agro_grain_impurity"/><td/></tr>
+                                <tr t-if="o.l10n_ua_agro_test_weight"><td>Test weight, g/l</td><td class="num" t-out="'%.0f' % o.l10n_ua_agro_test_weight"/><td/></tr>
+                                <tr t-if="o.l10n_ua_agro_oil_content"><td>Oil content, %</td><td class="num" t-out="'%.2f' % o.l10n_ua_agro_oil_content"/><td/></tr>
+                                <tr t-if="o.l10n_ua_agro_protein"><td>Protein, %</td><td class="num" t-out="'%.2f' % o.l10n_ua_agro_protein"/><td/></tr>
+                            </tbody>
+                        </table>
+                        <p>The indicators are averaged over the receipts of the batch, weighted by the net weight.</p>
+                        <table class="plain sign">
+                            <tr>
+                                <td style="width: 50%;">Laboratory assistant <span class="line">&#160;</span></td>
+                                <td>Agronomist <span class="line">&#160;</span></td>
+                            </tr>
+                        </table>
+                    </div>
+                </t>
+            </t>
+        </t>
+    </template>
+
+</odoo>
