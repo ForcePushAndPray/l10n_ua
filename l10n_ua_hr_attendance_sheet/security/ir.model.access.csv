@@ -14,3 +14,5 @@ access_hr_timesheet_line_manager,hr.timesheet.line.manager,model_hr_timesheet_li
 access_hr_timesheet_day_user,hr.timesheet.day.user,model_hr_timesheet_day,hr.group_hr_user,1,0,0,0
 access_hr_timesheet_day_officer,hr.timesheet.day.officer,model_hr_timesheet_day,l10n_ua_hr_base.group_hr_ua_officer,1,1,1,0
 access_hr_timesheet_day_manager,hr.timesheet.day.manager,model_hr_timesheet_day,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1
+access_hr_timesheet_partial_approval_officer,hr.timesheet.partial.approval.officer,model_hr_timesheet_partial_approval,l10n_ua_hr_base.group_hr_ua_officer,1,1,1,1
+access_hr_timesheet_partial_approval_manager,hr.timesheet.partial.approval.manager,model_hr_timesheet_partial_approval,l10n_ua_hr_base.group_hr_ua_manager,1,1,1,1

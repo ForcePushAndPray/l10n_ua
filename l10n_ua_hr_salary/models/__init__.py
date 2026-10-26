@@ -3,6 +3,7 @@ from . import hr_psp_parameters
 from . import hr_psp_parameters_template
 from . import hr_cpi_index
 from . import hr_version
+from . import hr_employee
 from . import hr_seniority_scale
 from . import hr_piece_work_entry
 from . import hr_accrual_type

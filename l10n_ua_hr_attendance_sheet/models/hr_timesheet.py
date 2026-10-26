@@ -1,7 +1,8 @@
 from datetime import date
 
-from odoo import models, fields, api
-from odoo.exceptions import ValidationError
+from odoo import models, fields, api, _
+from odoo.exceptions import UserError, ValidationError
+from odoo.tools import format_date
 from dateutil.relativedelta import relativedelta
 
 
@@ -84,6 +85,22 @@ class HrTimesheet(models.Model):
     
     notes = fields.Text(string='Notes')
 
+    partial_approval_date = fields.Date(
+        string='Partially Approved Until',
+        readonly=True,
+        copy=False,
+        tracking=True,
+        help='The days of the sheet up to this date are approved and locked. '
+             'Empty when the sheet has no partial approval.'
+    )
+    partial_approval_user_id = fields.Many2one(
+        'res.users',
+        string='Partially Approved By',
+        readonly=True,
+        copy=False,
+        tracking=True
+    )
+
     @api.onchange('company_id')
     def _onchange_company_id(self):
         if self.department_id and self.department_id.company_id \
@@ -103,9 +120,36 @@ class HrTimesheet(models.Model):
             rec.total_worked_days = sum(rec.line_ids.mapped('worked_days'))
             rec.total_worked_hours = sum(rec.line_ids.mapped('worked_hours'))
 
+    def _l10n_ua_month_bounds(self):
+        """The first and the last day of the month of the sheet."""
+        self.ensure_one()
+        date_from = date(self.year, int(self.month), 1)
+        return date_from, date_from + relativedelta(months=1, days=-1)
+
+    def _check_no_partial_approval(self):
+        """Refuse what would rebuild or move the days of a partially
+        approved sheet: the approved days must stay as they were approved."""
+        locked = self.filtered('partial_approval_date')
+        if locked:
+            raise UserError(_(
+                'Timesheet "%(sheet)s" is partially approved until %(date)s. '
+                'Set it back to draft first.',
+                sheet=locked[0].display_name,
+                date=format_date(self.env, locked[0].partial_approval_date)))
+
+    def write(self, vals):
+        if 'year' in vals or 'month' in vals:
+            self._check_no_partial_approval()
+        return super().write(vals)
+
+    def unlink(self):
+        self._check_no_partial_approval()
+        return super().unlink()
+
     def action_generate_lines(self):
         """Generate timesheet lines for all employees"""
         self.ensure_one()
+        self._check_no_partial_approval()
         self.line_ids.unlink()
         
         domain = [('company_id', '=', self.company_id.id)]
@@ -135,7 +179,27 @@ class HrTimesheet(models.Model):
         self.write({'state': 'approved'})
 
     def action_draft(self):
-        self.write({'state': 'draft'})
+        self.write({
+            'state': 'draft',
+            'partial_approval_date': False,
+            'partial_approval_user_id': False,
+        })
+
+    def action_partial_approve(self):
+        """Open the wizard that approves the days up to a chosen date."""
+        self.ensure_one()
+        if self.state != 'draft' or self.partial_approval_date:
+            raise UserError(_(
+                'Only a draft timesheet without a partial approval can be '
+                'partially approved.'))
+        return {
+            'name': _('Partial Approval'),
+            'type': 'ir.actions.act_window',
+            'res_model': 'hr.timesheet.partial.approval',
+            'view_mode': 'form',
+            'target': 'new',
+            'context': {'default_timesheet_id': self.id},
+        }
 
     _unique_year_month_department_id_company_id = models.Constraint(
         'unique(year, month, department_id, company_id)',
@@ -203,6 +267,9 @@ class HrTimesheetLine(models.Model):
         compute='_compute_totals',
         store=True
     )
+    partial_approval_date = fields.Date(
+        related='timesheet_id.partial_approval_date',
+    )
     holiday_hours = fields.Float(
         string='Holiday Hours',
         compute='_compute_totals',
@@ -257,9 +324,14 @@ class HrTimesheetLine(models.Model):
             line.norm_hours = sum(days.mapped('norm_hours'))
             line.overtime_diff = line.worked_hours - line.norm_hours
 
+    def unlink(self):
+        self.timesheet_id._check_no_partial_approval()
+        return super().unlink()
+
     def action_generate_days(self):
         """Generate day entries for the month"""
         self.ensure_one()
+        self.timesheet_id._check_no_partial_approval()
         self.day_ids.unlink()
         self.env['hr.timesheet.day'].create([
             dict(day, line_id=self.id, norm_hours=day['hours'])
@@ -384,3 +456,39 @@ class HrTimesheetDay(models.Model):
     
     is_scheduled = fields.Boolean(string='Scheduled')
     notes = fields.Char(string='Notes')
+
+    def _check_partial_approval_lock(self, line, day):
+        """Refuse a change to a day the partial approval of its sheet covers."""
+        locked_until = line.timesheet_id.partial_approval_date
+        if locked_until and day and day <= locked_until:
+            raise UserError(_(
+                'The days of timesheet "%(sheet)s" up to %(date)s are '
+                'partially approved and cannot be changed. Set the timesheet '
+                'back to draft first.',
+                sheet=line.timesheet_id.display_name,
+                date=format_date(self.env, locked_until)))
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        Line = self.env['hr.timesheet.line']
+        for vals in vals_list:
+            if vals.get('line_id') and vals.get('date'):
+                self._check_partial_approval_lock(
+                    Line.browse(vals['line_id']),
+                    fields.Date.to_date(vals['date']))
+        return super().create(vals_list)
+
+    def write(self, vals):
+        for day in self:
+            self._check_partial_approval_lock(day.line_id, day.date)
+            if 'date' in vals or 'line_id' in vals:
+                self._check_partial_approval_lock(
+                    self.env['hr.timesheet.line'].browse(
+                        vals.get('line_id', day.line_id.id)),
+                    fields.Date.to_date(vals.get('date', day.date)))
+        return super().write(vals)
+
+    def unlink(self):
+        for day in self:
+            self._check_partial_approval_lock(day.line_id, day.date)
+        return super().unlink()

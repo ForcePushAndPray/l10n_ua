@@ -24,7 +24,16 @@
                             <field name="employee_id" readonly="state != 'draft'"/>
                             <field name="department_id"/>
                             <field name="date" readonly="state != 'draft'"/>
-                            <field name="wage_percent" readonly="state != 'draft'"/>
+                            <field name="calculation_method" readonly="1"
+                                   invisible="calculation_method == 'percent'"/>
+                            <field name="wage_percent" readonly="state != 'draft'"
+                                   invisible="calculation_method != 'percent'"/>
+                            <field name="worked_hours"
+                                   invisible="calculation_method != 'worked_days'"/>
+                            <field name="norm_hours"
+                                   invisible="calculation_method != 'worked_days'"/>
+                            <field name="hourly_rate"
+                                   invisible="calculation_method != 'worked_days'"/>
                             <field name="currency_id" invisible="1"/>
                             <field name="company_id" groups="base.group_multi_company"/>
                         </group>

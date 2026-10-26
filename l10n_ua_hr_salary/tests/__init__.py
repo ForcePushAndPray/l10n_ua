@@ -24,3 +24,4 @@ from . import test_salary_currency
 from . import test_advance_currency
 from . import test_absence_pay
 from . import test_generated_timesheet
+from . import test_advance_worked_days

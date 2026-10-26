@@ -2,6 +2,7 @@ import logging
 
 from odoo import models, fields, api, _
 from odoo.exceptions import UserError
+from odoo.tools import format_date
 from dateutil.relativedelta import relativedelta
 from odoo.addons.l10n_ua_account_base.tools.formatters import MONTHS_UA
 
@@ -39,6 +40,34 @@ class HrSalaryAdvanceRun(models.Model):
         default=50.0,
         tracking=True,
     )
+    calculation_method = fields.Selection([
+        ('percent', 'Wage Percentage'),
+        ('worked_days', 'Based on Actual Days Worked'),
+    ], string='Calculation Method', default='percent', required=True,
+        tracking=True,
+        help='Wage Percentage: the percentage of the wage. Based on Actual '
+             'Days Worked: the hours of the timesheet from the 1st of the '
+             'month to the payment date, at the hourly rate of the employee. '
+             'The timesheet must be approved, at least partially, up to the '
+             'payment date.')
+    date_warning = fields.Char(compute='_compute_date_warning')
+
+    @api.depends('date', 'company_id', 'calculation_method')
+    def _compute_date_warning(self):
+        for run in self:
+            warnings = []
+            if run.date and run.company_id:
+                if run.date not in run.company_id._l10n_ua_working_dates(
+                        run.date, run.date):
+                    warnings.append(_(
+                        'The payment date is not a working day: wages due on '
+                        'a day off are paid on the working day before it.'))
+                if run.calculation_method == 'worked_days' and run.date.day > 15:
+                    warnings.append(_(
+                        'The advance period runs from the 1st of the month to '
+                        'the payment date and is longer than the first half '
+                        'of the month (15 calendar days).'))
+            run.date_warning = ' '.join(warnings)
 
     @api.depends('advance_ids')
     def _compute_advance_count(self):
@@ -62,6 +91,12 @@ class HrSalaryAdvanceRun(models.Model):
 
     def write(self, vals):
         result = super().write(vals)
+        if 'calculation_method' in vals:
+            # The drafts are recomputed by the new method: the hours of the
+            # timesheet are read only when the advances are generated.
+            for run in self.filtered(lambda r: r.state == 'draft'):
+                if run.advance_ids.filtered(lambda a: a.state == 'draft'):
+                    run.action_generate_advances()
         if 'wage_percent' in vals:
             for run in self:
                 draft_advances = run.advance_ids.filtered(lambda a: a.state == 'draft')
@@ -97,6 +132,9 @@ class HrSalaryAdvanceRun(models.Model):
             ('company_id', '=', self.company_id.id),
             ('version_ids.contract_date_start', '!=', False),
         ])
+        if self.calculation_method == 'worked_days':
+            return self._generate_worked_days_advances(employees.filtered(
+                lambda e: e.id not in existing_employee_ids))
         # Працівник із валютним окладом без курсу зриває перерахунок винятком.
         # У пакеті це означало б, що через одну незаповнену дату в довіднику
         # без авансу лишається вся установа. Тому такого пропускаємо, але
@@ -122,28 +160,181 @@ class HrSalaryAdvanceRun(models.Model):
                 'wage_percent': self.wage_percent,
             })
 
+        return self._skipped_notification(skipped)
+
+    def _skipped_notification(self, skipped, piece=()):
+        """The warning about the employees left without an advance, or True.
+
+        `skipped` are those without the rate of the currency of their wage,
+        `piece` those paid by piece work, whose advance is not computed from
+        the hours of the timesheet.
+        """
+        messages = []
         if skipped:
             _logger.warning(
                 'Аванс %s: пропущено %s працівник(ів) без курсу валюти окладу '
                 'на %s: %s', self.name, len(skipped),
                 fields.Date.to_string(self.date), ', '.join(skipped))
-            return {
-                'type': 'ir.actions.client',
-                'tag': 'display_notification',
-                'params': {
-                    'title': _('Аванс нараховано частково'),
-                    'message': _(
-                        'Без авансу лишились %(count)s працівник(ів): курс '
-                        'валюти їхнього окладу на %(date)s не заданий. '
-                        'Внесіть курс і повторіть нарахування. %(names)s',
-                        count=len(skipped),
-                        date=fields.Date.to_string(self.date),
-                        names=', '.join(skipped)),
-                    'type': 'warning',
-                    'sticky': True,
-                },
-            }
-        return True
+            messages.append(_(
+                'Без авансу лишились %(count)s працівник(ів): курс '
+                'валюти їхнього окладу на %(date)s не заданий. '
+                'Внесіть курс і повторіть нарахування. %(names)s',
+                count=len(skipped),
+                date=fields.Date.to_string(self.date),
+                names=', '.join(skipped)))
+        if piece:
+            messages.append(_(
+                'No advance for %(count)s piece-rate employee(s): an advance '
+                'based on actual days worked is not computed for piece work. '
+                '%(names)s',
+                count=len(piece), names=', '.join(piece)))
+        if not messages:
+            return True
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Аванс нараховано частково'),
+                'message': ' '.join(messages),
+                'type': 'warning',
+                'sticky': True,
+            },
+        }
+
+    def _early_approved_timesheets(self):
+        """Draft timesheets of the month approved up to a day before the
+        payment date: the days between are not approved, and no advance for
+        them can be computed."""
+        self.ensure_one()
+        return self.env['hr.timesheet'].search([
+            ('company_id', '=', self.company_id.id),
+            ('year', '=', self.date.year),
+            ('month', '=', str(self.date.month)),
+            ('state', '=', 'draft'),
+            ('partial_approval_date', '!=', False),
+            ('partial_approval_date', '<', self.date),
+        ])
+
+    def _approved_timesheet_line(self, employee):
+        """The employee's timesheet line of the month approved up to the
+        payment date: a confirmed or approved sheet, or one partially
+        approved on or after it. The latest sheet, as the payslip reads it."""
+        self.ensure_one()
+        return self.env['hr.timesheet.line'].search([
+            ('employee_id', '=', employee.id),
+            ('timesheet_id.month', '=', str(self.date.month)),
+            ('timesheet_id.year', '=', self.date.year),
+            '|',
+            ('timesheet_id.state', 'in', ['confirmed', 'approved']),
+            ('timesheet_id.partial_approval_date', '>=', self.date),
+        ], limit=1, order='timesheet_id desc')
+
+    def _generate_worked_days_advances(self, employees):
+        """Advances for the hours of the timesheet from the 1st of the month
+        to the payment date.
+
+        The hour is paid at the rate the payslip pays it at: the salary over
+        the norm of the month, or the hourly rate of the tariff grade, never
+        below the minimum hourly wage. Every employee must have a timesheet
+        approved up to the payment date; otherwise nothing is generated, and
+        the error lists every problem at once, so that the next run goes
+        through for everyone.
+        """
+        self.ensure_one()
+        if 'hr.timesheet.line' not in self.env:
+            raise UserError(_(
+                'An advance based on actual days worked is computed from the '
+                'timesheet. Install the attendance sheet module or compute '
+                'the advance as a wage percentage.'))
+        company = self.company_id
+        period_start = self.date.replace(day=1)
+        params = self.env['hr.psp.parameters'].get_parameters(
+            self.date, company.id)
+        min_hourly = params.min_hourly_wage if params else 0.0
+
+        problems = []
+        early = self._early_approved_timesheets()
+        for sheet in early:
+            problems.append(_(
+                '%(sheet)s: partially approved until %(date)s',
+                sheet=sheet.display_name,
+                date=format_date(self.env, sheet.partial_approval_date)))
+        in_early_sheets = early.line_ids.employee_id
+
+        skipped, piece, values = [], [], []
+        period = [period_start + relativedelta(days=n)
+                  for n in range((self.date - period_start).days + 1)]
+        for employee in employees:
+            if not any(employee._l10n_ua_employed_on(day) for day in period):
+                continue
+            version = employee._l10n_ua_version_on(self.date) \
+                or employee.current_version_id
+            if not version:
+                continue
+            salary_form = version.salary_form or 'salary'
+            if salary_form == 'piece':
+                piece.append(employee.name or str(employee.id))
+                continue
+            norm_hours = employee._l10n_ua_month_norm(
+                company, self.date, version)[1]
+            if salary_form == 'hourly':
+                grade = version.tariff_grade_id._l10n_ua_grade_on(self.date) \
+                    if version.tariff_grade_id else version.tariff_grade_id
+                if not grade.hourly_rate:
+                    problems.append(_(
+                        '%(employee)s: tariff grade %(grade)s has no hourly '
+                        'rate in force on %(date)s',
+                        employee=employee.name,
+                        grade=version.tariff_grade_id.display_name or '-',
+                        date=format_date(self.env, self.date)))
+                    continue
+                hourly_rate = max(grade.hourly_rate, min_hourly)
+            else:
+                try:
+                    wage = version._l10n_ua_effective_wage(
+                        self.date, company=company or version.company_id)
+                except UserError:
+                    skipped.append(employee.name or str(employee.id))
+                    continue
+                if not wage or norm_hours <= 0:
+                    continue
+                hourly_rate = wage / norm_hours
+            line = self._approved_timesheet_line(employee)
+            if not line:
+                if employee not in in_early_sheets:
+                    problems.append(_(
+                        '%(employee)s (%(department)s): no timesheet approved '
+                        'up to the payment date',
+                        employee=employee.name,
+                        department=employee.department_id.name or '-'))
+                continue
+            worked_hours = sum(line.day_ids.filtered(
+                lambda d: d.date and period_start <= d.date <= self.date
+            ).mapped('hours'))
+            if worked_hours <= 0:
+                continue
+            values.append({
+                'employee_id': employee.id,
+                'date': self.date,
+                'advance_run_id': self.id,
+                'company_id': company.id,
+                'calculation_method': 'worked_days',
+                'wage_percent': self.wage_percent,
+                'worked_hours': worked_hours,
+                'norm_hours': norm_hours,
+                'hourly_rate': hourly_rate,
+            })
+
+        if problems:
+            raise UserError(_(
+                'The advances cannot be computed for %(date)s: the timesheet '
+                'of every employee must be approved, at least partially, up '
+                'to the payment date. Fix the following and generate the '
+                'advances again:\n%(problems)s',
+                date=format_date(self.env, self.date),
+                problems='\n'.join('- ' + problem for problem in problems)))
+        self.env['hr.salary.advance'].create(values)
+        return self._skipped_notification(skipped, piece)
 
     def action_confirm_all(self):
         self.ensure_one()

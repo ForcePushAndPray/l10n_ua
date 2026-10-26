@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+
+    <record id="hr_timesheet_partial_approval_view_form" model="ir.ui.view">
+        <field name="name">hr.timesheet.partial.approval.form</field>
+        <field name="model">hr.timesheet.partial.approval</field>
+        <field name="arch" type="xml">
+            <form string="Partial Approval">
+                <group>
+                    <field name="timesheet_id"/>
+                    <field name="date"/>
+                </group>
+                <footer>
+                    <button name="action_approve" string="Approve" type="object"
+                            class="btn-primary"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+</odoo>

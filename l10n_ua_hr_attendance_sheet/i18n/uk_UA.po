@@ -67,6 +67,7 @@ msgstr "Іконка типу активності"
 
 #. module: l10n_ua_hr_attendance_sheet
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_attendance_sheet.hr_timesheet_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_attendance_sheet.hr_timesheet_partial_approval_view_form
 msgid "Approve"
 msgstr "Затвердити"
 
@@ -160,6 +161,7 @@ msgstr "Створити виробничий календар на рік"
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_code__create_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_day__create_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_line__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_partial_approval__create_uid
 msgid "Created by"
 msgstr "Створив"
 
@@ -170,6 +172,7 @@ msgstr "Створив"
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_code__create_date
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_day__create_date
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_line__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_partial_approval__create_date
 msgid "Created on"
 msgstr "Створено"
 
@@ -228,6 +231,7 @@ msgstr "Опис"
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_code__display_name
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_day__display_name
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_line__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_partial_approval__display_name
 msgid "Display Name"
 msgstr "Відображувана назва"
 
@@ -313,6 +317,7 @@ msgstr "Години зараховуються як відпрацьовани�
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_code__id
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_day__id
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_line__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_partial_approval__id
 msgid "ID"
 msgstr "ID"
 
@@ -369,6 +374,7 @@ msgstr "Червень"
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_code__write_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_day__write_uid
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_line__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_partial_approval__write_uid
 msgid "Last Updated by"
 msgstr "Оновив"
 
@@ -379,6 +385,7 @@ msgstr "Оновив"
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_code__write_date
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_day__write_date
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_line__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_partial_approval__write_date
 msgid "Last Updated on"
 msgstr "Оновлено"
 
@@ -671,6 +678,7 @@ msgstr "Статус на основі активностей\nПростроч�
 #: model:ir.model,name:l10n_ua_hr_attendance_sheet.model_hr_timesheet
 #: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_line__timesheet_id
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_attendance_sheet.hr_timesheet_view_form
+#: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_partial_approval__timesheet_id
 msgid "Timesheet"
 msgstr "Табель"
 
@@ -860,3 +868,77 @@ msgid ""
 msgstr ""
 "Відпрацьовані години мінус норма. Понаднормові оплачуються лише за наказом "
 "і вносяться в колонку «Понаднормові» вручну."
+
+#. module: l10n_ua_hr_attendance_sheet
+#: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet__partial_approval_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_line__partial_approval_date
+msgid "Partially Approved Until"
+msgstr "Затверджено частково по"
+
+#. module: l10n_ua_hr_attendance_sheet
+#: model:ir.model.fields,help:l10n_ua_hr_attendance_sheet.field_hr_timesheet__partial_approval_date
+#: model:ir.model.fields,help:l10n_ua_hr_attendance_sheet.field_hr_timesheet_line__partial_approval_date
+msgid "The days of the sheet up to this date are approved and locked. Empty when the sheet has no partial approval."
+msgstr "Дні табеля до цієї дати включно затверджені й заблоковані. Порожнє, якщо табель не затверджено частково."
+
+#. module: l10n_ua_hr_attendance_sheet
+#: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet__partial_approval_user_id
+msgid "Partially Approved By"
+msgstr "Хто затвердив частково"
+
+#. module: l10n_ua_hr_attendance_sheet
+#: model:ir.model,name:l10n_ua_hr_attendance_sheet.model_hr_timesheet_partial_approval
+msgid "Timesheet Partial Approval"
+msgstr "Часткове затвердження табеля"
+
+#. module: l10n_ua_hr_attendance_sheet
+#: model:ir.model.fields,field_description:l10n_ua_hr_attendance_sheet.field_hr_timesheet_partial_approval__date
+msgid "Approve Until"
+msgstr "Затвердити по дату"
+
+#. module: l10n_ua_hr_attendance_sheet
+#: model:ir.model.fields,help:l10n_ua_hr_attendance_sheet.field_hr_timesheet_partial_approval__date
+msgid "The days of the timesheet from the 1st of the month up to this date, inclusive, are approved and locked."
+msgstr "Дні табеля з 1 числа місяця до цієї дати включно затверджуються й блокуються."
+
+#. module: l10n_ua_hr_attendance_sheet
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_attendance_sheet.hr_timesheet_view_form
+msgid "Partially Approve"
+msgstr "Затвердити частково"
+
+#. module: l10n_ua_hr_attendance_sheet
+#. odoo-python
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_attendance_sheet.hr_timesheet_partial_approval_view_form
+#: code:addons/l10n_ua_hr_attendance_sheet/models/hr_timesheet.py:0
+msgid "Partial Approval"
+msgstr "Часткове затвердження"
+
+#. module: l10n_ua_hr_attendance_sheet
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_attendance_sheet.hr_timesheet_partial_approval_view_form
+msgid "Cancel"
+msgstr "Скасувати"
+
+#. module: l10n_ua_hr_attendance_sheet
+#. odoo-python
+#: code:addons/l10n_ua_hr_attendance_sheet/models/hr_timesheet.py:0
+msgid "Timesheet \"%(sheet)s\" is partially approved until %(date)s. Set it back to draft first."
+msgstr "Табель «%(sheet)s» затверджено частково по %(date)s. Спершу поверніть його в чернетку."
+
+#. module: l10n_ua_hr_attendance_sheet
+#. odoo-python
+#: code:addons/l10n_ua_hr_attendance_sheet/models/hr_timesheet.py:0
+#: code:addons/l10n_ua_hr_attendance_sheet/wizard/hr_timesheet_partial_approval.py:0
+msgid "Only a draft timesheet without a partial approval can be partially approved."
+msgstr "Затвердити частково можна лише табель у чернетці без часткового затвердження."
+
+#. module: l10n_ua_hr_attendance_sheet
+#. odoo-python
+#: code:addons/l10n_ua_hr_attendance_sheet/models/hr_timesheet.py:0
+msgid "The days of timesheet \"%(sheet)s\" up to %(date)s are partially approved and cannot be changed. Set the timesheet back to draft first."
+msgstr "Дні табеля «%(sheet)s» до %(date)s включно затверджено частково, їх не можна змінювати. Спершу поверніть табель у чернетку."
+
+#. module: l10n_ua_hr_attendance_sheet
+#. odoo-python
+#: code:addons/l10n_ua_hr_attendance_sheet/wizard/hr_timesheet_partial_approval.py:0
+msgid "The approval date must be within the month of the timesheet: from %(date_from)s to %(date_to)s."
+msgstr "Дата затвердження має бути в межах місяця табеля: з %(date_from)s по %(date_to)s."

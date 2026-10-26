@@ -683,26 +683,11 @@ class HrPayslip(models.Model):
     def _l10n_ua_month_norm(self):
         """The working time norm of the month of the period end: (days, hours).
 
-        The norm of the month itself: an absence, a hire in the middle of the
-        month, a part-time rate or a shift schedule does not shorten it. Each
-        day is read the way the
-        timesheet generator reads it: from the production calendar when the
-        company keeps one for the year and has the day in it, otherwise
-        Monday to Friday. The calendar is optional on purpose — under martial
-        law public holidays are working days, and an empty calendar is a
-        valid setup, not a missing one.
-
-        The hours of a day are those of a full-time day of the company's
-        working schedule, 8 when it has none — or of the employee's schedule
-        on a reduced working time, which is their whole norm.
+        Read by the employee's rule, the one the advance reads it by too.
         """
         self.ensure_one()
-        month_start = self.date_to.replace(day=1)
-        working = self.company_id._l10n_ua_working_dates(
-            month_start, month_start + relativedelta(months=1, days=-1))
-        return len(working), sum(
-            self._version_on(day)._l10n_ua_norm_hours(hours)
-            for day, hours in working.items())
+        return self.employee_id._l10n_ua_month_norm(
+            self.company_id, self.date_to, self.version_id)
 
     def _timesheet_line(self):
         """The confirmed timesheet line of this employee for the month.

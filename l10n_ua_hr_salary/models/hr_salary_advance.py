@@ -26,6 +26,26 @@ class HrSalaryAdvance(models.Model):
         default=50.0, 
         tracking=True,
     )
+    calculation_method = fields.Selection([
+        ('percent', 'Wage Percentage'),
+        ('worked_days', 'Based on Actual Days Worked'),
+    ], string='Calculation Method', default='percent', required=True,
+        tracking=True,
+        help='Wage Percentage: the percentage of the wage. Based on Actual '
+             'Days Worked: the hours of the timesheet from the 1st of the '
+             'month to the payment date, at the hourly rate of the employee.')
+    worked_hours = fields.Float(
+        string='Hours Worked', readonly=True, copy=False,
+        help='Hours of the timesheet from the 1st of the month to the payment '
+             'date, as the advance batch read them.')
+    norm_hours = fields.Float(
+        string='Norm Hours of the Month', readonly=True, copy=False,
+        help='The working time norm of the month the hourly rate of a salary '
+             'is taken over.')
+    hourly_rate = fields.Float(
+        string='Hourly Rate', readonly=True, copy=False, digits=(16, 4),
+        help='The rate an hour worked is paid at: the salary over the norm of '
+             'the month, or the hourly rate of the tariff grade.')
     gross_amount = fields.Monetary(
         string='Gross',
         compute='_compute_gross_amount', store=True,
@@ -92,11 +112,19 @@ class HrSalaryAdvance(models.Model):
     # regenerates them, and confirmed ones must not change retroactively.
     @api.depends(
         'employee_id', 'wage_percent', 'date',
+        'calculation_method', 'worked_hours', 'hourly_rate',
         'employee_id.current_version_id.wage',
         'employee_id.current_version_id.salary_currency_id',
     )
     def _compute_gross_amount(self):
         for advance in self:
+            if advance.calculation_method == 'worked_days':
+                # The hours and the rate are the batch's snapshot of the
+                # timesheet: a confirmed advance must not follow a sheet that
+                # is reopened later.
+                advance.gross_amount = round(
+                    advance.hourly_rate * advance.worked_hours, 2)
+                continue
             wage = 0.0
             if advance.employee_id:
                 version = advance.employee_id.current_version_id

@@ -8,13 +8,16 @@
             <form string="Timesheet">
                 <header>
                     <button name="action_generate_lines" string="Generate Lines" type="object"
-                            class="btn-primary" invisible="state != 'draft'"/>
+                            class="btn-primary"
+                            invisible="state != 'draft' or partial_approval_date"/>
+                    <button name="action_partial_approve" string="Partially Approve" type="object"
+                            invisible="state != 'draft' or partial_approval_date"/>
                     <button name="action_confirm" string="Confirm" type="object"
                             invisible="state != 'draft'"/>
                     <button name="action_approve" string="Approve" type="object"
                             class="btn-primary" invisible="state != 'confirmed'"/>
                     <button name="action_draft" string="Set to Draft" type="object"
-                            invisible="state == 'draft'"/>
+                            invisible="state == 'draft' and not partial_approval_date"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,approved"/>
                 </header>
                 <sheet>
@@ -42,6 +45,10 @@
                             <field name="total_employees"/>
                             <field name="total_worked_days"/>
                             <field name="total_worked_hours"/>
+                        </group>
+                        <group invisible="not partial_approval_date">
+                            <field name="partial_approval_date"/>
+                            <field name="partial_approval_user_id"/>
                         </group>
                     </group>
                     <notebook>
@@ -119,16 +126,24 @@
                     </group>
                     <notebook>
                         <page string="Days" name="days">
+                            <field name="partial_approval_date" invisible="1"/>
                             <field name="day_ids">
                                 <list editable="bottom">
-                                    <field name="day_number"/>
-                                    <field name="date"/>
-                                    <field name="code_id"/>
-                                    <field name="hours"/>
+                                    <field name="day_number"
+                                           readonly="parent.partial_approval_date and date and date &lt;= parent.partial_approval_date"/>
+                                    <field name="date"
+                                           readonly="parent.partial_approval_date and date and date &lt;= parent.partial_approval_date"/>
+                                    <field name="code_id"
+                                           readonly="parent.partial_approval_date and date and date &lt;= parent.partial_approval_date"/>
+                                    <field name="hours"
+                                           readonly="parent.partial_approval_date and date and date &lt;= parent.partial_approval_date"/>
                                     <field name="norm_hours"/>
-                                    <field name="overtime_hours"/>
-                                    <field name="night_hours"/>
-                                    <field name="notes"/>
+                                    <field name="overtime_hours"
+                                           readonly="parent.partial_approval_date and date and date &lt;= parent.partial_approval_date"/>
+                                    <field name="night_hours"
+                                           readonly="parent.partial_approval_date and date and date &lt;= parent.partial_approval_date"/>
+                                    <field name="notes"
+                                           readonly="parent.partial_approval_date and date and date &lt;= parent.partial_approval_date"/>
                                 </list>
                             </field>
                         </page>

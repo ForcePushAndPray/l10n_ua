@@ -312,6 +312,8 @@ msgstr "Розрахунок"
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_accrual_type__calculation_method
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_deduction_type__calculation_method
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_execution_document__calculation_method
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__calculation_method
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance_run__calculation_method
 msgid "Calculation Method"
 msgstr "Метод розрахунку"
 
@@ -935,6 +937,7 @@ msgstr "Множник святкових"
 
 #. module: l10n_ua_hr_salary
 #: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_accrual_type__calculation_method__hourly
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__hourly_rate
 msgid "Hourly Rate"
 msgstr "Погодинна ставка"
 
@@ -2167,6 +2170,8 @@ msgstr "Перевірити"
 #. module: l10n_ua_hr_salary
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__wage_percent
 #: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance_run__wage_percent
+#: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_salary_advance__calculation_method__percent
+#: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_salary_advance_run__calculation_method__percent
 msgid "Wage Percentage"
 msgstr "Відсоток від окладу"
 
@@ -3592,3 +3597,97 @@ msgstr ""
 "нарахування доходу: типово — за основним місцем роботи, а на сумісництві — "
 "ні. За цивільно-правовими, гіг- та авторськими договорами пільга не "
 "застосовується ніколи."
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_salary_advance__calculation_method__worked_days
+#: model:ir.model.fields.selection,name:l10n_ua_hr_salary.selection__hr_salary_advance_run__calculation_method__worked_days
+msgid "Based on Actual Days Worked"
+msgstr "Згідно фактично відпрацьованих днів"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,help:l10n_ua_hr_salary.field_hr_salary_advance__calculation_method
+msgid "Wage Percentage: the percentage of the wage. Based on Actual Days Worked: the hours of the timesheet from the 1st of the month to the payment date, at the hourly rate of the employee."
+msgstr "Відсоток від окладу: відсоток окладу. Згідно фактично відпрацьованих днів: години табеля з 1 числа місяця по дату виплати за годинною ставкою працівника."
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,help:l10n_ua_hr_salary.field_hr_salary_advance_run__calculation_method
+msgid "Wage Percentage: the percentage of the wage. Based on Actual Days Worked: the hours of the timesheet from the 1st of the month to the payment date, at the hourly rate of the employee. The timesheet must be approved, at least partially, up to the payment date."
+msgstr "Відсоток від окладу: відсоток окладу. Згідно фактично відпрацьованих днів: години табеля з 1 числа місяця по дату виплати за годинною ставкою працівника. Табель має бути затверджений, хоча б частково, щонайменше по дату виплати."
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__worked_hours
+msgid "Hours Worked"
+msgstr "Відпрацьовано годин"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,help:l10n_ua_hr_salary.field_hr_salary_advance__worked_hours
+msgid "Hours of the timesheet from the 1st of the month to the payment date, as the advance batch read them."
+msgstr "Години табеля з 1 числа місяця по дату виплати, як їх прочитав пакет авансів."
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance__norm_hours
+msgid "Norm Hours of the Month"
+msgstr "Норма годин місяця"
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,help:l10n_ua_hr_salary.field_hr_salary_advance__norm_hours
+msgid "The working time norm of the month the hourly rate of a salary is taken over."
+msgstr "Норма робочого часу місяця, за якою з окладу визначається годинна ставка."
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,help:l10n_ua_hr_salary.field_hr_salary_advance__hourly_rate
+msgid "The rate an hour worked is paid at: the salary over the norm of the month, or the hourly rate of the tariff grade."
+msgstr "Ставка оплати відпрацьованої години: оклад, поділений на норму годин місяця, або годинна ставка тарифного розряду."
+
+#. module: l10n_ua_hr_salary
+#: model:ir.model.fields,field_description:l10n_ua_hr_salary.field_hr_salary_advance_run__date_warning
+msgid "Date Warning"
+msgstr "Попередження щодо дати"
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_salary_advance_run.py:0
+msgid "The payment date is not a working day: wages due on a day off are paid on the working day before it."
+msgstr "Дата виплати не є робочим днем: якщо день виплати припадає на вихідний, святковий або неробочий день, зарплату виплачують напередодні."
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_salary_advance_run.py:0
+msgid "The advance period runs from the 1st of the month to the payment date and is longer than the first half of the month (15 calendar days)."
+msgstr "Період авансу — з 1 числа місяця по дату виплати, і він довший за першу половину місяця (15 календарних днів)."
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_salary_advance_run.py:0
+msgid "No advance for %(count)s piece-rate employee(s): an advance based on actual days worked is not computed for piece work. %(names)s"
+msgstr "Без авансу лишились %(count)s працівник(ів) на відрядній оплаті: аванс згідно фактично відпрацьованих днів для відрядної оплати не рахується. %(names)s"
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_salary_advance_run.py:0
+msgid "%(sheet)s: partially approved until %(date)s"
+msgstr "%(sheet)s: затверджено частково лише по %(date)s"
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_salary_advance_run.py:0
+msgid "%(employee)s: tariff grade %(grade)s has no hourly rate in force on %(date)s"
+msgstr "%(employee)s: тарифний розряд %(grade)s не має годинної ставки, чинної на %(date)s"
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_salary_advance_run.py:0
+msgid "%(employee)s (%(department)s): no timesheet approved up to the payment date"
+msgstr "%(employee)s (%(department)s): немає табеля, затвердженого щонайменше по дату виплати"
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_salary_advance_run.py:0
+msgid "An advance based on actual days worked is computed from the timesheet. Install the attendance sheet module or compute the advance as a wage percentage."
+msgstr "Аванс згідно фактично відпрацьованих днів рахується за табелем. Встановіть модуль табеля обліку робочого часу або рахуйте аванс відсотком від окладу."
+
+#. module: l10n_ua_hr_salary
+#. odoo-python
+#: code:addons/l10n_ua_hr_salary/models/hr_salary_advance_run.py:0
+msgid "The advances cannot be computed for %(date)s: the timesheet of every employee must be approved, at least partially, up to the payment date. Fix the following and generate the advances again:\n%(problems)s"
+msgstr "Аванс на %(date)s не можна розрахувати: табель кожного працівника має бути затверджений, хоча б частково, щонайменше по дату виплати. Виправте наведене нижче й повторіть нарахування:\n%(problems)s"
