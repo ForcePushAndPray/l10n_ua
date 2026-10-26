@@ -25,7 +25,7 @@
                     </div>
                     <group>
                         <group>
-                            <field name="year"/>
+                            <field name="year" options="{'enable_formatting': false}"/>
                             <field name="month"/>
                             <field name="department_id"
                                    domain="['|', ('company_id', '=', False), ('company_id', '=', company_id)]"/>
@@ -81,7 +81,7 @@
         <field name="arch" type="xml">
             <list string="Timesheets">
                 <field name="name"/>
-                <field name="year"/>
+                <field name="year" options="{'enable_formatting': false}"/>
                 <field name="month"/>
                 <field name="department_id"/>
                 <field name="total_employees"/>

@@ -97,12 +97,12 @@ class HrSickLeave(models.Model):
     )
     
     fss_days = fields.Integer(
-        string='FSS Days',
+        string='PFU Days',
         compute='_compute_fss_days',
         store=True
     )
     fss_amount = fields.Float(
-        string='FSS Amount',
+        string='PFU Amount',
         compute='_compute_amounts',
         store=True,
         digits=(16, 2)

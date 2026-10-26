@@ -38,7 +38,7 @@
                     </div>
                     <group>
                         <group string="Основне">
-                            <field name="year" readonly="state != 'draft'"/>
+                            <field name="year" options="{'enable_formatting': false}" readonly="state != 'draft'"/>
                             <field name="period" readonly="state != 'draft'"/>
                             <field name="rate" readonly="state != 'draft'"/>
                             <field name="company_id" readonly="state != 'draft'"

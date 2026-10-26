@@ -5,6 +5,13 @@ from odoo.exceptions import ValidationError
 from dateutil.relativedelta import relativedelta
 
 
+
+# Назви місяців для назви табеля («Табель за жовтень 2026 — …»)
+MONTHS_UK = {
+    '1': 'січень', '2': 'лютий', '3': 'березень', '4': 'квітень', '5': 'травень', '6': 'червень',
+    '7': 'липень', '8': 'серпень', '9': 'вересень', '10': 'жовтень', '11': 'листопад', '12': 'грудень',
+}
+
 class HrTimesheet(models.Model):
     _name = 'hr.timesheet'
     _description = 'Timesheet'
@@ -85,10 +92,9 @@ class HrTimesheet(models.Model):
 
     @api.depends('year', 'month', 'department_id')
     def _compute_name(self):
-        month_names = dict(self._fields['month'].selection)
         for rec in self:
-            dept = rec.department_id.name if rec.department_id else 'All'
-            rec.name = f'Табель {month_names.get(rec.month, "")} {rec.year} - {dept}'
+            dept = rec.department_id.name if rec.department_id else 'усі підрозділи'
+            rec.name = f'Табель за {MONTHS_UK.get(rec.month, "")} {rec.year} — {dept}'
 
     @api.depends('line_ids.worked_days', 'line_ids.worked_hours')
     def _compute_totals(self):

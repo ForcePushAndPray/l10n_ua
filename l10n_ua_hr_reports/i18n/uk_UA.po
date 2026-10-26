@@ -16,9 +16,44 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.actions.report,print_report_name:l10n_ua_hr_reports.action_report_hr_report_labor
+msgid "'1-PV_%s' % (object.period_key or '')"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid "(квартальна)"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid "(місячна)"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__citizenship__0
+msgid "0 - Foreigner or stateless person"
+msgstr "0 - Іноземець або особа без громадянства"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__citizenship__1
+msgid "1 - Citizen of Ukraine"
+msgstr "1 - Громадянин України"
+
+#. module: l10n_ua_hr_reports
 #: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5_line__category__1
 msgid "1 - Employee"
 msgstr "1 - Працівник"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__person_category__1
+msgid "1 - Employee (main place of work)"
+msgstr "1 - Найманий працівник (основне місце роботи)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_accrual_type__l10n_ua_1pv_group
+msgid "1-PV Wage Fund Row"
+msgstr "Рядок ФОП у 1-ПВ"
 
 #. module: l10n_ua_hr_reports
 #: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__report_type__1df
@@ -43,6 +78,11 @@ msgid "1DF Reports"
 msgstr "Звіти 1ДФ"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.ui.menu,name:l10n_ua_hr_reports.menu_hr_report_1df_reporting
+msgid "1DF Tax Calculation"
+msgstr "Податковий розрахунок 1ДФ"
+
+#. module: l10n_ua_hr_reports
 #: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_1df
 msgid "1DF Tax Report"
 msgstr "Податковий звіт 1ДФ"
@@ -58,14 +98,108 @@ msgid "2 - Civil Contract"
 msgstr "2 - Цивільно-правовий договір"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__person_category__2
+msgid "2 - Employee (concurrent employment)"
+msgstr "2 - Працівник за сумісництвом"
+
+#. module: l10n_ua_hr_reports
 #: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5_line__category__3
 msgid "3 - Disabled"
 msgstr "3 - Інвалід"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__person_category__3
+msgid "3 - Gig specialist (Diia.City gig contract)"
+msgstr "3 - Гіг-спеціаліст (гіг-контракт Дія Сіті)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__person_category__4
+msgid "4 - Civil law contract"
+msgstr "4 - Особа за цивільно-правовим договором"
+
+#. module: l10n_ua_hr_reports
 #: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5_line__category__4
 msgid "4 - Maternity"
 msgstr "4 - Декретна відпустка"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__person_category__5
+msgid "5 - Domestic worker"
+msgstr "5 - Домашній працівник"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid ""
+"<br/>\n"
+"                                    ЗАТВЕРДЖЕНО<br/>\n"
+"                                    Наказ Держстату<br/>\n"
+"                                    15 квітня 2024 р. № 117"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid "<strong style=\"font-size: 12pt;\">ЗВІТ ІЗ ПРАЦІ</strong><br/>"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid "<strong>Пояснення до розділу І</strong>"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid "<strong>№ 1-ПВ</strong><br/>"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.constraint,message:l10n_ua_hr_reports.constraint_hr_report_labor_period_company_uniq
+msgid "A 1-PV report for this period already exists!"
+msgstr "Звіт 1-ПВ за цей період уже існує!"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "A hire notice is created from a hiring order with an employee."
+msgstr ""
+"Повідомлення про прийняття створюється з наказу про прийняття, у якому "
+"вказано працівника."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.constraint,message:l10n_ua_hr_reports.constraint_hr_report_labor_line_report_cell_uniq
+msgid "A row of the 1-PV report can only appear once!"
+msgstr "Рядок звіту 1-ПВ може бути лише один!"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "A sent notice cannot be regenerated."
+msgstr "Подане повідомлення не можна сформувати повторно."
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid ""
+"A sent notice cannot be reset to draft; file a cancelling notice instead."
+msgstr ""
+"Подане повідомлення не можна повернути в чернетку — подайте скасовуюче "
+"повідомлення."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__state__accepted
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
+msgid "Accepted"
+msgstr "Прийнято"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__accrual_summary_ids
+msgid "Accrual Summary"
+msgstr "Зведення нарахувань"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model,name:l10n_ua_hr_reports.model_hr_accrual_type
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__accrual_type_id
+msgid "Accrual Type"
+msgstr "Вид нарахування"
 
 #. module: l10n_ua_hr_reports
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__accrued_amount
@@ -83,1282 +217,54 @@ msgid "Accrued and Paid"
 msgstr "Нараховано та виплачено"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__message_needaction
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_needaction
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_needaction
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_needaction
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_needaction
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_needaction
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_needaction
 msgid "Action Needed"
 msgstr "Потрібна дія"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__activity_ids
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__activity_ids
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__activity_ids
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__activity_ids
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_ids
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__activity_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_ids
 msgid "Activities"
 msgstr "Активності"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__activity_exception_decoration
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__activity_exception_decoration
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__activity_exception_decoration
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__activity_exception_decoration
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_exception_decoration
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__activity_exception_decoration
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_exception_decoration
 msgid "Activity Exception Decoration"
 msgstr "Оформлення виключення активності"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__activity_state
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__activity_state
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__activity_state
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__activity_state
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_state
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__activity_state
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_state
 msgid "Activity State"
 msgstr "Стан активності"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__activity_type_icon
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__activity_type_icon
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__activity_type_icon
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__activity_type_icon
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_type_icon
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__activity_type_icon
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_type_icon
 msgid "Activity Type Icon"
 msgstr "Іконка типу активності"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__4
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__4
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__4
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__4
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__4
-msgid "April"
-msgstr "Квітень"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_attachment_count
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_attachment_count
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_attachment_count
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_attachment_count
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_attachment_count
-msgid "Attachment Count"
-msgstr "Кількість вкладень"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__8
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__8
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__8
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__8
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__8
-msgid "August"
-msgstr "Серпень"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__report_type__headcount
-#: model:ir.ui.menu,name:l10n_ua_hr_reports.menu_hr_report_headcount
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_search
-msgid "Average Headcount"
-msgstr "Середньооблікова чисельність"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wizard_view_form
-msgid "Cancel"
-msgstr "Скасувати"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__category
-msgid "Category"
-msgstr "Категорія"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__company_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__company_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__company_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__company_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__company_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__company_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__company_id
-msgid "Company"
-msgstr "Компанія"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_report_1df
-msgid "Create a 1DF quarterly tax report"
-msgstr "Створити квартальний податковий звіт 1ДФ"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_report_d5
-msgid "Create a D5 monthly ESV report"
-msgstr "Створити місячний звіт ЄСВ Д5"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__create_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__create_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__create_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__create_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__create_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__create_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__create_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__create_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__create_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__create_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__create_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__create_uid
-msgid "Created by"
-msgstr "Створив"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__create_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__create_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__create_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__create_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__create_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__create_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__create_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__create_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__create_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__create_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__create_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__create_date
-msgid "Created on"
-msgstr "Створено"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_form
-msgid "D1 Appendix (Employees)"
-msgstr "Додаток Д1 (Працівники)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__report_type__d5
-msgid "D5 (ESV Monthly Report)"
-msgstr "Д5 (Місячний звіт ЄСВ)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_d5
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_form
-msgid "D5 ESV Report"
-msgstr "Звіт ЄСВ Д5"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.actions.act_window,name:l10n_ua_hr_reports.action_hr_report_d5
-#: model:ir.ui.menu,name:l10n_ua_hr_reports.menu_hr_report_d5
-msgid "D5 ESV Reports"
-msgstr "Звіти ЄСВ Д5"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_d5_line
-msgid "D5 Report Line (D1 Appendix)"
-msgstr "Рядок звіту Д5 (Додаток Д1)"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_tree
-msgid "D5 Reports"
-msgstr "Звіти Д5"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.constraint,message:l10n_ua_hr_reports.constraint_hr_report_d5_unique_year_month_company_id
-msgid "D5 report for this period already exists!"
-msgstr "Звіт Д5 за цей період вже існує!"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__date_from
-msgid "Date From"
-msgstr "Дата з"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__date_to
-msgid "Date To"
-msgstr "Дата по"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__12
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__12
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__12
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__12
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__12
-msgid "December"
-msgstr "Грудень"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__display_name
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__display_name
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__display_name
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__display_name
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__display_name
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__display_name
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__display_name
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__display_name
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__display_name
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__display_name
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_accrual_type__display_name
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__display_name
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__display_name
-msgid "Display Name"
-msgstr "Відображувана назва"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_1df__state__draft
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__state__draft
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__state__draft
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__state__draft
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__state__draft
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_search
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_search
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_search
-msgid "Draft"
-msgstr "Чернетка"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__esv_amount
-msgid "ESV Amount"
-msgstr "Сума ЄСВ"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__esv_base
-msgid "ESV Base"
-msgstr "База ЄСВ"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__employee_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__employee_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__employee_id
-msgid "Employee"
-msgstr "Працівник"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_1df_view_form
-msgid "Employees"
-msgstr "Працівники"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__end_date
-msgid "End Date"
-msgstr "Дата закінчення"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_form
-msgid "Export XML"
-msgstr "Експорт XML"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__2
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__2
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__2
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__2
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__2
-msgid "February"
-msgstr "Лютий"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__first_name
-msgid "First Name"
-msgstr "Ім'я"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_follower_ids
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_follower_ids
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_follower_ids
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_follower_ids
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_follower_ids
-msgid "Followers"
-msgstr "Підписники"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_partner_ids
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_partner_ids
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_partner_ids
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_partner_ids
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_partner_ids
-msgid "Followers (Partners)"
-msgstr "Підписники (Партнери)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__activity_type_icon
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__activity_type_icon
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__activity_type_icon
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_type_icon
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__activity_type_icon
-msgid "Font awesome icon e.g. fa-tasks"
-msgstr "Іконка Font Awesome, напр. fa-tasks"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_1df_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wizard_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
-msgid "Generate"
-msgstr "Згенерувати"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.actions.act_window,name:l10n_ua_hr_reports.action_hr_report_wizard
-#: model:ir.ui.menu,name:l10n_ua_hr_reports.menu_hr_report_wizard
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wizard_view_form
-msgid "Generate Report"
-msgstr "Згенерувати звіт"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_1df__state__generated
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__state__generated
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__state__generated
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__state__generated
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_search
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_search
-msgid "Generated"
-msgstr "Згенеровано"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_wizard
-msgid "HR Report Wizard"
-msgstr "Майстер звітів HR"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__has_message
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__has_message
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__has_message
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__has_message
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__has_message
-msgid "Has Message"
-msgstr "Є повідомлення"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__date_hire
-msgid "Hire Date"
-msgstr "Дата прийняття"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_accrual_type__id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__id
-msgid "ID"
-msgstr "ID"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__activity_exception_icon
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__activity_exception_icon
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__activity_exception_icon
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_exception_icon
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__activity_exception_icon
-msgid "Icon"
-msgstr "Іконка"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__activity_exception_icon
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__activity_exception_icon
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__activity_exception_icon
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_exception_icon
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__activity_exception_icon
-msgid "Icon to indicate an exception activity."
-msgstr "Іконка для позначення виключної активності."
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__message_needaction
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__message_needaction
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__message_needaction
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__message_needaction
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__message_needaction
-msgid "If checked, new messages require your attention."
-msgstr "Якщо позначено, нові повідомлення потребують вашої уваги."
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__message_has_error
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__message_has_sms_error
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__message_has_error
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__message_has_sms_error
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__message_has_error
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__message_has_sms_error
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__message_has_error
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__message_has_sms_error
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__message_has_error
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__message_has_sms_error
-msgid "If checked, some messages have a delivery error."
-msgstr "Якщо позначено, деякі повідомлення мають помилку доставки."
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__income_sign
-msgid "Income Sign"
-msgstr "Ознака доходу"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__income_type
-msgid "Income Type"
-msgstr "Тип доходу"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df_line__income_type
-msgid "Income type code for 1DF"
-msgstr "Код типу доходу для 1ДФ"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_is_follower
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_is_follower
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_is_follower
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_is_follower
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_is_follower
-msgid "Is Follower"
-msgstr "Є підписником"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__1
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__1
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__1
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__1
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__1
-msgid "January"
-msgstr "Січень"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__7
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__7
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__7
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__7
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__7
-msgid "July"
-msgstr "Липень"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__6
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__6
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__6
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__6
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__6
-msgid "June"
-msgstr "Червень"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__last_name
-msgid "Last Name"
-msgstr "Прізвище"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__write_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__write_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__write_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__write_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__write_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__write_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__write_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__write_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__write_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__write_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__write_uid
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__write_uid
-msgid "Last Updated by"
-msgstr "Оновив"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__write_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__write_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__write_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__write_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__write_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__write_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__write_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__write_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__write_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__write_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__write_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__write_date
-msgid "Last Updated on"
-msgstr "Оновлено"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__3
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__3
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__3
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__3
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__3
-msgid "March"
-msgstr "Березень"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_1df_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_form
-msgid "Mark as Submitted"
-msgstr "Позначити як подано"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__5
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__5
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__5
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__5
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__5
-msgid "May"
-msgstr "Травень"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_has_error
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_has_error
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_has_error
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_has_error
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_has_error
-msgid "Message Delivery error"
-msgstr "Помилка доставки повідомлення"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_ids
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_ids
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_ids
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_ids
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_ids
-msgid "Messages"
-msgstr "Повідомлення"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__middle_name
-msgid "Middle Name"
-msgstr "По батькові"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__military_amount
-msgid "Military Tax Amount"
-msgstr "Сума військового збору"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__month
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__month
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__month
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__month
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__month
-msgid "Month"
-msgstr "Місяць"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__my_activity_date_deadline
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__my_activity_date_deadline
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__my_activity_date_deadline
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__my_activity_date_deadline
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__my_activity_date_deadline
-msgid "My Activity Deadline"
-msgstr "Термін моєї активності"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__name
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__name
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__name
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__name
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__name
-msgid "Name"
-msgstr "Назва"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__activity_calendar_event_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__activity_calendar_event_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__activity_calendar_event_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_calendar_event_id
-msgid "Next Activity Calendar Event"
-msgstr "Подія календаря наступної активності"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__activity_date_deadline
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__activity_date_deadline
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__activity_date_deadline
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_date_deadline
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__activity_date_deadline
-msgid "Next Activity Deadline"
-msgstr "Термін наступної активності"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__activity_summary
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__activity_summary
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__activity_summary
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_summary
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__activity_summary
-msgid "Next Activity Summary"
-msgstr "Опис наступної активності"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__activity_type_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__activity_type_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__activity_type_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_type_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__activity_type_id
-msgid "Next Activity Type"
-msgstr "Тип наступної активності"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__notes
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__notes
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__notes
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__notes
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_1df_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_form
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__notes
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__notes
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__notes
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__notes
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__notes
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
-msgid "Notes"
-msgstr "Примітки"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__11
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__11
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__11
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__11
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__11
-msgid "November"
-msgstr "Листопад"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_needaction_counter
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_needaction_counter
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_needaction_counter
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_needaction_counter
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_needaction_counter
-msgid "Number of Actions"
-msgstr "Кількість дій"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_has_error_counter
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_has_error_counter
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_has_error_counter
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_has_error_counter
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_has_error_counter
-msgid "Number of errors"
-msgstr "Кількість помилок"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__message_needaction_counter
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__message_needaction_counter
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__message_needaction_counter
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__message_needaction_counter
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__message_needaction_counter
-msgid "Number of messages requiring action"
-msgstr "Кількість повідомлень, що потребують дії"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__message_has_error_counter
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__message_has_error_counter
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__message_has_error_counter
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__message_has_error_counter
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__message_has_error_counter
-msgid "Number of messages with delivery error"
-msgstr "Кількість повідомлень з помилкою доставки"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__10
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__10
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__10
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__10
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__10
-msgid "October"
-msgstr "Жовтень"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__pdfo_amount
-msgid "PDFO Amount"
-msgstr "Сума ПДФО"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__paid_amount
-msgid "Paid Amount"
-msgstr "Виплачено"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_1df__quarter__1
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__quarter__1
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__quarter__1
-msgid "Q1"
-msgstr "1 квартал"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_1df__quarter__2
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__quarter__2
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__quarter__2
-msgid "Q2"
-msgstr "2 квартал"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_1df__quarter__3
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__quarter__3
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__quarter__3
-msgid "Q3"
-msgstr "3 квартал"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_1df__quarter__4
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__quarter__4
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__quarter__4
-msgid "Q4"
-msgstr "4 квартал"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__quarter
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__quarter
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__quarter
-msgid "Quarter"
-msgstr "Квартал"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__rnokpp
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__rnokpp
-msgid "RNOKPP"
-msgstr "РНОКПП"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__report_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__report_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__report_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__report_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__report_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__report_id
-msgid "Report"
-msgstr "Звіт"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__line_ids
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_1df_view_form
-msgid "Report Lines"
-msgstr "Рядки звіту"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__line_ids
-msgid "Report Lines (D1)"
-msgstr "Рядки звіту (Д1)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__report_type
-msgid "Report Type"
-msgstr "Тип звіту"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__activity_user_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__activity_user_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__activity_user_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_user_id
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__activity_user_id
-msgid "Responsible User"
-msgstr "Відповідальний"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_has_sms_error
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_has_sms_error
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_has_sms_error
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_has_sms_error
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_has_sms_error
-msgid "SMS Delivery error"
-msgstr "Помилка доставки SMS"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__9
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__9
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__9
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__9
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__9
-msgid "September"
-msgstr "Вересень"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_1df_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
-msgid "Set to Draft"
-msgstr "Повернути в чернетку"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__start_date
-msgid "Start Date"
-msgstr "Дата початку"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__state
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__state
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__state
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__state
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__state
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__report_state
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_search
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_search
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_search
-msgid "Status"
-msgstr "Статус"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__activity_state
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__activity_state
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__activity_state
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_state
-msgid ""
-"Status based on activities\n"
-"Overdue: Due date is already passed\n"
-"Today: Activity date is today\n"
-"Planned: Future activities.Status based on activities\n"
-"Overdue: Due date is already passed\n"
-"Today: Activity date is today\n"
-"Planned: Future activities."
-msgstr ""
-"Статус на основі активностей\n"
-"Прострочено: Термін вже минув\n"
-"Сьогодні: Дата активності сьогодні\n"
-"Заплановано: Майбутні активності."
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__submission_date
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__submission_date
-msgid "Submission Date"
-msgstr "Дата подання"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_1df__state__submitted
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__state__submitted
-msgid "Submitted"
-msgstr "Подано"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__date_termination
-msgid "Termination Date"
-msgstr "Дата звільнення"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__termination_reason
-msgid "Termination Reason"
-msgstr "Причина звільнення"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_1df_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_1df_view_tree
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_tree
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_list
-msgid "Total"
-msgstr "Всього"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__total_accrued
-msgid "Total Accrued"
-msgstr "Всього нараховано"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__total_esv
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__total_esv
-msgid "Total ESV"
-msgstr "Всього ЄСВ"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__total_esv_base
-msgid "Total ESV Base"
-msgstr "Всього база ЄСВ"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__total_employees
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__total_employees
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__total_employees
-msgid "Total Employees"
-msgstr "Всього працівників"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__total_military
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__total_military
-msgid "Total Military Tax"
-msgstr "Всього військового збору"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__total_pdfo
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__total_pdfo
-msgid "Total PDFO"
-msgstr "Всього ПДФО"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__total_paid
-msgid "Total Paid"
-msgstr "Всього виплачено"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__activity_exception_decoration
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__activity_exception_decoration
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__activity_exception_decoration
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_exception_decoration
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__activity_exception_decoration
-msgid "Type of the exception activity on record."
-msgstr "Тип виключної активності в записі."
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__report_type__wage_fund
-#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_wage_fund
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
-msgid "Wage Fund Report"
-msgstr "Звіт про фонд оплати праці"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__website_message_ids
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__website_message_ids
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__website_message_ids
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__website_message_ids
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__website_message_ids
-msgid "Website Messages"
-msgstr "Повідомлення веб-сайту"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__website_message_ids
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__website_message_ids
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__website_message_ids
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__website_message_ids
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__website_message_ids
-msgid "Website communication history"
-msgstr "Історія комунікації веб-сайту"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__worked_days
-msgid "Worked Days"
-msgstr "Відпрацьовано днів"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__worked_hours
-msgid "Worked Hours"
-msgstr "Відпрацьовано годин"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__year
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__year
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__year
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__year
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__year
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__year
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_search
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_search
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_search
-msgid "Year"
-msgstr "Рік"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__accrual_summary_ids
-msgid "Accrual Summary"
-msgstr "Зведення нарахувань"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_wage_fund_accrual
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__accrual_type_id
-#: model:ir.model,name:l10n_ua_hr_reports.model_hr_accrual_type
-msgid "Accrual Type"
-msgstr "Вид нарахування"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__fund_allowances
-msgid "Allowances Fund"
-msgstr "Фонд надбавок"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__fund_allowances
-msgid "Allowances and supplements"
-msgstr "Надбавки та доплати"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__avg_headcount_full
-msgid "Average Headcount (All)"
-msgstr "Середньооблікова чисельність (усього)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__avg_headcount
-msgid "Average Headcount (Full-time)"
-msgstr "Середньооблікова чисельність (штатні)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__avg_headcount
-msgid "Average headcount of full-time employees"
-msgstr "Середньооблікова чисельність штатних працівників"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__avg_headcount_full
-msgid "Average headcount including part-time (FTE equivalent)"
-msgstr "Середньооблікова чисельність з урахуванням часткової зайнятості"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_headcount
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_form
-msgid "Average Headcount Report"
-msgstr "Звіт середньооблікової чисельності"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.actions.act_window,name:l10n_ua_hr_reports.action_hr_report_headcount
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_list
-msgid "Average Headcount Reports"
-msgstr "Звіти середньооблікової чисельності"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__fund_basic_salary
-msgid "Base salary accruals"
-msgstr "Нарахування основної заробітної плати"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__fund_basic_salary
-msgid "Basic Salary Fund"
-msgstr "Фонд основної зарплати"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__fund_bonuses
-msgid "Bonuses Fund"
-msgstr "Фонд премій"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__fund_bonuses
-msgid "Bonuses and premiums"
-msgstr "Премії та надбавки"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
-msgid "By Accrual Type"
-msgstr "За видами нарахувань"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
-msgid "By Employee"
-msgstr "По працівниках"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__total_calendar_days
-msgid "Calendar Days"
-msgstr "Календарних днів"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_report_headcount
-msgid "Create an average headcount report"
-msgstr "Створити звіт середньооблікової чисельності"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_report_wage_fund
-msgid "Create a wage fund report"
-msgstr "Створити звіт фонду оплати праці"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__line_ids
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_form
-msgid "Daily Data"
-msgstr "Дані по днях"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__date
-msgid "Date"
-msgstr "Дата"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__day_of_week
-msgid "Day"
-msgstr "День тижня"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__department_id
-msgid "Department"
-msgstr "Підрозділ"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__line_ids
-msgid "Employee Details"
-msgstr "Деталі по працівниках"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__esv_amount
-msgid "ESV"
-msgstr "ЄСВ"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__fte_count
-msgid "FTE"
-msgstr "ЕПЗ"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount_line__fte_count
-msgid "Full-time equivalent count"
-msgstr "Еквівалент повної зайнятості"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__gross_salary
-msgid "Gross Salary"
-msgstr "Нараховано (брутто)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__headcount
-msgid "Headcount"
-msgstr "Чисельність"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_headcount_line
-msgid "Headcount Report Daily Line"
-msgstr "Рядок звіту середньооблікової чисельності"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.constraint,message:l10n_ua_hr_reports.constraint_hr_report_headcount_unique_year_month_company_id
-msgid "Headcount report for this period already exists!"
-msgstr "Звіт середньооблікової чисельності за цей період вже існує!"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__military_amount
-msgid "Military Tax"
-msgstr "Військовий збір"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__total_military
-msgid "Military tax (5%)"
-msgstr "Військовий збір (5%)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__net_salary
-msgid "Net Salary"
-msgstr "До виплати (нетто)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount_line__headcount
-msgid "Number of full-time employees"
-msgstr "Кількість штатних працівників"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__total_employees
-msgid "Number of employees with payslips"
-msgstr "Кількість працівників з розрахунковими листками"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__fund_other
-msgid "Other accruals"
-msgstr "Інші нарахування"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__fund_other
-msgid "Other Payments"
-msgstr "Інші виплати"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__pdfo_amount
-msgid "PDFO"
-msgstr "ПДФО"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__total_pdfo
-msgid "Personal income tax (18%)"
-msgstr "Податок на доходи фізичних осіб (18%)"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
-msgid "Period"
-msgstr "Звітний період"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_form
-msgid "Results"
-msgstr "Результати"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
-msgid "Summary"
-msgstr "Загальні дані"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
-msgid "Tax Deductions"
-msgstr "Утримання"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_report_headcount
-msgid ""
-"This report calculates the average number of employees for a given month "
-"according to Ukrainian methodology."
-msgstr ""
-"Звіт розраховує середньооблікову чисельність за місяць відповідно до "
-"методології Держстату України."
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_report_wage_fund
-msgid ""
-"This report analyzes the wage fund structure by accrual types and provides "
-"tax deduction summaries."
-msgstr ""
-"Звіт аналізує структуру фонду оплати праці за видами нарахувань та надає "
-"зведення утримань."
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__total_amount
-msgid "Total Amount"
-msgstr "Сума"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__total_gross
-msgid "Total accrued amount (gross salary)"
-msgstr "Загальна сума нарахувань (брутто)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__total_calendar_days
-msgid "Total calendar days in the period"
-msgstr "Загальна кількість календарних днів у периоді"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__total_gross
-msgid "Total Gross"
-msgstr "Всього нараховано (брутто)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__total_net
-msgid "Total Net"
-msgstr "Всього до виплати (нетто)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__total_net
-msgid "Total net salary (after deductions)"
-msgstr "Загальна сума до виплати (після утримань)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__total_esv
-msgid "Unified social contribution (22%)"
-msgstr "Єдиний соціальний внесок (22%)"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_search
-msgid "Wage Fund"
-msgstr "Фонд оплати праці"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_wage_fund_line
-msgid "Wage Fund Report Employee Line"
-msgstr "Рядок звіту ФОП (по працівнику)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.actions.act_window,name:l10n_ua_hr_reports.action_hr_report_wage_fund
-#: model:ir.ui.menu,name:l10n_ua_hr_reports.menu_hr_report_wage_fund
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_list
-msgid "Wage Fund Reports"
-msgstr "Звіти фонду оплати праці"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.constraint,message:l10n_ua_hr_reports.constraint_hr_report_wage_fund_unique_year_month_company_id
-msgid "Wage fund report for this period already exists!"
-msgstr "Звіт фонду оплати праці за цей період вже існує!"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
-msgid "Wage Fund Structure"
-msgstr "Структура фонду оплати праці"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_accrual_type__l10n_ua_1pv_group
-msgid "1-PV Wage Fund Row"
-msgstr "Рядок ФОП у 1-ПВ"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.constraint,message:l10n_ua_hr_reports.constraint_hr_report_labor_period_company_uniq
-msgid "A 1-PV report for this period already exists!"
-msgstr "Звіт 1-ПВ за цей період уже існує!"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.constraint,message:l10n_ua_hr_reports.constraint_hr_report_labor_line_report_cell_uniq
-msgid "A row of the 1-PV report can only appear once!"
-msgstr "Рядок звіту 1-ПВ може бути лише один!"
 
 #. module: l10n_ua_hr_reports
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_form
@@ -1398,9 +304,76 @@ msgid "Additional: systematic bonuses (5030, 5050)"
 msgstr "Додаткова: систематичні премії (5030, 5050)"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__fund_allowances
+msgid "Allowances Fund"
+msgstr "Фонд надбавок"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__fund_allowances
+msgid "Allowances and supplements"
+msgstr "Надбавки та доплати"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__4
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__4
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__4
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__4
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__4
+msgid "April"
+msgstr "Квітень"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__message_attachment_count
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_attachment_count
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_attachment_count
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_attachment_count
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_attachment_count
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_attachment_count
+msgid "Attachment Count"
+msgstr "Кількість вкладень"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__8
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__8
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__8
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__8
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__8
+msgid "August"
+msgstr "Серпень"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__report_type__headcount
+#: model:ir.ui.menu,name:l10n_ua_hr_reports.menu_hr_report_headcount
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_search
+msgid "Average Headcount"
+msgstr "Середньооблікова чисельність"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__avg_headcount_full
+msgid "Average Headcount (All)"
+msgstr "Середньооблікова чисельність (усього)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__avg_headcount
+msgid "Average Headcount (Full-time)"
+msgstr "Середньооблікова чисельність (штатні)"
+
+#. module: l10n_ua_hr_reports
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__headcount_change
 msgid "Average Headcount Change, %"
 msgstr "Зміна середньооблікової кількості, %"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_headcount
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_form
+msgid "Average Headcount Report"
+msgstr "Звіт середньооблікової чисельності"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.actions.act_window,name:l10n_ua_hr_reports.action_hr_report_headcount
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_list
+msgid "Average Headcount Reports"
+msgstr "Звіти середньооблікової чисельності"
 
 #. module: l10n_ua_hr_reports
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__avg_wage_change
@@ -1408,9 +381,75 @@ msgid "Average Wage Change, %"
 msgstr "Зміна середньої заробітної плати, %"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__avg_headcount_full
+msgid "Average headcount including part-time (FTE equivalent)"
+msgstr "Середньооблікова чисельність з урахуванням часткової зайнятості"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__avg_headcount
+msgid "Average headcount of full-time employees"
+msgstr "Середньооблікова чисельність штатних працівників"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__fund_basic_salary
+msgid "Base salary accruals"
+msgstr "Нарахування основної заробітної плати"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__fund_basic_salary
+msgid "Basic Salary Fund"
+msgstr "Фонд основної зарплати"
+
+#. module: l10n_ua_hr_reports
 #: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_accrual_type__l10n_ua_1pv_group__basic
 msgid "Basic wage (5020)"
 msgstr "Основна заробітна плата (5020)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__fund_bonuses
+msgid "Bonuses Fund"
+msgstr "Фонд премій"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__fund_bonuses
+msgid "Bonuses and premiums"
+msgstr "Премії та надбавки"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
+msgid "By Accrual Type"
+msgstr "За видами нарахувань"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
+msgid "By Employee"
+msgstr "По працівниках"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__total_calendar_days
+msgid "Calendar Days"
+msgstr "Календарних днів"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wizard_view_form
+msgid "Cancel"
+msgstr "Скасувати"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__notice_type__cancel
+msgid "Cancelling"
+msgstr "Скасовуюче"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
+msgid "Cancelling hire notice"
+msgstr "Скасовуюче повідомлення про прийняття"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__category
+msgid "Category"
+msgstr "Категорія"
 
 #. module: l10n_ua_hr_reports
 #: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__headcount_change
@@ -1423,14 +462,49 @@ msgid "Change of row 1070 / row 1040 × 1000 against the previous month."
 msgstr "Зміна ряд.1070 / ряд.1040 × 1000 порівняно з попереднім місяцем."
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__citizenship
+msgid "Citizenship"
+msgstr "Громадянство"
+
+#. module: l10n_ua_hr_reports
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__column_no
 msgid "Column"
 msgstr "Графа"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__date_start
+msgid "Column 12. The notice must be filed before this date."
+msgstr "Графа 12. Повідомлення подається до цієї дати."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__date_formed
+msgid "Column 13: date the notice was formed."
+msgstr "Графа 13: дата формування повідомлення."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__person_category
+msgid ""
+"Column 5 of the form (CMU Resolution No. 413 as amended by No. 184 of "
+"21.02.2025)."
+msgstr ""
+"Графа 5 форми (постанова КМУ № 413 у ред. постанови № 184 від 21.02.2025)."
+
+#. module: l10n_ua_hr_reports
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__column_label
 msgid "Column Name"
 msgstr "Назва графи"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__company_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__company_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__company_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__company_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__company_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__company_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__company_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__company_id
+msgid "Company"
+msgstr "Компанія"
 
 #. module: l10n_ua_hr_reports
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
@@ -1459,439 +533,6 @@ msgid "Computed Value"
 msgstr "Розраховане значення"
 
 #. module: l10n_ua_hr_reports
-#: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_report_labor
-msgid "Create a 1-PV labour report"
-msgstr "Створіть звіт із праці 1-ПВ"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__state__done
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_search
-msgid "Done"
-msgstr "Виконано"
-
-#. module: l10n_ua_hr_reports
-#. odoo-python
-#: code:addons/l10n_ua_hr_reports/models/hr_report_labor.py:0
-msgid "EDRPOU: %s"
-msgstr "ЄДРПОУ: %s"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
-msgid "Explanations"
-msgstr "Пояснення"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
-msgid "Export XLSX"
-msgstr "Експорт XLSX"
-
-#. module: l10n_ua_hr_reports
-#. odoo-python
-#: code:addons/l10n_ua_hr_reports/models/hr_report_labor.py:0
-msgid "File %s to the State Statistics Service"
-msgstr "Подати %s до Держстату"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
-msgid "Filing"
-msgstr "Подання"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__date_deadline
-msgid "Filing Deadline"
-msgstr "Термін подання"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__period_type
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_search
-msgid "Form"
-msgstr "Форма"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_accrual_type__l10n_ua_1pv_group__incentive
-msgid "Incentive and compensation payments (5060)"
-msgstr "Заохочувальні та компенсаційні виплати (5060)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_accrual_type__l10n_ua_1pv_group__social_benefit
-msgid "Incentive: individual social benefits (5060, 5080)"
-msgstr "Заохочувальні: індивідуальні соціальні пільги (5060, 5080)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_accrual_type__l10n_ua_1pv_group__material_aid
-msgid "Incentive: material aid (5060, 5070)"
-msgstr "Заохочувальні: матеріальна допомога (5060, 5070)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_accrual_type__l10n_ua_1pv_group__incentive_unworked
-msgid "Incentive: pay for time not worked (5060, 5090)"
-msgstr "Заохочувальні: оплата невідпрацьованого часу (5060, 5090)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__name
-msgid "Indicator"
-msgstr "Показник"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.actions.act_window,name:l10n_ua_hr_reports.action_hr_report_labor
-#: model:ir.actions.report,name:l10n_ua_hr_reports.action_report_hr_report_labor
-#: model:ir.ui.menu,name:l10n_ua_hr_reports.menu_hr_report_labor
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
-msgid "Labour Report 1-PV"
-msgstr "Звіт із праці 1-ПВ"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_labor
-msgid "Labour Report 1-PV (State Statistics)"
-msgstr "Звіт із праці 1-ПВ (Держстат)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_labor_line
-msgid "Labour Report 1-PV Row"
-msgstr "Рядок звіту із праці 1-ПВ"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_list
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_search
-msgid "Labour Reports 1-PV"
-msgstr "Звіти із праці 1-ПВ"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__is_manual
-msgid "Manual"
-msgstr "Вручну"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__manual_value
-msgid "Manual Value"
-msgstr "Значення вручну"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
-msgid "Mark as Done"
-msgstr "Позначити виконаним"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__period_type__month
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_search
-msgid "Monthly"
-msgstr "Місячна"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__needs_explanation
-msgid "Needs Explanation"
-msgstr "Потрібне пояснення"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__date_deadline
-msgid ""
-"No later than the 7th day of the month after the period; a deadline falling "
-"on a weekend moves to the next Monday."
-msgstr ""
-"Не пізніше 7-го числа місяця, наступного за звітним періодом; термін, що "
-"припадає на вихідний, переноситься на понеділок."
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_accrual_type__l10n_ua_1pv_group__excluded
-msgid "Not part of the wage fund"
-msgstr "Не входить до фонду оплати праці"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor_line__is_auto
-msgid "Odoo computes this row. Rows it has no data for are entered by hand."
-msgstr ""
-"Odoo розраховує цей рядок. Рядки, для яких немає даних, вводяться вручну."
-
-#. module: l10n_ua_hr_reports
-#. odoo-python
-#: code:addons/l10n_ua_hr_reports/models/hr_report_labor.py:0
-msgid "Only a draft report can be recomputed."
-msgstr "Перерахувати можна лише чернетку звіту."
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__date_to
-msgid "Period End"
-msgstr "Кінець періоду"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__period_key
-msgid "Period Key"
-msgstr "Ключ періоду"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__date_from
-msgid "Period Start"
-msgstr "Початок періоду"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor_line__unit__hours
-msgid "Person-hours"
-msgstr "Люд.год"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor_line__unit__persons
-msgid "Persons"
-msgstr "Осіб"
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
-msgid "Print"
-msgstr "Друк"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__period_type__quarter
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_search
-msgid "Quarterly"
-msgstr "Квартальна"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__explanation_avg_wage
-msgid "Reason for Average Wage Deviation"
-msgstr "Причина відхилення середньої заробітної плати"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__explanation_headcount
-msgid "Reason for Headcount Deviation"
-msgstr "Причина відхилення середньооблікової кількості"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor_line__is_manual
-msgid ""
-"Report the value entered by hand instead of the computed one. The value is "
-"kept when the report is recomputed."
-msgstr ""
-"Подавати введене вручну значення замість розрахованого. Значення "
-"зберігається під час перерахунку звіту."
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__explanation_headcount
-msgid "Required by the form when the average headcount changed by 25% or more."
-msgstr ""
-"Форма вимагає пояснення, якщо середньооблікова кількість змінилася на 25% і "
-"більше."
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__explanation_avg_wage
-msgid "Required by the form when the average wage changed by 10% or more."
-msgstr ""
-"Форма вимагає пояснення, якщо середня заробітна плата змінилася на 10% і "
-"більше."
-
-#. module: l10n_ua_hr_reports
-#. odoo-python
-#: code:addons/l10n_ua_hr_reports/models/hr_report_labor.py:0
-msgid "Reset the report to draft to change its rows."
-msgstr "Поверніть звіт у чернетку, щоб змінити рядки."
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__code
-msgid "Row Code"
-msgstr "Код рядка"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__line_ids
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
-msgid "Rows"
-msgstr "Рядки"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__section
-msgid "Section"
-msgstr "Розділ"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__sequence
-msgid "Sequence"
-msgstr "Послідовність"
-
-#. module: l10n_ua_hr_reports
-#. odoo-python
-#: code:addons/l10n_ua_hr_reports/models/hr_report_labor.py:0
-msgid "Set the month or the quarter of the report."
-msgstr "Вкажіть місяць або квартал звіту."
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__activity_state
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__activity_state
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__activity_state
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__activity_state
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_state
-msgid ""
-"Status based on activities\n"
-"Overdue: Due date is already passed\n"
-"Today: Activity date is today\n"
-"Planned: Future activities."
-msgstr ""
-"Статус на основі активностей\n"
-"Прострочено: Термін вже минув\n"
-"Сьогодні: Дата активності сьогодні\n"
-"Заплановано: Майбутні активності."
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
-msgid ""
-"The average headcount changed by 25% or more, or the average wage by 10%\n"
-"                        or more, against the previous month: the form "
-"requires the reason on the\n"
-"                        Explanations tab."
-msgstr ""
-"Середньооблікова кількість змінилася на 25% і більше або середня заробітна "
-"плата — на 10% і більше порівняно з попереднім місяцем: форма вимагає "
-"вказати причину на вкладці «Пояснення»."
-
-#. module: l10n_ua_hr_reports
-#: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_report_labor
-msgid ""
-"The monthly and quarterly «Звіт із праці» of the State Statistics\n"
-"                Service (order № 117 of 15.04.2024): headcount, hours worked "
-"and\n"
-"                the wage fund computed from payslips and contracts."
-msgstr ""
-"Місячний і квартальний «Звіт із праці» Держстату (наказ № 117 від "
-"15.04.2024): чисельність, відпрацьований час і фонд оплати праці, "
-"розраховані з розрахункових листків і договорів."
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor_line__unit__kuah
-msgid "Thousand UAH"
-msgstr "Тис. грн"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor_line__unit__uah
-msgid "UAH"
-msgstr "Грн"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__unit
-msgid "Unit"
-msgstr "Одиниця"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor_line__unit__units
-msgid "Units"
-msgstr "Од."
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__value
-msgid "Value"
-msgstr "Значення"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_accrual_type__l10n_ua_1pv_group
-msgid ""
-"Where this accrual is reported in Section III of the 1-PV labour report. "
-"Left empty, the standard types are filed by their code and any other type by "
-"its category."
-msgstr ""
-"Куди це нарахування потрапляє в розділі III звіту із праці 1-ПВ. Якщо не "
-"заповнено, стандартні типи розподіляються за кодом, інші — за категорією."
-
-#. module: l10n_ua_hr_reports
-#. odoo-python
-#: code:addons/l10n_ua_hr_reports/models/hr_report_labor.py:0
-msgid "xlsxwriter is not installed. Run: pip install xlsxwriter"
-msgstr ""
-"Бібліотеку xlsxwriter не встановлено. Виконайте: pip install xlsxwriter"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__citizenship__0
-msgid "0 - Foreigner or stateless person"
-msgstr "0 - Іноземець або особа без громадянства"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__citizenship__1
-msgid "1 - Citizen of Ukraine"
-msgstr "1 - Громадянин України"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__person_category__1
-msgid "1 - Employee (main place of work)"
-msgstr "1 - Найманий працівник (основне місце роботи)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__person_category__2
-msgid "2 - Employee (concurrent employment)"
-msgstr "2 - Працівник за сумісництвом"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__person_category__3
-msgid "3 - Gig specialist (Diia.City gig contract)"
-msgstr "3 - Гіг-спеціаліст (гіг-контракт Дія Сіті)"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__person_category__4
-msgid "4 - Civil law contract"
-msgstr "4 - Особа за цивільно-правовим договором"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__person_category__5
-msgid "5 - Domestic worker"
-msgstr "5 - Домашній працівник"
-
-#. module: l10n_ua_hr_reports
-#. odoo-python
-#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
-msgid "A hire notice is created from a hiring order with an employee."
-msgstr ""
-"Повідомлення про прийняття створюється з наказу про прийняття, у якому "
-"вказано працівника."
-
-#. module: l10n_ua_hr_reports
-#. odoo-python
-#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
-msgid "A sent notice cannot be regenerated."
-msgstr "Подане повідомлення не можна сформувати повторно."
-
-#. module: l10n_ua_hr_reports
-#. odoo-python
-#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
-msgid ""
-"A sent notice cannot be reset to draft; file a cancelling notice instead."
-msgstr ""
-"Подане повідомлення не можна повернути в чернетку — подайте скасовуюче "
-"повідомлення."
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__state__accepted
-#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
-msgid "Accepted"
-msgstr "Прийнято"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__notice_type__cancel
-msgid "Cancelling"
-msgstr "Скасовуюче"
-
-#. module: l10n_ua_hr_reports
-#. odoo-python
-#: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
-msgid "Cancelling hire notice"
-msgstr "Скасовуюче повідомлення про прийняття"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__citizenship
-msgid "Citizenship"
-msgstr "Громадянство"
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__date_start
-msgid "Column 12. The notice must be filed before this date."
-msgstr "Графа 12. Повідомлення подається до цієї дати."
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__date_formed
-msgid "Column 13: date the notice was formed."
-msgstr "Графа 13: дата формування повідомлення."
-
-#. module: l10n_ua_hr_reports
-#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__person_category
-msgid ""
-"Column 5 of the form (CMU Resolution No. 413 as amended by No. 184 of "
-"21.02.2025)."
-msgstr ""
-"Графа 5 форми (постанова КМУ № 413 у ред. постанови № 184 від 21.02.2025)."
-
-#. module: l10n_ua_hr_reports
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__version_id
 msgid "Contract"
 msgstr "Договір"
@@ -1907,9 +548,133 @@ msgid "Create Cancelling Notice"
 msgstr "Створити скасовуюче повідомлення"
 
 #. module: l10n_ua_hr_reports
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_report_labor
+msgid "Create a 1-PV labour report"
+msgstr "Створіть звіт із праці 1-ПВ"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_report_1df
+msgid "Create a 1DF quarterly tax report"
+msgstr "Створити квартальний податковий звіт 1ДФ"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_report_d5
+msgid "Create a D5 monthly ESV report"
+msgstr "Створити місячний звіт ЄСВ Д5"
+
+#. module: l10n_ua_hr_reports
 #: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_hire_notice
 msgid "Create a hire notice"
 msgstr "Створіть повідомлення про прийняття на роботу"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_report_wage_fund
+msgid "Create a wage fund report"
+msgstr "Створити звіт фонду оплати праці"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_report_headcount
+msgid "Create an average headcount report"
+msgstr "Створити звіт середньооблікової чисельності"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__create_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__create_uid
+msgid "Created by"
+msgstr "Створив"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__create_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__create_date
+msgid "Created on"
+msgstr "Створено"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__currency_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__currency_id
+msgid "Currency"
+msgstr "Валюта"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_form
+msgid "D1 Appendix (Employees)"
+msgstr "Додаток Д1 (Працівники)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__report_type__d5
+msgid "D5 (ESV Monthly Report)"
+msgstr "Д5 (Місячний звіт ЄСВ)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_d5
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_form
+msgid "D5 ESV Report"
+msgstr "Звіт ЄСВ Д5"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.actions.act_window,name:l10n_ua_hr_reports.action_hr_report_d5
+#: model:ir.ui.menu,name:l10n_ua_hr_reports.menu_hr_report_d5
+msgid "D5 ESV Reports"
+msgstr "Звіти ЄСВ Д5"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_d5_line
+msgid "D5 Report Line (D1 Appendix)"
+msgstr "Рядок звіту Д5 (Додаток Д1)"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_tree
+msgid "D5 Reports"
+msgstr "Звіти Д5"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.constraint,message:l10n_ua_hr_reports.constraint_hr_report_d5_unique_year_month_company_id
+msgid "D5 report for this period already exists!"
+msgstr "Звіт Д5 за цей період вже існує!"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__line_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_form
+msgid "Daily Data"
+msgstr "Дані по днях"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__date
+msgid "Date"
+msgstr "Дата"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__date_from
+msgid "Date From"
+msgstr "Дата з"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__date_to
+msgid "Date To"
+msgstr "Дата по"
 
 #. module: l10n_ua_hr_reports
 #: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__order_date
@@ -1925,15 +690,155 @@ msgid "Dates"
 msgstr "Дати"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__day_of_week
+msgid "Day"
+msgstr "День тижня"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__12
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__12
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__12
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__12
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__12
+msgid "December"
+msgstr "Грудень"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__department_id
+msgid "Department"
+msgstr "Підрозділ"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_accrual_type__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_order__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__display_name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__display_name
+msgid "Display Name"
+msgstr "Відображувана назва"
+
+#. module: l10n_ua_hr_reports
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__doc_cnt
 msgid "Document No. in Period"
 msgstr "№ документа в періоді"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__state__done
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_search
+msgid "Done"
+msgstr "Виконано"
 
 #. module: l10n_ua_hr_reports
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
 msgid "Download XML"
 msgstr "Завантажити XML"
 
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__state__draft
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_1df__state__draft
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__state__draft
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__state__draft
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__state__draft
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__state__draft
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_search
+msgid "Draft"
+msgstr "Чернетка"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_report_labor.py:0
+msgid "EDRPOU: %s"
+msgstr "ЄДРПОУ: %s"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__esv_amount
+msgid "ESV"
+msgstr "ЄСВ"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__esv_amount
+msgid "ESV Amount"
+msgstr "Сума ЄСВ"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__esv_base
+msgid "ESV Base"
+msgstr "База ЄСВ"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.ui.menu,name:l10n_ua_hr_reports.menu_hr_report_d5_reporting
+msgid "ESV Report (D5)"
+msgstr "Звіт з ЄСВ (Д5)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__employee_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__employee_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__employee_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__employee_id
+msgid "Employee"
+msgstr "Працівник"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__line_ids
+msgid "Employee Details"
+msgstr "Деталі по працівниках"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_1df_view_form
+msgid "Employees"
+msgstr "Працівники"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__end_date
+msgid "End Date"
+msgstr "Дата закінчення"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
+msgid "Explanations"
+msgstr "Пояснення"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
+msgid "Export XLSX"
+msgstr "Експорт XLSX"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_form
+msgid "Export XML"
+msgstr "Експорт XML"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__fte_count
+msgid "FTE"
+msgstr "ЕПЗ"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__2
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__2
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__2
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__2
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__2
+msgid "February"
+msgstr "Лютий"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_report_labor.py:0
+msgid "File %s to the State Statistics Service"
+msgstr "Подати %s до Держстату"
 
 #. module: l10n_ua_hr_reports
 #. odoo-python
@@ -1946,6 +851,58 @@ msgstr ""
 "(постанова КМУ № 413, ст. 24 КЗпП)."
 
 #. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
+msgid "Filing"
+msgstr "Подання"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__date_deadline
+msgid "Filing Deadline"
+msgstr "Термін подання"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__first_name
+msgid "First Name"
+msgstr "Ім'я"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__message_follower_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_follower_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_follower_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_follower_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_follower_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_follower_ids
+msgid "Followers"
+msgstr "Підписники"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__message_partner_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_partner_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_partner_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_partner_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_partner_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_partner_ids
+msgid "Followers (Partners)"
+msgstr "Підписники (Партнери)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__activity_type_icon
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__activity_type_icon
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__activity_type_icon
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__activity_type_icon
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__activity_type_icon
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_type_icon
+msgid "Font awesome icon e.g. fa-tasks"
+msgstr "Іконка Font Awesome, напр. fa-tasks"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__period_type
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_search
+msgid "Form"
+msgstr "Форма"
+
+#. module: l10n_ua_hr_reports
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__date_formed
 msgid "Formed On"
 msgstr "Дата формування"
@@ -1954,6 +911,27 @@ msgstr "Дата формування"
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__person_name
 msgid "Full Name"
 msgstr "ПІБ"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount_line__fte_count
+msgid "Full-time equivalent count"
+msgstr "Еквівалент повної зайнятості"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_1df_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wizard_view_form
+msgid "Generate"
+msgstr "Згенерувати"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.actions.act_window,name:l10n_ua_hr_reports.action_hr_report_wizard
+#: model:ir.ui.menu,name:l10n_ua_hr_reports.menu_hr_report_wizard
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wizard_view_form
+msgid "Generate Report"
+msgstr "Згенерувати звіт"
 
 #. module: l10n_ua_hr_reports
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
@@ -1967,14 +945,65 @@ msgid "Generate the notice XML before sending."
 msgstr "Сформуйте XML повідомлення перед поданням."
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__state__generated
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_1df__state__generated
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__state__generated
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__state__generated
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__state__generated
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_search
+msgid "Generated"
+msgstr "Згенеровано"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__gross_salary
+msgid "Gross Salary"
+msgstr "Нараховано (брутто)"
+
+#. module: l10n_ua_hr_reports
 #: model:ir.model,name:l10n_ua_hr_reports.model_hr_order
 msgid "HR Order"
 msgstr "Кадровий наказ"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_wizard
+msgid "HR Report Wizard"
+msgstr "Майстер звітів HR"
+
+#. module: l10n_ua_hr_reports
 #: model:ir.actions.server,name:l10n_ua_hr_reports.ir_cron_check_hire_notice_deadlines_ir_actions_server
 msgid "HR UA: Контроль строків повідомлень ДПС про прийняття на роботу"
 msgstr "HR UA: Контроль строків повідомлень ДПС про прийняття на роботу"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__has_message
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__has_message
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__has_message
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__has_message
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__has_message
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__has_message
+msgid "Has Message"
+msgstr "Є повідомлення"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__headcount
+msgid "Headcount"
+msgstr "Чисельність"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_headcount_line
+msgid "Headcount Report Daily Line"
+msgstr "Рядок звіту середньооблікової чисельності"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.constraint,message:l10n_ua_hr_reports.constraint_hr_report_headcount_unique_year_month_company_id
+msgid "Headcount report for this period already exists!"
+msgstr "Звіт середньооблікової чисельності за цей період вже існує!"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__date_hire
+msgid "Hire Date"
+msgstr "Дата прийняття"
 
 #. module: l10n_ua_hr_reports
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
@@ -2044,9 +1073,214 @@ msgid "Hiring order without a sent notice to the tax authority."
 msgstr "Наказ про прийняття без поданого повідомлення до ДПС."
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_accrual_type__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_order__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__id
+msgid "ID"
+msgstr "ID"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__activity_exception_icon
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__activity_exception_icon
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__activity_exception_icon
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__activity_exception_icon
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__activity_exception_icon
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_exception_icon
+msgid "Icon"
+msgstr "Іконка"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__activity_exception_icon
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__activity_exception_icon
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__activity_exception_icon
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__activity_exception_icon
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__activity_exception_icon
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_exception_icon
+msgid "Icon to indicate an exception activity."
+msgstr "Іконка для позначення виключної активності."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__message_needaction
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__message_needaction
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__message_needaction
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__message_needaction
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__message_needaction
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__message_needaction
+msgid "If checked, new messages require your attention."
+msgstr "Якщо позначено, нові повідомлення потребують вашої уваги."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__message_has_error
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__message_has_sms_error
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__message_has_error
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__message_has_sms_error
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__message_has_error
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__message_has_sms_error
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__message_has_error
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__message_has_sms_error
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__message_has_error
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__message_has_sms_error
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__message_has_error
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__message_has_sms_error
+msgid "If checked, some messages have a delivery error."
+msgstr "Якщо позначено, деякі повідомлення мають помилку доставки."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_accrual_type__l10n_ua_1pv_group__incentive
+msgid "Incentive and compensation payments (5060)"
+msgstr "Заохочувальні та компенсаційні виплати (5060)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_accrual_type__l10n_ua_1pv_group__social_benefit
+msgid "Incentive: individual social benefits (5060, 5080)"
+msgstr "Заохочувальні: індивідуальні соціальні пільги (5060, 5080)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_accrual_type__l10n_ua_1pv_group__material_aid
+msgid "Incentive: material aid (5060, 5070)"
+msgstr "Заохочувальні: матеріальна допомога (5060, 5070)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_accrual_type__l10n_ua_1pv_group__incentive_unworked
+msgid "Incentive: pay for time not worked (5060, 5090)"
+msgstr "Заохочувальні: оплата невідпрацьованого часу (5060, 5090)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__income_sign
+msgid "Income Sign"
+msgstr "Ознака доходу"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__income_type
+msgid "Income Type"
+msgstr "Тип доходу"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df_line__income_type
+msgid "Income type code for 1DF"
+msgstr "Код типу доходу для 1ДФ"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__name
+msgid "Indicator"
+msgstr "Показник"
+
+#. module: l10n_ua_hr_reports
 #: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_hire_notice__notice_type__initial
 msgid "Initial"
 msgstr "Початкове"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__message_is_follower
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_is_follower
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_is_follower
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_is_follower
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_is_follower
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_is_follower
+msgid "Is Follower"
+msgstr "Є підписником"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__1
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__1
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__1
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__1
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__1
+msgid "January"
+msgstr "Січень"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__7
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__7
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__7
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__7
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__7
+msgid "July"
+msgstr "Липень"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__6
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__6
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__6
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__6
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__6
+msgid "June"
+msgstr "Червень"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.actions.act_window,name:l10n_ua_hr_reports.action_hr_report_labor
+#: model:ir.actions.report,name:l10n_ua_hr_reports.action_report_hr_report_labor
+#: model:ir.ui.menu,name:l10n_ua_hr_reports.menu_hr_report_labor
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
+msgid "Labour Report 1-PV"
+msgstr "Звіт із праці 1-ПВ"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_labor
+msgid "Labour Report 1-PV (State Statistics)"
+msgstr "Звіт із праці 1-ПВ (Держстат)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_labor_line
+msgid "Labour Report 1-PV Row"
+msgstr "Рядок звіту із праці 1-ПВ"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_list
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_search
+msgid "Labour Reports 1-PV"
+msgstr "Звіти із праці 1-ПВ"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__last_name
+msgid "Last Name"
+msgstr "Прізвище"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__write_uid
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__write_uid
+msgid "Last Updated by"
+msgstr "Оновив"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__write_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__write_date
+msgid "Last Updated on"
+msgstr "Оновлено"
 
 #. module: l10n_ua_hr_reports
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__is_mandatory
@@ -2054,19 +1288,190 @@ msgid "Mandatory"
 msgstr "Обов'язкове"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__is_manual
+msgid "Manual"
+msgstr "Вручну"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__manual_value
+msgid "Manual Value"
+msgstr "Значення вручну"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__3
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__3
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__3
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__3
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__3
+msgid "March"
+msgstr "Березень"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
+msgid "Mark as Done"
+msgstr "Позначити виконаним"
+
+#. module: l10n_ua_hr_reports
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
 msgid "Mark as Sent"
 msgstr "Позначити поданим"
 
 #. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_1df_view_form
+msgid "Mark as Submitted"
+msgstr "Позначити як подано"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__5
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__5
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__5
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__5
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__5
+msgid "May"
+msgstr "Травень"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__message_has_error
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_has_error
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_has_error
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_has_error
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_has_error
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_has_error
+msgid "Message Delivery error"
+msgstr "Помилка доставки повідомлення"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__message_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_ids
+msgid "Messages"
+msgstr "Повідомлення"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__middle_name
+msgid "Middle Name"
+msgstr "По батькові"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__military_amount
+msgid "Military Tax"
+msgstr "Військовий збір"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__military_amount
+msgid "Military Tax Amount"
+msgstr "Сума військового збору"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__total_military
+msgid "Military tax (5%)"
+msgstr "Військовий збір (5%)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__month
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__month
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__month
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__month
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__month
+msgid "Month"
+msgstr "Місяць"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__period_type__month
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_search
+msgid "Monthly"
+msgstr "Місячна"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__my_activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__my_activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__my_activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__my_activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__my_activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__my_activity_date_deadline
+msgid "My Activity Deadline"
+msgstr "Термін моєї активності"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__name
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__name
+msgid "Name"
+msgstr "Назва"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__needs_explanation
+msgid "Needs Explanation"
+msgstr "Потрібне пояснення"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__net_salary
+msgid "Net Salary"
+msgstr "До виплати (нетто)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__activity_calendar_event_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__activity_calendar_event_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__activity_calendar_event_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__activity_calendar_event_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__activity_calendar_event_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_calendar_event_id
+msgid "Next Activity Calendar Event"
+msgstr "Подія календаря наступної активності"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__activity_date_deadline
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_date_deadline
+msgid "Next Activity Deadline"
+msgstr "Термін наступної активності"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__activity_summary
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__activity_summary
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__activity_summary
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__activity_summary
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__activity_summary
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_summary
+msgid "Next Activity Summary"
+msgstr "Опис наступної активності"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__activity_type_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__activity_type_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__activity_type_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__activity_type_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__activity_type_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_type_id
+msgid "Next Activity Type"
+msgstr "Тип наступної активності"
+
+#. module: l10n_ua_hr_reports
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.view_hr_order_form_hire_notice
 msgid ""
-"No hire notice has been sent to the tax authority for this order. It must "
-"be\n"
+"No hire notice has been sent to the tax authority for this order. It must be\n"
 "                    filed before work starts (CMU Resolution No. 413)."
 msgstr ""
 "За цим наказом повідомлення до ДПС про прийняття не подано. Його подають\n"
 "                    до початку роботи (постанова КМУ № 413)."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__date_deadline
+msgid ""
+"No later than the 7th day of the month after the period; a deadline falling "
+"on a weekend moves to the next Monday."
+msgstr ""
+"Не пізніше 7-го числа місяця, наступного за звітним періодом; термін, що "
+"припадає на вихідний, переноситься на понеділок."
 
 #. module: l10n_ua_hr_reports
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_search
@@ -2078,6 +1483,29 @@ msgstr "Не подані"
 msgid "Not filled for gig and civil law contracts (column 10)."
 msgstr ""
 "Не заповнюється для гіг-контрактів і цивільно-правових договорів (графа 10)."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_accrual_type__l10n_ua_1pv_group__excluded
+msgid "Not part of the wage fund"
+msgstr "Не входить до фонду оплати праці"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__notes
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__notes
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__notes
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__notes
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__notes
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__notes
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__notes
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__notes
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_1df_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
+msgid "Notes"
+msgstr "Примітки"
 
 #. module: l10n_ua_hr_reports
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
@@ -2092,19 +1520,97 @@ msgstr "Тип повідомлення"
 #. module: l10n_ua_hr_reports
 #: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_hire_notice
 msgid ""
-"Notice to the tax authority about hiring an employee or concluding a gig "
-"contract\n"
+"Notice to the tax authority about hiring an employee or concluding a gig contract\n"
 "               (CMU Resolution No. 413). It is filed before work starts."
 msgstr ""
-"Повідомлення ДПС про прийняття працівника на роботу або укладення гіг-"
-"контракту\n"
+"Повідомлення ДПС про прийняття працівника на роботу або укладення гіг-контракту\n"
 "               (постанова КМУ № 413). Подається до початку роботи."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__11
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__11
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__11
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__11
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__11
+msgid "November"
+msgstr "Листопад"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__message_needaction_counter
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_needaction_counter
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_needaction_counter
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_needaction_counter
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_needaction_counter
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_needaction_counter
+msgid "Number of Actions"
+msgstr "Кількість дій"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__total_employees
+msgid "Number of employees with payslips"
+msgstr "Кількість працівників з розрахунковими листками"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__message_has_error_counter
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_has_error_counter
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_has_error_counter
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_has_error_counter
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_has_error_counter
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_has_error_counter
+msgid "Number of errors"
+msgstr "Кількість помилок"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount_line__headcount
+msgid "Number of full-time employees"
+msgstr "Кількість штатних працівників"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__message_needaction_counter
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__message_needaction_counter
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__message_needaction_counter
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__message_needaction_counter
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__message_needaction_counter
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__message_needaction_counter
+msgid "Number of messages requiring action"
+msgstr "Кількість повідомлень, що потребують дії"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__message_has_error_counter
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__message_has_error_counter
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__message_has_error_counter
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__message_has_error_counter
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__message_has_error_counter
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__message_has_error_counter
+msgid "Number of messages with delivery error"
+msgstr "Кількість повідомлень з помилкою доставки"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__10
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__10
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__10
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__10
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__10
+msgid "October"
+msgstr "Жовтень"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor_line__is_auto
+msgid "Odoo computes this row. Rows it has no data for are entered by hand."
+msgstr ""
+"Odoo розраховує цей рядок. Рядки, для яких немає даних, вводяться вручну."
 
 #. module: l10n_ua_hr_reports
 #. odoo-python
 #: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
 msgid "Only a draft or generated notice can be marked as sent."
 msgstr "Позначити поданим можна лише чернетку або сформоване повідомлення."
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_report_labor.py:0
+msgid "Only a draft report can be recomputed."
+msgstr "Перерахувати можна лише чернетку звіту."
 
 #. module: l10n_ua_hr_reports
 #. odoo-python
@@ -2135,10 +1641,57 @@ msgid "Order Number"
 msgstr "Номер наказу"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__fund_other
+msgid "Other Payments"
+msgstr "Інші виплати"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__fund_other
+msgid "Other accruals"
+msgstr "Інші нарахування"
+
+#. module: l10n_ua_hr_reports
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__is_overdue
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_search
 msgid "Overdue"
 msgstr "Прострочено"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__pdfo_amount
+msgid "PDFO"
+msgstr "ПДФО"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__pdfo_amount
+msgid "PDFO Amount"
+msgstr "Сума ПДФО"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__paid_amount
+msgid "Paid Amount"
+msgstr "Виплачено"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
+msgid "Period"
+msgstr "Звітний період"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__date_to
+msgid "Period End"
+msgstr "Кінець періоду"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__period_key
+msgid "Period Key"
+msgstr "Ключ періоду"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__date_from
+msgid "Period Start"
+msgstr "Початок періоду"
 
 #. module: l10n_ua_hr_reports
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
@@ -2152,9 +1705,86 @@ msgid "Person Category"
 msgstr "Категорія особи"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor_line__unit__hours
+msgid "Person-hours"
+msgstr "Люд.год"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__total_pdfo
+msgid "Personal income tax (18%)"
+msgstr "Податок на доходи фізичних осіб (18%)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor_line__unit__persons
+msgid "Persons"
+msgstr "Осіб"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
+msgid "Print"
+msgstr "Друк"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_1df__quarter__1
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__quarter__1
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__quarter__1
+msgid "Q1"
+msgstr "1 квартал"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_1df__quarter__2
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__quarter__2
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__quarter__2
+msgid "Q2"
+msgstr "2 квартал"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_1df__quarter__3
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__quarter__3
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__quarter__3
+msgid "Q3"
+msgstr "3 квартал"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_1df__quarter__4
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__quarter__4
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__quarter__4
+msgid "Q4"
+msgstr "4 квартал"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__quarter
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__quarter
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__quarter
+msgid "Quarter"
+msgstr "Квартал"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__period_type__quarter
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_search
+msgid "Quarterly"
+msgstr "Квартальна"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__rnokpp
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__rnokpp
+msgid "RNOKPP"
+msgstr "РНОКПП"
+
+#. module: l10n_ua_hr_reports
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__person_tin
 msgid "RNOKPP / Passport"
 msgstr "РНОКПП / паспорт"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__explanation_avg_wage
+msgid "Reason for Average Wage Deviation"
+msgstr "Причина відхилення середньої заробітної плати"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__explanation_headcount
+msgid "Reason for Headcount Deviation"
+msgstr "Причина відхилення середньооблікової кількості"
 
 #. module: l10n_ua_hr_reports
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__receipt_number
@@ -2174,6 +1804,103 @@ msgid "Rejected"
 msgstr "Відхилено"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__report_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__report_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount_line__report_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__report_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__report_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_line__report_id
+msgid "Report"
+msgstr "Звіт"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__line_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_1df_view_form
+msgid "Report Lines"
+msgstr "Рядки звіту"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__line_ids
+msgid "Report Lines (D1)"
+msgstr "Рядки звіту (Д1)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__report_type
+msgid "Report Type"
+msgstr "Тип звіту"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor_line__is_manual
+msgid ""
+"Report the value entered by hand instead of the computed one. The value is "
+"kept when the report is recomputed."
+msgstr ""
+"Подавати введене вручну значення замість розрахованого. Значення "
+"зберігається під час перерахунку звіту."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__explanation_headcount
+msgid ""
+"Required by the form when the average headcount changed by 25% or more."
+msgstr ""
+"Форма вимагає пояснення, якщо середньооблікова кількість змінилася на 25% і "
+"більше."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__explanation_avg_wage
+msgid "Required by the form when the average wage changed by 10% or more."
+msgstr ""
+"Форма вимагає пояснення, якщо середня заробітна плата змінилася на 10% і "
+"більше."
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_report_labor.py:0
+msgid "Reset the report to draft to change its rows."
+msgstr "Поверніть звіт у чернетку, щоб змінити рядки."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__activity_user_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__activity_user_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__activity_user_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__activity_user_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__activity_user_id
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_user_id
+msgid "Responsible User"
+msgstr "Відповідальний"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_form
+msgid "Results"
+msgstr "Результати"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__code
+msgid "Row Code"
+msgstr "Код рядка"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__line_ids
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
+msgid "Rows"
+msgstr "Рядки"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__message_has_sms_error
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__message_has_sms_error
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__message_has_sms_error
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__message_has_sms_error
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__message_has_sms_error
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__message_has_sms_error
+msgid "SMS Delivery error"
+msgstr "Помилка доставки SMS"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__section
+msgid "Section"
+msgstr "Розділ"
+
+#. module: l10n_ua_hr_reports
 #. odoo-python
 #: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
 msgid "Send hire notice to the tax authority"
@@ -2191,9 +1918,100 @@ msgid "Sent to the tax authority. Receipt: %s"
 msgstr "Подано до ДПС. Квитанція: %s"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__month__9
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_headcount__month__9
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor__month__9
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wage_fund__month__9
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__month__9
+msgid "September"
+msgstr "Вересень"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__sequence
+msgid "Sequence"
+msgstr "Послідовність"
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_report_labor.py:0
+msgid "Set the month or the quarter of the report."
+msgstr "Вкажіть місяць або квартал звіту."
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_1df_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
+msgid "Set to Draft"
+msgstr "Повернути в чернетку"
+
+#. module: l10n_ua_hr_reports
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
 msgid "Sign and Send"
 msgstr "Підписати і подати"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__start_date
+msgid "Start Date"
+msgstr "Дата початку"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__state
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__state
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__state
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__state
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__state
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__report_state
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__state
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_search
+msgid "Status"
+msgstr "Статус"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__activity_state
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__activity_state
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__activity_state
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__activity_state
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__activity_state
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_state
+msgid ""
+"Status based on activities\n"
+"Overdue: Due date is already passed\n"
+"Today: Activity date is today\n"
+"Planned: Future activities."
+msgstr ""
+"Статус на основі активностей\n"
+"Прострочено: Термін вже минув\n"
+"Сьогодні: Дата активності сьогодні\n"
+"Заплановано: Майбутні активності."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__submission_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__submission_date
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__submission_date
+msgid "Submission Date"
+msgstr "Дата подання"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_1df__state__submitted
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_d5__state__submitted
+msgid "Submitted"
+msgstr "Подано"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
+msgid "Summary"
+msgstr "Загальні дані"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
+msgid "Tax Deductions"
+msgstr "Утримання"
 
 #. module: l10n_ua_hr_reports
 #: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__person_tin
@@ -2205,11 +2023,20 @@ msgstr ""
 "переконання відмовилися від РНОКПП."
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df_line__date_termination
+msgid "Termination Date"
+msgstr "Дата звільнення"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__termination_reason
+msgid "Termination Reason"
+msgstr "Причина звільнення"
+
+#. module: l10n_ua_hr_reports
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
 msgid ""
 "The Procedure (CMU Resolution No. 413) requires the notice for employment\n"
-"                        and gig contracts. Category 4 (civil law contract) "
-"is accepted by the form\n"
+"                        and gig contracts. Category 4 (civil law contract) is accepted by the form\n"
 "                        but is not subject to the deadline control."
 msgstr ""
 "Порядок (постанова КМУ № 413) вимагає повідомлення для трудових договорів і "
@@ -2226,6 +2053,17 @@ msgstr ""
 "гіг-контракти)."
 
 #. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_form
+msgid ""
+"The average headcount changed by 25% or more, or the average wage by 10%\n"
+"                        or more, against the previous month: the form requires the reason on the\n"
+"                        Explanations tab."
+msgstr ""
+"Середньооблікова кількість змінилася на 25% і більше або середня заробітна "
+"плата — на 10% і більше порівняно з попереднім місяцем: форма вимагає "
+"вказати причину на вкладці «Пояснення»."
+
+#. module: l10n_ua_hr_reports
 #. odoo-python
 #: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
 msgid ""
@@ -2239,11 +2077,45 @@ msgstr ""
 #. odoo-python
 #: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
 msgid ""
-"The hire notice for %(employee)s was not sent before work started on %"
-"(date)s (CMU Resolution No. 413)."
+"The hire notice for %(employee)s was not sent before work started on "
+"%(date)s (CMU Resolution No. 413)."
 msgstr ""
-"Повідомлення про прийняття %(employee)s не подано до початку роботи %(date)s "
-"(постанова КМУ № 413)."
+"Повідомлення про прийняття %(employee)s не подано до початку роботи %(date)s"
+" (постанова КМУ № 413)."
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_report_labor
+msgid ""
+"The monthly and quarterly «Звіт із праці» of the State Statistics\n"
+"                Service (order № 117 of 15.04.2024): headcount, hours worked and\n"
+"                the wage fund computed from payslips and contracts."
+msgstr ""
+"Місячний і квартальний «Звіт із праці» Держстату (наказ № 117 від "
+"15.04.2024): чисельність, відпрацьований час і фонд оплати праці, "
+"розраховані з розрахункових листків і договорів."
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_report_wage_fund
+msgid ""
+"This report analyzes the wage fund structure by accrual types\n"
+"                and provides tax deduction summaries."
+msgstr ""
+"Звіт аналізує структуру фонду оплати праці за видами нарахувань\n"
+"                і підсумовує податки та утримання."
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.actions.act_window,help:l10n_ua_hr_reports.action_hr_report_headcount
+msgid ""
+"This report calculates the average number of employees\n"
+"                for a given month according to Ukrainian methodology."
+msgstr ""
+"Звіт розраховує середньооблікову кількість працівників\n"
+"                за місяць за українською методикою."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor_line__unit__kuah
+msgid "Thousand UAH"
+msgstr "Тис. грн"
 
 #. module: l10n_ua_hr_reports
 #. odoo-python
@@ -2252,9 +2124,109 @@ msgid "To generate the hire notice fill in: %s."
 msgstr "Для формування повідомлення про прийняття заповніть: %s."
 
 #. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_1df_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_1df_view_tree
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_tree
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_list
+msgid "Total"
+msgstr "Всього"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__total_accrued
+msgid "Total Accrued"
+msgstr "Всього нараховано"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund_accrual__total_amount
+msgid "Total Amount"
+msgstr "Сума"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__total_esv
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__total_esv
+msgid "Total ESV"
+msgstr "Всього ЄСВ"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__total_esv_base
+msgid "Total ESV Base"
+msgstr "Всього база ЄСВ"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__total_employees
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__total_employees
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__total_employees
+msgid "Total Employees"
+msgstr "Всього працівників"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__total_gross
+msgid "Total Gross"
+msgstr "Всього нараховано (брутто)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__total_military
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__total_military
+msgid "Total Military Tax"
+msgstr "Всього військового збору"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__total_net
+msgid "Total Net"
+msgstr "Всього до виплати (нетто)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__total_pdfo
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__total_pdfo
+msgid "Total PDFO"
+msgstr "Всього ПДФО"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__total_paid
+msgid "Total Paid"
+msgstr "Всього виплачено"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__total_gross
+msgid "Total accrued amount (gross salary)"
+msgstr "Загальна сума нарахувань (брутто)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__total_calendar_days
+msgid "Total calendar days in the period"
+msgstr "Загальна кількість календарних днів у периоді"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__total_net
+msgid "Total net salary (after deductions)"
+msgstr "Загальна сума до виплати (після утримань)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__activity_exception_decoration
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__activity_exception_decoration
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__activity_exception_decoration
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__activity_exception_decoration
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__activity_exception_decoration
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__activity_exception_decoration
+msgid "Type of the exception activity on record."
+msgstr "Тип виключної активності в записі."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor_line__unit__uah
+msgid "UAH"
+msgstr "Грн"
+
+#. module: l10n_ua_hr_reports
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__unzr
 msgid "UNZR"
 msgstr "УНЗР"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__total_esv
+msgid "Unified social contribution (22%)"
+msgstr "Єдиний соціальний внесок (22%)"
 
 #. module: l10n_ua_hr_reports
 #: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__unzr
@@ -2263,6 +2235,90 @@ msgid ""
 msgstr ""
 "Унікальний номер запису в Єдиному державному демографічному реєстрі (за "
 "наявності)."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__unit
+msgid "Unit"
+msgstr "Одиниця"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_labor_line__unit__units
+msgid "Units"
+msgstr "Од."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor_line__value
+msgid "Value"
+msgstr "Значення"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_search
+msgid "Wage Fund"
+msgstr "Фонд оплати праці"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_wage_fund_accrual
+msgid "Wage Fund Accrual Summary"
+msgstr "Зведення фонду оплати праці за видами нарахувань"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_wage_fund
+#: model:ir.model.fields.selection,name:l10n_ua_hr_reports.selection__hr_report_wizard__report_type__wage_fund
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
+msgid "Wage Fund Report"
+msgstr "Звіт про фонд оплати праці"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model,name:l10n_ua_hr_reports.model_hr_report_wage_fund_line
+msgid "Wage Fund Report Employee Line"
+msgstr "Рядок звіту ФОП (по працівнику)"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.actions.act_window,name:l10n_ua_hr_reports.action_hr_report_wage_fund
+#: model:ir.ui.menu,name:l10n_ua_hr_reports.menu_hr_report_wage_fund
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_list
+msgid "Wage Fund Reports"
+msgstr "Звіти фонду оплати праці"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_form
+msgid "Wage Fund Structure"
+msgstr "Структура фонду оплати праці"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.constraint,message:l10n_ua_hr_reports.constraint_hr_report_wage_fund_unique_year_month_company_id
+msgid "Wage fund report for this period already exists!"
+msgstr "Звіт фонду оплати праці за цей період вже існує!"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__website_message_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__website_message_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__website_message_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__website_message_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__website_message_ids
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__website_message_ids
+msgid "Website Messages"
+msgstr "Повідомлення веб-сайту"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_hire_notice__website_message_ids
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_1df__website_message_ids
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_d5__website_message_ids
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_headcount__website_message_ids
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_labor__website_message_ids
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_report_wage_fund__website_message_ids
+msgid "Website communication history"
+msgstr "Історія комунікації веб-сайту"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,help:l10n_ua_hr_reports.field_hr_accrual_type__l10n_ua_1pv_group
+msgid ""
+"Where this accrual is reported in Section III of the 1-PV labour report. "
+"Left empty, the standard types are filed by their code and any other type by"
+" its category."
+msgstr ""
+"Куди це нарахування потрапляє в розділі III звіту із праці 1-ПВ. Якщо не "
+"заповнено, стандартні типи розподіляються за кодом, інші — за категорією."
 
 #. module: l10n_ua_hr_reports
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__date_start
@@ -2279,11 +2335,20 @@ msgstr "Робота почалась, а повідомлення не пода
 #: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_hire_notice_view_form
 msgid ""
 "Work has started, but the notice has not been sent to the tax authority\n"
-"                        (CMU Resolution No. 413: the notice is filed before "
-"work starts)."
+"                        (CMU Resolution No. 413: the notice is filed before work starts)."
 msgstr ""
 "Робота почалась, а повідомлення до ДПС не подано (постанова КМУ № 413: "
 "повідомлення подається до початку роботи)."
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__worked_days
+msgid "Worked Days"
+msgstr "Відпрацьовано днів"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5_line__worked_hours
+msgid "Worked Hours"
+msgstr "Відпрацьовано годин"
 
 #. module: l10n_ua_hr_reports
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__xml_file
@@ -2291,10 +2356,43 @@ msgid "XML File"
 msgstr "XML-файл"
 
 #. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__xml_file
+msgid "XML-файл"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_hire_notice__xml_filename
 #: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__xml_filename
 msgid "Xml Filename"
 msgstr "Ім'я XML-файлу"
+
+#. module: l10n_ua_hr_reports
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_1df__year
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_d5__year
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_headcount__year
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_labor__year
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wage_fund__year
+#: model:ir.model.fields,field_description:l10n_ua_hr_reports.field_hr_report_wizard__year
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_headcount_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_labor_view_search
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_wage_fund_view_search
+msgid "Year"
+msgstr "Рік"
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid ""
+"______________________________________<br/>\n"
+"                                    (Власне ім’я ПРІЗВИЩЕ)"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid ""
+"______________________________________<br/>\n"
+"                                    Місце підпису керівника (власника) або особи,\n"
+"                                    відповідальної за достовірність наданої інформації"
+msgstr ""
 
 #. module: l10n_ua_hr_reports
 #. odoo-python
@@ -2323,8 +2421,8 @@ msgstr "РНОКПП або паспорт працівника"
 #. module: l10n_ua_hr_reports
 #. odoo-python
 #: code:addons/l10n_ua_hr_reports/models/hr_hire_notice.py:0
-msgid "employee full name"
-msgstr "ПІБ працівника"
+msgid "employee full name (surname and first name)"
+msgstr "ПІБ працівника (прізвище та ім'я)"
 
 #. module: l10n_ua_hr_reports
 #. odoo-python
@@ -2345,11 +2443,139 @@ msgid "work start date"
 msgstr "дату початку роботи"
 
 #. module: l10n_ua_hr_reports
-#: model:ir.ui.menu,name:l10n_ua_hr_reports.menu_hr_report_1df_reporting
-msgid "1DF Tax Calculation"
-msgstr "Податковий розрахунок 1ДФ"
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_report_labor.py:0
+msgid "xlsxwriter is not installed. Run: pip install xlsxwriter"
+msgstr ""
+"Бібліотеку xlsxwriter не встановлено. Виконайте: pip install xlsxwriter"
 
 #. module: l10n_ua_hr_reports
-#: model:ir.ui.menu,name:l10n_ua_hr_reports.menu_hr_report_d5_reporting
-msgid "ESV Report (D5)"
-msgstr "Звіт з ЄСВ (Д5)"
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid "Ідентифікаційний код ЄДРПОУ"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid ""
+"Державне статистичне спостереження<br/>\n"
+"                            Статистична конфіденційність забезпечується статтею 29\n"
+"                            Закону України \"Про офіційну статистику\""
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_report_d5.py:0
+msgid "Для формування Додатка 1 заповніть: %s."
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid "Код рядка"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid "Місцезнаходження"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid "Назва показників"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid "Найменування"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid "Основна причина відхилення"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_report_d5.py:0
+msgid "ПІБ керівника (director_id)"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_report_d5.py:0
+msgid "Подано до ДПС. Квитанція: %s"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_report_d5.py:0
+msgid "Подати Д5 (ЄСВ) до ДПС"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid ""
+"Подають: юридичні особи, відокремлені підрозділи\n"
+"                                    юридичних осіб – територіальному органу Держстату<br/>\n"
+"                                    Термін подання: не пізніше 7-го числа місяця,\n"
+"                                    наступного за звітним періодом"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.hr_report_d5_view_form
+msgid "Підписати і подати"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_report_d5.py:0
+msgid "РНОКПП керівника (director_id)"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid ""
+"Середньооблікова кількість штатних працівників (ряд.1040)\n"
+"                                        + ; – 25% і більше порівняно з попереднім періодом"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid ""
+"Середня заробітна плата штатного працівника\n"
+"                                        (ряд.1070 / ряд.1040 × 1000) + ; – 10% і більше\n"
+"                                        порівняно з попереднім періодом"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_report_d5.py:0
+msgid "Спочатку згенеруйте звіт (кнопка «Generate»)."
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_report_d5.py:0
+msgid "Сформовано XML Додатка 1 (ЄСВ): %s"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid "електронна пошта:"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_report_d5.py:0
+msgid "код ЄДРПОУ компанії"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#. odoo-python
+#: code:addons/l10n_ua_hr_reports/models/hr_report_d5.py:0
+msgid "код ДПІ компанії (tax_office_code)"
+msgstr ""
+
+#. module: l10n_ua_hr_reports
+#: model_terms:ir.ui.view,arch_db:l10n_ua_hr_reports.report_hr_report_labor
+msgid "телефон:"
+msgstr ""

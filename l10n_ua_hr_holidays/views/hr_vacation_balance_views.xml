@@ -24,7 +24,7 @@
                             <field name="period_start"/>
                             <field name="period_end"/>
                             <field name="period_index"/>
-                            <field name="year" readonly="1"/>
+                            <field name="year" options="{'enable_formatting': false}" readonly="1"/>
                         </group>
                     </group>
                     <group>
@@ -62,7 +62,7 @@
                 <field name="period_label" optional="show"/>
                 <field name="period_start" optional="hide"/>
                 <field name="period_end" optional="hide"/>
-                <field name="year" optional="hide"/>
+                <field name="year" options="{'enable_formatting': false}" optional="hide"/>
                 <field name="company_id" groups="base.group_multi_company" optional="hide"/>
                 <field name="entitled_days" optional="show"/>
                 <field name="carried_over" optional="show"/>

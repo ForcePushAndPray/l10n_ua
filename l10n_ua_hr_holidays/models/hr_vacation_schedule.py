@@ -75,7 +75,8 @@ class HrVacationSchedule(models.Model):
             leaves = self.env['hr.leave'].search([
                 ('employee_id', '=', employee.id),
                 ('state', 'not in', ('cancel', 'refuse')),
-                ('holiday_status_id.ua_leave_category', '!=', False),
+                # лікарняні — не відпустки: у графік не потрапляють
+                ('holiday_status_id.ua_leave_category', 'not in', (False, 'sick')),
                 ('request_date_from', '>=', year_start),
                 ('request_date_from', '<=', year_end),
             ], order='request_date_from')
