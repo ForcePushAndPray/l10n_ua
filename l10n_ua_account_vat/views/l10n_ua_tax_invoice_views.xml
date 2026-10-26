@@ -39,6 +39,7 @@
                             <field name="vat_method"/>
                             <field name="registration_deadline"/>
                             <field name="is_import"/>
+                            <field name="non_payer_reason" invisible="invoice_type != 'issued'"/>
                         </group>
                         <group>
                             <field name="partner_id"/>
