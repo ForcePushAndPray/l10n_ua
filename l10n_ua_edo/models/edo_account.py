@@ -17,6 +17,9 @@ plain data, so the base module and the bridges never see the API:
 * ``categories()`` → [(code, name)] — the document categories of the service.
 * ``default_categories()`` (optional) → {report xmlid: category code} — the
   category each Ukrainian printed form goes under by default.
+* ``bill_categories()`` (optional) → {category code} — the categories of
+  incoming documents a vendor bill is made from (invoices, acts, waybills).
+  Without it a bill can be made from any incoming document.
 """
 
 import logging
@@ -153,7 +156,8 @@ class L10nUaEdoAccount(models.Model):
 
     @api.model
     def _cron_sync(self):
-        for account in self.search([('provider', '!=', False)]):
+        # An account without a token is being set up (or is a demo): nothing to sync
+        for account in self.search([('provider', '!=', False)]).filtered(lambda a: a.sudo().token):
             try:
                 with self.env.cr.savepoint():
                     account._sync()
