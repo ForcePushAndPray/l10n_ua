@@ -87,6 +87,17 @@ class TestPartialApproval(TransactionCase):
         with self.assertRaises(UserError):
             self.sheet.unlink()
 
+    def test_moving_a_line_is_refused(self):
+        other = self.env['hr.employee'].create({
+            'name': 'Other Employee', 'company_id': self.company.id})
+        other_sheet = self.env['hr.timesheet'].create({
+            'month': '8', 'year': 2025, 'company_id': self.company.id})
+        self._wizard().action_approve()
+        with self.assertRaises(UserError):
+            self.line.employee_id = other
+        with self.assertRaises(UserError):
+            self.line.timesheet_id = other_sheet
+
     def test_a_second_partial_approval_is_refused(self):
         self._wizard().action_approve()
         with self.assertRaises(UserError):

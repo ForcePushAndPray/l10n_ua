@@ -324,6 +324,16 @@ class HrTimesheetLine(models.Model):
             line.norm_hours = sum(days.mapped('norm_hours'))
             line.overtime_diff = line.worked_hours - line.norm_hours
 
+    def write(self, vals):
+        # Moving a line would carry its approved days to another employee
+        # or into another sheet.
+        if 'employee_id' in vals or 'timesheet_id' in vals:
+            self.timesheet_id._check_no_partial_approval()
+            if vals.get('timesheet_id'):
+                self.env['hr.timesheet'].browse(
+                    vals['timesheet_id'])._check_no_partial_approval()
+        return super().write(vals)
+
     def unlink(self):
         self.timesheet_id._check_no_partial_approval()
         return super().unlink()

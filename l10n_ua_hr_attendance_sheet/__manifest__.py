@@ -1,6 +1,6 @@
 {
     'name': 'Ukraine - HR Attendance Sheet',
-    'version': '19.0.1.2.2',
+    'version': '19.0.1.2.3',
     'category': 'Human Resources/Localization',
     'summary': 'Ukrainian attendance sheet (Табель обліку робочого часу)',
     'description': """
