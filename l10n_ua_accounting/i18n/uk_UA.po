@@ -6672,3 +6672,52 @@ msgid ""
 msgstr ""
 "Звіт про власний капітал (Форма № 4) розраховується за рахунками власного "
 "капіталу 40–46."
+
+#. module: l10n_ua_accounting
+#: model:ir.model.fields.selection,name:l10n_ua_accounting.selection__l10n_ua_pnl_report_line__line_type__element
+msgid "Element of Operating Expenses"
+msgstr "Елемент операційних витрат"
+
+#. module: l10n_ua_accounting
+#: model:ir.model.fields.selection,name:l10n_ua_accounting.selection__l10n_ua_pnl_report_line__line_type__manual
+msgid "Entered by Hand"
+msgstr "Вводиться вручну"
+
+#. module: l10n_ua_accounting
+#: model:ir.model.fields.selection,name:l10n_ua_accounting.selection__l10n_ua_pnl_report_line__line_type__loss
+msgid "Loss"
+msgstr "Збиток"
+
+#. module: l10n_ua_accounting
+#. odoo-python
+#: code:addons/l10n_ua_accounting/models/l10n_ua_pnl_report.py:0
+msgid ""
+"Only the rows 2305, 2455 and 2600–2650 are entered by hand; the other rows "
+"come from the ledger. Recalculate the report instead."
+msgstr ""
+"Вручну вводяться лише рядки 2305, 2455 і 2600–2650; решта рядків береться з "
+"обліку. Перерахуйте звіт."
+
+#. module: l10n_ua_accounting
+#: model:ir.model.fields.selection,name:l10n_ua_accounting.selection__l10n_ua_pnl_report_line__line_type__oci
+msgid "Other Comprehensive Income"
+msgstr "Інший сукупний дохід"
+
+#. module: l10n_ua_accounting
+#: model:ir.model.fields,field_description:l10n_ua_accounting.field_l10n_ua_pnl_report_line__flow_key
+msgid "Row Key"
+msgstr "Ключ рядка"
+
+#. module: l10n_ua_accounting
+#: model_terms:ir.ui.view,arch_db:l10n_ua_accounting.view_pnl_report_form
+msgid ""
+"Rows 2305, 2455 and 2600–2650 are entered by hand. Section III is the debit\n"
+"                                turnover of class 8: without class 8 accounts it stays empty."
+msgstr ""
+"Рядки 2305, 2455 і 2600–2650 вводяться вручну. Розділ III — дебетовий оборот"
+" класу 8: без рахунків класу 8 він лишається порожнім."
+
+#. module: l10n_ua_accounting
+#: model:ir.model.fields.selection,name:l10n_ua_accounting.selection__l10n_ua_pnl_report_line__line_type__section
+msgid "Section Title"
+msgstr "Заголовок розділу"

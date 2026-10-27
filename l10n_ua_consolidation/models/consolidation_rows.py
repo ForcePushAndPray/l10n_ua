@@ -24,8 +24,8 @@ account and partner; ПДВ 643/644 between 1190 and 1690).
 Eliminations need this: a row built from ``abs()`` of a net balance cannot be
 reduced by the intra-group part of it.
 
-P&L amounts use exactly the Form 2 rule (credit turnover for income rows,
-debit turnover for expense rows).
+P&L amounts use exactly the Form 2 rule (``pnl_amount``: net turnover of
+the period without the entries closing it through 79).
 """
 
 from odoo.addons.l10n_ua_accounting.models.l10n_ua_balance_report import (
