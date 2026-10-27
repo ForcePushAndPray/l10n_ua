@@ -19,3 +19,4 @@ from . import test_balance_form
 from . import test_wizard_print
 from . import test_equity_report
 from . import test_pnl_form
+from . import test_small_report
