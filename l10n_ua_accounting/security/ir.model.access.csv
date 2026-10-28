@@ -33,3 +33,9 @@ access_deferral_report_user,l10n_ua.deferral.report.user,model_l10n_ua_deferral_
 access_deferral_post_wizard_user,l10n_ua.deferral.post.wizard.user,model_l10n_ua_deferral_post_wizard,account.group_account_user,1,1,1,1
 access_deferral_balance_wizard_user,l10n_ua.deferral.balance.wizard.user,model_l10n_ua_deferral_balance_wizard,account.group_account_readonly,1,1,1,1
 access_deferral_create_wizard_user,l10n_ua.deferral.create.wizard.user,model_l10n_ua_deferral_create_wizard,account.group_account_user,1,1,1,1
+access_equity_report_user,l10n_ua.equity.report.user,model_l10n_ua_equity_report,account.group_account_user,1,1,1,1
+access_equity_report_line_user,l10n_ua.equity.report.line.user,model_l10n_ua_equity_report_line,account.group_account_user,1,1,1,1
+access_small_report_user,l10n_ua.small.report.user,model_l10n_ua_small_report,account.group_account_user,1,1,1,1
+access_small_report_line_user,l10n_ua.small.report.line.user,model_l10n_ua_small_report_line,account.group_account_user,1,1,1,1
+access_notes_report_user,l10n_ua.notes.report.user,model_l10n_ua_notes_report,account.group_account_user,1,1,1,1
+access_notes_report_line_user,l10n_ua.notes.report.line.user,model_l10n_ua_notes_report_line,account.group_account_user,1,1,1,1

@@ -58,7 +58,9 @@
                             <span t-field="report.date_to" t-options='{"widget": "date"}'/> р.
                         </div>
 
-                        <div class="small text-center mb-2">Форма № 2</div>
+                        <div class="small text-center mb-2">Форма № 2 · Код за ДКУД 1801003</div>
+                        <div class="small mb-1">Одиниця виміру: тис. грн. без десяткового знака</div>
+                        <t t-set="vals" t-value="report._form_values()"/>
 
                         <!-- P&L Table from stored lines -->
                         <table>
@@ -72,34 +74,27 @@
                             </thead>
                             <tbody>
                                 <t t-foreach="report.line_ids.sorted('sequence')" t-as="line">
-                                    <!-- Detail: expenses in parentheses -->
-                                    <tr t-if="line.line_type == 'detail' and line.turnover_type == 'debit'">
-                                        <td t-esc="line.name"/>
-                                        <td class="text-center" t-esc="line.code"/>
-                                        <td class="text-right" t-esc="'(%.0f)' % line.current_amount"/>
-                                        <td class="text-right" t-esc="'(%.0f)' % line.previous_amount"/>
+                                    <!-- Section title -->
+                                    <tr t-if="line.line_type == 'section'">
+                                        <td colspan="4" class="bold text-center" t-esc="line.name"/>
                                     </tr>
-                                    <!-- Detail: income -->
-                                    <tr t-if="line.line_type == 'detail' and line.turnover_type != 'debit'">
-                                        <td t-esc="line.name"/>
-                                        <td class="text-center" t-esc="line.code"/>
-                                        <td class="text-right" t-esc="'%.0f' % line.current_amount"/>
-                                        <td class="text-right" t-esc="'%.0f' % line.previous_amount"/>
-                                    </tr>
-                                    <!-- Subtotal -->
-                                    <tr t-if="line.line_type == 'subtotal'" class="bold">
-                                        <td t-esc="line.name"/>
-                                        <td class="text-center" t-esc="line.code"/>
-                                        <td class="text-right" t-esc="'%.0f' % line.current_amount"/>
-                                        <td class="text-right" t-esc="'%.0f' % line.previous_amount"/>
-                                    </tr>
-                                    <!-- Total (net profit) -->
-                                    <tr t-if="line.line_type == 'total'" class="bold" style="border-top: 2px solid black;">
-                                        <td t-esc="line.name"/>
-                                        <td class="text-center" t-esc="line.code"/>
-                                        <td class="text-right" t-esc="'%.0f' % line.current_amount"/>
-                                        <td class="text-right" t-esc="'%.0f' % line.previous_amount"/>
-                                    </tr>
+                                    <t t-else="">
+                                        <t t-set="bold" t-value="line.line_type in ('subtotal', 'loss', 'total')"/>
+                                        <!-- Expenses and losses in parentheses; 2610–2650 with kopecks; 2600/2605 are counts -->
+                                        <t t-set="paren" t-value="line.line_type == 'loss' or line.turnover_type == 'debit'"/>
+
+                                        <tr t-att-class="'bold' if bold else ''"
+                                            t-att-style="'border-top: 2px solid black;' if line.line_type == 'total' else ''">
+                                            <td t-esc="line.name"/>
+                                            <td class="text-center" t-esc="line.code"/>
+                                            <t t-foreach="vals.get(line.code, (0, 0))" t-as="amount">
+                                                <td class="text-right">
+                                                    <t t-if="paren and amount &gt; 0" t-esc="'(' + report._ua_fmt(amount, line.code) + ')'"/>
+                                                    <t t-else="" t-esc="report._ua_fmt(amount, line.code)"/>
+                                                </td>
+                                            </t>
+                                        </tr>
+                                    </t>
                                 </t>
                             </tbody>
                         </table>

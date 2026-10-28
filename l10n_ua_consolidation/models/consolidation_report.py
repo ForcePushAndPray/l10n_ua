@@ -9,6 +9,10 @@ from odoo import _, api, fields, models
 from odoo.exceptions import UserError
 from odoo.tools import float_is_zero
 
+from odoo.addons.l10n_ua_accounting.models.l10n_ua_pnl_report import (
+    pnl_amount, pnl_closing_move_domain,
+)
+
 from .consolidation_rows import (
     BALANCE_ROWS, BALANCE_ROW_BY_KEY, EQUITY_DETAIL_KEYS, PNL_ROWS, PNL_ROW_BY_KEY,
     balance_side, complete_balance, complete_pnl, match_balance_row, match_pnl_row,
@@ -182,10 +186,12 @@ class L10nUaConsolidationReport(models.Model):
         return details, intragroup, unmapped
 
     def _company_pnl(self, company, date_from, date_to, ig_partner_ids=frozenset()):
-        """Form 2-к detail amounts of one company (Form 2 turnover rule)."""
+        """Form 2-к detail amounts of one company (Form 2 turnover rule:
+        net turnover without the closing through 79, ``pnl_amount``)."""
         groups = self._aml()._read_group(
             [('company_id', '=', company.id), ('parent_state', '=', 'posted'),
-             ('date', '>=', date_from), ('date', '<=', date_to)],
+             ('date', '>=', date_from), ('date', '<=', date_to)]
+            + pnl_closing_move_domain(self.env, company, date_from, date_to),
             groupby=['account_id', 'partner_id'], aggregates=['debit:sum', 'credit:sum'])
         codes = self._account_codes(self.env['account.account'].browse({g[0].id for g in groups}), company)
         details = defaultdict(float)
@@ -194,7 +200,7 @@ class L10nUaConsolidationReport(models.Model):
             key = match_pnl_row(codes.get(account.id, ''))
             if key is None:
                 continue
-            value = credit if PNL_ROW_BY_KEY[key]['turnover'] == 'credit' else debit
+            value = pnl_amount(PNL_ROW_BY_KEY[key]['turnover'], debit, credit)
             details[key] += value
             if partner.id in ig_partner_ids:
                 intragroup[key] += value

@@ -51,16 +51,54 @@
 
                         <div class="ua-report-title">
                             ЗВІТ ПРО РУХ ГРОШОВИХ КОШТІВ<br/>
-                            (за прямим методом)
+                            <t t-if="report.method == 'indirect'">(за непрямим методом)</t>
+                            <t t-else="">(за прямим методом)</t>
                         </div>
                         <div class="ua-report-subtitle mb-3">
                             за <span t-field="report.date_from" t-options='{"widget": "date"}'/> -
                             <span t-field="report.date_to" t-options='{"widget": "date"}'/> р.
                         </div>
 
-                        <div class="small text-center mb-2">Форма № 3</div>
+                        <div class="small text-center mb-2" t-if="report.method == 'indirect'">Форма № 3-н · Код за ДКУД 1801006</div>
+                        <div class="small text-center mb-2" t-else="">Форма № 3 · Код за ДКУД 1801004</div>
+                        <div class="small mb-1">Одиниця виміру: тис. грн. без десяткового знака</div>
+                        <t t-set="vals" t-value="report._form_values()"/>
 
-                        <table>
+                        <!-- Ф3-н: графи «надходження» і «видаток» за кожен період -->
+                        <table t-if="report.method == 'indirect'">
+                            <thead>
+                                <tr>
+                                    <th rowspan="2" style="width: 44%;">Стаття</th>
+                                    <th rowspan="2" style="width: 8%;">Код рядка</th>
+                                    <th colspan="2">За звітний період</th>
+                                    <th colspan="2">За аналогічний період попереднього року</th>
+                                </tr>
+                                <tr>
+                                    <th style="width: 12%;">надходження</th>
+                                    <th style="width: 12%;">видаток</th>
+                                    <th style="width: 12%;">надходження</th>
+                                    <th style="width: 12%;">видаток</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <t t-set="current_section" t-value="None"/>
+                                <t t-foreach="report.line_ids.sorted('sequence')" t-as="line">
+                                    <tr t-if="line.section and line.section != current_section" class="bold">
+                                        <td colspan="6" t-esc="report._section_title(line.section)"/>
+                                    </tr>
+                                    <t t-set="current_section" t-value="line.section or current_section"/>
+                                    <tr t-att-class="'bold' if line.line_type in ('subtotal', 'total') else ''">
+                                        <td t-att-style="'padding-left: 2em;' if line.line_type == 'sub' else ''" t-esc="line.name"/>
+                                        <td class="text-center" t-esc="line.code"/>
+                                        <t t-foreach="report._split_amount(line, vals.get(line.code, (0, 0))[0]) + report._split_amount(line, vals.get(line.code, (0, 0))[1])" t-as="amount">
+                                            <td class="text-right" t-esc="report._ua_fmt(amount)"/>
+                                        </t>
+                                    </tr>
+                                </t>
+                            </tbody>
+                        </table>
+
+                        <table t-else="">
                             <thead>
                                 <tr>
                                     <th style="width: 50%;">Стаття</th>
@@ -80,29 +118,35 @@
                                     <t t-set="current_section" t-value="line.section or current_section"/>
 
                                     <!-- Витрачання друкуються в дужках -->
+                                    <tr t-if="line.line_type == 'sub'">
+                                        <td style="padding-left: 2em;" t-esc="line.name"/>
+                                        <td class="text-center" t-esc="line.code"/>
+                                        <td class="text-right" t-esc="report._ua_paren(vals.get(line.code, (0, 0))[0])"/>
+                                        <td class="text-right" t-esc="report._ua_paren(vals.get(line.code, (0, 0))[1])"/>
+                                    </tr>
                                     <tr t-if="line.line_type == 'detail' and report._is_outflow_line(line)">
                                         <td t-esc="line.name"/>
                                         <td class="text-center" t-esc="line.code"/>
-                                        <td class="text-right" t-esc="'(%.0f)' % line.current_amount"/>
-                                        <td class="text-right" t-esc="'(%.0f)' % line.previous_amount"/>
+                                        <td class="text-right" t-esc="report._ua_paren(vals.get(line.code, (0, 0))[0])"/>
+                                        <td class="text-right" t-esc="report._ua_paren(vals.get(line.code, (0, 0))[1])"/>
                                     </tr>
                                     <tr t-if="line.line_type == 'detail' and not report._is_outflow_line(line)">
                                         <td t-esc="line.name"/>
                                         <td class="text-center" t-esc="line.code"/>
-                                        <td class="text-right" t-esc="'%.0f' % line.current_amount"/>
-                                        <td class="text-right" t-esc="'%.0f' % line.previous_amount"/>
+                                        <td class="text-right" t-esc="report._ua_fmt(vals.get(line.code, (0, 0))[0])"/>
+                                        <td class="text-right" t-esc="report._ua_fmt(vals.get(line.code, (0, 0))[1])"/>
                                     </tr>
                                     <tr t-if="line.line_type == 'subtotal'" class="bold">
                                         <td t-esc="line.name"/>
                                         <td class="text-center" t-esc="line.code"/>
-                                        <td class="text-right" t-esc="'%.0f' % line.current_amount"/>
-                                        <td class="text-right" t-esc="'%.0f' % line.previous_amount"/>
+                                        <td class="text-right" t-esc="report._ua_fmt(vals.get(line.code, (0, 0))[0])"/>
+                                        <td class="text-right" t-esc="report._ua_fmt(vals.get(line.code, (0, 0))[1])"/>
                                     </tr>
                                     <tr t-if="line.line_type == 'total'" class="bold" style="border-top: 2px solid black;">
                                         <td t-esc="line.name"/>
                                         <td class="text-center" t-esc="line.code"/>
-                                        <td class="text-right" t-esc="'%.0f' % line.current_amount"/>
-                                        <td class="text-right" t-esc="'%.0f' % line.previous_amount"/>
+                                        <td class="text-right" t-esc="report._ua_fmt(vals.get(line.code, (0, 0))[0])"/>
+                                        <td class="text-right" t-esc="report._ua_fmt(vals.get(line.code, (0, 0))[1])"/>
                                     </tr>
                                 </t>
                             </tbody>
